@@ -1,0 +1,65 @@
+import { LA1, LA2, LA3, LA4 } from "@/components/Fig";
+import MdxLayout from "@/components/mdx-layout";
+
+# Linear Algebra
+
+## Vectors
+A vector is a mathematical object that can be added to another vector or multiplied by a scalar to produce another vector. This general definition yields numerous examples:
+
+1. __Geometric Vectors.__ We can think of a vector as a geometric object with a magnitude (a length) and a direction (an arrowhead). For example, consider two vectors ${a = [3,3]}$ and ${b = [4,1].}$ The sum of these vectors is ${a + b = [3 + 4, 3 + 1],}$ which reduces to ${[7,4].}$ Geometrically:
+
+    <LA1/>
+
+    Similarly, we can _scale_ the geometric vector, which will still yield a vector.
+
+    <LA3/>
+
+2. __Polynomials.__ Polynomials may also be interpreted as vectors. Consider the two polynomials:
+
+    $$
+        3x^2 + 4x - 1 \\
+        4x^2 - 2x + 2
+    $$
+
+    We can think of these two polynomials as the vectors ${[3,4,-1]}$ and ${[4,-2,2],}$ where the polynomials' coefficients comprise the vector components. Adding these two vectors corresponds to adding the two polynomials, the sum of which is itself a polynomial. Thus, 
+
+    $$
+        [3,4,-1] + [4,-2,2] = [7,2,1]
+    $$
+
+    maps to the polynomial
+
+    $$
+        7x + 2x + 1.
+    $$
+
+    As an aside, recall that if we plot the two polynomials, the point where they intersect is the solution to the polynomial system. We will revisit this curiousity in later sections.
+
+    <LA2/>
+
+3. __Audio Signals.__ Audio signals can also be interpreted as vectors. We can add audio signals together to produce another audio signal, and we can also scale them to produce yet another. 
+
+    <LA4/>
+
+4. __Tuples.__ More abstractly, elements of ${\reals^n}$ (tuples, or arrays, of ${n}$ real numbers) are vectors. 
+    
+## Systems of Linear Equations
+Many problems in mathematics can be reduced to systems of linear equations. Linear algebra provides us the tools for solving these systems.
+
+> __Definition.__ The system
+> 
+> $$
+> \begin{aligned}
+>     a_{1,1}x_1 &+ &\ldots &+ a_{1,n}x_n = b_1 \\
+>     &\vdots & &\vdots  \\
+>     a_{m,1}x_1 &+ &\ldots &+ a_{m,n}x_n = b_n
+> \end{aligned}
+> $$
+> 
+> is called a __system of linear equations__, where ${a_{i,j}, b_{i} \in \reals}$ and each ${x_i}$ is a real number called an _unknown_ of the system.
+
+Given a system of linear equations ${S,}$ each ${n}$-tuple ${(x_1, \ldots, x_n) \in \reals^n}$ that satisfies ${S}$ is called a _solution_ of ${S.}$
+
+export default function MDXPage({ children }) {
+    return <MdxLayout>{children}</MdxLayout>
+}

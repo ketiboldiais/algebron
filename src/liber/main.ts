@@ -1120,7 +1120,7 @@ class Vector<T extends number[] = number[]> {
 }
 
 /** Returns a new vector. If a vector is passed, returns the vector (an identity function). */
-function vector(elements: number[] | Vector) {
+export function vector(elements: number[] | Vector) {
   if (Array.isArray(elements)) {
     return new Vector(elements);
   } else {
@@ -2198,7 +2198,7 @@ export class ArrowHead2D extends GraphicsAtom2D {
     return this;
   }
 
-  $refX: number = 0;
+  $refX: number = 9;
 
   refX(value: number) {
     this.$refX = value;
@@ -2400,12 +2400,12 @@ export function isCircle(obj: Graphics2DObj): obj is Circle2D {
 
 export class Text2D extends Graphics2DObj {
   $latex: null | "block" | "inline" = null;
-  $width: number = 50
+  $width: number = 50;
   width(value: number) {
     this.$width = value;
     return this;
   }
-  $height: number = 50
+  $height: number = 50;
   height(value: number) {
     this.$height = value;
     return this;
@@ -2561,6 +2561,11 @@ type TickSpecification = {
 
 class Axis2D extends Group2D {
   $type: "x" | "y";
+  $stroke: string = "black";
+  stroke(value: string) {
+    this.$stroke = value;
+    return this;
+  }
 
   ticks(spec: TickSpecification) {
     const xticks = () => {
@@ -2571,6 +2576,8 @@ class Axis2D extends Group2D {
         spec.step,
         "x"
       ).forEach((t) => {
+        t.label.fill(this.$stroke);
+        t.tick.stroke(this.$stroke);
         if (spec.tickFn) {
           t = spec.tickFn(t);
         }
@@ -2585,6 +2592,8 @@ class Axis2D extends Group2D {
         spec.step,
         "y"
       ).forEach((t) => {
+        t.label.fill(this.$stroke);
+        t.tick.stroke(this.$stroke);
         if (spec.tickFn) {
           t = spec.tickFn(t);
         }
@@ -2652,13 +2661,13 @@ class Axis2D extends Group2D {
     const x_axis = () => {
       const xmin = this.$domain[0];
       const xmax = this.$domain[1];
-      const xline = line2D([xmin, 0], [xmax, 0]);
+      const xline = line2D([xmin, 0], [xmax, 0]).stroke(this.$stroke);
       this.$children.push(xline);
     };
     const y_axis = () => {
       const ymin = this.$range[0];
       const ymax = this.$range[1];
-      const yline = line2D([0, ymin], [0, ymax]);
+      const yline = line2D([0, ymin], [0, ymax]).stroke(this.$stroke);
       this.$children.push(yline);
     };
     if (option === "x") {
@@ -2872,6 +2881,11 @@ class CartesianPlot2D extends Group2D {
 export function cplot(fn: string) {
   return new CartesianPlot2D(fn);
 }
+
+
+
+
+
 
 /** A value native to Winnow. */
 type Primitive =

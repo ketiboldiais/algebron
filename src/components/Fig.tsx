@@ -24,48 +24,51 @@ import {
   isArrowhead,
   text,
   SVG2D,
+  vector,
 } from "@/liber/main";
 import { CSSProperties, useEffect, useState } from "react";
 import katex from "katex";
 
-type FigProps = { d: SVG2D };
+const axis = (
+  on: "x" | "y",
+  domain: [number, number],
+  range: [number, number]
+) => {
+  return axis2D(on)
+    .stroke("grey")
+    .domain(domain)
+    .range(range)
+    .ticks({
+      length: 0.1,
+      step: 1,
+      tickFn: (t) => {
+        if (on === "x") {
+          t.label.dy(15);
+        } else {
+          t.label.dy(5).dx(15);
+        }
+        return t;
+      },
+    })
+    .done();
+};
 
 export const FigTest = () => {
   const D = tuple(-10, 10);
   const R = tuple(-10, 10);
-  const xAxis = axis2D("x")
-    .domain(D)
-    .range(R)
-    .ticks({
-      length: 0.1,
-      step: 1,
-      tickFn: (t) => {
-        t.label.dy(15);
-        return t;
-      },
-    })
-    .done();
-  const yAxis = axis2D("y")
-    .domain(D)
-    .range(R)
-    .ticks({
-      length: 0.1,
-      step: 1,
-      tickFn: (t) => {
-        t.label.dx(15).dy(4);
-        return t;
-      },
-    })
-    .done();
-
+  const angle = Math.PI/2;
+  const xmin = D[0];
+  const xmax = D[1];
+  const ymin = R[0]
+  const ymax = R[1];
+  const xaxis = line2D([xmin,0], [xmax,0]).stroke('green');
+  const yaxis = line2D([0,ymin], [0,ymax]).stroke('red');
+  const zaxis = line2D([0,ymin], [0,ymax]);
   const d = svg2D([
-    grid2D().domain(D).range(R).done(),
-    xAxis,
-    yAxis,
-    line2D([2, 2], [1.5, 1.3]).arrowEnd(),
-    text(`\\sin(x^2)`).position(2, 3).latex("inline"),
-    cplot("fn f(x) = sin(x^2)").stroke("red").domain(D).range(R).done(),
-  ])
+    xaxis, 
+    yaxis, 
+    // zaxis
+])
     .dimensions(600, 600)
     .domain(D)
     .range(R)
@@ -73,17 +76,20 @@ export const FigTest = () => {
   return <Fig d={d} />;
 };
 
-const Fig = ({ d }: FigProps) => {
+type FigProps = { d: SVG2D; w?: number; p?: number };
+
+const Fig = ({ d, w = 100 }: FigProps) => {
   const par = "xMidYMid meet";
   const width = d.$width;
   const height = d.$height;
   const viewbox = `0 0 ${width} ${height}`;
   const paddingBottom = `${100 * (height / width)}%`;
   const boxcss = {
-    display: "inline-block",
+    display: "block",
+    margin: "1vh auto",
     position: "relative",
-    width: "100%",
-    paddingBottom,
+    width: `${w}%`,
+    paddingBottom: `${w}%`,
     overflow: "hidden",
   } as const;
   const svgcss = {
@@ -196,6 +202,7 @@ const Txt = ({ element }: TxtProps) => {
         y={element.$position.$y}
         width={element.$width}
         height={element.$height}
+        color={element.$fill}
       >
         <Tex content={element.$content} block={block} />
       </foreignObject>
@@ -208,6 +215,7 @@ const Txt = ({ element }: TxtProps) => {
       y={element.$position.$y}
       dx={element.$dx}
       dy={element.$dy}
+      fill={element.$fill}
     >
       {element.$content}
     </text>
@@ -273,6 +281,105 @@ export const Tex = ({ content, block, style }: TexProps) => {
     }
   }, [mode, content]);
   return <Component style={style} dangerouslySetInnerHTML={state} />;
+};
+
+export const LA1 = () => {
+  const D = tuple(-8, 8);
+  const R = tuple(-8, 8);
+  const xAxis = axis("x", D, R);
+  const yAxis = axis("y", D, R);
+  const j = vector([3, 3]);
+  const k = vector([4, 1]);
+  const n = j.add(k);
+  const d = svg2D([
+    grid2D().domain(D).range(R).done(),
+    line2D([0, 0], [3, 3]).stroke("red").arrowEnd(),
+    line2D([0, 0], [4, 1]).stroke("red").arrowEnd(),
+    line2D([0, 0], [n.$x, n.$y]).stroke("blue").arrowEnd(),
+    text("a").position(2.5, 4).fill("red").latex("inline"),
+    text("b").position(3.5, 2).fill("red").latex("inline"),
+    text("a + b").position(5, 5.5).fill("blue").latex("inline"),
+    xAxis,
+    yAxis,
+  ])
+    .dimensions(400, 400)
+    .domain(D)
+    .range(R)
+    .done();
+  return <Fig d={d} w={60} />;
+};
+
+export const LA2 = () => {
+  const D = tuple(-3, 8);
+  const R = tuple(-3, 8);
+  const xAxis = axis('x', D, R);
+  const yAxis = axis('y', D, R);
+  const d = svg2D([
+    grid2D().domain(D).range(R).done(),
+    cplot("fn f(x) = 3x^2 + 4x - 1").domain(D).range(R).stroke("red").done(),
+    cplot("fn f(x) = 4x^2 - 2x + 2").domain(D).range(R).stroke("blue").done(),
+    text("3x^2 + 4x - 1").fill("red").position(1, 2).width(100).latex("inline"),
+    text("4x^2 - 2x + 2")
+      .position(1.5, 6)
+      .fill("blue")
+      .width(100)
+      .latex("inline"),
+    xAxis,
+    yAxis,
+  ])
+    .dimensions(400, 400)
+    .domain(D)
+    .range(R)
+    .done();
+  return <Fig d={d} w={60} />;
+};
+
+export const LA3 = () => {
+  const D = tuple(-8, 8);
+  const R = tuple(-8, 8);
+  const xAxis = axis("x", D, R);
+  const yAxis = axis("y", D, R);
+  const j = vector([3, 3]);
+  const n = j.mul(2);
+  const d = svg2D([
+    grid2D().domain(D).range(R).done(),
+    line2D([0, 0], [n.$x, n.$y]).stroke("blue").arrowEnd(),
+    line2D([0, 0], [3, 3]).stroke("red").arrowEnd(),
+    text("v").position(2.5, 4).latex("inline"),
+    text("2v").position(5, 5.5).latex("inline"),
+    xAxis,
+    yAxis,
+  ])
+    .dimensions(400, 400)
+    .domain(D)
+    .range(R)
+    .done();
+  return <Fig d={d} w={60} />;
+};
+
+export const LA4 = () => {
+  const D = tuple(-8, 8);
+  const R = tuple(-8, 8);
+  const xAxis = axis("x", D, R);
+  const yAxis = axis("y", D, R);
+  const j = vector([3, 3]);
+  const n = j.mul(2);
+  const d = svg2D([
+    grid2D().domain(D).range(R).done(),
+    xAxis,
+    yAxis,
+    cplot('fn f(x) = sin(x)').stroke('red').done(),
+    cplot('fn g(x) = cos(x)').stroke('blue').done(),
+    cplot('fn h(x) = cos(x) + sin(x)').stroke('green').done(),
+    text("f(x) = \\sin(x)").fill("red").position(-6,2.5).width(100).latex("inline"),
+    text("g(x) = \\cos(x)").fill("blue").position(-4,-2).width(100).latex("inline"),
+    text("h(x) = \\cos(x) + \\sin(x)").fill("green").position(1.5,4).width(150).latex("inline"),
+  ])
+    .dimensions(400, 400)
+    .domain(D)
+    .range(R)
+    .done();
+  return <Fig d={d} w={60} />;
 };
 
 export default Fig;

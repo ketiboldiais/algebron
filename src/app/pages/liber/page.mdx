@@ -1,0 +1,74 @@
+import MdxLayout from "@/components/mdx-layout";
+
+# Liber
+
+Welcome to Liber. On this page's sections, click to the right of the dollar sign (`$:`) to begin typing expressions. Hit "Enter" to execute the expression. Some of the REPL windows have code preset and entered to serve as examples.
+
+## Basic Number Types & Arithmetic
+
+Liber supports basic arithmetic operations. Liber's core arithmetic operations are displayed in the REPL below.
+
+<REPL
+  height={530}
+  initialLines={[
+    { type: "input", value: "5 + 5" },
+    { type: "output", value: "10" },
+    { type: "input", value: "9 - 3" },
+    { type: "output", value: "6" },
+    { type: "input", value: "6 * 7" },
+    { type: "output", value: "42" },
+    { type: "input", value: "15 / 5" },
+    { type: "output", value: "3" },
+    { type: "input", value: "7^2" },
+    { type: "output", value: "49" },
+    { type: "input", value: "15 % 200" },
+    { type: "output", value: "30" },
+    { type: "input", value: "(-7) rem 3" },
+    { type: "output", value: "-1" },
+    { type: "input", value: "(-7) mod 3" },
+    { type: "output", value: "2" },
+    { type: "input", value: "9 div 2" },
+    { type: "output", value: "4" },
+  ]}
+/>
+
+We used integers for the examples above, but certain operations are free to take floating point numbers (i.e., "floats"):
+
+<REPL
+  height={295}
+  initialLines={[
+    { type: "input", value: "3.5 + 7.6" },
+    { type: "output", value: "11.1" },
+    { type: "input", value: "2.5 - 1.1" },
+    { type: "output", value: "1.4" },
+    { type: "input", value: "2.2 * 5.3" },
+    { type: "output", value: "11.66" },
+    { type: "input", value: "8.6 / 2.2" },
+    { type: "output", value: "3.9090909090909087" },
+    { type: "input", value: "3.9^1.5" },
+    { type: "output", value: "7.701882886671284" },
+  ]}
+/>
+
+Integers and floats are considered **primitives** in Liber. The set of primitives also includes fractions. Fractions are written with the syntax ${a|b}$, where ${a}$ and ${b}$ are integers.
+
+<REPL
+  initialLines={[
+    { type: "input", value: "1|2 + 2|3" },
+    { type: "output", value: "7|6" },
+    { type: "input", value: "1|17 - 2|19" },
+    { type: "output", value: "-15|323" },
+    { type: "input", value: "3|4 * 2|7" },
+    { type: "output", value: "3|14" },
+  ]}
+/>
+
+Liber's core arithmetic operations are defined below.
+
+import { FigTest } from "@/components/Fig";
+
+<FigTest />
+
+export default function MDXPage({ children }) {
+    return <MdxLayout>{children}</MdxLayout>
+}
