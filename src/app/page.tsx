@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { links } from "./links";
-import { Plot3DTest, TreeTest, PlotTest } from "@/components/Fig";
+import { Plot3DTest } from "@/components/Fig";
 
 export default function Home() {
   return (
@@ -8,8 +8,6 @@ export default function Home() {
       <main>
         <h1>Liber</h1>
         <div className="main-gallery">
-          {/* <TreeTest /> */}
-          {/* <PlotTest/> */}
           <Plot3DTest />
         </div>
         <article>
@@ -23,14 +21,14 @@ export default function Home() {
             Inkscape generating SVGs of my hand-drawn diagrams.
           </p>
           <p>
-            My solution to cutting down that time: Generate the diagrams by code. Thus began Liber's nascency–a
+            My solution to cutting down that time: Generate the diagrams by code. Thus began Liber&apos;s nascency–a
             smorgasbord of graphics modules. Over time, I wanted more features–a
             class in statistics led to a statistics package, a class in algebra
             led to an automatic simplification function, and so on.
           </p>
           <p>
             Because of the technical background required to understanding
-            Liber's implementation and API, this site also serves as a
+            Liber&apos;s implementation and API, this site also serves as a
             repository of my notes from undergrad, many of which are generated
             with Liber.
           </p>

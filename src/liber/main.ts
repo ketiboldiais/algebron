@@ -1,7 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // § Utility Functions
 /** Returns a pretty-print tree of the given Object `Obj`. */
-const clog = console.log;
-export function treestring<T extends Object>(
+export function treestring<T extends object>(
   Obj: T,
   cbfn?: (node: any) => void
 ) {
@@ -28,12 +28,14 @@ export function treestring<T extends Object>(
     prevstack: [T, boolean][],
     cb: (str: string) => any
   ) => {
-    cbfn && cbfn(root);
+    if (cbfn) {
+      cbfn(root);
+    }
     let line = "";
     let index = 0;
     let lastKey = false;
     let circ = false;
-    let stack = prevstack.slice(0);
+    const stack = prevstack.slice(0);
     if (stack.push([root, last]) && stack.length > 0) {
       prevstack.forEach(function (lastState, idx) {
         if (idx > 0) line += (lastState[1] ? " " : "│") + "  ";
@@ -41,7 +43,9 @@ export function treestring<T extends Object>(
       });
       line += prefix(key, last) + key.toString();
       if (typeof root !== "object") line += ": " + root;
-      circ && (line += " (circular ref.)");
+      if (circ) {
+        (line += " (circular ref.)");
+      }
       cb(line);
     }
     if (!circ && typeof root === "object") {
@@ -70,16 +74,16 @@ function isNothing(x: any): x is undefined | null {
 }
 
 class None {
-  _tag: "None" = "None";
+  _tag = "None" as const;
   constructor() {}
-  map(f: (a: never) => unknown): None {
+  map(): None {
     return new None();
   }
 }
 
 class Some<T> {
   readonly value: T;
-  _tag: "Some" = "Some";
+  _tag = "Some" as const;
   constructor(value: T) {
     this.value = value;
   }
@@ -214,7 +218,7 @@ class LinkedList<T> {
   cdr() {
     const list = this.clone();
     if (list.isEmpty) return list;
-    let previousHead = list.head;
+    const previousHead = list.head;
     if (list.count === 1) {
       list.head = binode();
       list.tail = binode();
@@ -270,7 +274,7 @@ class LinkedList<T> {
       let count = 0;
       let current = this.head;
       while (count !== index) {
-        let k = current._right;
+        const k = current._right;
         if (k.isNothing()) break;
         current = k;
         count++;
@@ -354,7 +358,7 @@ class LinkedList<T> {
   /** Returns th string representation of this list. */
   toString(f?: (x: T, index: number) => string) {
     const out = this.clone();
-    const g = f ? f : (x: T, index: number) => x;
+    const g = f ? f : (x: T) => x;
     return "(" + out.map((d, i) => g(d, i)).join(",") + ")";
   }
 
@@ -373,7 +377,7 @@ class LinkedList<T> {
       const right = current._right;
       current._right = current._left;
       current._left = right;
-      let k = current._left;
+      const k = current._left;
       if (k.isNothing() || i > this.count) break;
       current = k;
       i++;
@@ -404,7 +408,7 @@ class LinkedList<T> {
   /** Removes the last element of this list. */
   pop(): Option<T> {
     if (this.isEmpty) return none();
-    let popped = this.tail;
+    const popped = this.tail;
     if (this.length === 1) {
       this.head = binode();
       this.tail = binode();
@@ -482,7 +486,7 @@ class Left<T> {
   constructor(value: T) {
     this.value = value;
   }
-  map<A>(): Either<T, never> {
+  map(): Either<T, never> {
     return this as any;
   }
   isLeft(): this is Left<T> {
@@ -494,7 +498,7 @@ class Left<T> {
   unwrap() {
     return this.value;
   }
-  chain<X, S>(): Left<T> {
+  chain(): Left<T> {
     return this;
   }
 }
@@ -691,7 +695,7 @@ function factorialize(num: number) {
   if (num === 0 || num === 1) {
     return 1;
   }
-  for (var i = num - 1; i >= 1; i--) {
+  for (let i = num - 1; i >= 1; i--) {
     num *= i;
   }
   return num;
@@ -703,12 +707,12 @@ function clamp(minimum: number, input: number, maximum: number) {
 }
 
 /** Given the number pair `(x1,x2)` returns the value between `x1` and `x2` at `p` percent of the dsitance between `x1` and `x2`. Useful for computations like: “What x-coordinate is 35% between 46 and 182?” Note that the percentage `p` is assumed to be between `0` and `1`. */
-function lerp([x1, x2]: [number, number], p: number) {
+export function lerp([x1, x2]: [number, number], p: number) {
   return x1 * (1 - p) + x2 * p;
 }
 
 /** Given the number pair `(x,y)`, returns the value at the given decimal point `a`. Used primarily for computations like: How far through this line has this point moved? */
-function inverseLerp([x, y]: [number, number], a: number) {
+export function inverseLerp([x, y]: [number, number], a: number) {
   return clamp(0, (a - x) / (y - x), 1);
 }
 
@@ -1446,19 +1450,6 @@ function isExponential(u: any): u is Exponential {
   return u instanceof Exponential;
 }
 
-type PARValue =
-  | `${
-      | "xMinYMin"
-      | "xMidYMin"
-      | "xMaxYMin"
-      | "xMinYMid"
-      | "xMidYMid"
-      | "xMaxYMid"
-      | "xMinYMax"
-      | "xMidYMax"
-      | "xMaxYMax"} ${"meet" | "slice"}`
-  | "none";
-
 /** An enum of types mapped to SVG path command prefixes. */
 enum pc {
   M,
@@ -2159,11 +2150,7 @@ export class Arrowhead extends GraphicsAtom {
     return this;
   }
 
-  fit(
-    domain: [number, number],
-    range: [number, number],
-    dimensions: [number, number]
-  ): this {
+  fit(): this {
     return this;
   }
 
@@ -3038,28 +3025,28 @@ class Leaf extends TNode {
   get $height() {
     return 1;
   }
-  onLastChild(fn: (node: TreeChild) => void) {
+  onLastChild() {
     return this;
   }
-  onFirstChild(fn: (node: TreeChild) => void) {
+  onFirstChild() {
     return this;
   }
-  nodes(nodes: TreeChild[]) {
+  nodes() {
     return this;
   }
-  child(child: TreeChild) {
+  child() {
     return this;
   }
-  inorder(f: (node: TreeChild, index: number) => void) {
+  inorder() {
     return this;
   }
-  preorder(f: (node: TreeChild, index: number) => void) {
+  preorder() {
     return this;
   }
-  postorder(f: (node: TreeChild, index: number) => void) {
+  postorder() {
     return this;
   }
-  bfs(f: (node: TreeChild, level: number) => void) {
+  bfs() {
     return this;
   }
 
@@ -3114,9 +3101,13 @@ class Fork extends TNode {
     let i = 0;
     const t = (tree: TreeChild) => {
       const [left, right] = arraySplit(tree.$children);
-      left.length && left.forEach((c) => t(c));
+      if (left.length) {
+        left.forEach((c) => t(c));
+      }
       f(tree, i++);
-      right.length && right.forEach((c) => t(c));
+      if (right.length) {
+        right.forEach((c) => t(c));
+      }
     };
     t(this);
     return this;
@@ -3126,8 +3117,12 @@ class Fork extends TNode {
     const t = (tree: TreeChild) => {
       const [left, right] = arraySplit(tree.$children);
       f(tree, i++);
-      left.length && left.forEach((c) => t(c));
-      right.length && right.forEach((c) => t(c));
+      if (left.length) {
+        left.forEach((c) => t(c));
+      }
+      if (right.length) {
+        right.forEach((c) => t(c));
+      }
     };
     t(this);
     return this;
@@ -3136,8 +3131,12 @@ class Fork extends TNode {
     let i = 0;
     const t = (tree: TreeChild) => {
       const [left, right] = arraySplit(tree.$children);
-      left.length && left.forEach((c) => t(c));
-      right.length && right.forEach((c) => t(c));
+      if (left.length) {
+        left.forEach((c) => t(c));
+      }
+      if (right.length) {
+        right.forEach((c) => t(c));
+      }
       f(tree, i++);
     };
     t(this);
@@ -3206,7 +3205,7 @@ class TreeObj extends GroupObj {
     }
   }
   $nodeRadius: number = 10;
-  $nodeFill: string = 'white';
+  $nodeFill: string = "white";
   done() {
     this.lay();
     this.$tree.bfs((node) => {
@@ -3221,13 +3220,12 @@ class TreeObj extends GroupObj {
     this.$tree.bfs((node) => {
       const x = node.$x;
       const y = node.$y;
-      const c = circle(this.$nodeRadius, [x, y])
-        .fill(this.$nodeFill)
+      const c = circle(this.$nodeRadius, [x, y]).fill(this.$nodeFill);
       nodes.push(c);
-      let t = text(node.$name)
+      const t = text(node.$name)
         .position(x, y)
         .textAnchor("middle")
-        .dy(this.$nodeRadius*2.2);
+        .dy(this.$nodeRadius * 2.2);
       labels.push(t);
     });
     nodes.forEach((c) => this.$children.push(c));
@@ -3359,12 +3357,11 @@ class TreeObj extends GroupObj {
           VOR = vor.right();
           if (VOR) {
             vor = VOR;
-            // @ts-ignore
-            vor._ancestor = v;
+            vor.$ancestor = v;
           }
-          let shift = vil.$x + sil - (vir.$x + sir) + distance;
+          const shift = vil.$x + sil - (vir.$x + sir) + distance;
           if (shift > 0) {
-            let a = ancestor(vil, v, default_ancestor);
+            const a = ancestor(vil, v, default_ancestor);
             movesubtree(a, v, shift);
             sir = sir + shift;
             sor = sor + shift;
@@ -3412,7 +3409,7 @@ class TreeObj extends GroupObj {
         execShifts(v);
         const L = v.$children[0];
         const R = v.$children[v.$children.length - 1];
-        let midpoint = (L.$x + R.$x) / 2;
+        const midpoint = (L.$x + R.$x) / 2;
         const w = leftBrother(v);
         if (w) {
           v.$x = w.$x + distance;
@@ -3495,16 +3492,16 @@ class TreeObj extends GroupObj {
       TreeChild,
       TreeChild
     ] => {
-      let delta = left.$x + left_offset - (right.$x + right_offset);
+      const delta = left.$x + left_offset - (right.$x + right_offset);
       if (max_offset === null || delta > max_offset) {
         max_offset = delta;
       }
       if (left_outer === null) left_outer = left;
       if (right_outer === null) right_outer = right;
-      let lo = left_outer.left();
-      let li = left.right();
-      let ri = right.left();
-      let ro = right_outer.right();
+      const lo = left_outer.left();
+      const li = left.right();
+      const ri = right.left();
+      const ro = right_outer.right();
       if (li && ri) {
         left_offset += left.$dx;
         right_offset += right.$dx;
@@ -3522,6 +3519,7 @@ class TreeObj extends GroupObj {
       return out;
     };
     const fixSubtrees = (left: TreeChild, right: TreeChild) => {
+      // eslint-disable-next-line prefer-const
       let [li, ri, diff, loffset, roffset, lo, ro] = contour(left, right);
       diff += 1;
       diff += (right.$x + diff + left.$x) % 2;
@@ -4715,7 +4713,7 @@ class FRACTION {
     } else if (Number.isInteger(value)) {
       return new FRACTION(value, 1);
     } else {
-      let eps = 1.0e-15;
+      const eps = 1.0e-15;
       let x = value;
       let a = Math.floor(x);
       let h1 = 1;
@@ -4885,7 +4883,7 @@ function isRelation(u: MathObj): u is Relation {
 }
 
 class Boolean extends MathObj {
-  operandAt(i: number): MathObj {
+  operandAt(): MathObj {
     return UNDEFINED();
   }
   operands(): MathObj[] {
@@ -4904,9 +4902,7 @@ class Boolean extends MathObj {
   toString(): string {
     return `${this.bool}`;
   }
-  map<T extends MathObj>(
-    callbackfn: (value: MathObj, index: number, array: MathObj[]) => T
-  ): this {
+  map(): this {
     return this;
   }
   bool: boolean;
@@ -4931,7 +4927,7 @@ abstract class Numeric extends MathObj {
 }
 
 class Int extends Numeric {
-  operandAt(i: number): MathObj {
+  operandAt(): MathObj {
     return UNDEFINED();
   }
   negate(): Int {
@@ -4959,9 +4955,7 @@ class Int extends Numeric {
   toString(): string {
     return `${this.int}`;
   }
-  map<T extends MathObj>(
-    callbackfn: (value: MathObj, index: number, array: MathObj[]) => T
-  ): this {
+  map(): this {
     return this;
   }
   int: number;
@@ -4986,7 +4980,7 @@ function isInt(u: MathObj): u is Int {
 }
 
 class Float64 extends Numeric {
-  operandAt(i: number): MathObj {
+  operandAt(): MathObj {
     return UNDEFINED();
   }
   negate(): Numeric {
@@ -5011,9 +5005,7 @@ class Float64 extends Numeric {
   toString(): string {
     return `${this.float}`;
   }
-  map<T extends MathObj>(
-    callbackfn: (value: MathObj, index: number, array: MathObj[]) => T
-  ): this {
+  map(): this {
     return this;
   }
   float: number;
@@ -5032,7 +5024,7 @@ function isFloat64(u: MathObj): u is Float64 {
 }
 
 class Sym extends MathObj {
-  operandAt(i: number): MathObj {
+  operandAt(): MathObj {
     return UNDEFINED();
   }
   operands(): MathObj[] {
@@ -5051,9 +5043,7 @@ class Sym extends MathObj {
   toString(): string {
     return this.sym;
   }
-  map<T extends MathObj>(
-    callbackfn: (value: MathObj, index: number, array: MathObj[]) => T
-  ): this {
+  map(): this {
     return this;
   }
   sym: string;
@@ -5063,50 +5053,8 @@ class Sym extends MathObj {
   }
 }
 
-class Infty extends MathObj {
-  operands(): MathObj[] {
-    return [];
-  }
-  operandAt(i: number): MathObj {
-    return UNDEFINED();
-  }
-  kind(): expression_type {
-    return expression_type.infinity;
-  }
-  equals(other: MathObj): boolean {
-    if (!isInfty(other)) {
-      return false;
-    } else {
-      return this.sign === other.sign;
-    }
-  }
-  toString(): string {
-    return `${this.sign}INFINITY`;
-  }
-  map<T extends MathObj>(
-    callbackfn: (value: MathObj, index: number, array: MathObj[]) => T
-  ): this {
-    return this;
-  }
-  sign: "+" | "-";
-  value: number;
-  constructor(sign: "+" | "-") {
-    super();
-    this.sign = sign;
-    this.value = sign === "+" ? Infinity : -Infinity;
-  }
-}
-
-function INFINITY(sign: "+" | "-") {
-  return new Infty(sign);
-}
-
-function isInfty(u: MathObj): u is Infty {
-  return u.kind() === expression_type.infinity;
-}
-
 class Undefined extends MathObj {
-  operandAt(i: number): MathObj {
+  operandAt(): MathObj {
     return UNDEFINED();
   }
   operands(): MathObj[] {
@@ -5121,9 +5069,7 @@ class Undefined extends MathObj {
   toString(): string {
     return this.sym;
   }
-  map<T extends MathObj>(
-    callbackfn: (value: MathObj, index: number, array: MathObj[]) => T
-  ): this {
+  map(): this {
     return this;
   }
   sym: "UNDEFINED";
@@ -5153,7 +5099,7 @@ function isSym(u: MathObj): u is Sym {
 }
 
 class Fraction extends Numeric {
-  operandAt(i: number): MathObj {
+  operandAt(): MathObj {
     return UNDEFINED();
   }
   operands(): MathObj[] {
@@ -5259,9 +5205,7 @@ class Fraction extends Numeric {
   toString(): string {
     return `${this.numerator.int}|${this.denominator.int}`;
   }
-  map<T extends MathObj>(
-    callbackfn: (value: MathObj, index: number, array: MathObj[]) => T
-  ): this {
+  map(): this {
     return this;
   }
   public readonly numerator: Int;
@@ -5322,7 +5266,7 @@ class Sum extends MathObj {
     this.args = this.args.map(callbackfn);
     return this;
   }
-  op: "+" = "+";
+  op = "+" as const;
   args: MathObj[];
   constructor(args: MathObj[]) {
     super();
@@ -5367,7 +5311,7 @@ class Difference extends MathObj {
     this.args = this.args.map(callbackfn);
     return this;
   }
-  op: "-" = "-";
+  op = "-" as const;
   args: MathObj[];
   constructor(args: MathObj[]) {
     super();
@@ -5412,7 +5356,7 @@ class Product extends MathObj {
     this.args = this.args.map(callbackfn);
     return this;
   }
-  op: "*" = "*";
+  op = "*" as const;
   args: MathObj[];
   constructor(args: MathObj[]) {
     super();
@@ -5457,7 +5401,7 @@ class Quotient extends MathObj {
     this.args = this.args.map(callbackfn);
     return this;
   }
-  op: "/" = "/";
+  op = "/" as const;
   args: MathObj[];
   constructor(args: MathObj[]) {
     super();
@@ -5493,7 +5437,7 @@ class Power extends MathObj {
     }
   }
   toString(): string {
-    let left = this.base.toString();
+    const left = this.base.toString();
     let right = this.exponent.toString();
     if (!isAtom(this.exponent)) {
       right = `(${right})`;
@@ -5510,7 +5454,7 @@ class Power extends MathObj {
     this.args = this.args.map(callbackfn);
     return this;
   }
-  op: "^" = "^";
+  op = "^" as const;
   args: MathObj[];
   constructor(base: MathObj, exponent: MathObj) {
     super();
@@ -5523,8 +5467,8 @@ class Power extends MathObj {
     return this.args[1];
   }
   simplify() {
-    let v = this.base;
-    let w = this.exponent;
+    const v = this.base;
+    const w = this.exponent;
     if (isInt(v)) {
       if (v.int === 0) return int(0);
       if (v.int === 1) return int(1);
@@ -5533,7 +5477,6 @@ class Power extends MathObj {
       if (w.int === 0) return int(1);
       if (w.int === 1) return v;
     }
-    let n = w;
   }
 }
 
@@ -5604,7 +5547,7 @@ function simplifyRationalNumber(u: MathObj) {
     const n = u.numerator;
     const d = u.denominator;
     if (mod(n.int, d.int) === 0) return int(iquot(n.int, d.int));
-    let g = gcd(n.int, d.int);
+    const g = gcd(n.int, d.int);
     if (d.int > 0) return frac(int(iquot(n.int, g)), int(iquot(d.int, g)));
     if (d.int < 0) return frac(int(iquot(-n.int, g)), int(iquot(-d.int, g)));
   }
@@ -5677,7 +5620,7 @@ function evalPower(v: MathObj, n: MathObj): Rational | Undefined {
       if (n.int === 0) return int(1);
       if (n.int === -1) return frac(v.denominator, v.numerator);
       if (n.int < -1) {
-        let s = frac(v.denominator, v.numerator);
+        const s = frac(v.denominator, v.numerator);
         return evalPower(s, int(-n.int));
       }
     }
@@ -5699,44 +5642,44 @@ function simplifyRNERec(u: MathObj): MathObj {
     return simplifyRNERec(u.args[0]);
   }
   if (isDiff(u) && u.args.length === 1) {
-    let v = simplifyRNERec(u.args[0]);
+    const v = simplifyRNERec(u.args[0]);
     if (isUndefined(v)) return v;
     return evalProduct(int(-1), v);
   }
   if (isSum(u) && u.args.length === 2) {
-    let v = simplifyRNERec(u.args[0]);
-    let w = simplifyRNERec(u.args[1]);
+    const v = simplifyRNERec(u.args[0]);
+    const w = simplifyRNERec(u.args[1]);
     if (isUndefined(v) || isUndefined(w)) {
       return UNDEFINED();
     }
     return evalSum(v, w);
   }
   if (isProduct(u) && u.args.length === 2) {
-    let v = simplifyRNERec(u.args[0]);
-    let w = simplifyRNERec(u.args[1]);
+    const v = simplifyRNERec(u.args[0]);
+    const w = simplifyRNERec(u.args[1]);
     if (isUndefined(v) || isUndefined(w)) {
       return UNDEFINED();
     }
     return evalProduct(v, w);
   }
   if (isDiff(u) && u.args.length === 2) {
-    let v = simplifyRNERec(u.args[0]);
-    let w = simplifyRNERec(u.args[1]);
+    const v = simplifyRNERec(u.args[0]);
+    const w = simplifyRNERec(u.args[1]);
     if (isUndefined(v) || isUndefined(w)) {
       return UNDEFINED();
     }
     return evalDiff(v, w);
   }
   if (isFrac(u)) {
-    let v = simplifyRNERec(u.numerator);
-    let w = simplifyRNERec(u.denominator);
+    const v = simplifyRNERec(u.numerator);
+    const w = simplifyRNERec(u.denominator);
     if (isUndefined(v) || isUndefined(w)) {
       return UNDEFINED();
     }
     return evalQuotient(v, w);
   }
   if (isPower(u)) {
-    let v = simplifyRNERec(u.base);
+    const v = simplifyRNERec(u.base);
     if (isUndefined(v)) return v;
     return evalPower(v, u.exponent);
   }
@@ -5753,8 +5696,8 @@ function simplifyRNE(u: MathObj) {
 const O3 = (uElts: MathObj[], vElts: MathObj[]): boolean => {
   if (uElts.length === 0) return true;
   if (vElts.length === 0) return false;
-  let u = uElts[0];
-  let v = vElts[0];
+  const u = uElts[0];
+  const v = vElts[0];
   return !u.equals(v) ? order(u, v) : O3(cdr(uElts), cdr(vElts));
 };
 
@@ -5839,13 +5782,13 @@ function mergeSums(pElts: MathObj[], qElts: MathObj[]): MathObj[] {
   if (qElts.length === 0) return pElts;
   if (pElts.length === 0) return qElts;
 
-  let p = pElts[0];
-  let ps = cdr(pElts);
+  const p = pElts[0];
+  const ps = cdr(pElts);
 
-  let q = qElts[0];
-  let qs = cdr(qElts);
+  const q = qElts[0];
+  const qs = cdr(qElts);
 
-  let res = simplifySumRec([p, q]);
+  const res = simplifySumRec([p, q]);
   if (res.length === 0) return mergeSums(ps, qs);
   if (res.length === 1) return cons(mergeSums(ps, qs), res[0]);
   if (argsEqual(res, [p, q])) return cons(mergeSums(ps, qElts), p);
@@ -5869,7 +5812,7 @@ function simplifySumRec(elts: MathObj[]): MathObj[] {
       (isInt(elts[0]) || isFrac(elts[0])) &&
       (isInt(elts[1]) || isFrac(elts[1]))
     ) {
-      let P = simplifyRNE(sum(elts[0], elts[1]));
+      const P = simplifyRNE(sum(elts[0], elts[1]));
       if (isNum(P) && P.value() === 0) return [];
       return [P];
     }
@@ -5882,12 +5825,12 @@ function simplifySumRec(elts: MathObj[]): MathObj[] {
       return [elts[0]];
     }
 
-    let p = elts[0];
-    let q = elts[1];
+    const p = elts[0];
+    const q = elts[1];
 
     if (term(p).equals(term(q))) {
-      let S = simplifySum(sum(constant(p), constant(q)));
-      let res = simplifyProduct(prod(term(p), S));
+      const S = simplifySum(sum(constant(p), constant(q)));
+      const res = simplifyProduct(prod(term(p), S));
       if (isNum(res) && res.value() === 0) return [];
       return [res];
     }
@@ -5903,7 +5846,7 @@ function simplifySumRec(elts: MathObj[]): MathObj[] {
 function simplifySum(u: Sum) {
   const elts = u.args;
   if (elts.length === 1) return elts[0];
-  let res = simplifySumRec(elts);
+  const res = simplifySumRec(elts);
   if (res.length === 0) return int(0);
   if (res.length === 1) return res[0];
   return sum(...res);
@@ -5913,13 +5856,13 @@ function simplifySum(u: Sum) {
 function mergeProducts(pElts: MathObj[], qElts: MathObj[]): MathObj[] {
   if (pElts.length === 0) return qElts;
   if (qElts.length === 0) return pElts;
-  let p = pElts[0];
-  let ps = cdr(pElts);
+  const p = pElts[0];
+  const ps = cdr(pElts);
 
-  let q = qElts[0];
-  let qs = cdr(qElts);
+  const q = qElts[0];
+  const qs = cdr(qElts);
 
-  let res = simplifyProductRec([p, q]);
+  const res = simplifyProductRec([p, q]);
   if (res.length === 0) return mergeProducts(ps, qs);
   if (res.length === 1) return cons(mergeProducts(ps, qs), res[0]);
 
@@ -5950,7 +5893,7 @@ function simplifyProductRec(elts: MathObj[]): MathObj[] {
       (isInt(elts[0]) || isFrac(elts[0])) &&
       (isInt(elts[1]) || isFrac(elts[1]))
     ) {
-      let P = simplifyRNE(prod(elts[0], elts[1]));
+      const P = simplifyRNE(prod(elts[0], elts[1]));
       if (isNum(P) && P.value() === 1) {
         return [];
       }
@@ -5984,12 +5927,12 @@ function simplifyProductRec(elts: MathObj[]): MathObj[] {
       return [float64(elts[0].value() * elts[1].value())];
     }
 
-    let p = elts[0];
-    let q = elts[1];
+    const p = elts[0];
+    const q = elts[1];
 
     if (base(p).equals(base(q))) {
-      let S = simplifySum(sum(exponent(p), exponent(q)));
-      let res = simplifyPower(pow(base(p), S));
+      const S = simplifySum(sum(exponent(p), exponent(q)));
+      const res = simplifyPower(pow(base(p), S));
       if (isNum(res) && res.value() === 1) return [];
       return [res];
     }
@@ -6005,7 +5948,7 @@ function simplifyProductRec(elts: MathObj[]): MathObj[] {
 function simplifyProduct(u: Product): MathObj {
   const L = u.args;
   for (let i = 0; i < L.length; i++) {
-    let arg = L[i];
+    const arg = L[i];
     // SPRD-1
     if (isUndefined(arg)) {
       return UNDEFINED();
@@ -6015,7 +5958,7 @@ function simplifyProduct(u: Product): MathObj {
       return int(0);
     }
   }
-  let res = simplifyProductRec(u.args);
+  const res = simplifyProductRec(u.args);
   if (res.length === 0) return int(1);
   if (res.length === 1) return res[0];
   return prod(...res);
@@ -6023,18 +5966,18 @@ function simplifyProduct(u: Product): MathObj {
 
 /** Simplifies a power expression. */
 function simplifyPower(u: Power): MathObj {
-  let v = u.base;
-  let w = u.exponent;
+  const v = u.base;
+  const w = u.exponent;
   if (isNum(v) && v.value() === 0) return int(0);
   if (isNum(v) && v.value() === 1) return int(1);
   if (isNum(w) && w.value() === 0) return int(1);
   if (isNum(w) && w.value() === 1) return v;
-  let n = w;
+  const n = w;
   if ((isInt(v) || isFrac(v)) && isInt(n)) {
     return simplifyRNE(pow(v, n));
   }
   if (isPower(v) && isInt(w)) {
-    let P = simplifyProduct(prod(v.exponent, w));
+    const P = simplifyProduct(prod(v.exponent, w));
     return simplifyPower(pow(v.base, P));
   }
   if (isProduct(v) && isInt(w)) {
@@ -6047,7 +5990,7 @@ function simplifyPower(u: Power): MathObj {
 function simplifyQuotient(u: Quotient) {
   const elts0 = u.args[0];
   const elts1 = u.args[1];
-  let P = simplifyPower(pow(elts1, int(-1)));
+  const P = simplifyPower(pow(elts1, int(-1)));
   return simplifyProduct(prod(elts0, P));
 }
 
@@ -6056,7 +5999,7 @@ function simplifyDiff(u: Difference) {
     return simplifyProduct(prod(int(-1), u.args[0]));
   }
   if (u.args.length === 2) {
-    let x = simplifyProduct(prod(int(-1), u.args[1]));
+    const x = simplifyProduct(prod(int(-1), u.args[1]));
     return simplifySum(sum(u.args[0], x));
   }
   throw algebraError("simplifyDiff failed");
@@ -6065,7 +6008,7 @@ function simplifyDiff(u: Difference) {
 function simplifyFunction(u: Func): MathObj {
   if (u.op === "log") {
     if (u.args.length === 1) {
-      let x = simplify(u.args[0]);
+      const x = simplify(u.args[0]);
       // log 1 = 0
       if (x.equals(int(1))) return int(0);
       // log 0 = undefined
@@ -6073,7 +6016,7 @@ function simplifyFunction(u: Func): MathObj {
       // log e = 1
       if (x.equals(sym("e"))) return int(1);
       if (isNum(x)) {
-        let res = Math.log(x.value());
+        const res = Math.log(x.value());
         if (Number.isInteger(res)) return int(res);
         return float64(res);
       }
@@ -6083,17 +6026,17 @@ function simplifyFunction(u: Func): MathObj {
   }
   if (u.op === "sin") {
     if (u.args.length === 1) {
-      let x = simplify(u.args[0]);
+      const x = simplify(u.args[0]);
       // sin of some number -> number
       if (isNum(x)) {
-        let res = Math.sin(x.value());
+        const res = Math.sin(x.value());
         if (Number.isInteger(res)) return int(res);
         return float64(res);
       }
       // sin pi = 0
       if (isSym(x)) {
         if (x.sym === "pi") return int(0);
-        let res = Math.sin(Math.PI);
+        const res = Math.sin(Math.PI);
         if (Number.isInteger(res)) return int(res);
         return float64(res);
       }
@@ -6103,17 +6046,17 @@ function simplifyFunction(u: Func): MathObj {
   }
   if (u.op === "cos") {
     if (u.args.length === 1) {
-      let x = simplify(u.args[0]);
+      const x = simplify(u.args[0]);
       // sin of some number -> number
       if (isNum(x)) {
-        let res = Math.cos(x.value());
+        const res = Math.cos(x.value());
         if (Number.isInteger(res)) return int(res);
         return float64(res);
       }
       // sin pi = 0
       if (isSym(x)) {
         if (x.sym === "pi") return int(-1);
-        let res = Math.cos(Math.PI);
+        const res = Math.cos(Math.PI);
         if (Number.isInteger(res)) return int(res);
         return float64(res);
       }
@@ -6138,7 +6081,7 @@ function simplify(expression: MathObj | string): MathObj {
   } else if (isFrac(u)) {
     return simplifyRationalNumber(u);
   } else {
-    let v = u.map(simplify);
+    const v = u.map(simplify);
     if (isPower(v)) {
       return simplifyPower(v);
     } else if (isProduct(v)) {
@@ -6157,15 +6100,10 @@ function simplify(expression: MathObj | string): MathObj {
   }
 }
 
-/** Returns the given expression as a math object. */
-function toMathObj(expression: MathObj | string): MathObj {
-  return typeof expression === "string" ? exp(expression).obj() : expression;
-}
-
 function freeof(expression1: MathObj | string, expression2: MathObj | string) {
-  let u =
+  const u =
     typeof expression1 === "string" ? exp(expression1).obj() : expression1;
-  let t =
+  const t =
     typeof expression2 === "string" ? exp(expression2).obj() : expression2;
   if (u.equals(t)) {
     return false;
@@ -6173,7 +6111,7 @@ function freeof(expression1: MathObj | string, expression2: MathObj | string) {
     return true;
   } else {
     for (let i = 0; i < u.operands().length; i++) {
-      let arg = u.operands()[i];
+      const arg = u.operands()[i];
       if (!freeof(arg, t)) return false;
     }
     return true;
@@ -6183,7 +6121,7 @@ function freeof(expression1: MathObj | string, expression2: MathObj | string) {
 function exp(source: string) {
   const parse = () => {
     let $current = 0;
-    let _tkns = lexical(source).stream();
+    const _tkns = lexical(source).stream();
     if (_tkns.isLeft()) return _tkns;
     const $tokens = _tkns.unwrap();
 
@@ -6232,8 +6170,8 @@ function exp(source: string) {
     const equality = () => {
       let left = compare();
       while (match(token_type.bang_equal, token_type.equal_equal)) {
-        let op = previous();
-        let right = compare();
+        const op = previous();
+        const right = compare();
         left = relate(op.$lexeme as RelationOperator, [left, right]);
       }
       return left;
@@ -6249,8 +6187,8 @@ function exp(source: string) {
           token_type.less_equal
         )
       ) {
-        let op = previous();
-        let right = addition();
+        const op = previous();
+        const right = addition();
         left = relate(op.$lexeme as RelationOperator, [left, right]);
       }
       return left;
@@ -6259,7 +6197,7 @@ function exp(source: string) {
     const addition = (): MathObj => {
       let left = subtraction();
       while (match(token_type.plus)) {
-        let right = subtraction();
+        const right = subtraction();
         left = sum(left, right);
       }
       return left;
@@ -6268,7 +6206,7 @@ function exp(source: string) {
     const subtraction = (): MathObj => {
       let left = product();
       while (match(token_type.minus)) {
-        let right = product();
+        const right = product();
         left = diff(left, right);
       }
       return left;
@@ -6277,7 +6215,7 @@ function exp(source: string) {
     const product = (): MathObj => {
       let left = imul();
       while (match(token_type.star)) {
-        let right = imul();
+        const right = imul();
         left = prod(left, right);
       }
       return left;
@@ -6289,7 +6227,7 @@ function exp(source: string) {
         (isInt(left) || isFloat64(left)) &&
         (check(token_type.symbol) || check(token_type.native))
       ) {
-        let right = quotient();
+        const right = quotient();
         left = prod(left, right);
       }
       return left;
@@ -6298,7 +6236,7 @@ function exp(source: string) {
     const quotient = (): MathObj => {
       let left = power();
       while (match(token_type.slash)) {
-        let right = power();
+        const right = power();
         left = quot(left, right);
       }
       return left;
@@ -6307,7 +6245,7 @@ function exp(source: string) {
     const power = (): MathObj => {
       let left = negate();
       while (match(token_type.caret)) {
-        let right = negate();
+        const right = negate();
         left = pow(left, right);
       }
       return left;
@@ -6384,7 +6322,7 @@ function exp(source: string) {
         consume(token_type.right_paren, `Expected a closing ")"`);
         expr = expr.parend();
         if (check(token_type.left_paren)) {
-          let right = expression();
+          const right = expression();
           return prod(expr, right);
         }
         return expr;
@@ -6448,7 +6386,8 @@ function union<T>(setA: Set<T>, setB: Set<T>) {
 
 function subexs(expression: MathObj | string) {
   const f = (expression: MathObj | string): Set<string> => {
-    let u = typeof expression === "string" ? exp(expression).obj() : expression;
+    const u =
+      typeof expression === "string" ? exp(expression).obj() : expression;
     if (isAtom(u)) {
       return cset(u.toString());
     } else {
@@ -6463,10 +6402,13 @@ function subexs(expression: MathObj | string) {
   return [...out];
 }
 
-function deriv(expression: MathObj | string, variable: Sym | string): MathObj {
+export function deriv(
+  expression: MathObj | string,
+  variable: Sym | string
+): MathObj {
   let u: MathObj =
     typeof expression === "string" ? exp(expression).simplify() : expression;
-  let x: Sym = typeof variable === "string" ? sym(variable) : variable;
+  const x: Sym = typeof variable === "string" ? sym(variable) : variable;
   // deriv-1
   if (isSym(u) && u.equals(x)) {
     return int(1);
@@ -6474,46 +6416,46 @@ function deriv(expression: MathObj | string, variable: Sym | string): MathObj {
   u = simplify(u);
   if (isPower(u)) {
     // u = v^w
-    let v = simplify(u.base);
-    let w = simplify(u.exponent);
-    let d = simplify(diff(w, int(1)));
+    const v = simplify(u.base);
+    const w = simplify(u.exponent);
+    const d = simplify(diff(w, int(1)));
     return simplify(prod(w, pow(v, d)));
   }
   if (isQuotient(u)) {
-    let f = u.args[0];
-    let g = u.args[1];
-    let df = deriv(f, x);
-    let dg = deriv(g, x);
-    let dfg = prod(df, g);
-    let fdg = prod(f, dg);
-    let gx2 = pow(g, int(2));
-    let top = diff(dfg, fdg);
-    let bottom = gx2;
+    const f = u.args[0];
+    const g = u.args[1];
+    const df = deriv(f, x);
+    const dg = deriv(g, x);
+    const dfg = prod(df, g);
+    const fdg = prod(f, dg);
+    const gx2 = pow(g, int(2));
+    const top = diff(dfg, fdg);
+    const bottom = gx2;
     return simplify(quot(top, bottom));
   }
   if (isDiff(u)) {
-    let s = u.map((arg) => deriv(arg, x));
+    const s = u.map((arg) => deriv(arg, x));
     return simplify(s);
   }
   if (isSum(u)) {
-    let s = u.map((arg) => deriv(arg, x));
+    const s = u.map((arg) => deriv(arg, x));
     return simplify(s);
   }
   if (isProduct(u)) {
-    let f = u.args[0];
-    let g = u.args[1];
-    let dg = deriv(g, x);
-    let df = deriv(f, x);
-    let left = prod(f, dg);
-    let right = prod(df, g);
+    const f = u.args[0];
+    const g = u.args[1];
+    const dg = deriv(g, x);
+    const df = deriv(f, x);
+    const left = prod(f, dg);
+    const right = prod(df, g);
     return simplify(sum(left, right));
   }
   if (isFunc(u)) {
     if (u.op === "deriv") return u;
     if (u.op === "sin") {
-      let v = u.args[0];
-      let dvx = simplify(deriv(v, x));
-      let p = simplify(prod(fn("cos", [v]), dvx));
+      const v = u.args[0];
+      const dvx = simplify(deriv(v, x));
+      const p = simplify(prod(fn("cos", [v]), dvx));
       return p;
     }
   }
@@ -7494,11 +7436,6 @@ class BigInteger extends Expr {
   }
 }
 
-/** Returns a new Big Integer node. */
-function $bigInteger(value: bigint) {
-  return new BigInteger(value);
-}
-
 class SciNum extends Expr {
   accept<T>(visitor: Visitor<T>): T {
     return visitor.sciNum(this);
@@ -7514,11 +7451,6 @@ class SciNum extends Expr {
     super();
     this.$value = value;
   }
-}
-
-/** Returns a new scientific number node. */
-function $scinum(value: Exponential) {
-  return new SciNum(value);
 }
 
 /** An AST node corresponding to a fraction. */
@@ -7758,11 +7690,6 @@ class SuperExpr extends Expr {
     super();
     this.$method = method;
   }
-}
-
-/** Returns a new super expression node. */
-function $super(method: Token) {
-  return new SuperExpr(method);
 }
 
 /** An AST node corresponding to a this expression. */
@@ -8089,7 +8016,7 @@ export function syntax(source: string) {
     if (!nxt.isType(token_type.symbol)) {
       return state.error("Expected a property name", nxt.$line);
     }
-    let exp = $get(lhs, nxt);
+    const exp = $get(lhs, nxt);
     if (state.nextIs(token_type.left_paren)) {
       const args: Expr[] = [];
       if (!state.check(token_type.right_paren)) {
@@ -9113,7 +9040,7 @@ class Resolver<T extends Resolvable = Resolvable> implements Visitor<void> {
     this.resolve(node.$index);
     return;
   }
-  algebraString(node: AlgebraString): void {
+  algebraString(): void {
     return;
   }
   tupleExpr(node: TupleExpr): void {
@@ -9192,7 +9119,7 @@ class Resolver<T extends Resolvable = Resolvable> implements Visitor<void> {
     return;
   }
   superExpr(node: SuperExpr): void {
-    throw new Error("super not implemented.");
+    throw new Error(`super unhandled: ${node.$method.$line}`);
   }
   thisExpr(node: ThisExpr): void {
     if (this.$currentClass === classType.none) {
@@ -9205,7 +9132,7 @@ class Resolver<T extends Resolvable = Resolvable> implements Visitor<void> {
     return;
   }
   stringConcat(node: StringConcatExpr): void {
-    throw new Error("Method not implemented.");
+    throw new Error(`string concat not handled: ${node.$op.$line}`);
   }
   sym(node: Identifier): void {
     const name = node.$symbol;
@@ -9218,31 +9145,31 @@ class Resolver<T extends Resolvable = Resolvable> implements Visitor<void> {
     this.resolveLocal(node, node.$symbol.$lexeme);
     return;
   }
-  string(node: StringLit): void {
+  string(): void {
     return;
   }
-  bool(node: Bool): void {
+  bool(): void {
     return;
   }
-  nil(node: Nil): void {
+  nil(): void {
     return;
   }
-  integer(node: Integer): void {
+  integer(): void {
     return;
   }
-  float(node: Float): void {
+  float(): void {
     return;
   }
-  bigInteger(node: BigInteger): void {
+  bigInteger(): void {
     return;
   }
-  sciNum(node: SciNum): void {
+  sciNum(): void {
     return;
   }
-  frac(node: Frac): void {
+  frac(): void {
     return;
   }
-  numConst(node: NumConst): void {
+  numConst(): void {
     return;
   }
 }
@@ -9268,6 +9195,7 @@ class Environment<T> {
 
   /** Returns the parent environment `d` links away. */
   ancestor(d: number) {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     let env: Environment<T> | null = this;
     for (let i = 0; i < d; i++) {
       env = this.$enclosing;
@@ -9289,6 +9217,7 @@ class Environment<T> {
    * in the parent environment `d` links away.
    */
   getAt(d: number, name: string): T {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
     return this.ancestor(d)?.$values.get(name)!;
   }
 
@@ -9387,10 +9316,6 @@ class Obj {
   toString() {
     return `${this.klass.name} instance`;
   }
-}
-
-function $isKlassInstance(x: any): x is Obj {
-  return x instanceof Obj;
 }
 
 class Class {
@@ -10039,19 +9964,19 @@ class Compiler implements Visitor<Primitive> {
   }
 
   getExpr(node: GetExpr): Primitive {
-    throw new Error("Method not implemented.");
+    throw new Error(`get not implemented: ${node.$name.$line}`);
   }
 
   setExpr(node: SetExpr): Primitive {
-    throw new Error("Method not implemented.");
+    throw new Error(`set not implemented: ${node.$name.$line}`);
   }
 
   superExpr(node: SuperExpr): Primitive {
-    throw new Error("Method not implemented.");
+    throw new Error(`super not implemented: ${node.$method.$line}`);
   }
 
   thisExpr(node: ThisExpr): Primitive {
-    throw new Error("Method not implemented.");
+    throw new Error(`this not implemented: ${node.$keyword.$line}`);
   }
 
   stringConcat(node: StringConcatExpr): Primitive {

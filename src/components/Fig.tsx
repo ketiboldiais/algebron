@@ -24,8 +24,6 @@ import {
   SVGObj,
   vector,
   line3D,
-  engine,
-  Fn,
   haxis,
   vaxis,
   Plot3D,
@@ -192,7 +190,7 @@ const Circ = ({ element }: CircleProps) => {
 type TxtProps = { element: TextObj };
 const Txt = ({ element }: TxtProps) => {
   if (element.$latex) {
-    let block = element.$latex === "block" ? true : false;
+    const block = element.$latex === "block" ? true : false;
     return (
       <foreignObject
         x={element.$position.$x}
@@ -427,7 +425,7 @@ type Plot3DProps = { element: Plot3D };
 export function PLOT3D({ element }: Plot3DProps) {
   const d = element;
   const Plot3DPath = ({ zfn }: { zfn: Fn3D }) => {
-    const ref = useRef<any>(null);
+    const ref = useRef(null);
     const paramFunction = (x: number, y: number, target: Vector3) => {
       const [X, Y, Z] = zfn(x, y);
       if (Number.isNaN(Z)) {
