@@ -1,4 +1,4 @@
-import { LA1, LA2, LA3, LA4 } from "@/components/Fig";
+import { LA1, LA2, LA3, LA4, LA5 } from "@/components/Fig";
 import MdxLayout from "@/components/mdx-layout";
 
 # Linear Algebra
@@ -6,11 +6,11 @@ import MdxLayout from "@/components/mdx-layout";
 ## Vectors
 A vector is a mathematical object that can be added to another vector or multiplied by a scalar to produce another vector. This general definition yields numerous examples:
 
-1. __Geometric Vectors.__ We can think of a vector as a geometric object with a magnitude (a length) and a direction (an arrowhead). For example, consider two vectors ${a = [3,3]}$ and ${b = [4,1].}$ The sum of these vectors is ${a + b = [3 + 4, 3 + 1],}$ which reduces to ${[7,4].}$ Geometrically:
+1. __Geometric Vectors.__ We can think of a vector as a geometric object with a magnitude (a line of given length) and a direction (an arrowhead). For example, consider two vectors ${a = [3,3]}$ and ${b = [4,1].}$ The sum of these vectors is ${a + b = [3 + 4, 3 + 1],}$ which reduces to ${[7,4].}$ Geometrically:
 
     <LA1/>
 
-    Similarly, we can _scale_ the geometric vector, which will still yield a vector.
+    Similarly, we can _scale_ the geometric vector, which will still yield a vector, longer, shorter, or just the same.
 
     <LA3/>
 
@@ -21,7 +21,7 @@ A vector is a mathematical object that can be added to another vector or multipl
         4x^2 - 2x + 2
     $$
 
-    We can think of these two polynomials as the vectors ${[3,4,-1]}$ and ${[4,-2,2],}$ where the polynomials' coefficients comprise the vector components. Adding these two vectors corresponds to adding the two polynomials, the sum of which is itself a polynomial. Thus, 
+    We can represent these expressions as the vectors ${[3,4,-1]}$ and ${[4,-2,2],}$ where the polynomials' coefficients comprise the vector components. Adding these two vectors corresponds to adding the two polynomials, the sum of which is itself a polynomial (i.e., a vector). Thus, 
 
     $$
         [3,4,-1] + [4,-2,2] = [7,2,1]
@@ -58,7 +58,30 @@ Many problems in mathematics can be reduced to systems of linear equations. Line
 > 
 > is called a __system of linear equations__, where ${a_{i,j}, b_{i} \in \reals}$ and each ${x_i}$ is a real number called an _unknown_ of the system.
 
-Given a system of linear equations ${S,}$ each ${n}$-tuple ${(x_1, \ldots, x_n) \in \reals^n}$ that satisfies ${S}$ is called a _solution_ of ${S.}$
+Given a system of linear equations ${S,}$ each ${n}$-tuple ${(x_1, \ldots, x_n) \in \reals^n}$ that satisfies ${S}$ is called a _solution_ of ${S.}$ In a system with two unknowns ${x_1}$ and ${x_2,}$ each linear equation defines a line on the ${x_1}$-${x_2}$ plane. E.g., 
+
+$$
+    4x_1 + 4x_2 = 5 \\
+    2x_1 - 4x_2 = 1
+$$
+
+is such a system. Note that we chose the variables ${x_1}$ and ${x_2}$ arbitrarily. We could've just used ${x}$ and ${y:}$
+
+$$
+    4x + 4y = 5 \\
+    2x - 4y = 1.
+$$
+
+Notice that these are simple linear equations. Solving for ${y:}$
+
+$$
+    y = -x + \dfrac{5}{4} \\[1em]
+    y = \dfrac{x}{2} - \dfrac{1}{4}.
+$$
+
+The point where these lines intersect is a solution to the system. In this case, the point ${(1, \frac{1}{4}).}$ Thus, the system above has the __solution space__ of ${\lbrace (1, \frac{1}{4}) \rbrace.}$
+
+<LA5/>
 
 export default function MDXPage({ children }) {
     return <MdxLayout>{children}</MdxLayout>

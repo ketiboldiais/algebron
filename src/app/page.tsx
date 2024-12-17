@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { links } from "./links";
+import { Plot3DTest } from "@/components/Fig";
 
 
 export default function Home() {
@@ -8,6 +9,7 @@ export default function Home() {
       <main>
         <div>
           <h1>Liber</h1>
+          <Plot3DTest/>
           <p>
             Liber is a scripting language designed for numerical analysis,
             symbolic computation, and statistical analysis, written in
@@ -19,7 +21,7 @@ export default function Home() {
             notes by hand and rewriting them in LaTeX. With enough practice and
             a few shortcuts in vim and emacs, I learned to quickly type in
             LaTeX. Unfortunately, I still spent an inordinate amount of time in
-            Inkscape generating SVGs of my hand-drawn diagrams.
+            Inkscape generating SVGs of my hand-drawn diagrams (imagine drawing the 3D plot above by hand).
           </p>
           <p>
             My solution to cutting down that time: Write a program that
@@ -43,7 +45,9 @@ export default function Home() {
           </ol>
         </div>
       </main>
-      <footer></footer>
+      <footer>
+        Ketib Oldiais © 2024
+      </footer>
     </div>
   );
 }

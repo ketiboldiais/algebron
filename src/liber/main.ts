@@ -1510,7 +1510,7 @@ enum pc {
   Z,
 }
 
-abstract class PathCommand {
+export abstract class PathCommand {
   $type: pc;
   $end: Vector;
   constructor(type: pc, end: Vector) {
@@ -1723,37 +1723,38 @@ class ACommand extends PathCommand {
   }
 }
 
-enum graphics2D {
+enum graphics {
   line,
   path,
   circle,
   group,
   text,
   arrowhead,
+  segment,
 }
 
 /** An object corresponding to a 2D SVG object. */
-export abstract class Graphics2DObj {
+export abstract class GraphicsObj {
   $id: string | number = uid(10);
   id(value: string | number) {
     this.$id = value;
     return this;
   }
-  abstract kind(): graphics2D;
-  abstract childOf(parentObj: SVG2D | null): this;
-  abstract interpolate2D(
+  abstract kind(): graphics;
+  abstract childOf(parentObj: SVGObj | null): this;
+  abstract fit(
     domain: [number, number],
     range: [number, number],
     dimensions: [number, number]
   ): this;
-  $parentSVG: SVG2D | null = null;
+  $parentSVG: SVGObj | null = null;
 }
 
-export class SVG2D {
-  $children: Graphics2DObj[];
-  $markers: ArrowHead2D[] = [];
+export class SVGObj {
+  $children: GraphicsObj[];
+  $markers: Arrowhead[] = [];
 
-  constructor(children: Graphics2DObj[]) {
+  constructor(children: GraphicsObj[]) {
     this.$children = children;
   }
 
@@ -1791,21 +1792,21 @@ export class SVG2D {
   done() {
     this.$children.forEach((child) => {
       child.childOf(this);
-      child.interpolate2D(this.$domain, this.$range, this.$dimensions);
+      child.fit(this.$domain, this.$range, this.$dimensions);
     });
     return this;
   }
 }
 
-export function svg2D(children: Graphics2DObj[]) {
-  return new SVG2D(children);
+export function svg(children: GraphicsObj[]) {
+  return new SVGObj(children);
 }
 
-abstract class GraphicsAtom2D extends Graphics2DObj {
-  abstract kind(): graphics2D;
+abstract class GraphicsAtom extends GraphicsObj {
+  abstract kind(): graphics;
 }
 
-export class Path extends GraphicsAtom2D {
+export class Path extends GraphicsAtom {
   $stroke: string = "black";
   stroke(value: string) {
     this.$stroke = value;
@@ -1821,11 +1822,11 @@ export class Path extends GraphicsAtom2D {
     this.$strokeWidth = value;
     return this;
   }
-  kind(): graphics2D {
-    return graphics2D.path;
+  kind(): graphics {
+    return graphics.path;
   }
 
-  childOf(parent: SVG2D | null) {
+  childOf(parent: SVGObj | null) {
     this.$parentSVG = parent;
     return this;
   }
@@ -1906,7 +1907,7 @@ export class Path extends GraphicsAtom2D {
     return this;
   }
 
-  interpolate2D(
+  fit(
     domain: [number, number],
     range: [number, number],
     dimensions: [number, number]
@@ -2153,6 +2154,13 @@ export class Path extends GraphicsAtom2D {
     return this.push(PathCommand.M(x, y, z));
   }
 
+  /**
+   * Appends an M-command to this path's command list.
+   */
+  L(x: number, y: number, z: number = 1) {
+    return this.push(PathCommand.L(x, y, z));
+  }
+
   /** Closes this path's command list. */
   Z() {
     return this.push(PathCommand.Z());
@@ -2169,21 +2177,28 @@ export function path(x: number = 0, y: number = 0, z: number = 1) {
   return new Path(x, y, z);
 }
 
-/** Returns true and asserts if the given object is an SVG Path object. */
-export function isPath(obj: Graphics2DObj): obj is Path {
-  return obj.kind() === graphics2D.path;
+export function line3D(
+  start: [number, number, number],
+  end: [number, number, number]
+) {
+  return path().M(start[0], start[1], start[2]).L(end[0], end[1], end[2]);
 }
 
-export class ArrowHead2D extends GraphicsAtom2D {
-  kind(): graphics2D {
-    return graphics2D.arrowhead;
+/** Returns true and asserts if the given object is an SVG Path object. */
+export function isPath(obj: GraphicsObj): obj is Path {
+  return obj.kind() === graphics.path;
+}
+
+export class Arrowhead extends GraphicsAtom {
+  kind(): graphics {
+    return graphics.arrowhead;
   }
-  childOf(parentObj: SVG2D | null): this {
+  childOf(parentObj: SVGObj | null): this {
     this.$parentSVG = parentObj;
     return this;
   }
 
-  interpolate2D(
+  fit(
     domain: [number, number],
     range: [number, number],
     dimensions: [number, number]
@@ -2253,19 +2268,19 @@ export class ArrowHead2D extends GraphicsAtom2D {
 
 /** Returns a new arrowhead. */
 function arrowhead(id: string | number) {
-  return new ArrowHead2D(id);
+  return new Arrowhead(id);
 }
 
 /** Returns true, and asserts, if the given object is an arrowhead. */
-export function isArrowhead(obj: Graphics2DObj): obj is ArrowHead2D {
-  return obj.kind() === graphics2D.arrowhead;
+export function isArrowhead(obj: GraphicsObj): obj is Arrowhead {
+  return obj.kind() === graphics.arrowhead;
 }
 
-export class Line2D extends GraphicsAtom2D {
-  $arrowEnd: null | ArrowHead2D = null;
-  $arrowStart: null | ArrowHead2D = null;
+export class LineObj extends GraphicsAtom {
+  $arrowEnd: null | Arrowhead = null;
+  $arrowStart: null | Arrowhead = null;
 
-  arrowStart(arrow?: ArrowHead2D) {
+  arrowStart(arrow?: Arrowhead) {
     if (arrow) {
       this.$arrowStart = arrow;
     } else {
@@ -2277,7 +2292,7 @@ export class Line2D extends GraphicsAtom2D {
     return this;
   }
 
-  arrowEnd(arrow?: ArrowHead2D) {
+  arrowEnd(arrow?: Arrowhead) {
     if (arrow) {
       this.$arrowEnd = arrow;
     } else {
@@ -2286,7 +2301,7 @@ export class Line2D extends GraphicsAtom2D {
     return this;
   }
 
-  childOf(parentObj: SVG2D | null): this {
+  childOf(parentObj: SVGObj | null): this {
     this.$parentSVG = parentObj;
     if (this.$parentSVG) {
       if (this.$arrowEnd) {
@@ -2299,7 +2314,7 @@ export class Line2D extends GraphicsAtom2D {
     return this;
   }
 
-  interpolate2D(
+  fit(
     domain: [number, number],
     range: [number, number],
     dimensions: [number, number]
@@ -2310,8 +2325,8 @@ export class Line2D extends GraphicsAtom2D {
     this.$end = vector([X(this.$end.$x), Y(this.$end.$y)]);
     return this;
   }
-  kind(): graphics2D {
-    return graphics2D.line;
+  kind(): graphics {
+    return graphics.line;
   }
   $start: Vector;
   $end: Vector;
@@ -2332,23 +2347,23 @@ export class Line2D extends GraphicsAtom2D {
   }
 }
 
-export function line2D(start: [number, number], end: [number, number]) {
-  return new Line2D(start, end);
+export function line(start: [number, number], end: [number, number]) {
+  return new LineObj(start, end);
 }
 
-export function isLine2D(obj: Graphics2DObj): obj is Line2D {
-  return obj.kind() === graphics2D.line;
+export function isLine(obj: GraphicsObj): obj is LineObj {
+  return obj.kind() === graphics.line;
 }
 
-export class Circle2D extends GraphicsAtom2D {
-  kind(): graphics2D {
-    return graphics2D.circle;
+export class Circle extends GraphicsAtom {
+  kind(): graphics {
+    return graphics.circle;
   }
-  childOf(parentObj: SVG2D | null): this {
+  childOf(parentObj: SVGObj | null): this {
     this.$parentSVG = parentObj;
     return this;
   }
-  interpolate2D(
+  fit(
     domain: [number, number],
     range: [number, number],
     dimensions: [number, number]
@@ -2391,14 +2406,14 @@ export class Circle2D extends GraphicsAtom2D {
 }
 
 export function circle(radius: number, position: [number, number]) {
-  return new Circle2D(radius, position);
+  return new Circle(radius, position);
 }
 
-export function isCircle(obj: Graphics2DObj): obj is Circle2D {
-  return obj.kind() === graphics2D.circle;
+export function isCircle(obj: GraphicsObj): obj is Circle {
+  return obj.kind() === graphics.circle;
 }
 
-export class Text2D extends Graphics2DObj {
+export class TextObj extends GraphicsObj {
   $latex: null | "block" | "inline" = null;
   $width: number = 50;
   width(value: number) {
@@ -2414,14 +2429,14 @@ export class Text2D extends Graphics2DObj {
     this.$latex = value;
     return this;
   }
-  kind(): graphics2D {
-    return graphics2D.text;
+  kind(): graphics {
+    return graphics.text;
   }
-  childOf(parentObj: SVG2D | null): this {
+  childOf(parentObj: SVGObj | null): this {
     this.$parentSVG = parentObj;
     return this;
   }
-  interpolate2D(
+  fit(
     domain: [number, number],
     range: [number, number],
     dimensions: [number, number]
@@ -2474,24 +2489,24 @@ export class Text2D extends Graphics2DObj {
 }
 
 export function text(content: string | number) {
-  return new Text2D(content);
+  return new TextObj(content);
 }
 
-export function isText2D(obj: Graphics2DObj): obj is Text2D {
-  return obj.kind() === graphics2D.text;
+export function isText(obj: GraphicsObj): obj is TextObj {
+  return obj.kind() === graphics.text;
 }
 
-abstract class GraphicsCompound2D extends Graphics2DObj {
-  abstract kind(): graphics2D;
-  $children: Graphics2DObj[] = [];
+abstract class GraphicsCompound2D extends GraphicsObj {
+  abstract kind(): graphics;
+  $children: GraphicsObj[] = [];
 }
 
-export class Group2D extends GraphicsCompound2D {
-  kind(): graphics2D {
-    return graphics2D.group;
+export class GroupObj extends GraphicsCompound2D {
+  kind(): graphics {
+    return graphics.group;
   }
 
-  childOf(parent: SVG2D | null): this {
+  childOf(parent: SVGObj | null): this {
     this.$parentSVG = parent;
     this.$children.forEach((child) => {
       child.childOf(parent);
@@ -2499,34 +2514,34 @@ export class Group2D extends GraphicsCompound2D {
     return this;
   }
 
-  interpolate2D(
+  fit(
     domain: [number, number],
     range: [number, number],
     dimensions: [number, number]
   ) {
     this.$children.forEach((child) => {
-      child.interpolate2D(domain, range, dimensions);
+      child.fit(domain, range, dimensions);
     });
     return this;
   }
 
-  constructor(children: Graphics2DObj[]) {
+  constructor(children: GraphicsObj[]) {
     super();
     this.$children = children;
   }
 }
 
 /** Returns a new SVG group object. */
-export function group2D(children: Graphics2DObj[]) {
-  return new Group2D(children);
+export function group(children: GraphicsObj[]) {
+  return new GroupObj(children);
 }
 
 /** Returns true and asserts if the given object is an SVG group object. */
-export function isGroup2D(obj: Graphics2DObj): obj is Group2D {
-  return obj.kind() === graphics2D.group;
+export function isGroup(obj: GraphicsObj): obj is GroupObj {
+  return obj.kind() === graphics.group;
 }
 
-export type Tick = { tick: Line2D; label: Text2D };
+export type Tick = { tick: LineObj; label: TextObj };
 
 function ticklines2D(
   tickLength: number,
@@ -2539,13 +2554,13 @@ function ticklines2D(
   const output: Tick[] = [];
   if (orientation === "x") {
     numbers.forEach((n) => {
-      const tick = line2D([n, -tickLength], [n, tickLength]);
+      const tick = line([n, -tickLength], [n, tickLength]);
       const label = text(n).position(tick.$start.$x, tick.$start.$y);
       output.push({ tick, label });
     });
   } else {
     numbers.forEach((n) => {
-      const tick = line2D([-tickLength, n], [tickLength, n]);
+      const tick = line([-tickLength, n], [tickLength, n]);
       const label = text(n).position(tick.$start.$x, tick.$start.$y);
       output.push({ tick, label });
     });
@@ -2559,7 +2574,7 @@ type TickSpecification = {
   tickFn?: (t: Tick) => Tick;
 };
 
-class Axis2D extends Group2D {
+class Axis2D extends GroupObj {
   $type: "x" | "y";
   $stroke: string = "black";
   stroke(value: string) {
@@ -2613,7 +2628,7 @@ class Axis2D extends Group2D {
     this.$type = type;
   }
 
-  interpolate2D(
+  fit(
     domain: [number, number],
     range: [number, number],
     dimensions: [number, number]
@@ -2621,7 +2636,7 @@ class Axis2D extends Group2D {
     domain = this.$domain;
     range = this.$range;
     this.$children.forEach((child) => {
-      child.interpolate2D(domain, range, dimensions);
+      child.fit(domain, range, dimensions);
     });
     return this;
   }
@@ -2661,13 +2676,13 @@ class Axis2D extends Group2D {
     const x_axis = () => {
       const xmin = this.$domain[0];
       const xmax = this.$domain[1];
-      const xline = line2D([xmin, 0], [xmax, 0]).stroke(this.$stroke);
+      const xline = line([xmin, 0], [xmax, 0]).stroke(this.$stroke);
       this.$children.push(xline);
     };
     const y_axis = () => {
       const ymin = this.$range[0];
       const ymax = this.$range[1];
-      const yline = line2D([0, ymin], [0, ymax]).stroke(this.$stroke);
+      const yline = line([0, ymin], [0, ymax]).stroke(this.$stroke);
       this.$children.push(yline);
     };
     if (option === "x") {
@@ -2686,7 +2701,7 @@ export function axis2D(on: "x" | "y") {
   return new Axis2D(on);
 }
 
-class Grid2D extends Group2D {
+class Grid extends GroupObj {
   $domain: [number, number] = [-5, 5];
 
   get $xMin() {
@@ -2717,7 +2732,7 @@ class Grid2D extends Group2D {
     return this;
   }
 
-  interpolate2D(
+  fit(
     domain: [number, number],
     range: [number, number],
     dimensions: [number, number]
@@ -2725,7 +2740,7 @@ class Grid2D extends Group2D {
     domain = this.$domain;
     range = this.$range;
     this.$children.forEach((child) => {
-      child.interpolate2D(domain, range, dimensions);
+      child.fit(domain, range, dimensions);
     });
     return this;
   }
@@ -2737,14 +2752,14 @@ class Grid2D extends Group2D {
     const ymax = this.$yMax;
     for (let i = xmin + this.$step; i < xmax; i++) {
       this.$children.push(
-        line2D([i, ymin], [i, ymax])
+        line([i, ymin], [i, ymax])
           .stroke(this.$stroke)
           .strokeWidth(this.$strokeWidth)
       );
     }
     for (let i = ymin + this.$step; i < ymax; i++) {
       this.$children.push(
-        line2D([xmax, i], [xmin, i])
+        line([xmax, i], [xmin, i])
           .stroke(this.$stroke)
           .strokeWidth(this.$strokeWidth)
       );
@@ -2763,11 +2778,11 @@ class Grid2D extends Group2D {
   }
 }
 
-export function grid2D() {
-  return new Grid2D();
+export function grid() {
+  return new Grid();
 }
 
-class CartesianPlot2D extends Group2D {
+class CartesianPlot extends GroupObj {
   $fn: string;
   constructor(fn: string) {
     super([]);
@@ -2795,7 +2810,7 @@ class CartesianPlot2D extends Group2D {
     this.$range = range;
     return this;
   }
-  interpolate2D(
+  fit(
     domain: [number, number],
     range: [number, number],
     dimensions: [number, number]
@@ -2803,7 +2818,7 @@ class CartesianPlot2D extends Group2D {
     domain = this.$domain;
     range = this.$range;
     this.$children.forEach((child) => {
-      child.interpolate2D(domain, range, dimensions);
+      child.fit(domain, range, dimensions);
     });
     return this;
   }
@@ -2879,13 +2894,133 @@ class CartesianPlot2D extends Group2D {
 }
 
 export function cplot(fn: string) {
-  return new CartesianPlot2D(fn);
+  return new CartesianPlot(fn);
 }
 
+type Triplet<T> = [T, T, T];
 
+export class Plot3D {
+  $fn: string;
 
+  constructor(fn: string) {
+    this.$fn = fn;
+  }
 
+  $segments: number = 100;
 
+  segments(value: number) {
+    this.$segments = value;
+  }
+
+  $fov: number = 60;
+
+  fov(value: number) {
+    this.$fov = value;
+    return this;
+  }
+
+  $far: number = 30;
+
+  far(value: number) {
+    this.$far = value;
+    return this;
+  }
+
+  $xDomain: [number, number] = [-10, 10];
+  xDomain(interval: [number, number]) {
+    this.$xDomain = interval;
+    return this;
+  }
+
+  $yDomain: [number, number] = [-10, 10];
+
+  yDomain(interval: [number, number]) {
+    this.$yDomain = interval;
+    return this;
+  }
+
+  get $xMin() {
+    return this.$xDomain[0];
+  }
+  get $xMax() {
+    return this.$xDomain[1];
+  }
+  get $yMin() {
+    return this.$yDomain[0];
+  }
+  get $yMax() {
+    return this.$yDomain[1];
+  }
+
+  get $xRange() {
+    return this.$xMax - this.$xMin;
+  }
+  get $yRange() {
+    return this.$yMax - this.$yMin;
+  }
+
+  $scale: number = 0.7;
+  scale(value: number) {
+    this.$scale = value;
+    return this;
+  }
+
+  $gridColor: string = "lightgrey";
+
+  gridColor(value: string) {
+    this.$gridColor = value;
+    return this;
+  }
+
+  $width: number = 300;
+  width(value: number) {
+    this.$width = value;
+    return this;
+  }
+
+  $height: number = 300;
+  height(value: number) {
+    this.$height = value;
+    return this;
+  }
+
+  $position: Triplet<number> = [12, 10, 12];
+  position(value: Triplet<number>) {
+    this.$position = value;
+    return this;
+  }
+
+  $near: number = 0.1;
+  near(value: number) {
+    this.$near = value;
+    return this;
+  }
+
+  $z: (x: number, y: number) => Triplet<number> = (a, b) => [a, b, 0];
+
+  paramFn() {
+    const e = engine();
+    const f = e.compile(this.$fn);
+    if (!(f instanceof Fn)) {
+      return this;
+    }
+    const out = (x: number, y: number) => {
+      x = this.$xRange * x + this.$xMin;
+      y = this.$yRange * y + this.$yMin;
+      let z = f.call(e.compiler, [x, y]);
+      if (typeof z !== "number") {
+        z = NaN;
+      }
+      return tuple(x, y, z);
+    };
+    this.$z = out;
+    return this;
+  }
+}
+
+export function plot3D(zfn: string) {
+  return new Plot3D(zfn);
+}
 
 /** A value native to Winnow. */
 type Primitive =
@@ -5210,8 +5345,33 @@ function simplifyProductRec(elts: MathObj[]): MathObj[] {
       }
       return [P];
     }
+
+    // left side is 1; 1 * u = u
     if (isNum(elts[0]) && elts[0].value() === 1) return [elts[1]];
+
+    // right side is 1; u * 1 = u
     if (isNum(elts[1]) && elts[1].value() === 1) return [elts[0]];
+
+    // float * float
+    if (isFloat64(elts[0]) && isFloat64(elts[1])) {
+      return [float64(elts[0].value() * elts[1].value())];
+    }
+    // float * int
+    if (isFloat64(elts[0]) && isInt(elts[1])) {
+      return [float64(elts[0].value() * elts[1].value())];
+    }
+    // int * float
+    if (isInt(elts[0]) && isFloat64(elts[1])) {
+      return [float64(elts[0].value() * elts[1].value())];
+    }
+    // float * fraction
+    if (isFloat64(elts[0]) && isFrac(elts[1])) {
+      return [float64(elts[0].value() * elts[1].value())];
+    }
+    // fraction * float
+    if (isFrac(elts[0]) && isFloat64(elts[1])) {
+      return [float64(elts[0].value() * elts[1].value())];
+    }
 
     let p = elts[0];
     let q = elts[1];
@@ -5258,11 +5418,7 @@ function simplifyPower(u: Power): MathObj {
   if (isNum(v) && v.value() === 1) return int(1);
   if (isNum(w) && w.value() === 0) return int(1);
   if (isNum(w) && w.value() === 1) return v;
-
   let n = w;
-  if (isInt(v) && isInt(n)) {
-    return int(v.int ** n.int);
-  }
   if ((isInt(v) || isFrac(v)) && isInt(n)) {
     return simplifyRNE(pow(v, n));
   }
@@ -5360,7 +5516,13 @@ function simplifyFunction(u: Func): MathObj {
 /** Attempts to simplify the given algebraic expression. */
 function simplify(expression: MathObj | string): MathObj {
   const u = typeof expression === "string" ? exp(expression).obj() : expression;
-  if (isInt(u) || isSym(u) || isUndefined(u) || u.isSimplified) {
+  if (
+    isInt(u) ||
+    isSym(u) ||
+    isFloat64(u) ||
+    isUndefined(u) ||
+    u.isSimplified
+  ) {
     return u;
   } else if (isFrac(u)) {
     return simplifyRationalNumber(u);
@@ -8674,7 +8836,7 @@ function returnValue(value: Primitive) {
 }
 
 /** An object representing a function in Twine.  */
-class Fn {
+export class Fn {
   private declaration: FnStmt;
   private closure: Environment<Primitive>;
   private isInitializer: boolean;

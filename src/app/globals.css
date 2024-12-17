@@ -188,3 +188,10 @@ article {
   width: clamp(300px, 70%, 600px);
   margin: 0 auto;
 }
+
+footer {
+  display: block;
+  width: fit-content;
+  margin: 3vh auto;
+  color: lightgray;
+} 
