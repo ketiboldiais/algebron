@@ -89,6 +89,7 @@ const Error = ({ children }: Children) => {
 
 type TerminalContentProps = Children & { height: number };
 
+// eslint-disable-next-line react/display-name
 const TerminalContent = forwardRef<HTMLDivElement, TerminalContentProps>(
   (props, ref) => {
     return (

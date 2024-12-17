@@ -1,6 +1,6 @@
 "use client";
 
-import { engine, lexical, strof, syntax, treestring } from "@/liber/main";
+import { engine, strof } from "@/liber/main";
 import { KeyboardEventHandler, useState } from "react";
 
 const Terminal = () => {
