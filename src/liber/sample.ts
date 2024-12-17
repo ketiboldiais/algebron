@@ -5086,6 +5086,7 @@ class Tree extends TREE {
     this._edgeFn = callback;
     return this;
   }
+  // stopped here
   end() {
     this.lay();
     this._tree.bfs((node) => {

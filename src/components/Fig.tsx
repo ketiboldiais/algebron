@@ -12,7 +12,6 @@ import {
   LineObj,
   isLine,
   line,
-  axis2D,
   TextObj,
   isText,
   grid,
@@ -27,9 +26,16 @@ import {
   line3D,
   engine,
   Fn,
+  haxis,
+  vaxis,
+  Plot3D,
+  Fn3D,
+  tree,
+  subtree,
+  leaf,
 } from "@/liber/main";
 
-import { CSSProperties, useEffect, useRef, useState } from "react";
+import { CSSProperties, ReactNode, useEffect, useRef, useState } from "react";
 import katex from "katex";
 import {
   OrbitControls,
@@ -43,59 +49,42 @@ const axis = (
   domain: [number, number],
   range: [number, number]
 ) => {
-  return axis2D(on)
-    .stroke("grey")
-    .domain(domain)
-    .range(range)
-    .ticks({
-      length: 0.1,
-      step: 1,
-      tickFn: (t) => {
-        if (on === "x") {
-          t.label.dy(15);
-        } else {
-          t.label.dy(5).dx(15);
-        }
+  if (on === "x") {
+    return haxis(domain, 1)
+      .ticks((t) => {
+        t.label.dy(15);
         return t;
-      },
-    })
-    .done();
-};
-
-export const FigTest = () => {
-  const D = tuple(-10, 10);
-  const R = tuple(-10, 10);
-  const angle = (-3 * Math.PI) / 4;
-  const xmin = D[0];
-  const xmax = D[1];
-  const ymin = R[0];
-  const ymax = R[1];
-  const xaxis = line3D([xmin, 0, 1], [xmax, 0, 1]).stroke("green");
-  const yaxis = line3D([0, ymin, 1], [0, ymax, 1]).stroke("red");
-  const zaxis = line3D([0, ymin, 1], [0, ymax, 1])
-    .stroke("blue")
-    .rotateZ(angle);
-  const d = svg([xaxis, yaxis, zaxis])
-    .dimensions(600, 600)
-    .domain(D)
-    .range(R)
-    .done();
-  return <Fig d={d} />;
+      })
+      .stroke("grey")
+      .done();
+  } else {
+    return vaxis(range, 1)
+      .ticks((t) => {
+        t.label.dy(5).dx(15);
+        return t;
+      })
+      .stroke("grey")
+      .done();
+  }
 };
 
 type FigProps = { d: SVGObj; w?: number; p?: number };
 
-const Fig = ({ d, w = 100 }: FigProps) => {
+const FIGURE = ({ children }: { children: ReactNode }) => {
+  return <figure>{children}</figure>;
+};
+
+const Fig = ({ d, w = 100, p = w }: FigProps) => {
   const par = "xMidYMid meet";
   const width = d.$width;
   const height = d.$height;
   const viewbox = `0 0 ${width} ${height}`;
   const boxcss = {
     display: "block",
-    margin: "1vh auto",
+    margin: "0 auto",
     position: "relative",
     width: `${w}%`,
-    paddingBottom: `${w}%`,
+    paddingBottom: `${p}%`,
     overflow: "hidden",
   } as const;
   const svgcss = {
@@ -108,12 +97,14 @@ const Fig = ({ d, w = 100 }: FigProps) => {
   } as const;
 
   return (
-    <div style={boxcss}>
-      <svg viewBox={viewbox} preserveAspectRatio={par} style={svgcss}>
-        <DEF elements={d.$markers} />
-        <Fig2D elements={d.$children} />
-      </svg>
-    </div>
+    <FIGURE>
+      <div style={boxcss}>
+        <svg viewBox={viewbox} preserveAspectRatio={par} style={svgcss}>
+          <DEF elements={d.$markers} />
+          <Fig2D elements={d.$children} />
+        </svg>
+      </div>
+    </FIGURE>
   );
 };
 
@@ -298,7 +289,7 @@ export const LA1 = () => {
   const k = vector([4, 1]);
   const n = j.add(k);
   const d = svg([
-    grid().domain(D).range(R).done(),
+    grid(D, R).done(),
     line([0, 0], [3, 3]).stroke("red").arrowEnd(),
     line([0, 0], [4, 1]).stroke("red").arrowEnd(),
     line([0, 0], [n.$x, n.$y]).stroke("blue").arrowEnd(),
@@ -321,9 +312,9 @@ export const LA2 = () => {
   const xAxis = axis("x", D, R);
   const yAxis = axis("y", D, R);
   const d = svg([
-    grid().domain(D).range(R).done(),
-    cplot("fn f(x) = 3x^2 + 4x - 1").domain(D).range(R).stroke("red").done(),
-    cplot("fn f(x) = 4x^2 - 2x + 2").domain(D).range(R).stroke("blue").done(),
+    grid(D, R).done(),
+    cplot("fn f(x) = 3x^2 + 4x - 1", D, R).stroke("red").done(),
+    cplot("fn f(x) = 4x^2 - 2x + 2", D, R).stroke("blue").done(),
     text("3x^2 + 4x - 1").fill("red").position(1, 2).width(100).latex("inline"),
     text("4x^2 - 2x + 2")
       .position(1.5, 6)
@@ -348,7 +339,7 @@ export const LA3 = () => {
   const j = vector([3, 3]);
   const n = j.mul(2);
   const d = svg([
-    grid().domain(D).range(R).done(),
+    grid(D, R).done(),
     line([0, 0], [n.$x, n.$y]).stroke("blue").arrowEnd(),
     line([0, 0], [3, 3]).stroke("red").arrowEnd(),
     text("v").position(2.5, 4).latex("inline"),
@@ -369,12 +360,12 @@ export const LA4 = () => {
   const xAxis = axis("x", D, R);
   const yAxis = axis("y", D, R);
   const d = svg([
-    grid().domain(D).range(R).done(),
+    grid(D, R).done(),
     xAxis,
     yAxis,
-    cplot("fn f(x) = sin(x)").domain(D).range(R).stroke("red").done(),
-    cplot("fn g(x) = cos(x)").domain(D).range(R).stroke("blue").done(),
-    cplot("fn h(x) = cos(x) + sin(x)").stroke("green").done(),
+    cplot("fn f(x) = sin(x)", D, R).stroke("red").done(),
+    cplot("fn g(x) = cos(x)", D, R).stroke("blue").done(),
+    cplot("fn h(x) = cos(x) + sin(x)", D, R).stroke("green").done(),
     text("f(x) = \\sin(x)")
       .fill("red")
       .position(-6, 2.5)
@@ -404,11 +395,11 @@ export const LA5 = () => {
   const xAxis = axis("x", D, R);
   const yAxis = axis("y", D, R);
   const d = svg([
-    grid().domain(D).range(R).done(),
+    grid(D, R).done(),
     xAxis,
     yAxis,
-    cplot("fn f(x) = (5/4) - x").domain(D).range(R).stroke("red").done(),
-    cplot("fn g(x) = (x/2) - (1/4)").domain(D).range(R).stroke("blue").done(),
+    cplot("fn f(x) = (5/4) - x", D, R).stroke("red").done(),
+    cplot("fn g(x) = (x/2) - (1/4)", D, R).stroke("blue").done(),
   ])
     .dimensions(400, 400)
     .domain(D)
@@ -432,27 +423,18 @@ function CameraController() {
   return null;
 }
 
-export function Plot3DTest() {
-  const d = plot3D("fn z(x,y) = sin(x) + cos(y)").paramFn();
-  const pf = (x: number, y: number, target: Vector3) => {
-    x = d.$xRange * x + d.$xMin;
-    y = d.$yRange * y + d.$yMin;
-    const z = (2*x) + y;
-    if (Number.isNaN(z)) {
-      return target.set(0.001, 0.001, 0.001);
-    }
-    return target.set(x, z, y);
-  };
-  const Plot3DPath = () => {
+type Plot3DProps = { element: Plot3D };
+export function PLOT3D({ element }: Plot3DProps) {
+  const d = element;
+  const Plot3DPath = ({ zfn }: { zfn: Fn3D }) => {
     const ref = useRef<any>(null);
     const paramFunction = (x: number, y: number, target: Vector3) => {
-      const [X, Y, Z] = d.$z(x, y);
+      const [X, Y, Z] = zfn(x, y);
       if (Number.isNaN(Z)) {
         return target.set(0.001, 0.001, 0.001);
       }
       return target.set(X, Z, Y);
     };
-    const gn = new ParametricGeometry(pf, d.$segments, d.$segments);
     const graph = new ParametricGeometry(
       paramFunction,
       d.$segments,
@@ -463,27 +445,95 @@ export function Plot3DTest() {
         <mesh ref={ref} scale={d.$scale} geometry={graph}>
           <meshNormalMaterial side={DoubleSide} />
         </mesh>
-        <mesh ref={ref} scale={d.$scale} geometry={gn}>
-          <meshNormalMaterial side={DoubleSide} />
-        </mesh>
       </>
     );
   };
+  const Paths = () => {
+    return (
+      <>
+        {d.$zFunctions.map((zfn, i) => (
+          <>
+            <Plot3DPath key={`${d.id}-${i}`} zfn={zfn} />
+          </>
+        ))}
+      </>
+    );
+  };
+  const containerStyles: CSSProperties = {
+    width: d.$width,
+    height: d.$height,
+    margin: "0 auto",
+  };
   return (
-    <Canvas
-      camera={{
-        fov: d.$fov,
-        position: d.$position,
-        near: d.$near,
-        far: d.$far,
-      }}
-      onCreated={({ camera }) => camera.lookAt(0, 0, 0)}
-    >
-      <CameraController />
-      <pointLight position={[0, 250, 0]} color={0xffffff} />
-      <primitive object={new AxesHelper(10)} />
-      <primitive object={new GridHelper(10, 10, d.$gridColor, d.$gridColor)} />
-      <Plot3DPath />
-    </Canvas>
+    <FIGURE>
+      <div style={containerStyles}>
+        <Canvas
+          camera={{
+            fov: d.$fov,
+            position: d.$position,
+            near: d.$near,
+            far: d.$far,
+          }}
+          onCreated={({ camera }) => camera.lookAt(0, 0, 0)}
+        >
+          <CameraController />
+          <pointLight position={[0, 250, 0]} color={0xffffff} />
+          <primitive object={new AxesHelper(10)} />
+          <primitive
+            object={new GridHelper(10, 10, d.$gridColor, d.$gridColor)}
+          />
+          <Paths />
+        </Canvas>
+      </div>
+    </FIGURE>
   );
 }
+
+export function Plot3DTest() {
+  const d = plot3D("fn z(x,y) = sin(x) + cos(y)").paramFn();
+  return <PLOT3D element={d} />;
+}
+
+export function TreeTest() {
+  const d = svg([
+    tree(
+      subtree("a").nodes([
+        subtree("b").nodes([leaf("c"), leaf("d")]),
+        subtree("e").nodes([
+          leaf("f"),
+          subtree("g").nodes([
+            subtree("h").nodes([leaf("j"), leaf("k")]),
+            leaf("i"),
+          ]),
+        ]),
+      ])
+    )
+      .layout("reingold-tilford")
+      .done(),
+  ]).done();
+  return <Fig d={d}/>;
+}
+
+export const PlotTest = () => {
+  const D = tuple(-10, 10);
+  const R = tuple(-10, 10);
+  const xmin = D[0];
+  const xmax = D[1];
+  const ymin = R[0];
+  const ymax = R[1];
+  const xaxis = line3D([xmin, 0, 1], [xmax, 0, 1]).stroke("grey");
+  const yaxis = line3D([0, ymin, 1], [0, ymax, 1]).stroke("grey");
+  const d = svg([
+    xaxis,
+    yaxis,
+    cplot("fn f(x) = sin(x)", D, R).stroke("red").done(),
+    cplot("fn g(x) = cos(x)", D, R).stroke("blue").done(),
+    cplot("fn h(x) = cos(x) + sin(x)", D, R).stroke("green").done(),
+    cplot("fn n(x) = 2cos(x)", D, R).stroke("purple").done(),
+  ])
+    .dimensions(600, 600)
+    .domain(D)
+    .range(R)
+    .done();
+  return <Fig d={d}/>;
+};

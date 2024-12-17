@@ -1,0 +1,64 @@
+import MdxLayout from "@/components/mdx-layout";
+
+# Calculus
+
+## Expressions
+In algebra, we use letters like ${x,}$ ${y,}$ ${n,}$ and ${m}$ to represent some object (e.g., numbers). These letters are called __variables__. When we combine these variables with mathematical operations (e.g., addition, subtraction, multiplication, etc.), we obtain an __expression__. For example, the following are all expressions:
+
+$$
+    a + 2 \\[1em]
+    x^2 \\[1em]
+    \dfrac{x^{1/3} + y}{xy}
+$$
+
+Of course, expressions need not have variables. These are expressions, too:
+
+$$
+    1 + 1 \\[1em]
+    2/3 \\[1em]
+    \pi
+$$
+
+When we place an equal sign between two expressions, we have an equation. This is just a symbolic way of saying, "These two expressions are the same." Here is a rather famous one: 
+
+$$
+    a^2 + b^2 = c^2.
+$$
+
+## The Domain of an Expression
+All mathematical expressions have a __domain__ – the set of all values for which the expression is defined. For example, in the expression ${a^2 + b^2 = c^2,}$ we assume the expression is defined for real numbers. That is, it only makes sense if we plug real numbers into the variables. It would not make sense if the domain included, say, dogs. Of course, it very well could, but we'd have to define what it means to square and add dogs: 
+
+$$
+    \text{rottweiler}^2 + \text{greyhound}^2 = \text{mastiff}^2.
+$$
+
+The point is, outside the expression's domain, the expression is undefined.
+
+> __Definition.__ Given an expression ${u,}$ the notation
+>
+> $$
+>    \text{dom}(u)
+> $$
+> 
+> denotes the domain of ${u.}$
+
+__*example*__. In the expression ${1/((t-1)(t-3)),}$ we define the domain to be all real numbers (${\reals}$), not including ${1}$ and not including ${-3.}$ If we let ${t = 1}$ or ${t = -3,}$ then we have a zero denominator. And as we all know, we cannot divide by zero.
+
+$$
+    \text{dom} \left( \dfrac{1}{(t-1)(t+3)} \right) = \set{t \in \reals | t \neq 1, t \neq -3}.
+$$
+
+## Solution Sets
+Because an expression may contain variables, an equation is true or false only if we substitute values into those variables. Until then, the equation is neither true nor false. If a value is substituted and the equation is true, we call that value the __solution__, or __root__, of the equation. The set of all roots to an equation is called the equation's __truth set__ or __solution set__. 
+
+If the equation's solution set is the equation's domain, we call the equation an
+__identity__. 
+
+__*example*__. ${x^2 - 9 = (x - 3)(x + 3).}$
+
+__*example*__. ${\dfrac{x^2}{x} = x.}$
+
+
+export default function MDXPage({ children }) {
+    return <MdxLayout>{children}</MdxLayout>
+}

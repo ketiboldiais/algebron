@@ -198,6 +198,15 @@ export function tuple<T extends any[]>(...data: T) {
   return data;
 }
 
+/** Given an array of type `T[]`, splits the array in two and returns the two halves as a pair. */
+function arraySplit<T>(array: T[]) {
+  const L = array.length;
+  const half = Math.ceil(L / 2);
+  const left = array.slice(0, half);
+  const right = array.slice(half);
+  return [left, right] as [T[], T[]];
+}
+
 class LinkedList<T> {
   private head: Binode<T>;
   private tail: Binode<T>;
@@ -1450,54 +1459,6 @@ type PARValue =
       | "xMaxYMax"} ${"meet" | "slice"}`
   | "none";
 
-// § GRAPHICS
-class Fig2D {
-  /** This figure's preserve aspect ratio value. */
-  $preserveAspectRatio: PARValue = "xMidYMid meet";
-
-  /** Sets this figure's perserve aspect ratio value. */
-  preserveAspectRatio(value: PARValue) {
-    this.$preserveAspectRatio = value;
-    return this;
-  }
-
-  /** The width of this SVG. */
-  $width: number = 500;
-
-  /** Sets the width of this SVG. */
-  width(value: number) {
-    this.$width = value;
-    return this;
-  }
-
-  /** The height of this SVG. */
-  $height: number = 500;
-
-  /** Sets the height of this SVG. */
-  height(value: number) {
-    this.$height = value;
-    return this;
-  }
-
-  /** The domain that x-axis points should be interpolated to. */
-  $domain: [number, number] = [-10, 10];
-
-  /** Sets this figure's domain. */
-  domain(xMin: number, xMax: number) {
-    this.$domain = [xMin, xMax];
-    return this;
-  }
-
-  /** The range that x-axis points should be interpolated to. */
-  $range: [number, number] = [-10, 10];
-
-  /** Sets this figure's range. */
-  range(yMin: number, yMax: number) {
-    this.$range = [yMin, yMax];
-    return this;
-  }
-}
-
 /** An enum of types mapped to SVG path command prefixes. */
 enum pc {
   M,
@@ -2413,7 +2374,7 @@ export function isCircle(obj: GraphicsObj): obj is Circle {
   return obj.kind() === graphics.circle;
 }
 
-export class TextObj extends GraphicsObj {
+export class TextObj extends GraphicsAtom {
   $latex: null | "block" | "inline" = null;
   $width: number = 50;
   width(value: number) {
@@ -2499,6 +2460,35 @@ export function isText(obj: GraphicsObj): obj is TextObj {
 abstract class GraphicsCompound2D extends GraphicsObj {
   abstract kind(): graphics;
   $children: GraphicsObj[] = [];
+  $domain: [number, number] = [-5, 5];
+
+  get $xMin() {
+    return this.$domain[0];
+  }
+
+  get $xMax() {
+    return this.$domain[1];
+  }
+
+  domain(domain: [number, number]) {
+    this.$domain = domain;
+    return this;
+  }
+
+  $range: [number, number] = [-5, 5];
+
+  get $yMin() {
+    return this.$range[0];
+  }
+
+  get $yMax() {
+    return this.$range[1];
+  }
+
+  range(range: [number, number]) {
+    this.$range = range;
+    return this;
+  }
 }
 
 export class GroupObj extends GraphicsCompound2D {
@@ -2568,188 +2558,100 @@ function ticklines2D(
   return output;
 }
 
-type TickSpecification = {
-  length: number;
-  step: number;
-  tickFn?: (t: Tick) => Tick;
-};
-
-class Axis2D extends GroupObj {
-  $type: "x" | "y";
+abstract class Axis extends GroupObj {
   $stroke: string = "black";
   stroke(value: string) {
     this.$stroke = value;
     return this;
   }
-
-  ticks(spec: TickSpecification) {
-    const xticks = () => {
-      ticklines2D(
-        spec.length,
-        this.$domain[0],
-        this.$domain[1],
-        spec.step,
-        "x"
-      ).forEach((t) => {
-        t.label.fill(this.$stroke);
-        t.tick.stroke(this.$stroke);
-        if (spec.tickFn) {
-          t = spec.tickFn(t);
-        }
-        this.$children.push(t.label, t.tick);
-      });
-    };
-    const yticks = () => {
-      ticklines2D(
-        spec.length,
-        this.$range[0],
-        this.$range[1],
-        spec.step,
-        "y"
-      ).forEach((t) => {
-        t.label.fill(this.$stroke);
-        t.tick.stroke(this.$stroke);
-        if (spec.tickFn) {
-          t = spec.tickFn(t);
-        }
-        this.$children.push(t.label, t.tick);
-      });
-    };
-    if (this.$type === "x") {
-      xticks();
-    } else {
-      yticks();
-    }
+  $tickLength: number = 0.1;
+  tickLength(value: number) {
+    this.$tickLength = value;
     return this;
   }
-
-  constructor(type: "x" | "y") {
+  $interval: [number, number];
+  $step: number;
+  constructor(interval: [number, number], step: number) {
     super([]);
-    this.$type = type;
+    this.$interval = interval;
+    this.$step = step;
   }
+}
 
-  fit(
-    domain: [number, number],
-    range: [number, number],
-    dimensions: [number, number]
-  ) {
-    domain = this.$domain;
-    range = this.$range;
-    this.$children.forEach((child) => {
-      child.fit(domain, range, dimensions);
+class VerticalAxis extends Axis {
+  ticks(tickFn?: (t: Tick) => Tick) {
+    ticklines2D(
+      this.$tickLength,
+      this.$interval[0],
+      this.$interval[1],
+      this.$step,
+      "y"
+    ).forEach((t) => {
+      t.label.fill(this.$stroke);
+      t.tick.stroke(this.$stroke);
+      if (tickFn) {
+        t = tickFn(t);
+      }
+      this.$children.push(t.label, t.tick);
     });
     return this;
   }
-
-  $domain: [number, number] = [-5, 5];
-
-  get $xMin() {
-    return this.$domain[0];
+  constructor(interval: [number, number], step: number) {
+    super(interval, step);
   }
-
-  get $xMax() {
-    return this.$domain[1];
-  }
-
-  domain(domain: [number, number]) {
-    this.$domain = domain;
-    return this;
-  }
-
-  $range: [number, number] = [-5, 5];
-
-  get $yMin() {
-    return this.$range[0];
-  }
-
-  get $yMax() {
-    return this.$range[1];
-  }
-
-  range(range: [number, number]) {
-    this.$range = range;
-    return this;
-  }
-
   done() {
-    const option = this.$type;
-    const x_axis = () => {
-      const xmin = this.$domain[0];
-      const xmax = this.$domain[1];
-      const xline = line([xmin, 0], [xmax, 0]).stroke(this.$stroke);
-      this.$children.push(xline);
-    };
-    const y_axis = () => {
-      const ymin = this.$range[0];
-      const ymax = this.$range[1];
-      const yline = line([0, ymin], [0, ymax]).stroke(this.$stroke);
-      this.$children.push(yline);
-    };
-    if (option === "x") {
-      x_axis();
-      return this;
-    }
-    if (option === "y") {
-      y_axis();
-      return this;
-    }
+    const ymin = this.$interval[0];
+    const ymax = this.$interval[1];
+    const yline = line([0, ymin], [0, ymax]).stroke(this.$stroke);
+    this.$children.push(yline);
     return this;
   }
 }
 
-export function axis2D(on: "x" | "y") {
-  return new Axis2D(on);
+export function vaxis(interval: [number, number], step: number) {
+  return new VerticalAxis(interval, step);
+}
+
+class HorizontalAxis extends Axis {
+  ticks(tickFn?: (t: Tick) => Tick) {
+    ticklines2D(
+      this.$tickLength,
+      this.$interval[0],
+      this.$interval[1],
+      this.$step,
+      "x"
+    ).forEach((t) => {
+      t.label.fill(this.$stroke);
+      t.tick.stroke(this.$stroke);
+      if (tickFn) {
+        t = tickFn(t);
+      }
+      this.$children.push(t.label, t.tick);
+    });
+    return this;
+  }
+  constructor(interval: [number, number], step: number) {
+    super(interval, step);
+  }
+  done() {
+    const xmin = this.$interval[0];
+    const xmax = this.$interval[1];
+    const xline = line([xmin, 0], [xmax, 0]).stroke(this.$stroke);
+    this.$children.push(xline);
+    return this;
+  }
+}
+
+export function haxis(interval: [number, number], step: number) {
+  return new HorizontalAxis(interval, step);
 }
 
 class Grid extends GroupObj {
-  $domain: [number, number] = [-5, 5];
-
-  get $xMin() {
-    return this.$domain[0];
-  }
-
-  get $xMax() {
-    return this.$domain[1];
-  }
-
-  domain(domain: [number, number]) {
-    this.$domain = domain;
-    return this;
-  }
-
-  $range: [number, number] = [-5, 5];
-
-  get $yMin() {
-    return this.$range[0];
-  }
-
-  get $yMax() {
-    return this.$range[1];
-  }
-
-  range(range: [number, number]) {
-    this.$range = range;
-    return this;
-  }
-
-  fit(
-    domain: [number, number],
-    range: [number, number],
-    dimensions: [number, number]
-  ) {
-    domain = this.$domain;
-    range = this.$range;
-    this.$children.forEach((child) => {
-      child.fit(domain, range, dimensions);
-    });
-    return this;
-  }
-
   done() {
-    const xmin = this.$xMin;
-    const xmax = this.$xMax;
-    const ymin = this.$yMin;
-    const ymax = this.$yMax;
+    const xmin = this.$xDomain[0];
+    const xmax = this.$xDomain[1];
+    const ymin = this.$yRange[0];
+    const ymax = this.$yRange[1];
     for (let i = xmin + this.$step; i < xmax; i++) {
       this.$children.push(
         line([i, ymin], [i, ymax])
@@ -2773,56 +2675,36 @@ class Grid extends GroupObj {
     this.$step = value;
     return this;
   }
-  constructor() {
+  $xDomain: [number, number];
+  $yRange: [number, number];
+  constructor(xDomain: [number, number], yRange: [number, number]) {
     super([]);
+    this.$xDomain = xDomain;
+    this.$yRange = yRange;
   }
 }
 
-export function grid() {
-  return new Grid();
+export function grid(xDomain: [number, number], yRange: [number, number]) {
+  return new Grid(xDomain, yRange);
 }
 
 class CartesianPlot extends GroupObj {
   $fn: string;
-  constructor(fn: string) {
+  $xPlotDomain: [number, number];
+  $yPlotRange: [number, number];
+  constructor(
+    fn: string,
+    xPlotDomain: [number, number],
+    $yPlotRange: [number, number]
+  ) {
     super([]);
     this.$fn = fn;
+    this.$xPlotDomain = xPlotDomain;
+    this.$yPlotRange = $yPlotRange;
   }
-  $domain: [number, number] = [-5, 5];
-  get $xMin() {
-    return this.$domain[0];
-  }
-  get $xMax() {
-    return this.$domain[1];
-  }
-  domain(domain: [number, number]) {
-    this.$domain = domain;
-    return this;
-  }
-  $range: [number, number] = [-5, 5];
-  get $yMin() {
-    return this.$range[0];
-  }
-  get $yMax() {
-    return this.$range[1];
-  }
-  range(range: [number, number]) {
-    this.$range = range;
-    return this;
-  }
-  fit(
-    domain: [number, number],
-    range: [number, number],
-    dimensions: [number, number]
-  ) {
-    domain = this.$domain;
-    range = this.$range;
-    this.$children.forEach((child) => {
-      child.fit(domain, range, dimensions);
-    });
-    return this;
-  }
+
   $samples: number = 200;
+
   samples(value: number) {
     this.$samples = value;
     return this;
@@ -2830,10 +2712,10 @@ class CartesianPlot extends GroupObj {
 
   done() {
     const out: PathCommand[] = [];
-    const xmin = this.$xMin;
-    const xmax = this.$xMax;
-    const ymin = this.$yMin;
-    const ymax = this.$yMax;
+    const xmin = this.$xPlotDomain[0];
+    const xmax = this.$xPlotDomain[1];
+    const ymin = this.$yPlotRange[0];
+    const ymax = this.$yPlotRange[1];
     const e = engine();
     const fn = e.compile(this.$fn);
     if (!(fn instanceof Fn)) {
@@ -2893,26 +2775,38 @@ class CartesianPlot extends GroupObj {
   }
 }
 
-export function cplot(fn: string) {
-  return new CartesianPlot(fn);
+export function cplot(
+  fn: string,
+  domain: [number, number],
+  range: [number, number]
+) {
+  return new CartesianPlot(fn, domain, range);
 }
 
-type Triplet<T> = [T, T, T];
+export type Triplet<T> = [T, T, T];
+export type Fn3D = (x: number, y: number) => Triplet<number>;
 
 export class Plot3D {
-  $fn: string;
+  $id: string | number = uid(10);
 
-  constructor(fn: string) {
+  id(value: string | number) {
+    this.$id = value;
+    return this;
+  }
+
+  $fn: string[];
+
+  constructor(fn: string[]) {
     this.$fn = fn;
   }
 
-  $segments: number = 100;
+  $segments: number = 200;
 
   segments(value: number) {
     this.$segments = value;
   }
 
-  $fov: number = 60;
+  $fov: number = 50;
 
   fov(value: number) {
     this.$fov = value;
@@ -2927,6 +2821,7 @@ export class Plot3D {
   }
 
   $xDomain: [number, number] = [-10, 10];
+
   xDomain(interval: [number, number]) {
     this.$xDomain = interval;
     return this;
@@ -2959,7 +2854,7 @@ export class Plot3D {
     return this.$yMax - this.$yMin;
   }
 
-  $scale: number = 0.7;
+  $scale: number = 0.6;
   scale(value: number) {
     this.$scale = value;
     return this;
@@ -2972,13 +2867,13 @@ export class Plot3D {
     return this;
   }
 
-  $width: number = 300;
+  $width: number = 200;
   width(value: number) {
     this.$width = value;
     return this;
   }
 
-  $height: number = 300;
+  $height: number = 200;
   height(value: number) {
     this.$height = value;
     return this;
@@ -2996,11 +2891,30 @@ export class Plot3D {
     return this;
   }
 
-  $z: (x: number, y: number) => Triplet<number> = (a, b) => [a, b, 0];
+  $z: Fn3D = (a, b) => [a, b, 0];
+
+  $zFunctions: Fn3D[] = [];
 
   paramFn() {
+    const makeZFn = (zFunctionString: string) => {
+      const e = engine();
+      const f = e.compile(zFunctionString);
+      if (!(f instanceof Fn)) {
+        throw algebraError("f is not an instance of Fn");
+      }
+      const out = (x: number, y: number) => {
+        x = this.$xRange * x + this.$xMin;
+        y = this.$yRange * y + this.$yMin;
+        let z = f.call(e.compiler, [x, y]);
+        if (typeof z !== "number") {
+          z = NaN;
+        }
+        return tuple(x, y, z);
+      };
+      return out;
+    };
     const e = engine();
-    const f = e.compile(this.$fn);
+    const f = e.compile(this.$fn[0]);
     if (!(f instanceof Fn)) {
       return this;
     }
@@ -3013,13 +2927,710 @@ export class Plot3D {
       }
       return tuple(x, y, z);
     };
+    for (let i = 0; i < this.$fn.length; i++) {
+      const zFnString = this.$fn[i];
+      const zFnCompiled = makeZFn(zFnString);
+      this.$zFunctions.push(zFnCompiled);
+    }
     this.$z = out;
     return this;
   }
 }
 
-export function plot3D(zfn: string) {
+export function plot3D(zfn: string[] | string) {
+  if (typeof zfn === "string") {
+    zfn = [zfn];
+  }
   return new Plot3D(zfn);
+}
+
+class TNode {
+  $thread: TreeChild | null = null;
+  $parent: Fork | null = null;
+  $children: TreeChild[] = [];
+  $index: number = 0;
+  $change: number = 0;
+  $shift: number = 0;
+  $leftMostSibling: TreeChild | null = null;
+  $name: string | number;
+  $dx: number = 0;
+  $dy: number = 0;
+  $id: string | number = uid(10);
+  $commands: PathCommand[] = [];
+  get $x() {
+    return this.$commands[0].$end.$x;
+  }
+  get $y() {
+    return this.$commands[0].$end.$y;
+  }
+  get $z() {
+    return this.$commands[0].$end.$z;
+  }
+  set $x(x: number) {
+    this.$commands = [PathCommand.M(x, this.$y, this.$z)];
+  }
+  set $y(y: number) {
+    this.$commands = [PathCommand.M(this.$x, y, this.$z)];
+  }
+  set $z(z: number) {
+    this.$commands = [PathCommand.M(this.$x, this.$y, z)];
+  }
+  constructor(name: string | number, parent?: Fork) {
+    this.$name = name;
+    this.$parent = parent !== undefined ? parent : null;
+    this.$commands = [PathCommand.M(0, 0, 1)];
+  }
+  sketch(depth: number = 0) {
+    this.$x = -1;
+    this.$y = depth;
+    this.$dx = 0;
+    this.$change = 0;
+    this.$shift = 0;
+    this.$thread = null;
+    this.$leftMostSibling = null;
+  }
+  left(): TreeChild | null {
+    if (this.$thread) {
+      return this.$thread;
+    } else if (this.$children.length) {
+      return this.$children[0];
+    } else {
+      return null;
+    }
+  }
+  right(): TreeChild | null {
+    if (this.$thread) {
+      return this.$thread;
+    } else if (this.$children.length) {
+      return this.$children[this.$children.length - 1];
+    } else {
+      return null;
+    }
+  }
+  get $degree() {
+    return this.$children.length;
+  }
+  get $hasNoChildren() {
+    return this.$degree === 0;
+  }
+  get $hasChildren() {
+    return !this.$hasNoChildren;
+  }
+  hasChild(id: string | number) {
+    if (this.$hasNoChildren) return false;
+    for (let i = 0; i < this.$degree; i++) {
+      const child = this.$children[i];
+      if (child.$id === id) {
+        return true;
+      }
+    }
+    return false;
+  }
+}
+
+class Leaf extends TNode {
+  $ancestor: TreeChild;
+  constructor(name: string | number, parent?: Fork) {
+    super(name, parent);
+    this.$x = -1;
+    this.$ancestor = this;
+  }
+  get $height() {
+    return 1;
+  }
+  onLastChild(fn: (node: TreeChild) => void) {
+    return this;
+  }
+  onFirstChild(fn: (node: TreeChild) => void) {
+    return this;
+  }
+  nodes(nodes: TreeChild[]) {
+    return this;
+  }
+  child(child: TreeChild) {
+    return this;
+  }
+  inorder(f: (node: TreeChild, index: number) => void) {
+    return this;
+  }
+  preorder(f: (node: TreeChild, index: number) => void) {
+    return this;
+  }
+  postorder(f: (node: TreeChild, index: number) => void) {
+    return this;
+  }
+  bfs(f: (node: TreeChild, level: number) => void) {
+    return this;
+  }
+
+  childOf(parent: Fork) {
+    this.$parent = parent;
+    this.$ancestor = parent.$ancestor;
+    return this;
+  }
+}
+
+export function leaf(name: string | number) {
+  return new Leaf(name);
+}
+
+class Fork extends TNode {
+  $ancestor: TreeChild;
+  childOf(parent: Fork) {
+    this.$parent = parent;
+    this.$ancestor = parent.$ancestor;
+    return this;
+  }
+  get $height() {
+    let height = -Infinity;
+    this.$children.forEach((c) => {
+      const h = c.$height;
+      if (h > height) height = h;
+    });
+    return height + 1;
+  }
+  nodes(nodes: TreeChild[]) {
+    nodes.forEach((node) => {
+      node.$index = this.$degree;
+      this.$children.push(node.childOf(this));
+    });
+    return this;
+  }
+  onLastChild(callback: (node: TreeChild) => void) {
+    const c = this.$children[this.$children.length - 1];
+    if (c) callback(c);
+    return this;
+  }
+  onFirstChild(callback: (node: TreeChild) => void) {
+    const c = this.$children[0];
+    if (c) callback(c);
+    return this;
+  }
+  child(child: TreeChild) {
+    this.$children.push(child.childOf(this));
+    return this;
+  }
+  inorder(f: (node: TreeChild, index: number) => void) {
+    let i = 0;
+    const t = (tree: TreeChild) => {
+      const [left, right] = arraySplit(tree.$children);
+      left.length && left.forEach((c) => t(c));
+      f(tree, i++);
+      right.length && right.forEach((c) => t(c));
+    };
+    t(this);
+    return this;
+  }
+  preorder(f: (node: TreeChild, index: number) => void) {
+    let i = 0;
+    const t = (tree: TreeChild) => {
+      const [left, right] = arraySplit(tree.$children);
+      f(tree, i++);
+      left.length && left.forEach((c) => t(c));
+      right.length && right.forEach((c) => t(c));
+    };
+    t(this);
+    return this;
+  }
+  postorder(f: (node: TreeChild, index: number) => void) {
+    let i = 0;
+    const t = (tree: TreeChild) => {
+      const [left, right] = arraySplit(tree.$children);
+      left.length && left.forEach((c) => t(c));
+      right.length && right.forEach((c) => t(c));
+      f(tree, i++);
+    };
+    t(this);
+    return this;
+  }
+  bfs(f: (node: TreeChild, level: number) => void) {
+    const queue = linkedList<TreeChild>(this);
+    let count = queue.length;
+    let level = 0;
+    while (queue.length > 0) {
+      const tree = queue.shift();
+      count--;
+      if (tree._tag === "None") continue;
+      f(tree.value, level);
+      tree.value.$children.forEach((c) => queue.push(c));
+      if (count === 0) {
+        level++;
+        count = queue.length;
+      }
+    }
+    queue.clear();
+    return this;
+  }
+  constructor(name: string | number) {
+    super(name);
+    this.$ancestor = this;
+  }
+}
+
+function isLeaf(x: any): x is Leaf {
+  return x instanceof Leaf;
+}
+
+export function subtree(name: string | number) {
+  return new Fork(name);
+}
+
+type TreeChild = Leaf | Fork;
+
+type TreeLayout =
+  | "knuth"
+  | "wetherell-shannon"
+  | "buccheim-unger-leipert"
+  | "hv"
+  | "reingold-tilford";
+
+type Traversal = "preorder" | "inorder" | "postorder" | "bfs";
+
+type LinkFunction = (line: LineObj, source: TNode, target: TNode) => LineObj;
+
+class TreeObj extends GroupObj {
+  $tree: Fork;
+  private lay() {
+    // deno-fmt-ignore
+    switch (this.$layout) {
+      case "buccheim-unger-leipert":
+        return this.buccheim();
+      case "hv":
+        return this.HV();
+      case "knuth":
+        return this.knuth();
+      case "reingold-tilford":
+        return this.reingoldTilford();
+      case "wetherell-shannon":
+        return this.wetherellShannon();
+    }
+  }
+  $nodeRadius: number = 10;
+  $nodeFill: string = 'white';
+  done() {
+    this.lay();
+    this.$tree.bfs((node) => {
+      const p = node.$parent;
+      if (p) {
+        const l = line([p.$x, p.$y], [node.$x, node.$y]);
+        this.$children.push(l);
+      }
+    });
+    const nodes: GraphicsAtom[] = [];
+    const labels: TextObj[] = [];
+    this.$tree.bfs((node) => {
+      const x = node.$x;
+      const y = node.$y;
+      const c = circle(this.$nodeRadius, [x, y])
+        .fill(this.$nodeFill)
+      nodes.push(c);
+      let t = text(node.$name)
+        .position(x, y)
+        .textAnchor("middle")
+        .dy(this.$nodeRadius*2.2);
+      labels.push(t);
+    });
+    nodes.forEach((c) => this.$children.push(c));
+    labels.forEach((t) => this.$children.push(t));
+    return this;
+  }
+  constructor(tree: Fork) {
+    super([]);
+    this.$tree = tree;
+  }
+  $layout: TreeLayout = "knuth";
+  layout(option: TreeLayout) {
+    this.$layout = option;
+    return this;
+  }
+  private $edgenotes: Partial<Record<Traversal, LinkFunction>> = {};
+  edges(of: Traversal, callback: LinkFunction) {
+    this.$edgenotes[of] = callback;
+    return this;
+  }
+  nodes(nodes: TreeChild[]) {
+    nodes.forEach((n) => this.$tree.child(n));
+    return this;
+  }
+  private HV() {
+    const largerToRight = (parent: TreeChild) => {
+      const left = parent.left();
+      const right = parent.right();
+      if (left === null || right === null) return;
+      const sh = 2;
+      if (isLeaf(left) && isLeaf(right)) {
+        right.$x = parent.$x + 1;
+        right.$y = parent.$y;
+        left.$x = parent.$x;
+        left.$y = parent.$y - sh;
+        parent.$dx = 1;
+      } else {
+        const L = left.$degree;
+        const R = right.$degree;
+        if (L >= R) {
+          left.$x = parent.$x + R + 1;
+          left.$y = parent.$y;
+          right.$x = parent.$x;
+          right.$y = parent.$y - 2;
+          parent.$dx += left.$x;
+        } else if (L < R) {
+          right.$x = parent.$x + L + 1;
+          right.$y = parent.$y;
+          left.$x = parent.$x;
+          left.$y = parent.$y - sh;
+          parent.$dx += right.$x;
+        }
+      }
+      parent.$children.forEach((c) => largerToRight(c));
+    };
+    const xmin = this.$xMin;
+    const ymax = this.$yMax;
+    this.$tree.$x = xmin;
+    this.$tree.$y = ymax;
+    largerToRight(this.$tree);
+    return this;
+  }
+  private buccheim() {
+    const leftBrother = (self: TreeChild) => {
+      let n = null;
+      if (self.$parent) {
+        for (const node of self.$parent.$children) {
+          if (node.$id === self.$id) return n;
+          else n = node;
+        }
+      }
+      return n;
+    };
+    const get_lmost_sibling = (self: TreeChild) => {
+      if (
+        !self.$leftMostSibling &&
+        self.$parent &&
+        self.$id !== self.$parent.$children[0].$id
+      ) {
+        self.$leftMostSibling = self.$parent.$children[0];
+        return self.$parent.$children[0];
+      }
+      return self.$leftMostSibling;
+    };
+    const movesubtree = (wl: TreeChild, wr: TreeChild, shift: number) => {
+      const st = wr.$index - wl.$index;
+      wr.$change -= shift / st;
+      wr.$shift += shift;
+      wl.$change += shift / st;
+      wr.$x += shift;
+      wr.$dx += shift;
+    };
+    const ancestor = (
+      vil: TreeChild,
+      v: TreeChild,
+      default_ancestor: TreeChild
+    ) => {
+      if (v.$parent && v.$parent.hasChild(vil.$id)) {
+        return vil.$ancestor;
+      }
+      return default_ancestor;
+    };
+    const apportion = (
+      v: TreeChild,
+      default_ancestor: TreeChild,
+      distance: number
+    ) => {
+      const w = leftBrother(v);
+      let vol = get_lmost_sibling(v);
+      if (w !== null && vol !== null) {
+        let vir = v;
+        let vor = v;
+        let vil = w;
+        let sir = v.$dx;
+        let sor = v.$dx;
+        let sil = vil.$dx;
+        let sol = vol.$dx;
+        let VIL: TreeChild | null = vil;
+        let VIR: TreeChild | null = vir;
+        let VOL: TreeChild | null = vol;
+        let VOR: TreeChild | null = vor;
+        while (VIL?.right() && VIR?.left()) {
+          VIL = vil.right();
+          if (VIL) vil = VIL;
+          VIR = vir.left();
+          if (VIR) vir = VIR;
+          VOL = vol.left();
+          if (VOL) vol = VOL;
+          VOR = vor.right();
+          if (VOR) {
+            vor = VOR;
+            // @ts-ignore
+            vor._ancestor = v;
+          }
+          let shift = vil.$x + sil - (vir.$x + sir) + distance;
+          if (shift > 0) {
+            let a = ancestor(vil, v, default_ancestor);
+            movesubtree(a, v, shift);
+            sir = sir + shift;
+            sor = sor + shift;
+          }
+          sil += vil.$dx;
+          sir += vir.$dx;
+          sol += vol.$dx;
+          sor += vor.$dx;
+        }
+        if (vil.right() && !vor.right()) {
+          vor.$thread = vil.right();
+          vor.$dx += sil - sor;
+        } else {
+          if (vir.left() && !vol.left()) {
+            vol.$thread = vir.left();
+            vol.$dx += sir - sol;
+          }
+          default_ancestor = v;
+        }
+      }
+      return default_ancestor;
+    };
+    const execShifts = (v: TreeChild) => {
+      let shift = 0;
+      let change = 0;
+      for (const w of v.$children) {
+        w.$x += shift;
+        w.$dx += shift;
+        change += w.$change;
+        shift += w.$shift + change;
+      }
+    };
+    const firstwalk = (v: TreeChild, distance: number = 1) => {
+      if (v.$children.length === 0) {
+        if (v.$leftMostSibling) {
+          const lb = leftBrother(v);
+          if (lb) v.$x = lb.$x + distance;
+        } else v.$x = 0;
+      } else {
+        let default_ancestor = v.$children[0];
+        for (const w of v.$children) {
+          firstwalk(w);
+          default_ancestor = apportion(w, default_ancestor, distance);
+        }
+        execShifts(v);
+        const L = v.$children[0];
+        const R = v.$children[v.$children.length - 1];
+        let midpoint = (L.$x + R.$x) / 2;
+        const w = leftBrother(v);
+        if (w) {
+          v.$x = w.$x + distance;
+          v.$dx = v.$x - midpoint;
+        } else {
+          v.$x = midpoint;
+        }
+      }
+      return v;
+    };
+    const secondwalk = (
+      v: TreeChild,
+      m: number = 0,
+      depth: number = 0,
+      min: number | null = null
+    ): number => {
+      v.$x += m;
+      v.$y = -depth;
+      if (min === null || v.$x < min) {
+        min = v.$x;
+      }
+      for (const w of v.$children) {
+        min = secondwalk(w, m + v.$dx, depth + 1, min);
+      }
+      return min;
+    };
+    const thirdwalk = (tree: TreeChild, n: number) => {
+      tree.$x += n;
+      for (const w of tree.$children) {
+        thirdwalk(w, n);
+      }
+    };
+    const buccheim = () => {
+      this.$tree.sketch();
+      firstwalk(this.$tree);
+      const min = secondwalk(this.$tree);
+      if (min < 0) {
+        thirdwalk(this.$tree, -min);
+      }
+    };
+    buccheim();
+    buccheim();
+    const x = this.$tree.$x;
+    const y = this.$tree.$height / 2;
+    this.$tree.bfs((n) => {
+      n.$x -= x;
+      n.$y += y;
+    });
+    return this;
+  }
+  private knuth() {
+    this.$tree.bfs((node, level) => {
+      const y = 0 - level;
+      node.$y = y;
+    });
+    this.$tree.inorder((node, index) => {
+      node.$x = index;
+    });
+    const x = this.$tree.$x;
+    this.$tree.bfs((node) => {
+      node.$x -= x;
+    });
+    return this;
+  }
+  private reingoldTilford() {
+    const contour = (
+      left: TreeChild,
+      right: TreeChild,
+      max_offset: number | null = null,
+      left_offset: number = 0,
+      right_offset: number = 0,
+      left_outer: TreeChild | null = null,
+      right_outer: TreeChild | null = null
+    ): [
+      TreeChild | null,
+      TreeChild | null,
+      number,
+      number,
+      number,
+      TreeChild,
+      TreeChild
+    ] => {
+      let delta = left.$x + left_offset - (right.$x + right_offset);
+      if (max_offset === null || delta > max_offset) {
+        max_offset = delta;
+      }
+      if (left_outer === null) left_outer = left;
+      if (right_outer === null) right_outer = right;
+      let lo = left_outer.left();
+      let li = left.right();
+      let ri = right.left();
+      let ro = right_outer.right();
+      if (li && ri) {
+        left_offset += left.$dx;
+        right_offset += right.$dx;
+        return contour(li, ri, max_offset, left_offset, right_offset, lo, ro);
+      }
+      const out = tuple(
+        li,
+        ri,
+        max_offset,
+        left_offset,
+        right_offset,
+        left_outer,
+        right_outer
+      );
+      return out;
+    };
+    const fixSubtrees = (left: TreeChild, right: TreeChild) => {
+      let [li, ri, diff, loffset, roffset, lo, ro] = contour(left, right);
+      diff += 1;
+      diff += (right.$x + diff + left.$x) % 2;
+      right.$dx = diff;
+      right.$x += diff;
+      if (right.$children.length) {
+        roffset += diff;
+      }
+      if (ri && !li) {
+        lo.$thread = ri;
+        lo.$dx = roffset - loffset;
+      } else if (li && !ri) {
+        ro.$thread = li;
+        ro.$dx = loffset - roffset;
+      }
+      const out = Math.floor((left.$x + right.$x) / 2);
+      return out;
+    };
+    const addmods = (tree: TreeChild, mod: number = 0) => {
+      tree.$x += mod;
+      tree.$children.forEach((c) => addmods(c, mod + tree.$dx));
+      return tree;
+    };
+    const setup = (tree: TreeChild, depth: number = 0) => {
+      tree.sketch(-depth);
+      if (tree.$children.length === 0) {
+        tree.$x = 0;
+        return tree;
+      }
+      if (tree.$children.length === 1) {
+        tree.$x = setup(tree.$children[0], depth + 1).$x;
+        return tree;
+      }
+      const left = setup(tree.$children[0], depth + 1);
+      const right = setup(tree.$children[1], depth + 1);
+      tree.$x = fixSubtrees(left, right);
+      return tree;
+    };
+    setup(this.$tree);
+    addmods(this.$tree);
+    const x = this.$tree.$x;
+    const y = this.$tree.$height / 2;
+    this.$tree.bfs((n) => {
+      n.$x -= x;
+      n.$y += y;
+    });
+    return this;
+  }
+  private wetherellShannon() {
+    const lay = (
+      tree: TreeChild,
+      depth: number,
+      nexts: number[] = [0],
+      offsets: number[] = [0]
+    ) => {
+      tree.$children.forEach((c) => {
+        lay(c, depth + 1, nexts, offsets);
+      });
+      tree.$y = -depth;
+      if (isNothing(nexts[depth])) {
+        nexts[depth] = 0;
+      }
+      if (isNothing(offsets[depth])) {
+        offsets[depth] = 0;
+      }
+      let x = nexts[depth];
+      if (tree.$degree === 0) {
+        x = nexts[depth];
+      } else if (tree.$degree === 1) {
+        x = tree.$children[0].$x + 1;
+      } else {
+        let lx = 0;
+        tree.onFirstChild((n) => {
+          lx = n.$x;
+        });
+        let rx = 0;
+        tree.onLastChild((n) => {
+          rx = n.$x;
+        });
+        const xpos = lx + rx;
+        x = xpos / 2;
+      }
+      offsets[depth] = max(offsets[depth], nexts[depth] - x);
+      if (tree.$degree === 0) {
+        const d = x + offsets[depth];
+        tree.$x = d;
+      } else {
+        tree.$x = x;
+      }
+      nexts[depth] += 2;
+      tree.$dx = offsets[depth];
+    };
+    const addDxs = (tree: TreeChild, sum: number = 0) => {
+      tree.$x = tree.$x + sum;
+      sum += tree.$dx;
+      tree.$children.forEach((c) => addDxs(c, sum));
+    };
+    lay(this.$tree, 0);
+    addDxs(this.$tree);
+    const x = this.$tree.$x;
+    this.$tree.bfs((n) => {
+      n.$x -= x;
+    });
+    return this;
+  }
+}
+
+export function tree(t: Fork) {
+  return new TreeObj(t);
 }
 
 /** A value native to Winnow. */

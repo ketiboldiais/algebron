@@ -83,6 +83,144 @@ The point where these lines intersect is a solution to the system. In this case,
 
 <LA5/>
 
+We can represent a system of linear equations with matrices. We place the coefficients ${a_{i,j}}$ into vectors,
+
+$$
+    \begin{bmatrix}
+    a_{1,1} \\ \vdots \\ a_{m,1}
+    \end{bmatrix}
+    x_1 
+    +
+    \begin{bmatrix}
+    a_{1,2} \\ \vdots \\ a_{m,2}
+    \end{bmatrix}
+    x_2 
+    + 
+    \ldots
+    +
+    \begin{bmatrix}
+    a_{1,n} \\ \vdots \\ a_{m,n}
+    \end{bmatrix}
+    x_n 
+    =
+    \begin{bmatrix}
+    b_1 \\ \vdots \\ b_m
+    \end{bmatrix},
+$$
+
+then place the vectors into matrices
+
+$$
+    \begin{aligned}
+    \begin{bmatrix}
+    a_{1,1} &\ldots &a_{1,n} \\
+    \vdots   &~     \vdots &\vdots \\
+    a_{m,1} &\ldots &a_{m,n}
+    \end{bmatrix}
+    \end{aligned}
+
+    \begin{bmatrix}
+    x_1 \\ \vdots \\ x_n
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+    b_1 \\ \vdots \\ b_m
+    \end{bmatrix}.
+$$
+
+## Matrices
+A matrix can be thought of as an array of arrays. They allow us to compactly represent a system of linear equations. 
+
+> __Definition.__ Let ${m,n \in \N.}$ A real-valued ${(m,n)}$ matrix ${\bold{A}}$
+> is an ${m \cdot n}$ tuple of elements ${a_{i,j},}$ ${i = 1, \ldots, m,}$ ${j =
+> 1, \ldots, n.}$ This tuple is ordered as a rectangle of ${m}$ rows and ${n}$
+> columns:
+> 
+> $$
+>     \bold{A} = 
+>     \begin{bmatrix}
+>     a_{1,1} & a_{1,2} & \ldots & a_{1,n} \\
+>     a_{2,1} & a_{2,2} & \ldots & a_{2,n} \\
+>     \vdots  & \vdots  & \vdots & \vdots \\
+>     a_{m,1} & a_{m,2} & \ldots & a_{m,n} 
+>     \end{bmatrix},
+>     ~~ a_{i,j} \in \R.
+> $$
+> We call ${i}$ the _row index_, and ${j}$ the _column index_.
+
+Some additional terminology: A ${(1,n)}$ matrix is called a __row vector__, and a ${(m,1)}$ matrix is called a __column vector__.
+
+__*example*__. In programming, we can represent a row vector with a simple array:
+
+~~~ts
+let R = [1,2,3,4]
+~~~
+
+__*example*__. A matrix would be an array of arrays:
+
+~~~ts
+let M = [
+  [1,2,3],
+  [4,5,6],
+  [7,8,9],
+]
+~~~
+
+__*example*__. A column vector would be an array of one-element arrays: 
+
+~~~ts
+let C = [[1],[2],[3]]
+~~~
+
+### Matrix Addition
+To add two matrices, we add each element of one matrix to the corresponding element (the element of the same indices) in the other matrix (element-wise sum).
+
+__Definition.__ Let ${\bold{A} \in \R^{m \times n},}$ and let ${\bold{B} \in \R^{m \times n}.}$ Then the sum ${\bold{A} + \bold{B}}$ is defined as:
+
+$$
+    \bold{A} + \bold{B} := 
+    \begin{bmatrix}
+    a_{1,1} + b_{1,1} & \ldots & a_{1,n} + b_{1,n} \\
+    \vdots & \vdots & \vdots \\
+    a_{m,1} + b_{m,1} & \ldots & a_{m,n} + b_{m,n}
+    \end{bmatrix}
+    \in
+    \reals^{m \times n}.
+$$
+
+__*example*__. 
+
+$$
+\begin{aligned}
+    \begin{bmatrix}
+    3 & 0 & 3 \\
+    5 & 7 & 4 \\
+    2 & 1 & 8
+    \end{bmatrix}
+    +
+    \begin{bmatrix}
+    1 & 2 & 5 \\
+    4 & 1 & 4 \\
+    3 & 0 & 1
+    \end{bmatrix}
+    &=
+    \begin{bmatrix}
+    3 + 1 & 0 + 2 & 3 + 5 \\
+    5 + 4 & 7 + 1 & 4 + 4 \\
+    2 + 3 & 1 + 0 & 8 + 1
+    \end{bmatrix} \\
+    &=
+    \begin{bmatrix}
+    4 & 2 & 8 \\
+    9 & 8 & 8 \\
+    5 & 1 & 9
+    \end{bmatrix}
+\end{aligned}.
+$$
+
+
+
+
 export default function MDXPage({ children }) {
     return <MdxLayout>{children}</MdxLayout>
 }

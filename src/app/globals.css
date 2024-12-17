@@ -34,33 +34,34 @@
 }
 
 html {
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .katex {
-  font-size: 1.1rem;
+  font-size: 1rem;
+  overflow-y: hidden;
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
   font-family: "tp";
-  /* font-family: KaTeX_main; */
-  padding: 5vw;
+  padding: 1vh 5vw;
 }
 
 pre,
 code {
   font-family: KaTeX_typewriter;
-  font-size: 14px;
+  font-size: 0.93rem;
 }
+
 textarea {
   width: 100%;
 }
 
 pre {
-  padding: 1rem;
-  border-radius: 0.5em;
+  padding: 0.8rem;
+  border-radius: 0.2em;
   overflow-x: scroll;
   background-color: rgb(42, 50, 57);
   color: white;
@@ -97,7 +98,7 @@ h6 + p {
 
 h1 {
   text-align: center;
-  margin-bottom: 10vh;
+  margin-bottom: 5vh;
   margin-top: 5vh;
 }
 
@@ -134,7 +135,7 @@ h3,
 h4,
 h5,
 h6 {
-  margin-top: 4vh;
+  margin-top: 5vh;
 }
 
 a {
@@ -144,16 +145,14 @@ a {
   text-decoration: none;
 }
 .postlink p,
-h2 {
-  margin: 0;
-}
+
 .postlink {
   height: fit-content;
 }
 
 blockquote {
   padding: 0 0 0 1em;
-  width: 80%;
+  width: 93%;
   border-left: solid 2px rgb(188, 188, 188);
   margin: auto;
 }
@@ -187,6 +186,7 @@ ol {
 article {
   width: clamp(300px, 70%, 600px);
   margin: 0 auto;
+  margin-bottom: 50vh;
 }
 
 footer {
@@ -195,3 +195,14 @@ footer {
   margin: 3vh auto;
   color: lightgray;
 } 
+
+figure {
+  width: 100%;
+  margin: 5px;
+}
+
+strong em {
+  font-variant: small-caps;
+  font-weight: bold;
+  font-style: normal;
+}
