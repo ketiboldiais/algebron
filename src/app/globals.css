@@ -217,6 +217,9 @@ aside {
 aside p {
   margin: 1vh 0;
 }
+li p {
+  margin: 0;
+}
 /* Wide viewport */
 @media (min-width: 1000px) {
   aside {

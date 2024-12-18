@@ -58,6 +58,36 @@ __*example*__. ${x^2 - 9 = (x - 3)(x + 3).}$
 
 __*example*__. ${\dfrac{x^2}{x} = x.}$
 
+## Number Sets
+For the purposes of calculus, it suffices to give informal definitions of numbers. 
+
+<aside>
+Thorough definitions of the naturals and integers are typically presented in a set theory course; the rationals, irrationals, and reals in a real analysis course; and the complex numbers in a linear algebra course.
+</aside>
+
+> __Definition (informal): Real Numbers.__ A real number is any number that can be expressed in decimal form. We denote the set of real numbers with the symbol ${\reals.}$
+
+The real numbers can be represented as points on a _number line_. A fundamental fact: There is a one-to-one correspondence between the set of real numbers and the set of points on a line. For each given point, the real number associated with that point is called the point's __coordinate__.
+
+![Real Line](https://res.cloudinary.com/sublimis/image/upload/v1653361169/math/number_line_rbz14e.svg)
+
+The naturals are the most basic numbers. These are the numbers we use for counting. 
+
+> __Definition (informal): Natural Numbers.__ A natural number is any number of the set ${\{ 0, 1, 2, 3, \ldots \}.}$ We denote this set with the symbol ${\N.}$
+
+The naturals with the negative numbers comprise the set of integers.
+
+> __Definition (informal): Integers.__ An integer is any number of the set ${\{ \ldots, -2, -1, 0, 1, 2, \ldots \}.}$ We denote this set with the symbol ${\Z.}$
+
+As its name suggests, a rational number is any number that can be written as the ratio of two integers.
+
+> __Definition (informal): Rational Numbers.__ Let ${a \in \Z}$ and let ${b \in \Z.}$ Then a rational number is any number of the form ${a/b.}$ We denote the set of all such numbers with the symbol ${\mathbb{Q}.}$
+
+Any number that does not satisfy the definition of rational numbers is called an irrational number.
+
+> __Definition (informal): Irrational Numbers.__ Let ${x}$ be some number. If ${x \notin \mathbb{Q},}$ then ${x}$ is an irrational number.
+
+Examples of irrational numbers include ${\sqrt{2},}$ ${\pi,}$ and Euler's number ${e.}$ None of these numbers can be written as a ratio of integers.
 
 export default function MDXPage({ children }) {
     return <MdxLayout>{children}</MdxLayout>

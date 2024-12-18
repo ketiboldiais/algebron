@@ -42,6 +42,86 @@ A vector is a mathematical object that can be added to another vector or multipl
     <LA4/>
 
 4. __Tuples.__ More abstractly, elements of ${\reals^n}$ (tuples, or arrays, of ${n}$ real numbers) are vectors. 
+
+## Real Vectors
+For now, we'll focus only on vectors in ${\reals^n.}$ That is, vectors with ${n}$ components, all of which are real numbers.  
+
+> __Definition: Real Zero Vector__. The zero vector in ${\reals^n}$ is the vector ${\bold{0}^n,}$ whose components are all zero.
+>
+> $$
+>    \bold{0}^n = \begin{bmatrix}
+>    0_1 \\
+>    0_2 \\
+>    \vdots \\
+>    0_n
+>     \end{bmatrix}.
+> $$
+
+The zero vector is special for a few reasons:
+
+1. Given a vector ${\bold{v} \in \reals^n,}$ adding the zero vector ${\bold{0}^n}$ will always return ${\bold{v}.}$ Because of this result, we call the zero vector ${\bold{0}^n}$ the __additive identity__ of ${\reals^n.}$
+2. The zero vector is the only vector with a magnitude of zero.
+3. The zero vector is the only vector with no direction.
+
+### Scalar Multiplication
+Scalar multiplication is straightforward: We multiply each component of the vector by the given scalar ${k.}$ Geometrically (in ${\reals^2}$ or ${\reals^3}$), if ${k \gt 0,}$ this has the effect of making the vector shorter or longer. 
+
+> __Definition: Scalar Multiplication.__ Let ${\bold{v}}$ be a vector in ${\reals^n,}$ and let ${k \in \reals}$ be a scalar. Then:
+>
+> $$
+>     k \bold{v} = \begin{bmatrix}
+>     k\bold{v}_1 \\
+>     k\bold{v}_2 \\
+>     \vdots \\
+>     k\bold{v}_n
+>     \end{bmatrix}.
+> $$
+
+__*example*__. 
+
+$$
+    3 \begin{bmatrix}
+    5 \\
+    8 \\
+    7
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+    3 \times 5 \\
+    3 \times 8 \\
+    3 \times 7
+    \end{bmatrix}
+    = 
+    \begin{bmatrix}
+    15 \\
+    24 \\
+    21
+    \end{bmatrix}.
+$$
+
+Since ${k}$ can be any real number, scalar multiplication's definition implies that we can negate a vector and perform element-wise division.
+
+> __Definition: Vector Negation.__ Given a vector ${\bold{v},}$ the negation of ${\bold{v},}$ denoted ${-\bold{v},}$ is:
+> 
+> $$
+>     -\bold{v} = \begin{bmatrix}
+>     -1 \times \bold{v}_1 \\
+>     -1 \times \bold{v}_2 \\
+>     \vdots \\
+>     -1 \times \bold{v}_n
+>     \end{bmatrix}
+>     = 
+>     \begin{bmatrix}
+>     -\bold{v}_1 \\
+>     -\bold{v}_2 \\
+>     \vdots \\
+>     -\bold{v}_n
+>     \end{bmatrix}
+>     .
+> $$
+
+Geometrically, negating a vector ${\bold{v}}$ "switches" its direction.
+
     
 ## Systems of Linear Equations
 Many problems in mathematics can be reduced to systems of linear equations. Linear algebra provides us the tools for solving these systems.
