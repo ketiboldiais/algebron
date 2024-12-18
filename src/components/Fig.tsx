@@ -501,15 +501,19 @@ export function TreeTest() {
           leaf("f"),
           subtree("g").nodes([
             subtree("h").nodes([leaf("j"), leaf("k")]),
-            leaf("i"),
+            leaf("o"),
           ]),
         ]),
       ])
     )
-      .layout("reingold-tilford")
+      .nodeRadius(5)
+      .layout('reingold-tilford')
       .done(),
-  ]).done();
-  return <Fig d={d}/>;
+  ])
+    .domain([-10,10])
+    .range([-10,10])
+    .done();
+  return <Fig d={d} />;
 }
 
 export const PlotTest = () => {
@@ -533,5 +537,5 @@ export const PlotTest = () => {
     .domain(D)
     .range(R)
     .done();
-  return <Fig d={d}/>;
+  return <Fig d={d} />;
 };

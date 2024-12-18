@@ -44,7 +44,7 @@ export function treestring<T extends object>(
       line += prefix(key, last) + key.toString();
       if (typeof root !== "object") line += ": " + root;
       if (circ) {
-        (line += " (circular ref.)");
+        line += " (circular ref.)";
       }
       cb(line);
     }
@@ -3205,6 +3205,10 @@ class TreeObj extends GroupObj {
     }
   }
   $nodeRadius: number = 10;
+  nodeRadius(value: number) {
+    this.$nodeRadius = value;
+    return this;
+  }
   $nodeFill: string = "white";
   done() {
     this.lay();
@@ -3311,10 +3315,10 @@ class TreeObj extends GroupObj {
       return self.$leftMostSibling;
     };
     const movesubtree = (wl: TreeChild, wr: TreeChild, shift: number) => {
-      const st = wr.$index - wl.$index;
-      wr.$change -= shift / st;
+      const subtrees = wr.$index - wl.$index;
+      wr.$change -= shift / subtrees;
       wr.$shift += shift;
-      wl.$change += shift / st;
+      wl.$change += shift / subtrees;
       wr.$x += shift;
       wr.$dx += shift;
     };
@@ -3453,10 +3457,10 @@ class TreeObj extends GroupObj {
     buccheim();
     buccheim();
     const x = this.$tree.$x;
-    const y = this.$tree.$height / 2;
+    // const y = this.$tree.$height;
     this.$tree.bfs((n) => {
       n.$x -= x;
-      n.$y += y;
+      // n.$y += y;
     });
     return this;
   }

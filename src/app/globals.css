@@ -206,3 +206,26 @@ strong em {
   font-weight: bold;
   font-style: normal;
 }
+
+aside {
+  color: #209797;
+  font-size: 85%;
+  position: relative;
+  border-top: solid thin #88c6c6;
+  border-bottom: solid thin #88c6c6;
+}
+aside p {
+  margin: 1vh 0;
+}
+/* Wide viewport */
+@media (min-width: 1000px) {
+  aside {
+      float: left;
+      clear: left;
+      margin-left: -17vw;
+      text-align: right;
+      top: -3rem;
+      width: 15vw;
+      margin-top: 1rem;
+  }
+}

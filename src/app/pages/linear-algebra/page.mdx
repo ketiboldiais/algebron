@@ -218,8 +218,167 @@ $$
 \end{aligned}.
 $$
 
+### Matrix Multiplication
+There are three forms of matrix multiplication: __scalar multiplication__, the __Hadamard product__, and the __row-column dot product__.
 
+#### Hadamard Product
+The Hadamard product is simply element-wise multiplication. 
 
+__Definition.__ Let ${\bold{A} \in \R^{m \times n},}$ and let ${\bold{B} \in \R^{m \times n}.}$ Then the Hadamard product ${\bold{A} \odot \bold{B}}$ is defined as:
+
+$$
+    \bold{A} \odot \bold{B} := 
+    \begin{bmatrix}
+    a_{1,1}b_{1,1} & \ldots & a_{1,n}b_{1,n} \\
+    \vdots & \vdots & \vdots \\
+    a_{m,1}b_{m,1} & \ldots & a_{m,n}b_{m,n}
+    \end{bmatrix}
+    \in
+    \reals^{m \times n}.
+$$
+
+Like the matrix sum, the Hadamard product is defined only if ${\bold{A}}$ and ${\bold{B}}$ have the same dimensions.
+
+<aside>
+The Hadamard product is attributed to, and named after, the French mathematician Jacques Hadamard (1865 - 1963). Hadamard was a leading contributor in the fields of number theory, complex analysis, differential geometry, and partial differential equations. Hadamard's second cousin, Lucie, was the wife of Alfred Dreyfus of the Dreyfus affair.
+</aside>
+
+__*example*__. 
+
+$$
+\begin{aligned}
+    \begin{bmatrix}
+    2 & 7 & 5 \\
+    9 & 4 & 3 \\
+    1 & 3 & 8
+    \end{bmatrix}
+    +
+    \begin{bmatrix}
+    7 & 3 & 5 \\
+    9 & 8 & 4 \\
+    1 & 6 & 3
+    \end{bmatrix}
+    &=
+    \begin{bmatrix}
+    2 \times 7 & 7 \times 3 & 5 \times 5 \\
+    9 \times 9 & 4 \times 8 & 3 \times 4 \\
+    1 \times 1 & 3 \times 6 & 8 \times 3
+    \end{bmatrix} \\
+    &=
+    \begin{bmatrix}
+    14 & 21 & 25 \\
+    81 & 32 & 12 \\
+    1 & 18 & 24
+    \end{bmatrix}
+\end{aligned}.
+$$
+
+#### Scalar Multiplication
+When we multiply a scalar to a matrix, we multiply each element of the matrix with the scalar.
+
+#### Row-Column Dot Product
+With matrix sums, we simply perform element-wise addition. Matrix multiplication, however, looks a little different:
+
+> __Definition.__ Given matrices ${\bold{A} \in \reals^{m \times n}}$ and${\bold{B} \in \reals^{n \times k},}$ the elements ${c_{i,j}}$ of the product ${\bold{C} = \bold{A}\bold{B} \in \reals^{m \times k}}$ are computed as:
+> 
+> $$
+>     c_{i,j} = \sum_{\ell = 1}^{n} a_{i,\ell} b_{i,\ell,} \\[1em]
+>     i = 1, \ldots, m \\
+>     j = 1, \ldots, k. 
+> $$
+
+That is, to compute the element ${c_{i,j},}$ multiply the ${i^{\text{th}}}$ row of ${\bold{A}}$ with the ${j^{\text{th}}}$ column of ${\bold{B}}$ and sum them. 
+
+__*example*__. To compute the row-column dot product of
+
+$$
+    \underbrace{
+    \begin{bmatrix}
+    1 & 2 & 3 \\
+    4 & 5 & 6
+    \end{bmatrix}}_{\bold{A}}
+    \cdot
+    \underbrace{
+    \begin{bmatrix}
+    7 & 8 \\
+    9 & 10 \\
+    11 & 12
+    \end{bmatrix}}_{\bold{B}},
+$$
+
+we start by computing the dot product of the first row of ${A}$ and the first column of ${B:}$ 
+
+$$
+\begin{aligned}
+    [1,2,3] \cdot [7,9,11] &= (1 \times 7) + (2 \times 9) + (3 \times 11) \\
+    &= 58.
+\end{aligned}
+$$
+
+This gives us the first row, first column entry:
+
+$$
+    \begin{bmatrix}
+    58 & ~ \\
+    ~ & ~
+    \end{bmatrix}.
+$$
+
+Next we compute the first row, second column dot product:
+
+$$
+\begin{aligned}
+    [1,2,3] \cdot [8,10,12] &= (1 \times 8) + (2 \times 10) + (3 \times 12) \\
+    &= 64.
+\end{aligned}
+$$
+
+This gives us the first row, second column entry:
+
+$$
+    \begin{bmatrix}
+    58 & 64 \\
+    ~ & ~
+    \end{bmatrix}.
+$$
+
+Now the second row, first column:
+
+$$
+\begin{aligned}
+    [4,5,6] \cdot [7,9,11] &= (4 \times 7) + (5 \times 9) + (6 \times 11) \\
+    &= 139.
+\end{aligned}
+$$
+
+Thus, we now have:
+
+$$
+\begin{bmatrix}
+58 & 64 \\
+139 & ~
+\end{bmatrix}.
+$$
+
+Finally, compute the second row, second column:
+
+$$
+\begin{aligned}
+[4,5,6] \cdot [8,10,12] &= (4 \times 8) + (5 \times 10) + (6 \times 12) \\
+&= 154.
+\end{aligned}
+$$
+
+The result:
+
+$$
+\begin{bmatrix}
+58 & 64 \\
+139 & 154
+\end{bmatrix}.
+$$
+
+Notice: Given a matrix ${\bold{A}}$ and a matrix ${\bold{B},}$ the row-column product ${\bold{A} \cdot \bold{B}}$ is defined only if the number of columns of ${\bold{A}}$ is equal to the number of rows of ${\bold{B}.}$ In general, given an ${m \times n}$ matrix ${\bold{A}}$ and an ${n \times k}$ matrix ${\bold{B},}$ ${\bold{A}\cdot\bold{B}}$ is defined only if the ${n}$s are the same. The result ${\bold{A} \cdot \bold{B}}$ is an ${m \times k}$ matrix.
 
 export default function MDXPage({ children }) {
     return <MdxLayout>{children}</MdxLayout>
