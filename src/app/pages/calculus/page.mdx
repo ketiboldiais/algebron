@@ -3,7 +3,8 @@ import MdxLayout from "@/components/mdx-layout";
 # Calculus
 
 ## Expressions
-In algebra, we use letters like ${x,}$ ${y,}$ ${n,}$ and ${m}$ to represent some object (e.g., numbers). These letters are called __variables__. When we combine these variables with mathematical operations (e.g., addition, subtraction, multiplication, etc.), we obtain an __expression__. For example, the following are all expressions:
+
+In algebra, we use letters like ${x,}$ ${y,}$ ${n,}$ and ${m}$ to represent some object (e.g., numbers). These letters are called **variables**. When we combine these variables with mathematical operations (e.g., addition, subtraction, multiplication, etc.), we obtain an **expression**. For example, the following are all expressions:
 
 $$
     a + 2 \\[1em]
@@ -19,14 +20,15 @@ $$
     \pi
 $$
 
-When we place an equal sign between two expressions, we have an equation. This is just a symbolic way of saying, "These two expressions are the same." Here is a rather famous one: 
+When we place an equal sign between two expressions, we have an equation. This is just a symbolic way of saying, "These two expressions are the same." Here is a rather famous one:
 
 $$
     a^2 + b^2 = c^2.
 $$
 
 ## The Domain of an Expression
-All mathematical expressions have a __domain__ – the set of all values for which the expression is defined. For example, in the expression ${a^2 + b^2 = c^2,}$ we assume the expression is defined for real numbers. That is, it only makes sense if we plug real numbers into the variables. It would not make sense if the domain included, say, dogs. Of course, it very well could, but we'd have to define what it means to square and add dogs: 
+
+All mathematical expressions have a **domain** – the set of all values for which the expression is defined. For example, in the expression ${a^2 + b^2 = c^2,}$ we assume the expression is defined for real numbers. That is, it only makes sense if we plug real numbers into the variables. It would not make sense if the domain included, say, dogs. Of course, it very well could, but we'd have to define what it means to square and add dogs:
 
 $$
     \text{rottweiler}^2 + \text{greyhound}^2 = \text{mastiff}^2.
@@ -34,61 +36,121 @@ $$
 
 The point is, outside the expression's domain, the expression is undefined.
 
-> __Definition.__ Given an expression ${u,}$ the notation
+> **Definition.** Given an expression ${u,}$ the notation
 >
 > $$
 >    \text{dom}(u)
 > $$
-> 
+>
 > denotes the domain of ${u.}$
 
-__*example*__. In the expression ${1/((t-1)(t-3)),}$ we define the domain to be all real numbers (${\reals}$), not including ${1}$ and not including ${-3.}$ If we let ${t = 1}$ or ${t = -3,}$ then we have a zero denominator. And as we all know, we cannot divide by zero.
+**_example_**. In the expression ${1/((t-1)(t-3)),}$ we define the domain to be all real numbers (${\reals}$), not including ${1}$ and not including ${-3.}$ If we let ${t = 1}$ or ${t = -3,}$ then we have a zero denominator. And as we all know, we cannot divide by zero.
 
 $$
     \text{dom} \left( \dfrac{1}{(t-1)(t+3)} \right) = \set{t \in \reals | t \neq 1, t \neq -3}.
 $$
 
 ## Solution Sets
-Because an expression may contain variables, an equation is true or false only if we substitute values into those variables. Until then, the equation is neither true nor false. If a value is substituted and the equation is true, we call that value the __solution__, or __root__, of the equation. The set of all roots to an equation is called the equation's __truth set__ or __solution set__. 
+
+Because an expression may contain variables, an equation is true or false only if we substitute values into those variables. Until then, the equation is neither true nor false. If a value is substituted and the equation is true, we call that value the **solution**, or **root**, of the equation. The set of all roots to an equation is called the equation's **truth set** or **solution set**.
 
 If the equation's solution set is the equation's domain, we call the equation an
-__identity__. 
+**identity**.
 
-__*example*__. ${x^2 - 9 = (x - 3)(x + 3).}$
+**_example_**. ${x^2 - 9 = (x - 3)(x + 3).}$
 
-__*example*__. ${\dfrac{x^2}{x} = x.}$
+**_example_**. ${\dfrac{x^2}{x} = x.}$
 
 ## Number Sets
-For the purposes of calculus, it suffices to give informal definitions of numbers. 
+
+For the purposes of calculus, it suffices to give informal definitions of numbers.
 
 <aside>
-Thorough definitions of the naturals and integers are typically presented in a set theory course; the rationals, irrationals, and reals in a real analysis course; and the complex numbers in a linear algebra course.
+  Thorough definitions of the naturals and integers are typically presented in a
+  set theory course; the rationals, irrationals, and reals in a real analysis
+  course; and the complex numbers in a linear algebra course.
 </aside>
 
-> __Definition (informal): Real Numbers.__ A real number is any number that can be expressed in decimal form. We denote the set of real numbers with the symbol ${\reals.}$
+> **Definition (informal): Real Numbers.** A real number is any number that can be expressed in decimal form. We denote the set of real numbers with the symbol ${\reals.}$
 
-The real numbers can be represented as points on a _number line_. A fundamental fact: There is a one-to-one correspondence between the set of real numbers and the set of points on a line. For each given point, the real number associated with that point is called the point's __coordinate__.
+The real numbers can be represented as points on a _number line_. A fundamental fact: There is a one-to-one correspondence between the set of real numbers and the set of points on a line. For each given point, the real number associated with that point is called the point's **coordinate**.
 
 ![Real Line](https://res.cloudinary.com/sublimis/image/upload/v1653361169/math/number_line_rbz14e.svg)
 
-The naturals are the most basic numbers. These are the numbers we use for counting. 
+The naturals are the most basic numbers. These are the numbers we use for counting.
 
-> __Definition (informal): Natural Numbers.__ A natural number is any number of the set ${\{ 0, 1, 2, 3, \ldots \}.}$ We denote this set with the symbol ${\N.}$
+> **Definition (informal): Natural Numbers.** A natural number is any number of the set ${\{ 0, 1, 2, 3, \ldots \}.}$ We denote this set with the symbol ${\N.}$
 
 The naturals with the negative numbers comprise the set of integers.
 
-> __Definition (informal): Integers.__ An integer is any number of the set ${\{ \ldots, -2, -1, 0, 1, 2, \ldots \}.}$ We denote this set with the symbol ${\Z.}$
+> **Definition (informal): Integers.** An integer is any number of the set ${\{ \ldots, -2, -1, 0, 1, 2, \ldots \}.}$ We denote this set with the symbol ${\Z.}$
 
 As its name suggests, a rational number is any number that can be written as the ratio of two integers.
 
-> __Definition (informal): Rational Numbers.__ Let ${a \in \Z}$ and let ${b \in \Z.}$ Then a rational number is any number of the form ${a/b.}$ We denote the set of all such numbers with the symbol ${\mathbb{Q}.}$
+> **Definition (informal): Rational Numbers.** Let ${a \in \Z}$ and let ${b \in \Z.}$ Then a rational number is any number of the form ${a/b.}$ We denote the set of all such numbers with the symbol ${\mathbb{Q}.}$
 
 Any number that does not satisfy the definition of rational numbers is called an irrational number.
 
-> __Definition (informal): Irrational Numbers.__ Let ${x}$ be some number. If ${x \notin \mathbb{Q},}$ then ${x}$ is an irrational number.
+> **Definition (informal): Irrational Numbers.** Let ${x}$ be some number. If ${x \notin \mathbb{Q},}$ then ${x}$ is an irrational number.
 
 Examples of irrational numbers include ${\sqrt{2},}$ ${\pi,}$ and Euler's number ${e.}$ None of these numbers can be written as a ratio of integers.
 
+## Relations
+
+In mathematics, a **relation** is the definition of some relationship between mathematical objects. We can relate one real to another in terms of their position on the real line. For example, viewing the real line, we can say that ${0}$ is "to the left" of ${1,}$ or, more succinctly, ${0 \lt 1.}$ We can talk about the reals in terms of their relations to other reals because of the fact that the real numbers are _ordered_: ${2}$ comes after ${1,}$ ${3}$ comes after ${2,}$ ${0}$ comes before ${1,}$ ${\pi}$ comes before ${4,}$ etc.
+
+| Notation     | Definition                               | Example                     |
+| ------------ | ---------------------------------------- | --------------------------- |
+| ${a \lt b}$  | ${a}$ is less than ${b.}$                | ${0 \lt 1.}$                |
+| ${a \leq b}$ | ${a}$ is less than or equal to ${b.}$    | ${1 \leq 1,}$ ${0 \leq 1.}$ |
+| ${a \gt b}$  | ${a}$ is greater than ${b.}$             | ${1 \gt 0.}$                |
+| ${a \geq b}$ | ${a}$ is greater than or equal to ${b.}$ | ${1 \gt 1, 1 \gt 0.}$       |
+
+## Intervals
+
+When we work with ${\reals,}$ we often want to talk about sections of the real line (or, in terms of set theory, subsets of ${\reals}$). These sections, or subsets, can be defined in terms of intervals.
+
+> **Definition.** The open interval ${(a,b)}$ consists of all reals ${x}$ such that ${a \lt x \lt b.}$ The closed interval ${[a,b]}$ consists of all reals ${x}$ such that ${a \leq x \leq b.}$ The left-inclusive interval ${[a,b)}$ consists of all reals ${x}$ such that ${a \leq x \lt b.}$ The right-inclusive interval ${(a,b]}$ consits of all reals ${x}$ such that ${a \lt x \leq b.}$
+
+In some cases, we may want talk about a subset of the reals that extends indefinitely in some direction. Such subsets are called **unbounded intervals**.
+
+| Notation              | Inequality   |
+| --------------------- | ------------ |
+| ${(a, \infty)}$       | ${x \gt a}$  |
+| ${[a, \infty)}$       | ${x \geq a}$ |
+| ${(-\infty, a)}$      | ${x \lt a}$  |
+| ${(-\infty, a]}$      | ${x \leq a}$ |
+| ${(-\infty, \infty)}$ |              |
+
+## Absolute Value
+
+For some problems, we want to think about how far a given real number ${x}$ is from ${0.}$ The operator for computing this distance is the _absolute value_.
+
+> **Definition: Absolute Value.** Given ${x \in \reals,}$ the absolute value of ${x,}$ denoted ${| x |,}$ is defined as:
+>
+> $$
+>     | x | = \begin{cases}
+>     -x & \text{if} ~ x \lt 0 \\
+>     x & \text{else}
+>     \end{cases}.
+> $$
+
+**_example_**. ${|6 - 7| = |-1| = 1.}$
+
+Below are some properties of the absolute value.
+
+| Property                                                                       | Comment                                                               |
+| ------------------------------------------------------------------------------ | --------------------------------------------------------------------- |
+| ${\vert x \vert \geq 0}$                                                       | Absolute values are always nonnegative.                               |
+| ${x \leq \vert x \vert}$                                                       |                                                                       |
+| ${-x \leq \vert x \vert}$                                                      |                                                                       |
+| ${\vert x \vert^2 = x^2}$                                                      |                                                                       |
+| ${\sqrt{x^2} = \vert x \vert}$                                                 |                                                                       |
+| ${\vert ab \vert = \vert a \vert \vert b \vert}$                               |                                                                       |
+| ${\left\vert \dfrac{a}{b} \right\vert = \dfrac{\vert a \vert}{\vert b \vert}}$ | ${b \neq 0}$                                                          |
+| ${\vert a + b \vert \leq \vert a \vert + \vert b \vert}$                       | This is a rather famous property, called the **triangle inequality**. |
+
 export default function MDXPage({ children }) {
     return <MdxLayout>{children}</MdxLayout>
+
 }

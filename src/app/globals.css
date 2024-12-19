@@ -125,6 +125,7 @@ th,
 td {
   border: solid thin lightgrey;
   margin: auto;
+  width: fit-content;
 }
 table td {
   padding: 5px;
@@ -220,6 +221,7 @@ aside p {
 li p {
   margin: 0;
 }
+
 /* Wide viewport */
 @media (min-width: 1000px) {
   aside {
