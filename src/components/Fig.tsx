@@ -31,7 +31,7 @@ import {
   tree,
   subtree,
   leaf,
-} from "@/liber/main";
+} from "@/algebron/main";
 
 import { CSSProperties, ReactNode, useEffect, useRef, useState } from "react";
 import katex from "katex";
@@ -69,7 +69,7 @@ const axis = (
 type FigProps = { d: SVGObj; w?: number; p?: number };
 
 const FIGURE = ({ children }: { children: ReactNode }) => {
-  return <figure>{children}</figure>;
+  return <figure className="algebron-fig">{children}</figure>;
 };
 
 const Fig = ({ d, w = 100, p = w }: FigProps) => {
@@ -451,7 +451,7 @@ export function PLOT3D({ element }: Plot3DProps) {
       <>
         {d.$zFunctions.map((zfn, i) => (
           <>
-            <Plot3DPath key={`${d.id}-${i}`} zfn={zfn} />
+            <Plot3DPath key={`${d.$id}-${i}`} zfn={zfn} />
           </>
         ))}
       </>
@@ -498,20 +498,18 @@ export function TreeTest() {
       subtree("a").nodes([
         subtree("b").nodes([leaf("c"), leaf("d")]),
         subtree("e").nodes([
-          leaf("f"),
-          subtree("g").nodes([
-            subtree("h").nodes([leaf("j"), leaf("k")]),
-            leaf("o"),
+          subtree("f").nodes([
+            subtree("g").nodes([leaf("h"), leaf("i")]),
           ]),
         ]),
       ])
     )
-      .nodeRadius(5)
-      .layout('reingold-tilford')
+      .nodeRadius(6)
+      .layout('hv')
       .done(),
   ])
-    .domain([-10,10])
-    .range([-10,10])
+    .domain([-10, 10])
+    .range([-10, 10])
     .done();
   return <Fig d={d} />;
 }

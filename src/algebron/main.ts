@@ -203,7 +203,7 @@ export function tuple<T extends any[]>(...data: T) {
 }
 
 /** Given an array of type `T[]`, splits the array in two and returns the two halves as a pair. */
-function arraySplit<T>(array: T[]) {
+export function arraySplit<T>(array: T[]) {
   const L = array.length;
   const half = Math.ceil(L / 2);
   const left = array.slice(0, half);
@@ -3205,7 +3205,7 @@ class TreeObj extends GroupObj {
     }
   }
   $nodeRadius: number = 10;
-  nodeRadius(value: number) {
+  nodeRadius(value:number) {
     this.$nodeRadius = value;
     return this;
   }
@@ -3315,10 +3315,10 @@ class TreeObj extends GroupObj {
       return self.$leftMostSibling;
     };
     const movesubtree = (wl: TreeChild, wr: TreeChild, shift: number) => {
-      const subtrees = wr.$index - wl.$index;
-      wr.$change -= shift / subtrees;
+      const st = wr.$index - wl.$index;
+      wr.$change -= shift / st;
       wr.$shift += shift;
-      wl.$change += shift / subtrees;
+      wl.$change += shift / st;
       wr.$x += shift;
       wr.$dx += shift;
     };
@@ -3457,10 +3457,10 @@ class TreeObj extends GroupObj {
     buccheim();
     buccheim();
     const x = this.$tree.$x;
-    // const y = this.$tree.$height;
+    const y = this.$tree.$height / 2;
     this.$tree.bfs((n) => {
       n.$x -= x;
-      // n.$y += y;
+      n.$y += y;
     });
     return this;
   }

@@ -1,1 +1,1 @@
-This is the documentation website for Liber.
+This is the documentation website for Algebron.

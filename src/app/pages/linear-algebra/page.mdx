@@ -3,50 +3,68 @@ import MdxLayout from "@/components/mdx-layout";
 
 # Linear Algebra
 
+<TOC>
+
+- [Linear Algebra](#linear-algebra)
+  - [Vectors](#vectors)
+  - [Real Vectors](#real-vectors)
+    - [Scalar Multiplication](#scalar-multiplication)
+  - [Systems of Linear Equations](#systems-of-linear-equations)
+  - [Matrices](#matrices)
+    - [Matrix Addition](#matrix-addition)
+    - [Matrix Multiplication](#matrix-multiplication)
+      - [Hadamard Product](#hadamard-product)
+      - [Scalar Multiplication](#scalar-multiplication-1)
+      - [Row-Column Dot Product](#row-column-dot-product)
+
+</TOC>
+
 ## Vectors
+
 A vector is a mathematical object that can be added to another vector or multiplied by a scalar to produce another vector. This general definition yields numerous examples:
 
-1. __Geometric Vectors.__ We can think of a vector as a geometric object with a magnitude (a line of given length) and a direction (an arrowhead). For example, consider two vectors ${a = [3,3]}$ and ${b = [4,1].}$ The sum of these vectors is ${a + b = [3 + 4, 3 + 1],}$ which reduces to ${[7,4].}$ Geometrically:
+1. **Geometric Vectors.** We can think of a vector as a geometric object with a magnitude (a line of given length) and a direction (an arrowhead). For example, consider two vectors ${a = [3,3]}$ and ${b = [4,1].}$ The sum of these vectors is ${a + b = [3 + 4, 3 + 1],}$ which reduces to ${[7,4].}$ Geometrically:
 
-    <LA1/>
+   <LA1 />
 
-    Similarly, we can _scale_ the geometric vector, which will still yield a vector, longer, shorter, or just the same.
+   Similarly, we can _scale_ the geometric vector, which will still yield a vector, longer, shorter, or just the same.
 
-    <LA3/>
+   <LA3 />
 
-2. __Polynomials.__ Polynomials may also be interpreted as vectors. Consider the two polynomials:
+2. **Polynomials.** Polynomials may also be interpreted as vectors. Consider the two polynomials:
 
-    $$
-        3x^2 + 4x - 1 \\
-        4x^2 - 2x + 2
-    $$
+   $$
+       3x^2 + 4x - 1 \\
+       4x^2 - 2x + 2
+   $$
 
-    We can represent these expressions as the vectors ${[3,4,-1]}$ and ${[4,-2,2],}$ where the polynomials' coefficients comprise the vector components. Adding these two vectors corresponds to adding the two polynomials, the sum of which is itself a polynomial (i.e., a vector). Thus, 
+   We can represent these expressions as the vectors ${[3,4,-1]}$ and ${[4,-2,2],}$ where the polynomials' coefficients comprise the vector components. Adding these two vectors corresponds to adding the two polynomials, the sum of which is itself a polynomial (i.e., a vector). Thus,
 
-    $$
-        [3,4,-1] + [4,-2,2] = [7,2,1]
-    $$
+   $$
+       [3,4,-1] + [4,-2,2] = [7,2,1]
+   $$
 
-    maps to the polynomial
+   maps to the polynomial
 
-    $$
-        7x + 2x + 1.
-    $$
+   $$
+       7x + 2x + 1.
+   $$
 
-    As an aside, recall that if we plot the two polynomials, the point where they intersect is the solution to the polynomial system. We will revisit this curiousity in later sections.
+   As an aside, recall that if we plot the two polynomials, the point where they intersect is the solution to the polynomial system. We will revisit this curiousity in later sections.
 
-    <LA2/>
+   <LA2 />
 
-3. __Audio Signals.__ Audio signals can also be interpreted as vectors. We can add audio signals together to produce another audio signal, and we can also scale them to produce yet another. 
+3. **Audio Signals.** Audio signals can also be interpreted as vectors. We can add audio signals together to produce another audio signal, and we can also scale them to produce yet another.
 
-    <LA4/>
+   <LA4 />
 
-4. __Tuples.__ More abstractly, elements of ${\reals^n}$ (tuples, or arrays, of ${n}$ real numbers) are vectors. 
+4. **Tuples.** More abstractly, elements of ${\reals^n}$ (tuples, or arrays, of ${n}$ real numbers) are vectors.
 
 ## Real Vectors
-For now, we'll focus only on vectors in ${\reals^n.}$ That is, vectors with ${n}$ components, all of which are real numbers.  
 
-> __Definition: Real Zero Vector__. The zero vector in ${\reals^n}$ is the vector ${\bold{0}^n,}$ whose components are all zero.
+For now, we'll focus only on vectors in ${\reals^n.}$ That is, vectors with ${n}$ components, all of which are real numbers.
+
+> **Definition: Real Zero Vector**. The zero vector in ${\reals^n}$ is the vector ${\bold{0}^n,}$ whose components are all zero.
 >
 > $$
 >    \bold{0}^n = \begin{bmatrix}
@@ -59,14 +77,15 @@ For now, we'll focus only on vectors in ${\reals^n.}$ That is, vectors with ${n}
 
 The zero vector is special for a few reasons:
 
-1. Given a vector ${\bold{v} \in \reals^n,}$ adding the zero vector ${\bold{0}^n}$ will always return ${\bold{v}.}$ Because of this result, we call the zero vector ${\bold{0}^n}$ the __additive identity__ of ${\reals^n.}$
+1. Given a vector ${\bold{v} \in \reals^n,}$ adding the zero vector ${\bold{0}^n}$ will always return ${\bold{v}.}$ Because of this result, we call the zero vector ${\bold{0}^n}$ the **additive identity** of ${\reals^n.}$
 2. The zero vector is the only vector with a magnitude of zero.
 3. The zero vector is the only vector with no direction.
 
 ### Scalar Multiplication
-Scalar multiplication is straightforward: We multiply each component of the vector by the given scalar ${k.}$ Geometrically (in ${\reals^2}$ or ${\reals^3}$), if ${k \gt 0,}$ this has the effect of making the vector shorter or longer. 
 
-> __Definition: Scalar Multiplication.__ Let ${\bold{v}}$ be a vector in ${\reals^n,}$ and let ${k \in \reals}$ be a scalar. Then:
+Scalar multiplication is straightforward: We multiply each component of the vector by the given scalar ${k.}$ Geometrically (in ${\reals^2}$ or ${\reals^3}$), if ${k \gt 0,}$ this has the effect of making the vector shorter or longer.
+
+> **Definition: Scalar Multiplication.** Let ${\bold{v}}$ be a vector in ${\reals^n,}$ and let ${k \in \reals}$ be a scalar. Then:
 >
 > $$
 >     k \bold{v} = \begin{bmatrix}
@@ -77,7 +96,7 @@ Scalar multiplication is straightforward: We multiply each component of the vect
 >     \end{bmatrix}.
 > $$
 
-__*example*__. 
+**_example_**.
 
 $$
     3 \begin{bmatrix}
@@ -91,7 +110,7 @@ $$
     3 \times 8 \\
     3 \times 7
     \end{bmatrix}
-    = 
+    =
     \begin{bmatrix}
     15 \\
     24 \\
@@ -101,8 +120,8 @@ $$
 
 Since ${k}$ can be any real number, scalar multiplication's definition implies that we can negate a vector and perform element-wise division.
 
-> __Definition: Vector Negation.__ Given a vector ${\bold{v},}$ the negation of ${\bold{v},}$ denoted ${-\bold{v},}$ is:
-> 
+> **Definition: Vector Negation.** Given a vector ${\bold{v},}$ the negation of ${\bold{v},}$ denoted ${-\bold{v},}$ is:
+>
 > $$
 >     -\bold{v} = \begin{bmatrix}
 >     -1 \times \bold{v}_1 \\
@@ -110,7 +129,7 @@ Since ${k}$ can be any real number, scalar multiplication's definition implies t
 >     \vdots \\
 >     -1 \times \bold{v}_n
 >     \end{bmatrix}
->     = 
+>     =
 >     \begin{bmatrix}
 >     -\bold{v}_1 \\
 >     -\bold{v}_2 \\
@@ -122,12 +141,12 @@ Since ${k}$ can be any real number, scalar multiplication's definition implies t
 
 Geometrically, negating a vector ${\bold{v}}$ "switches" its direction.
 
-    
 ## Systems of Linear Equations
+
 Many problems in mathematics can be reduced to systems of linear equations. Linear algebra provides us the tools for solving these systems.
 
-> __Definition.__ The system
-> 
+> **Definition.** The system
+>
 > $$
 > \begin{aligned}
 >     a_{1,1}x_1 &+ &\ldots &+ a_{1,n}x_n = b_1 \\
@@ -135,10 +154,10 @@ Many problems in mathematics can be reduced to systems of linear equations. Line
 >     a_{m,1}x_1 &+ &\ldots &+ a_{m,n}x_n = b_n
 > \end{aligned}
 > $$
-> 
-> is called a __system of linear equations__, where ${a_{i,j}, b_{i} \in \reals}$ and each ${x_i}$ is a real number called an _unknown_ of the system.
+>
+> is called a **system of linear equations**, where ${a_{i,j}, b_{i} \in \reals}$ and each ${x_i}$ is a real number called an _unknown_ of the system.
 
-Given a system of linear equations ${S,}$ each ${n}$-tuple ${(x_1, \ldots, x_n) \in \reals^n}$ that satisfies ${S}$ is called a _solution_ of ${S.}$ In a system with two unknowns ${x_1}$ and ${x_2,}$ each linear equation defines a line on the ${x_1}$-${x_2}$ plane. E.g., 
+Given a system of linear equations ${S,}$ each ${n}$-tuple ${(x_1, \ldots, x_n) \in \reals^n}$ that satisfies ${S}$ is called a _solution_ of ${S.}$ In a system with two unknowns ${x_1}$ and ${x_2,}$ each linear equation defines a line on the ${x_1}$-${x_2}$ plane. E.g.,
 
 $$
     4x_1 + 4x_2 = 5 \\
@@ -159,9 +178,9 @@ $$
     y = \dfrac{x}{2} - \dfrac{1}{4}.
 $$
 
-The point where these lines intersect is a solution to the system. In this case, the point ${(1, \frac{1}{4}).}$ Thus, the system above has the __solution space__ of ${\lbrace (1, \frac{1}{4}) \rbrace.}$
+The point where these lines intersect is a solution to the system. In this case, the point ${(1, \frac{1}{4}).}$ Thus, the system above has the **solution space** of ${\lbrace (1, \frac{1}{4}) \rbrace.}$
 
-<LA5/>
+<LA5 />
 
 We can represent a system of linear equations with matrices. We place the coefficients ${a_{i,j}}$ into vectors,
 
@@ -169,19 +188,19 @@ $$
     \begin{bmatrix}
     a_{1,1} \\ \vdots \\ a_{m,1}
     \end{bmatrix}
-    x_1 
+    x_1
     +
     \begin{bmatrix}
     a_{1,2} \\ \vdots \\ a_{m,2}
     \end{bmatrix}
-    x_2 
-    + 
+    x_2
+    +
     \ldots
     +
     \begin{bmatrix}
     a_{1,n} \\ \vdots \\ a_{m,n}
     \end{bmatrix}
-    x_n 
+    x_n
     =
     \begin{bmatrix}
     b_1 \\ \vdots \\ b_m
@@ -209,56 +228,59 @@ $$
 $$
 
 ## Matrices
-A matrix can be thought of as an array of arrays. They allow us to compactly represent a system of linear equations. 
 
-> __Definition.__ Let ${m,n \in \N.}$ A real-valued ${(m,n)}$ matrix ${\bold{A}}$
+A matrix can be thought of as an array of arrays. They allow us to compactly represent a system of linear equations.
+
+> **Definition.** Let ${m,n \in \N.}$ A real-valued ${(m,n)}$ matrix ${\bold{A}}$
 > is an ${m \cdot n}$ tuple of elements ${a_{i,j},}$ ${i = 1, \ldots, m,}$ ${j =
 > 1, \ldots, n.}$ This tuple is ordered as a rectangle of ${m}$ rows and ${n}$
 > columns:
-> 
+>
 > $$
->     \bold{A} = 
+>     \bold{A} =
 >     \begin{bmatrix}
 >     a_{1,1} & a_{1,2} & \ldots & a_{1,n} \\
 >     a_{2,1} & a_{2,2} & \ldots & a_{2,n} \\
 >     \vdots  & \vdots  & \vdots & \vdots \\
->     a_{m,1} & a_{m,2} & \ldots & a_{m,n} 
+>     a_{m,1} & a_{m,2} & \ldots & a_{m,n}
 >     \end{bmatrix},
 >     ~~ a_{i,j} \in \R.
 > $$
+>
 > We call ${i}$ the _row index_, and ${j}$ the _column index_.
 
-Some additional terminology: A ${(1,n)}$ matrix is called a __row vector__, and a ${(m,1)}$ matrix is called a __column vector__.
+Some additional terminology: A ${(1,n)}$ matrix is called a **row vector**, and a ${(m,1)}$ matrix is called a **column vector**.
 
-__*example*__. In programming, we can represent a row vector with a simple array:
+**_example_**. In programming, we can represent a row vector with a simple array:
 
-~~~ts
-let R = [1,2,3,4]
-~~~
+```ts
+let R = [1, 2, 3, 4];
+```
 
-__*example*__. A matrix would be an array of arrays:
+**_example_**. A matrix would be an array of arrays:
 
-~~~ts
+```ts
 let M = [
-  [1,2,3],
-  [4,5,6],
-  [7,8,9],
-]
-~~~
+  [1, 2, 3],
+  [4, 5, 6],
+  [7, 8, 9],
+];
+```
 
-__*example*__. A column vector would be an array of one-element arrays: 
+**_example_**. A column vector would be an array of one-element arrays:
 
-~~~ts
-let C = [[1],[2],[3]]
-~~~
+```ts
+let C = [[1], [2], [3]];
+```
 
 ### Matrix Addition
+
 To add two matrices, we add each element of one matrix to the corresponding element (the element of the same indices) in the other matrix (element-wise sum).
 
-__Definition.__ Let ${\bold{A} \in \R^{m \times n},}$ and let ${\bold{B} \in \R^{m \times n}.}$ Then the sum ${\bold{A} + \bold{B}}$ is defined as:
+**Definition.** Let ${\bold{A} \in \R^{m \times n},}$ and let ${\bold{B} \in \R^{m \times n}.}$ Then the sum ${\bold{A} + \bold{B}}$ is defined as:
 
 $$
-    \bold{A} + \bold{B} := 
+    \bold{A} + \bold{B} :=
     \begin{bmatrix}
     a_{1,1} + b_{1,1} & \ldots & a_{1,n} + b_{1,n} \\
     \vdots & \vdots & \vdots \\
@@ -268,7 +290,7 @@ $$
     \reals^{m \times n}.
 $$
 
-__*example*__. 
+**_example_**.
 
 $$
 \begin{aligned}
@@ -299,15 +321,17 @@ $$
 $$
 
 ### Matrix Multiplication
-There are three forms of matrix multiplication: __scalar multiplication__, the __Hadamard product__, and the __row-column dot product__.
+
+There are three forms of matrix multiplication: **scalar multiplication**, the **Hadamard product**, and the **row-column dot product**.
 
 #### Hadamard Product
-The Hadamard product is simply element-wise multiplication. 
 
-__Definition.__ Let ${\bold{A} \in \R^{m \times n},}$ and let ${\bold{B} \in \R^{m \times n}.}$ Then the Hadamard product ${\bold{A} \odot \bold{B}}$ is defined as:
+The Hadamard product is simply element-wise multiplication.
+
+**Definition.** Let ${\bold{A} \in \R^{m \times n},}$ and let ${\bold{B} \in \R^{m \times n}.}$ Then the Hadamard product ${\bold{A} \odot \bold{B}}$ is defined as:
 
 $$
-    \bold{A} \odot \bold{B} := 
+    \bold{A} \odot \bold{B} :=
     \begin{bmatrix}
     a_{1,1}b_{1,1} & \ldots & a_{1,n}b_{1,n} \\
     \vdots & \vdots & \vdots \\
@@ -320,10 +344,14 @@ $$
 Like the matrix sum, the Hadamard product is defined only if ${\bold{A}}$ and ${\bold{B}}$ have the same dimensions.
 
 <aside>
-The Hadamard product is attributed to, and named after, the French mathematician Jacques Hadamard (1865 - 1963). Hadamard was a leading contributor in the fields of number theory, complex analysis, differential geometry, and partial differential equations. Hadamard's second cousin, Lucie, was the wife of Alfred Dreyfus of the Dreyfus affair.
+  The Hadamard product is attributed to, and named after, the French
+  mathematician Jacques Hadamard (1865 - 1963). Hadamard was a leading
+  contributor in the fields of number theory, complex analysis, differential
+  geometry, and partial differential equations. Hadamard's second cousin, Lucie,
+  was the wife of Alfred Dreyfus of the Dreyfus affair.
 </aside>
 
-__*example*__. 
+**_example_**.
 
 $$
 \begin{aligned}
@@ -354,22 +382,24 @@ $$
 $$
 
 #### Scalar Multiplication
+
 When we multiply a scalar to a matrix, we multiply each element of the matrix with the scalar.
 
 #### Row-Column Dot Product
+
 With matrix sums, we simply perform element-wise addition. Matrix multiplication, however, looks a little different:
 
-> __Definition.__ Given matrices ${\bold{A} \in \reals^{m \times n}}$ and${\bold{B} \in \reals^{n \times k},}$ the elements ${c_{i,j}}$ of the product ${\bold{C} = \bold{A}\bold{B} \in \reals^{m \times k}}$ are computed as:
-> 
+> **Definition.** Given matrices ${\bold{A} \in \reals^{m \times n}}$ and${\bold{B} \in \reals^{n \times k},}$ the elements ${c_{i,j}}$ of the product ${\bold{C} = \bold{A}\bold{B} \in \reals^{m \times k}}$ are computed as:
+>
 > $$
 >     c_{i,j} = \sum_{\ell = 1}^{n} a_{i,\ell} b_{i,\ell,} \\[1em]
 >     i = 1, \ldots, m \\
->     j = 1, \ldots, k. 
+>     j = 1, \ldots, k.
 > $$
 
-That is, to compute the element ${c_{i,j},}$ multiply the ${i^{\text{th}}}$ row of ${\bold{A}}$ with the ${j^{\text{th}}}$ column of ${\bold{B}}$ and sum them. 
+That is, to compute the element ${c_{i,j},}$ multiply the ${i^{\text{th}}}$ row of ${\bold{A}}$ with the ${j^{\text{th}}}$ column of ${\bold{B}}$ and sum them.
 
-__*example*__. To compute the row-column dot product of
+**_example_**. To compute the row-column dot product of
 
 $$
     \underbrace{
@@ -386,7 +416,7 @@ $$
     \end{bmatrix}}_{\bold{B}},
 $$
 
-we start by computing the dot product of the first row of ${A}$ and the first column of ${B:}$ 
+we start by computing the dot product of the first row of ${A}$ and the first column of ${B:}$
 
 $$
 \begin{aligned}
@@ -462,4 +492,5 @@ Notice: Given a matrix ${\bold{A}}$ and a matrix ${\bold{B},}$ the row-column pr
 
 export default function MDXPage({ children }) {
     return <MdxLayout>{children}</MdxLayout>
+
 }

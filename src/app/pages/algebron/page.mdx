@@ -2,14 +2,40 @@ import MdxLayout from "@/components/mdx-layout";
 
 # Liber
 
+<TOC>
+
+- [Liber](#liber)
+  - [Basic Number Types \& Arithmetic](#basic-number-types--arithmetic)
+  - [Primitive Types](#primitive-types)
+    - [Integers](#integers)
+    - [Floating Point Numbers](#floating-point-numbers)
+    - [Fractions](#fractions)
+    - [Big Integers](#big-integers)
+    - [Strings](#strings)
+    - [Symbolic Strings](#symbolic-strings)
+  - [Data Structures](#data-structures)
+    - [Lists](#lists)
+    - [Vectors](#vectors)
+    - [Matrices](#matrices)
+  - [2D Graphics](#2d-graphics)
+    - [Cartesian Plot](#cartesian-plot)
+    - [Linear Axes](#linear-axes)
+    - [Polar Plot](#polar-plot)
+    - [Polar Axes](#polar-axes)
+    - [Tree Drawing](#tree-drawing)
+    - [Graph Drawing](#graph-drawing)
+  - [3D Graphics](#3d-graphics)
+    - [3D Plot](#3d-plot)
+
+</TOC>
+
 Welcome to Liber. On this page's sections, click to the right of the dollar sign (`$:`) to begin typing expressions. Hit "Enter" to execute the expression. Some of the REPL windows have code preset and entered to serve as examples.
 
 ## Basic Number Types & Arithmetic
-
 Liber supports basic arithmetic operations. Liber's core arithmetic operations are displayed in the REPL below.
 
 <REPL
-  height={530}
+  height={450}
   initialLines={[
     { type: "input", value: "5 + 5" },
     { type: "output", value: "10" },
@@ -53,6 +79,7 @@ We used integers for the examples above, but certain operations are free to take
 Integers and floats are considered **primitives** in Liber. The set of primitives also includes fractions. Fractions are written with the syntax ${a|b}$, where ${a}$ and ${b}$ are integers.
 
 <REPL
+  height={200}
   initialLines={[
     { type: "input", value: "1|2 + 2|3" },
     { type: "output", value: "7|6" },
@@ -63,10 +90,36 @@ Integers and floats are considered **primitives** in Liber. The set of primitive
   ]}
 />
 
+## Primitive Types
+### Integers
+Integers are the most basic type in Liber. The largest possible integer in Liber is ${9,007,199,254,740,991}$ or ${2^{53} - 1.}$ Any integer greater than this will be cast to a [big integer](#big-integers).
+
+### Floating Point Numbers
+Floating point numbers in Liber are represented in the 64-bit format.
+
+### Fractions
+Fractions in Liber are implemented as JavaScript objects.
+
+### Big Integers
+### Strings
+### Symbolic Strings
+## Data Structures
+### Lists
+### Vectors
+### Matrices
+## 2D Graphics
+### Cartesian Plot
+### Linear Axes
+### Polar Plot
+### Polar Axes
+### Tree Drawing
+### Graph Drawing
+## 3D Graphics
+### 3D Plot
+
+
+
 import { FigTest, TreeTest } from "@/components/Fig";
-
-<TreeTest/>
-
 
 export default function MDXPage({ children }) {
     return <MdxLayout>{children}</MdxLayout>

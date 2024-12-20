@@ -1,24 +1,13 @@
 "use client";
 
-import { engine, isErr, strof } from "@/liber/main";
+import { engine, isErr, strof } from "@/algebron/main";
 import { forwardRef, ReactNode, useEffect, useRef, useState } from "react";
 
 type Children = { children: ReactNode };
 
 const Container = ({ children }: Children) => {
   return (
-    <div
-      className="repl"
-      style={{
-        fontFamily: "monospace",
-        fontWeight: "bold",
-        color: "#fff",
-        backgroundColor: "#333",
-        borderRadius: "4px",
-        boxShadow: "0px 2px 2px rgba(0, 0, 0, 0.5)",
-        overflow: "hidden",
-      }}
-    >
+    <div className="repl">
       {children}
     </div>
   );
