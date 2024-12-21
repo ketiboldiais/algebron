@@ -28,12 +28,13 @@ import { Plot3DDemo } from "@/components/Fig";
     - [Matrices](#matrices)
   - [CAS Modules](#cas-modules)
     - [simplify(u)](#simplifyu)
-    - [freeof(u,xs)](#freeofuxs)
+    - [freeOf(u,xs)](#freeofuxs)
     - [derive(u,x)](#deriveux)
     - [isMonomial(u,xs)](#ismonomialuxs)
     - [isPolynomial(u,xs)](#ispolynomialuxs)
     - [gpeDeg(u,xs)](#gpedeguxs)
     - [vars(u)](#varsu)
+    - [coefGPE(u,x,j)](#coefgpeuxj)
   - [2D Graphics](#2d-graphics)
     - [Cartesian Plot](#cartesian-plot)
     - [Linear Axes](#linear-axes)
@@ -227,17 +228,17 @@ Where `u` is a string or MathObj, simplifies the expression. Below is an example
 
 ~~~ts
 const x = simplify('(1/x) * x');
-console.log(x.toString()); // "1"
+console.log(x.strung()); // "1"
 ~~~
 
-### freeof(u,xs)
+### freeOf(u,xs)
 Where `u` is a string or MathObj and `xs` is an array of strings or MathObjects, returns true if the expression `u` does not contain any of the subexpressions in `xs`; false otherwise.
 
 ~~~ts
-const x = freeof('2x + 1', ['x']);
+const x = freeOf('2x + 1', ['x']);
 console.log(x); // false
 
-const y = freeof('3a^2 + 9b + c', ['y', 'z']);
+const y = freeOf('3a^2 + 9b + c', ['y', 'z']);
 console.log(y); // true
 ~~~
 
@@ -294,6 +295,16 @@ console.log(result1); // ['x', 'y']
 
 const result2 = vars("(3 * x) * (x + 1) * (y^2) * z^n");
 console.log(result2); // ['1 + x', 'x', 'y', 'z^n']
+~~~
+
+### coefGPE(u,x,j)
+Where `u` is a string or MathObj, `x` is a string or symbol (corresponding to a variable), and `j` is a nonnegative integer, returns the sum of the coefficient parts of all monomials of `u` with variable part ${x^j.}$
+
+~~~ts
+const result1 = coefGPE('(a * x^2) + (b * x) + c', 'x', 2);
+console.log(result1.strung()); // a
+const result2 = coefGPE('(3 * x * y^2) + (5 * x^2 * y) + (7 * x) + 9', 'x', 1); // 7 + 3y^2
+console.log(result2.strung());
 ~~~
 
 ## 2D Graphics

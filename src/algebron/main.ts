@@ -4055,7 +4055,7 @@ function pt(id: string | number, position: Vector) {
 }
 
 class ForceGraph extends GroupObj {
-  private $particles: Map<(string | number), Particle>;
+  private $particles: Map<string | number, Particle>;
   private $graph: Graph;
   $iterations: number = 100;
   iterations(x: number) {
@@ -4095,12 +4095,12 @@ class ForceGraph extends GroupObj {
   }
 
   $domain: [number, number] = [-10, 10];
-  domain(interval: [number,number]) {
+  domain(interval: [number, number]) {
     this.$domain = interval;
     return this;
   }
   $range: [number, number] = [-10, 10];
-  range(interval: [number,number]) {
+  range(interval: [number, number]) {
     this.$range = interval;
     return this;
   }
@@ -4115,15 +4115,9 @@ class ForceGraph extends GroupObj {
     }
   }
 
-  private iterate(
-    MIN_X: number,
-    MAX_X: number,
-    MIN_Y: number,
-    MAX_Y: number,
-  ) {
-    const rsq = (v: Vector, u: Vector) => (
-      ((v.$x - u.$x) ** 2) + ((v.$y - u.$y) ** 2)
-    );
+  private iterate(MIN_X: number, MAX_X: number, MIN_Y: number, MAX_Y: number) {
+    const rsq = (v: Vector, u: Vector) =>
+      (v.$x - u.$x) ** 2 + (v.$y - u.$y) ** 2;
     this.forEachPt((v) => {
       v.$f = v2D(0, 0);
       this.forEachPt((u) => {
@@ -4131,7 +4125,7 @@ class ForceGraph extends GroupObj {
           let d2 = rsq(v.$p, u.$p);
           if (d2 === 0) d2 = 0.001;
           const c = this.$repulsion / d2;
-          const f = (v.$p.sub(u.$p)).mul(c);
+          const f = v.$p.sub(u.$p).mul(c);
           v.$f = v.$f.add(f);
         }
       });
@@ -4140,14 +4134,14 @@ class ForceGraph extends GroupObj {
       const u = this.$particles.get(e.$source.$id);
       const v = this.$particles.get(e.$target.$id);
       if (u && v) {
-        const f = (u.$p.sub(v.$p)).mul(this.$attraction);
+        const f = u.$p.sub(v.$p).mul(this.$attraction);
         v.$f = v.$f.add(f);
       }
     });
     let displacement = 0;
     this.forEachPt((v) => {
-      v.$v = (v.$v.add(v.$f)).mul(this.$decay);
-      displacement += (Math.abs(v.$v.$x)) + Math.abs(v.$v.$y);
+      v.$v = v.$v.add(v.$f).mul(this.$decay);
+      displacement += Math.abs(v.$v.$x) + Math.abs(v.$v.$y);
       v.$p = v.$p.add(v.$v);
       v.$p.$x = clamp(MIN_X, v.$p.$x, MAX_X);
       v.$p.$y = clamp(MIN_Y, v.$p.$y, MAX_Y);
@@ -4165,15 +4159,13 @@ class ForceGraph extends GroupObj {
   }
 
   $styles: {
-    $nodes: Partial<
-      {
-        fill: string;
-        radius: number;
-        fontColor: string;
-        fontSize: number;
-        fontFamily: string;
-      }
-    >;
+    $nodes: Partial<{
+      fill: string;
+      radius: number;
+      fontColor: string;
+      fontSize: number;
+      fontFamily: string;
+    }>;
     $edges: Partial<{ stroke: string }>;
   } = {
     $nodes: { fill: "white", radius: 5 },
@@ -4260,8 +4252,9 @@ class ForceGraph extends GroupObj {
     });
     this.$particles.forEach((p) => {
       const t = p.$id;
-      const c = circle(this.$nodeRadius, [p.$p.$x, p.$p.$y])
-        .fill(this.$nodeColor);
+      const c = circle(this.$nodeRadius, [p.$p.$x, p.$p.$y]).fill(
+        this.$nodeColor
+      );
       this.$children.push(c);
       const label = text(t)
         .position(p.$p.$x, p.$p.$y + p.$r)
@@ -4276,9 +4269,7 @@ class ForceGraph extends GroupObj {
 
 /** Returns a new force layout graph. */
 export function forceGraph(graph: Graph) {
-  return (
-    new ForceGraph(graph)
-  );
+  return new ForceGraph(graph);
 }
 
 /** A value native to Winnow. */
@@ -6957,7 +6948,7 @@ function freeofOne(
  * any of the expressions contained in the array
  * of subexpressions.
  */
-export function freeof(
+export function freeOf(
   expression: MathObj | string,
   subexpressions: (MathObj | string)[]
 ) {
@@ -7318,7 +7309,7 @@ export function derive(
       return p;
     }
   }
-  if (freeof(u, [x])) {
+  if (freeOf(u, [x])) {
     return int(0);
   }
   return fn("deriv", [u, x]).markSimplified();
@@ -7357,7 +7348,7 @@ export function isMonomial(
     }
     return true;
   }
-  return freeof(u, [...S]);
+  return freeOf(u, [...S]);
 }
 
 /**
@@ -7408,7 +7399,7 @@ function monDeg(
   });
   const vs = listx(vars);
   const u = typeof expression === "string" ? exp(expression).obj() : expression;
-  if (freeof(u, vars)) {
+  if (freeOf(u, vars)) {
     return int(0);
   }
   if (vs.has(u)) {
@@ -7498,6 +7489,88 @@ export function vars(expression: MathObj | string) {
   const out = f(expression);
   return Array.from(out);
 }
+
+function coefficientMonomialGPE(
+  expression: string | MathObj,
+  variable: string | Sym
+): Undefined | [MathObj, Int] {
+  let u = typeof expression === "string" ? exp(expression).obj() : expression;
+  u = simplify(u);
+  const x = typeof variable === "string" ? sym(variable) : variable;
+  if (u.equals(x)) {
+    return tuple(int(1), int(1));
+  } else if (isPower(u)) {
+    const base = u.base;
+    const exponent = u.exponent;
+    if (base.equals(x) && isInt(exponent) && exponent.int > 1) {
+      return tuple(int(1), exponent);
+    }
+  } else if (isProduct(u)) {
+    let m = int(0);
+    let c: MathObj = u;
+    for (let i = 0; i < u.args.length; i++) {
+      const f = coefficientMonomialGPE(u.args[i], x);
+      if (!Array.isArray(f) && isUndefined(f)) {
+        return UNDEFINED();
+      } else if (isNum(f[1]) && f[1].value() !== 0) {
+        m = f[1];
+        c = quot(u, pow(x, m));
+      }
+    }
+    return tuple(c, m);
+  }
+  if (freeOf(u, [x])) {
+    return tuple(u, int(0));
+  } else {
+    return UNDEFINED();
+  }
+}
+
+export function coefGPE(
+  expression: string | MathObj,
+  variable: string | Sym,
+  J: number | Int
+) {
+  let u = typeof expression === 'string' ?
+    exp(expression).obj() : expression;
+  u = simplify(u);
+  const x = typeof variable === 'string' ? sym(variable) : variable;
+  const j = typeof J === 'number' ? int(J) : J;
+  if (!isSum(u)) {
+    const f = coefficientMonomialGPE(u,x);
+    if (!Array.isArray(f) && isUndefined(f)) {
+      return UNDEFINED();
+    }
+    else {
+      if (j.equals(f[1])) {
+        return f[0];
+      } else {
+        return int(0);
+      }
+    }
+  } else {
+    if (u.equals(x)) {
+      if (j.equals(int(1))) {
+        return int(1);
+      } else {
+        return int(0);
+      }
+    }
+    let c: MathObj = int(0);
+    for (let i = 0; i < u.args.length; i++) {
+      const f = coefficientMonomialGPE(u.args[i], x);
+      if (!Array.isArray(f) && isUndefined(f)) {
+        return UNDEFINED();
+      }
+      else if (f[1].equals(j)) {
+        c = sum(c,f[0]);
+      }
+    }
+    return simplify(c);
+  }
+}
+
+
 
 // § Nodekind Enum
 enum nodekind {
