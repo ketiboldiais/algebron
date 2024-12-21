@@ -31,6 +31,9 @@ import {
   subtree,
   leaf,
   circle,
+  range,
+  randInt,
+  zip,
 } from "@/algebron/main";
 
 import { CSSProperties, ReactNode, useEffect, useRef, useState } from "react";
@@ -199,6 +202,7 @@ const TEXT = ({ data }: TextProps) => {
         width={data.$width}
         height={data.$height}
         color={data.$fill}
+        fontSize={data.$fontSize ? data.$fontSize : "inherit"}
       >
         <Tex content={data.$content} block={block} />
       </foreignObject>
@@ -275,7 +279,7 @@ export const Tex = ({ content, block, style }: TexProps) => {
         enstate(html(""));
       }
     }
-  }, [mode, content]);
+  }, [mode, content, displayMode]);
   return <Component style={style} dangerouslySetInnerHTML={state} />;
 };
 
@@ -495,6 +499,101 @@ export function Plot3DDemo() {
   return <PLOT3D data={d} />;
 }
 
+export const Calc1 = () => {
+  const D = tuple(-5, 5);
+  const R = tuple(-5, 5);
+  const xAxis = axis("x", D, R);
+  const yAxis = axis("y", D, R);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const xs = range(-5, 5, 0.5).map((_) => randInt(-4, 4));
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const ys = range(-5, 5, 0.5).map((_) => randInt(-4, 4));
+  const xys = zip(xs, ys).filter(
+    ([x, y]) =>
+      !(
+        (x === 2 && y === 2) ||
+        (x === 2 && y === -2) ||
+        (x === -2 && y === 2) ||
+        (x === -2 && y === -2)
+      )
+  );
+  const cs = xys.map(([x, y]) => circle(5, [x, y]).fill("lightblue"));
+  const ts = xys.map(([x, y]) => text(`(${x},${y})`).position(x, y).dy(-10));
+  const d = svg([
+    grid(D, R).done(),
+    xAxis,
+    yAxis,
+    text("I").position(2, 2),
+    text("IV").position(2, -2),
+    text("II").position(-2, 2),
+    text("III").position(-2, -2),
+    ...cs,
+    ...ts,
+  ])
+    .dimensions(400, 400)
+    .domain(D)
+    .range(R)
+    .done();
+  return <Fig data={d} width={45} />;
+};
+
+export const DistanceBetweenPoints = () => {
+  const D = tuple(-5, 5);
+  const R = tuple(-5, 5);
+  const xAxis = axis("x", D, R);
+  const yAxis = axis("y", D, R);
+  const d = svg([
+    grid(D, R).done(),
+    xAxis,
+    yAxis,
+    line([1, 1], [-3, 4]).stroke("firebrick"),
+    circle(5, [1, 1]).fill("salmon"),
+    circle(5, [-3, 4]).fill("salmon"),
+  ])
+    .dimensions(400, 400)
+    .domain(D)
+    .range(R)
+    .done();
+  return <Fig data={d} width={45} />;
+};
+
+export const DistanceBetweenPoints2 = () => {
+  const D = tuple(-5, 5);
+  const R = tuple(-5, 5);
+  const xAxis = axis("x", D, R);
+  const yAxis = axis("y", D, R);
+  const d = svg([
+    grid(D, R).done(),
+    xAxis,
+    yAxis,
+    line([1, 1], [-3, 4]).stroke("firebrick"),
+    line([-3, 1], [-3, 4]).stroke("firebrick"),
+    line([-3, 1], [1, 1]).stroke("firebrick"),
+    circle(5, [1, 1]).fill("salmon"),
+    circle(5, [-3, 4]).fill("salmon"),
+    circle(5, [-3, 1]).fill("salmon"),
+    text("(x_P, y_P)").latex("inline").position(-2.9, 4.7),
+    text("(x_Q, y_Q)").latex("inline").position(1, 1.2),
+    text("(x_P, y_Q)").latex("inline").position(-4, 1.2),
+    text("c").latex("inline").position(-1.5, 3.4).fontSize("16px"),
+    text("\\vert y_P - y_Q \\vert")
+      .latex("inline")
+      .position(-5.2, 3.4)
+      .width(100)
+      .fontSize("15px"),
+    text("\\vert x_P - x_Q \\vert")
+      .latex("inline")
+      .position(-2.1, 1.2)
+      .width(100)
+      .fontSize("15px"),
+  ])
+    .dimensions(400, 400)
+    .domain(D)
+    .range(R)
+    .done();
+  return <Fig data={d} width={60} />;
+};
+
 export const TreeTest = () => {
   const d = svg([
     tree(
@@ -517,7 +616,11 @@ export const TreeTest = () => {
     .domain([-10, 10])
     .range([-3, 3])
     .done();
-  return <Fig data={d} width={70} paddingBottom={43} />;
+  return (
+    <div>
+      <Fig data={d} width={70} paddingBottom={43} />
+    </div>
+  );
 };
 
 export const PlotTest = () => {

@@ -710,7 +710,7 @@ function gcd(a: number, b: number) {
 }
 
 /** Returns an array of numbers running from start to stop exclusive. */
-function range(start: number, stop: number, step = 1): number[] {
+export function range(start: number, stop: number, step = 1): number[] {
   const out = [];
   for (let i = start + step; i < stop; i += step) {
     out.push(i);
@@ -718,8 +718,16 @@ function range(start: number, stop: number, step = 1): number[] {
   return out;
 }
 
+export function zip<T extends unknown[][]>(
+  ...args: T
+): { [K in keyof T]: T[K] extends (infer V)[] ? V : never }[] {
+  const minLength = Math.min(...args.map((arr) => arr.length));
+  // @ts-expect-error This is too much for ts
+  return [...Array(minLength).keys()].map((i) => args.map((arr) => arr[i]));
+}
+
 /** Computes the arithmetic mean of the given list of numbers. */
-function avg(...nums: number[]) {
+export function avg(...nums: number[]) {
   let sum = 0;
   for (let i = 0; i < nums.length; i++) {
     sum += nums[i];
