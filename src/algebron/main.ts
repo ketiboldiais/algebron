@@ -1801,10 +1801,20 @@ export class SVGObj {
 
   $range: [number, number] = [-5, 5];
 
+  $className: string = "";
+
+  className(value: string) {
+    this.$className = value;
+    return this;
+  }
+
+  $id: string = uid(10);
+
   range(range: [number, number]) {
     this.$range = range;
     return this;
   }
+
   done() {
     this.$children.forEach((child) => {
       child.childOf(this);
@@ -4871,8 +4881,13 @@ function cdr<T>(list: T[]) {
   }
 }
 
+function reverse<T>(list: T[]) {
+  return list.slice().reverse();
+}
+
 enum expression_type {
   relation,
+  list,
   int,
   float64,
   fraction,
@@ -4905,9 +4920,10 @@ abstract class MathObj {
   abstract kind(): expression_type;
   abstract equals(other: MathObj): boolean;
   abstract toString(): string;
+  abstract strung(): string;
   abstract map<T extends MathObj>(
     callbackfn: (value: MathObj, index: number, array: MathObj[]) => T
-  ): this;
+  ): MathObj;
 }
 
 function isMathObj(u: any): u is MathObj {
@@ -4924,6 +4940,80 @@ function argsEqual(a: MathObj[], b: MathObj[]) {
   if (b.length === 0) return false;
   if (a[0].equals(b[0])) return argsEqual(cdr(a), cdr(b));
   return false;
+}
+
+class ListX extends MathObj {
+  $args: MathObj[];
+  constructor(args: MathObj[]) {
+    super();
+    this.$args = args;
+  }
+  operands(): MathObj[] {
+    return this.$args;
+  }
+  operandAt(i: number): MathObj {
+    const out = this.$args[i];
+    if (out !== undefined) {
+      return out;
+    }
+    return UNDEFINED();
+  }
+  kind(): expression_type {
+    return expression_type.list;
+  }
+  equals(other: MathObj): boolean {
+    if (other instanceof ListX) {
+      if (other.$args.length !== this.$args.length) {
+        return false;
+      }
+      for (let i = 0; i < this.$args.length; i++) {
+        const a = this.$args[i];
+        const b = other.$args[i];
+        if (!a.equals(b)) {
+          return false;
+        }
+      }
+      return true;
+    }
+    return false;
+  }
+  toString(): string {
+    const args = this.$args.map((a) => a.toString()).join(", ");
+    return `[${args}]`;
+  }
+  strung(): string {
+    return this.toString();
+  }
+  map<T extends MathObj>(
+    callbackfn: (value: MathObj, index: number, array: MathObj[]) => T
+  ): ListX {
+    return new ListX(this.$args.map(callbackfn));
+  }
+  cdr() {
+    const newargs = cdr(this.$args);
+    return new ListX(newargs);
+  }
+  cons(element: MathObj) {
+    const newargs = [element, ...this.$args];
+    return new ListX(newargs);
+  }
+  reverse() {
+    const newargs = this.$args.slice().reverse();
+    return new ListX(newargs);
+  }
+  has(element: MathObj) {
+    for (let i = 0; i < this.$args.length; i++) {
+      const x = this.$args[i];
+      if (x.equals(element)) {
+        return true;
+      }
+    }
+    return false;
+  }
+}
+
+function listx(expressions: MathObj[]) {
+  return new ListX(expressions);
 }
 
 class Relation extends MathObj {
@@ -4943,6 +5033,9 @@ class Relation extends MathObj {
   toString(): string {
     const out = this.args.map((arg) => arg.toString()).join(` ${this.op} `);
     return this.parenLevel ? `(${out})` : out;
+  }
+  strung(): string {
+    return `(${this.toString()})`;
   }
   map<T extends MathObj>(
     callbackfn: (value: MathObj, index: number, array: MathObj[]) => T
@@ -4975,6 +5068,9 @@ function isRelation(u: MathObj): u is Relation {
 }
 
 class Boolean extends MathObj {
+  strung(): string {
+    return this.toString();
+  }
   operandAt(): MathObj {
     return UNDEFINED();
   }
@@ -5013,12 +5109,19 @@ function isBool(u: MathObj): u is Boolean {
 abstract class Numeric extends MathObj {
   abstract value(): number;
   abstract negate(): Numeric;
+  abstract abs(): Numeric;
   isZero() {
     return this.value() === 0;
   }
 }
 
 class Int extends Numeric {
+  abs() {
+    return int(Math.abs(this.value()));
+  }
+  strung(): string {
+    return this.toString();
+  }
   operandAt(): MathObj {
     return UNDEFINED();
   }
@@ -5072,6 +5175,12 @@ function isInt(u: MathObj): u is Int {
 }
 
 class Float64 extends Numeric {
+  abs(): Numeric {
+    return float64(Math.abs(this.float));
+  }
+  strung(): string {
+    return this.toString();
+  }
   operandAt(): MathObj {
     return UNDEFINED();
   }
@@ -5116,6 +5225,9 @@ function isFloat64(u: MathObj): u is Float64 {
 }
 
 class Sym extends MathObj {
+  strung(): string {
+    return this.toString();
+  }
   operandAt(): MathObj {
     return UNDEFINED();
   }
@@ -5146,6 +5258,9 @@ class Sym extends MathObj {
 }
 
 class Undefined extends MathObj {
+  strung(): string {
+    return this.toString();
+  }
   operandAt(): MathObj {
     return UNDEFINED();
   }
@@ -5191,6 +5306,12 @@ function isSym(u: MathObj): u is Sym {
 }
 
 class Fraction extends Numeric {
+  abs() {
+    return frac(this.numerator.abs(), this.denominator.abs());
+  }
+  strung(): string {
+    return this.toString();
+  }
   operandAt(): MathObj {
     return UNDEFINED();
   }
@@ -5295,7 +5416,7 @@ class Fraction extends Numeric {
     }
   }
   toString(): string {
-    return `${this.numerator.int}|${this.denominator.int}`;
+    return `${this.numerator.int}/${this.denominator.int}`;
   }
   map(): this {
     return this;
@@ -5321,6 +5442,10 @@ function isFrac(u: MathObj): u is Fraction {
 }
 
 class Sum extends MathObj {
+  strung(): string {
+    const out = this.args.map((arg) => arg.strung()).join(" + ");
+    return `(${out})`;
+  }
   operandAt(i: number): MathObj {
     const out = this.args[i];
     if (out === undefined) return UNDEFINED();
@@ -5375,6 +5500,10 @@ function isSum(u: MathObj): u is Sum {
 }
 
 class Difference extends MathObj {
+  strung(): string {
+    const out = this.args.map((arg) => arg.strung()).join(" - ");
+    return `(${out})`;
+  }
   operandAt(i: number): MathObj {
     const out = this.args[i];
     if (out === undefined) return UNDEFINED();
@@ -5420,6 +5549,27 @@ function isDiff(u: MathObj): u is Difference {
 }
 
 class Product extends MathObj {
+  strung(): string {
+    if (this.args.length === 2) {
+      const left = this.args[0];
+      const right = this.args[1];
+      if (isNum(left) && isSym(right)) {
+        return `${left.strung()}${right.strung()}`;
+      }
+      if (isSym(left) && isNum(right)) {
+        if (right.value() === -1) {
+          return `-${left.strung()}`;
+        }
+      }
+      if (isNum(left) && isPower(right)) {
+        if (isSym(right.base)) {
+          return `${left.strung()}${right.strung()}`;
+        }
+      }
+    }
+    const out = this.args.map((arg) => arg.strung()).join(" * ");
+    return `(${out})`;
+  }
   operandAt(i: number): MathObj {
     const out = this.args[i];
     if (out === undefined) return UNDEFINED();
@@ -5465,6 +5615,10 @@ function isProduct(u: MathObj): u is Product {
 }
 
 class Quotient extends MathObj {
+  strung(): string {
+    const out = this.args.map((arg) => arg.strung()).join(" / ");
+    return `(${out})`;
+  }
   operandAt(i: number): MathObj {
     const out = this.args[i];
     if (out === undefined) return UNDEFINED();
@@ -5510,6 +5664,21 @@ function isQuotient(u: MathObj): u is Quotient {
 }
 
 class Power extends MathObj {
+  strung(): string {
+    const left = this.base.strung();
+    let right = this.exponent.strung();
+    if (!isAtom(this.exponent)) {
+      right = `(${right})`;
+    }
+    if (isNum(this.exponent) && this.exponent.value() < 0) {
+      right = `(${right})`;
+    }
+    if (isNum(this.exponent) && this.exponent.value() < 0) {
+      return `1/${this.base.strung()}^${this.exponent.abs()}`;
+    }
+    const out = `${left}^${right}`;
+    return `(${out})`;
+  }
   operandAt(i: number): MathObj {
     const out = this.args[i];
     if (out === undefined) return UNDEFINED();
@@ -5581,6 +5750,11 @@ function isPower(u: MathObj): u is Power {
 }
 
 class Func extends MathObj {
+  strung(): string {
+    const f = this.op;
+    const args = this.args.map((arg) => arg.strung()).join(",");
+    return `(${f}(${args}))`;
+  }
   operandAt(i: number): MathObj {
     const out = this.args[i];
     if (out === undefined) return UNDEFINED();
@@ -5793,7 +5967,9 @@ const O3 = (uElts: MathObj[], vElts: MathObj[]): boolean => {
   return !u.equals(v) ? order(u, v) : O3(cdr(uElts), cdr(vElts));
 };
 
-function order(u: MathObj, v: MathObj): boolean {
+function order(u: MathObj | string, v: MathObj | string): boolean {
+  u = typeof u === "string" ? exp(u).obj() : u;
+  v = typeof v === "string" ? exp(v).obj() : v;
   // O-1
   if (isRational(u) && isRational(v)) {
     return u.rational().lt(v.rational());
@@ -5810,15 +5986,18 @@ function order(u: MathObj, v: MathObj): boolean {
   if (isFrac(u) && isFloat64(v)) {
     return u.numerator.int / u.denominator.int < v.float;
   }
+  if (isNum(u) && isNum(v)) {
+    return u.value() < v.value();
+  }
   // O-2
   if (isSym(u) && isSym(v)) {
     return u.sym < v.sym;
   }
   if (isProduct(u) && isProduct(v)) {
-    return O3(u.args.reverse(), v.args.reverse());
+    return O3(reverse(u.args), reverse(v.args));
   }
   if (isSum(u) && isSum(v)) {
-    return O3(u.args.reverse(), v.args.reverse());
+    return O3(reverse(u.args), reverse(v.args));
   }
   if (isPower(u) && isPower(v)) {
     return u.base.equals(v.base)
@@ -5844,6 +6023,18 @@ function order(u: MathObj, v: MathObj): boolean {
     return u.op === v.sym ? false : order(sym(u.op), v);
   }
   return !order(v, u);
+}
+
+/**
+ * Given the array of expressions (where each expression
+ * is either a string or object), returns an array of
+ * expressions sorted according to Algebron's order relation.
+ */
+export function sortex(expressions: (MathObj | string)[]) {
+  const exprs = expressions.map((e) =>
+    typeof e === "string" ? exp(e).obj() : e
+  );
+  return exprs.sort((a, b) => (order(a, b) ? -1 : 1));
 }
 
 /** Returns the base of the given math object. */
@@ -6192,7 +6383,10 @@ function simplify(expression: MathObj | string): MathObj {
   }
 }
 
-function freeof(expression1: MathObj | string, expression2: MathObj | string) {
+function freeofOne(
+  expression1: MathObj | string,
+  expression2: MathObj | string
+) {
   const u =
     typeof expression1 === "string" ? exp(expression1).obj() : expression1;
   const t =
@@ -6204,10 +6398,27 @@ function freeof(expression1: MathObj | string, expression2: MathObj | string) {
   } else {
     for (let i = 0; i < u.operands().length; i++) {
       const arg = u.operands()[i];
-      if (!freeof(arg, t)) return false;
+      if (!freeofOne(arg, t)) return false;
     }
     return true;
   }
+}
+
+/**
+ * Returns true if `expression` does not contain
+ * any of the expressions contained in the array
+ * of subexpressions.
+ */
+export function freeof(
+  expression: MathObj | string,
+  subexpressions: (MathObj | string)[]
+) {
+  for (let i = 0; i < subexpressions.length; i++) {
+    if (!freeofOne(expression, subexpressions[i])) {
+      return false;
+    }
+  }
+  return true;
 }
 
 function exp(source: string) {
@@ -6476,6 +6687,9 @@ function union<T>(setA: Set<T>, setB: Set<T>) {
   return _union;
 }
 
+/**
+ * Returns the subexpressions of the given `expression`/
+ */
 function subexs(expression: MathObj | string) {
   const f = (expression: MathObj | string): Set<string> => {
     const u =
@@ -6494,7 +6708,12 @@ function subexs(expression: MathObj | string) {
   return [...out];
 }
 
-export function deriv(
+/**
+ * Returns a MathObject correspodning to the
+ * derivative of the given `expression`
+ * with respect to the given `variable`.
+ */
+export function derive(
   expression: MathObj | string,
   variable: Sym | string
 ): MathObj {
@@ -6516,8 +6735,8 @@ export function deriv(
   if (isQuotient(u)) {
     const f = u.args[0];
     const g = u.args[1];
-    const df = deriv(f, x);
-    const dg = deriv(g, x);
+    const df = derive(f, x);
+    const dg = derive(g, x);
     const dfg = prod(df, g);
     const fdg = prod(f, dg);
     const gx2 = pow(g, int(2));
@@ -6526,18 +6745,18 @@ export function deriv(
     return simplify(quot(top, bottom));
   }
   if (isDiff(u)) {
-    const s = u.map((arg) => deriv(arg, x));
+    const s = u.map((arg) => derive(arg, x));
     return simplify(s);
   }
   if (isSum(u)) {
-    const s = u.map((arg) => deriv(arg, x));
+    const s = u.map((arg) => derive(arg, x));
     return simplify(s);
   }
   if (isProduct(u)) {
     const f = u.args[0];
     const g = u.args[1];
-    const dg = deriv(g, x);
-    const df = deriv(f, x);
+    const dg = derive(g, x);
+    const df = derive(f, x);
     const left = prod(f, dg);
     const right = prod(df, g);
     return simplify(sum(left, right));
@@ -6546,16 +6765,190 @@ export function deriv(
     if (u.op === "deriv") return u;
     if (u.op === "sin") {
       const v = u.args[0];
-      const dvx = simplify(deriv(v, x));
+      const dvx = simplify(derive(v, x));
       const p = simplify(prod(fn("cos", [v]), dvx));
       return p;
     }
   }
-  if (freeof(u, x)) {
+  if (freeof(u, [x])) {
     return int(0);
   }
   return fn("deriv", [u, x]).markSimplified();
 }
+
+export function isMonomial(
+  expression: string | MathObj,
+  variables: string[] | Sym[]
+): boolean {
+  const vars: Sym[] = [];
+  variables.forEach((v) => {
+    if (typeof v === "string") {
+      vars.push(sym(v));
+    } else {
+      vars.push(v);
+    }
+  });
+  const S = cset(...vars.map((x) => x.toString()));
+  const u = typeof expression === "string" ? exp(expression).obj() : expression;
+  const us = u.toString();
+  if (S.has(us)) {
+    return true;
+  } else if (isPower(u)) {
+    const base = u.base;
+    const exponent = u.exponent;
+    if (S.has(base.toString()) && isInt(exponent) && exponent.value() > 1) {
+      return true;
+    }
+  } else if (isProduct(u)) {
+    const operands = u.args;
+    for (let i = 0; i < operands.length; i++) {
+      const operand = operands[i];
+      if (!isMonomial(operand, Array.from(S))) {
+        return false;
+      }
+    }
+    return true;
+  }
+  return freeof(u, [...S]);
+}
+
+/**
+ * Returns true if the given `expression` is a general
+ * polynomial in the given `variables`, false otherwise.
+ */
+export function isPolynomial(
+  expression: string | MathObj,
+  variables: string[] | Sym[]
+): boolean {
+  const vars: Sym[] = [];
+  variables.forEach((v) => {
+    if (typeof v === "string") {
+      vars.push(sym(v));
+    } else {
+      vars.push(v);
+    }
+  });
+  const S = cset(...vars.map((x) => x.toString()));
+  const u = typeof expression === "string" ? exp(expression).obj() : expression;
+  if (!isSum(u)) {
+    return isMonomial(u, variables);
+  } else {
+    if (S.has(u.toString())) {
+      return true;
+    }
+    for (let i = 0; i < u.args.length; i++) {
+      const operand = u.args[i];
+      if (!isMonomial(operand, variables)) {
+        return false;
+      }
+    }
+    return true;
+  }
+}
+
+function monDeg(
+  expression: string | MathObj,
+  variables: string[] | Sym[]
+): Int {
+  const vars: Sym[] = [];
+  variables.forEach((v) => {
+    if (typeof v === "string") {
+      vars.push(sym(v));
+    } else {
+      vars.push(v);
+    }
+  });
+  const vs = listx(vars);
+  const u = typeof expression === "string" ? exp(expression).obj() : expression;
+  if (freeof(u, vars)) {
+    return int(0);
+  }
+  if (vs.has(u)) {
+    return int(1);
+  }
+  if (isPower(u) && isInt(u.exponent) && u.exponent.value() > 1) {
+    return int(u.exponent.value());
+  }
+  if (isProduct(u)) {
+    const out = u.args
+      .map((x) => monDeg(x, variables))
+      .reduce((p, c) => int(p.int + c.int), int(0));
+    return out;
+  }
+  return int(0);
+}
+
+/**
+ * Where `expression` is a general polynomial expression
+ * and `variables` is a set of variables, returns the
+ * degree of `expression`.
+ */
+export function gpeDeg(
+  expression: string | MathObj,
+  variables: string[] | Sym[]
+): Int {
+  const vars: Sym[] = [];
+  variables.forEach((v) => {
+    if (typeof v === "string") {
+      vars.push(sym(v));
+    } else {
+      vars.push(v);
+    }
+  });
+  let u = typeof expression === "string" ? exp(expression).obj() : expression;
+  u = simplify(u);
+  if (isSum(u)) {
+    const rs = u.args.map((x) => {
+      return monDeg(x, vars).int;
+    });
+    const res = Math.max(...rs);
+    return int(res);
+  }
+  return monDeg(expression, variables);
+}
+
+export function vars(expression: MathObj | string) {
+  const f = (expression: MathObj | string): Set<string> => {
+    let u = typeof expression === "string" ? exp(expression).obj() : expression;
+    u = simplify(u);
+    if (isInt(u) || isFrac(u)) {
+      return cset<string>();
+    }
+    if (isPower(u)) {
+      if (isInt(u.exponent) && u.exponent.value() > 1) {
+        return cset(u.base.toString());
+      } else {
+        return cset(u.toString());
+      }
+    }
+    if (isSum(u)) {
+      const x = u.args.reduce((p, c) => union(p, f(c)), cset<string>());
+      return x;
+    }
+    if (isProduct(u)) {
+      const sumOperands: MathObj[] = [];
+      const nonSumOperands: MathObj[] = [];
+      u.args.forEach((arg) => {
+        if (isSum(arg)) {
+          sumOperands.push(arg);
+        } else {
+          nonSumOperands.push(arg);
+        }
+      });
+      const x = Array.from(nonSumOperands.reduce(
+        (p, c) => union(p, f(c)),
+        cset<string>()
+      )).map(n => n.toString());
+      const result = union(cset(...(sumOperands.map(s=>s.toString()))), cset(...x));
+      return result;
+    }
+    return cset(u.toString());
+  };
+
+  const out = f(expression);
+  return Array.from(out);
+}
+
 
 // § Nodekind Enum
 enum nodekind {

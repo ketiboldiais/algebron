@@ -85,8 +85,8 @@ const TerminalContent = forwardRef<HTMLDivElement, TerminalContentProps>(
       <div
         ref={ref}
         style={{
-          padding: "16px",
-          paddingTop: "2px",
+          padding: "9px",
+          paddingTop: "1px",
           height: `${props.height}px`,
           overflowY: "auto",
         }}

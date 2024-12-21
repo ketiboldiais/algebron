@@ -12,8 +12,12 @@ import MdxLayout from "@/components/mdx-layout";
   - [Intervals](#intervals)
   - [Absolute Value](#absolute-value)
   - [Equations](#equations)
-    - [Linear Equations](#linear-equations)
-    - [Quadratic Equations](#quadratic-equations)
+  - [Families of Expressions](#families-of-expressions)
+    - [Linear Expressions](#linear-expressions)
+    - [Monomial Expressions](#monomial-expressions)
+    - [Quadratic Expressions](#quadratic-expressions)
+      - [The Quadratic Formula](#the-quadratic-formula)
+    - [Polynomial Expressions](#polynomial-expressions)
 
 </TOC>
 
@@ -195,10 +199,11 @@ $$
 	\int_0^{3.8}\frac{\pi^4 x y (a+9 c+8 b \cos(\frac{\pi z}{l})+18 c \cos(\frac{2 \pi z}{l})) \sin^2(\frac{\pi z}{l})}{l^4} dz.
 $$
 
-As we will see throughout the course, certain equations share similar properties and patterns. Studying these similarities, we find that equations can be grouped into _families_. The following sections are dedicated to studying these families. 
+## Families of Expressions
+When we examine the variety of expressions found in mathematics, we find that certain groups of expressions share similiar patterns and properties. To try and organize this vast variety, we will organize these expressions into _families of expressions_, or _kinds of expressions_. 
 
-### Linear Equations
-The simplest family of equations is the __linear equation in one variable__. As simple as such equations are, many real world problems can be reduced to a linear equation.
+### Linear Expressions
+The simplest family of expressions is the __linear expression in one variable__. As simple as such expressions are, many real world problems can be reduced to linear expressions, or more specifically, linear equations.
 
 <aside>
 
@@ -206,20 +211,32 @@ Complex problems can be reduced to _systems of linear equations_. Analyzing thes
 
 </aside>
 
-> __Definition.__ A linear equation in one variable is an equation that can be written in the form 
+> __Definition.__ A linear expression in one variable is an expression that can be written in the form 
 >
 > $$
->    ax + b = 0,
+>    ax + b,
 > $$
 >
 > where ${a}$ and ${b}$ are real numbers and ${a \neq 0.}$
 
-### Quadratic Equations
+In the definition above, we call the expressions ${ax}$ and ${b}$ the __terms__ &mdash; or, more generally, the __subexpressions__ &mdash; of the linear expression.
 
-> __Definition.__ A quadratic equation is an equation in one variable that can be written in the form 
+### Monomial Expressions
+The terms of a linear expression are themselves a special type of expression called __monomial expressions__. The simplest monomial expression is the __univariate monomial expression__, or the __monomial expression in one variable__.
+
+> __Definition.__ Let ${u}$ be an expression. We say that ${u}$ is a __univariate monomial expression__ in a single variable ${x}$ if ${u}$ satisfies one of the following rules:
+>
+> 1. ${u}$ is an integer or fraction.
+> 2. ${u = x.}$
+> 3. ${u = x^n,}$ where ${n \in \Z}$ and ${n \gt 1.}$
+> 4. ${u}$ is a product with two operands that satisfies either (1), (2), or (3).
+
+### Quadratic Expressions
+
+> __Definition.__ A quadratic expression in one variable is an expression that can be written in the form 
 >
 > $$
->    ax^2 + bx + c = 0,
+>    ax^2 + bx + c,
 > $$
 >
 > with ${a,b,c \in \reals}$ and ${a \neq 0.}$
@@ -228,6 +245,7 @@ The following property is often useful to solving quadratic equations:
 
 > __Property.__ ${pq = 0}$ if and only if ${p = 0}$ or ${q = 0.}$
 
+#### The Quadratic Formula
 We can also solve quadratic equations directly with the quadratic formula:
 
 > __Formula.__ The solutions of the quadratic equation ${ax^2 + bx + c = 0,}$ where ${a \neq 0,}$ are given by
@@ -235,6 +253,38 @@ We can also solve quadratic equations directly with the quadratic formula:
 > $$
 >    x = \dfrac{-b \pm \sqrt{b^2 - 4ac}}{2a}.
 > $$
+
+### Polynomial Expressions
+Quadratic expressions can be generalized as polynomial expressions in one variable. I.e., they are a specific type of polynomial expression in one variable. 
+
+> __Definition.__ A polynomial ${u}$ in one variable is an expression of the form:
+>
+> $$
+>    u_nx^n + u_{n-1}x^{n-1} + \ldots + u_1x + u_0,
+> $$
+>
+> where the coefficients ${u_j}$ are rational numbers, and ${n}$ is a non-negative integer.
+
+If ${u_n \neq 0,}$ we call ${u_n}$ the __leading coefficient__ of ${u}$ and ${n}$ the __degree__ of ${u.}$ The expression ${u = 0}$ is called the __zero polynomial__. By convention, the zero polynomial has leading coefficient ${0}$ and, according to mathematical convention, has degree ${-\infty.}$
+
+To aid our discussion on polynomials, we define the following operators. 
+
+> __Definition.__ Let ${u}$ be a polynomial expression in a single variable ${x.}$ Then:
+>
+> $$
+>    \text{deg}(u,x) 
+> $$
+>
+> corresponds to the degree of ${u}$ and
+>
+> $$
+>    \text{lc}(u,x)
+> $$
+>
+> corresponds to the leading coefficient of ${u.}$ If the variable ${x}$ is clear from context, we use the shorthand notation ${\text{deg}(u)}$ and ${\text{lc}(u).}$
+
+ 
+
 
 export default function MDXPage({ children }) {
     return <MdxLayout>{children}</MdxLayout>

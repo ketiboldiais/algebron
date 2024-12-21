@@ -108,7 +108,7 @@ const Fig = ({ data, width = 100, paddingBottom = width }: FigProps) => {
 
 type Fig2DProps = { elements: GraphicsObj[] };
 
-type Path2DProps = { element: Path };
+type Path2DProps = { data: Path };
 
 type DEFProps = { elements: Arrowhead[] };
 const DEF = ({ elements }: DEFProps) => {
@@ -138,13 +138,13 @@ const DEF = ({ elements }: DEFProps) => {
   );
 };
 
-const Path2D = ({ element }: Path2DProps) => {
+const PATH = ({ data }: Path2DProps) => {
   return (
     <path
-      d={element.toString()}
-      fill={element.$fill}
-      stroke={element.$stroke}
-      strokeWidth={element.$strokeWidth}
+      d={data.toString()}
+      fill={data.$fill}
+      stroke={data.$stroke}
+      strokeWidth={data.$strokeWidth}
     />
   );
 };
@@ -152,93 +152,94 @@ const Path2D = ({ element }: Path2DProps) => {
 const Fig2D = ({ elements }: Fig2DProps) => {
   return (
     <>
-      {elements.map((element) => {
-        if (isGroup(element)) {
-          return <G2D key={element.$id} element={element} />;
+      {elements.map((data) => {
+        if (isGroup(data)) {
+          return <GROUP key={data.$id} data={data} />;
         }
-        if (isPath(element)) {
-          return <Path2D key={element.$id} element={element} />;
+        if (isPath(data)) {
+          return <PATH key={data.$id} data={data} />;
         }
-        if (isLine(element)) {
-          return <L2D key={element.$id} element={element} />;
+        if (isLine(data)) {
+          return <LINE key={data.$id} data={data} />;
         }
-        if (isText(element)) {
-          return <Txt key={element.$id} element={element} />;
+        if (isText(data)) {
+          return <TEXT key={data.$id} data={data} />;
         }
-        if (isCircle(element)) {
-          return <Circ key={element.$id} element={element} />;
+        if (isCircle(data)) {
+          return <CIRCLE key={data.$id} data={data} />;
         }
       })}
     </>
   );
 };
 
-type CircleProps = { element: Circle };
-const Circ = ({ element }: CircleProps) => {
+type CircleProps = { data: Circle };
+
+const CIRCLE = ({ data }: CircleProps) => {
   return (
     <circle
-      cx={element.$position.$x}
-      cy={element.$position.$y}
-      r={element.$radius}
-      fill={element.$fill}
-      strokeWidth={element.$strokeWidth}
-      stroke={element.$stroke}
+      cx={data.$position.$x}
+      cy={data.$position.$y}
+      r={data.$radius}
+      fill={data.$fill}
+      strokeWidth={data.$strokeWidth}
+      stroke={data.$stroke}
     />
   );
 };
 
-type TxtProps = { element: TextObj };
-const Txt = ({ element }: TxtProps) => {
-  if (element.$latex) {
-    const block = element.$latex === "block" ? true : false;
+type TextProps = { data: TextObj };
+const TEXT = ({ data }: TextProps) => {
+  if (data.$latex) {
+    const block = data.$latex === "block" ? true : false;
     return (
       <foreignObject
-        x={element.$position.$x}
-        y={element.$position.$y}
-        width={element.$width}
-        height={element.$height}
-        color={element.$fill}
+        x={data.$position.$x}
+        y={data.$position.$y}
+        width={data.$width}
+        height={data.$height}
+        color={data.$fill}
       >
-        <Tex content={element.$content} block={block} />
+        <Tex content={data.$content} block={block} />
       </foreignObject>
     );
   }
   return (
     <text
-      textAnchor={element.$textAnchor}
-      x={element.$position.$x}
-      y={element.$position.$y}
-      dx={element.$dx}
-      dy={element.$dy}
-      fill={element.$fill}
+      textAnchor={data.$textAnchor}
+      x={data.$position.$x}
+      y={data.$position.$y}
+      dx={data.$dx}
+      dy={data.$dy}
+      fill={data.$fill}
     >
-      {element.$content}
+      {data.$content}
     </text>
   );
 };
 
-type G2DProps = { element: GroupObj };
-const G2D = ({ element }: G2DProps) => {
+type GroupProps = { data: GroupObj };
+const GROUP = ({ data }: GroupProps) => {
   return (
     <g>
-      <Fig2D elements={element.$children} />
+      <Fig2D elements={data.$children} />
     </g>
   );
 };
 
-type L2DProps = { element: LineObj };
+type L2DProps = { data: LineObj };
 
-const L2D = ({ element }: L2DProps) => {
+const LINE = ({ data }: L2DProps) => {
   return (
     <line
-      x1={element.$start.$x}
-      y1={element.$start.$y}
-      x2={element.$end.$x}
-      y2={element.$end.$y}
-      stroke={element.$stroke}
-      strokeWidth={element.$strokeWidth}
-      markerEnd={element.$arrowEnd ? `url(#${element.$id}-end)` : ""}
-      markerStart={element.$arrowEnd ? `url(#${element.$id}-start)` : ""}
+      x1={data.$start.$x}
+      y1={data.$start.$y}
+      x2={data.$end.$x}
+      y2={data.$end.$y}
+      stroke={data.$stroke}
+      strokeWidth={data.$strokeWidth}
+      markerEnd={data.$arrowEnd ? `url(#${data.$id}-end)` : ""}
+      markerStart={data.$arrowEnd ? `url(#${data.$id}-start)` : ""}
     />
   );
 };
@@ -421,9 +422,9 @@ function CameraController() {
   return null;
 }
 
-type Plot3DProps = { element: Plot3D };
-export function PLOT3D({ element }: Plot3DProps) {
-  const d = element;
+type Plot3DProps = { data: Plot3D };
+export function PLOT3D({ data }: Plot3DProps) {
+  const d = data;
   const Plot3DPath = ({ zfn }: { zfn: Fn3D }) => {
     const ref = useRef(null);
     const paramFunction = (x: number, y: number, target: Vector3) => {
@@ -450,9 +451,7 @@ export function PLOT3D({ element }: Plot3DProps) {
     return (
       <>
         {d.$zFunctions.map((zfn, i) => (
-          <>
-            <Plot3DPath key={`${d.$id}-${i}`} zfn={zfn} />
-          </>
+          <Plot3DPath key={`${d.$id}-${i}`} zfn={zfn} />
         ))}
       </>
     );
@@ -489,11 +488,11 @@ export function PLOT3D({ element }: Plot3DProps) {
 
 export function Plot3DTest() {
   const d = plot3D("fn z(x,y) = sin(x) + cos(y)").paramFn();
-  return <PLOT3D element={d} />;
+  return <PLOT3D data={d} />;
 }
 export function Plot3DDemo() {
   const d = plot3D("fn z(x,y) = 4 * e^(-1/4 * y^2) * sin(2x - 1)").paramFn();
-  return <PLOT3D element={d} />;
+  return <PLOT3D data={d} />;
 }
 
 export const TreeTest = () => {
