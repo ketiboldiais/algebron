@@ -1198,6 +1198,11 @@ function homogenousVector(value: number, length: number) {
   return new Vector(elements);
 }
 
+/** Returns a new 2D vector. */
+function v2D(x: number, y: number) {
+  return new Vector([x, y]);
+}
+
 /** Given `vectorA` and `vectorB`, ensures that `vectorA` and `vectorB` have the same sizes (number of elements). If one is smaller than the other, the shorter is padded with additional zeros to ensure the lengths are the same. */
 function equalen(vectorA: Vector, vectorB: Vector): [Vector, Vector] {
   const A = [];
@@ -3739,6 +3744,541 @@ class TreeObj extends GroupObj {
 
 export function tree(t: Fork) {
   return new TreeObj(t);
+}
+
+type EdgeType = "--" | "-->";
+
+class Vertex<T = any> {
+  $id: string;
+  $data: T | null;
+  constructor(id: string | number, data: T | null = null) {
+    this.$id = `${id}`;
+    this.$data = data;
+  }
+  copy() {
+    const out = new Vertex(this.$id, this.$data);
+    return out;
+  }
+  data(data: T) {
+    const out = this.copy();
+    out.$data = data;
+    return out;
+  }
+  id(value: string | number) {
+    const out = this.copy();
+    out.$id = `${value}`;
+    return out;
+  }
+}
+
+export function vertex<T>(id: string | number, data: T | null = null) {
+  return new Vertex(id, data);
+}
+
+class Edge<T = any, K = any> {
+  $source: Vertex<T>;
+  $target: Vertex<T>;
+  $direction: EdgeType;
+  $id: string;
+  $meta: K | null;
+  constructor(
+    source: Vertex<T>,
+    target: Vertex<T>,
+    direction: EdgeType,
+    meta: K | null = null
+  ) {
+    this.$source = source;
+    this.$target = target;
+    this.$direction = direction;
+    this.$id = `${source.$id}${direction}${target.$id}`;
+    this.$meta = meta;
+  }
+  /**
+   * Returns true if this edge is equivalent to the other
+   * edge. Where:
+   *
+   * - 𝑆₁ is the source id of this edge,
+   * - 𝑆₂ is the source id of the other edge,
+   * - 𝑇₁ is the target id of this edge, and
+   * - 𝑇₂ is the target id of the other edge,
+   *
+   * the equivalence relation is defined as follows:
+   * 1. If the edges are of different directions (`--` and `->` or vice versa), the
+   *    edges are not equivalent.
+   * 2. If the edges are both directed (`--`), the edges are equivalent
+   *    only if:
+   *    ~~~
+   *    (𝑆₁ = 𝑆₂) AND (𝑇₁ = 𝑇₂).
+   *    ~~~
+   * 3. If the edges are undirected, the edges are equivalent only if:
+   *    ~~~
+   *    ((𝑆₁ = 𝑆₂) AND (𝑇₁ = 𝑇₂))  OR  ((𝑆₁ = 𝑇₂) AND (𝑇₁ = 𝑆₂))
+   *    ~~~
+   * @example
+   * ~~~
+   * // a and b are equivalent since they’re undirected:
+   * // 1--2 and 2--1
+   * const a = edge(1,2)
+   * const b = edge(2,1)
+   *
+   * // c and d are equivalent since 1->2 and 1->2.
+   * // e is not equivalent to either since it’s the directed
+   * // edge 2->1
+   * const c = link(1,2)
+   * const d = link(1,2)
+   * const e = link(2,1)
+   * ~~~
+   */
+  isEquivalent(other: Edge) {
+    const s1 = this.$source.$id;
+    const t1 = this.$target.$id;
+    const s2 = other.$source.$id;
+    const t2 = other.$target.$id;
+    if (this.$direction === "-->" && other.$direction === "-->") {
+      return s1 === s2 && t1 === t2;
+    }
+    if (this.$direction === "--" && other.$direction === "--") {
+      return (s1 === s2 && t1 === t2) || (s1 === t2 && t1 === s2);
+    }
+    return false;
+  }
+
+  reverse() {
+    const out = new Edge(this.$target, this.$source, this.$direction);
+    out.$meta = this.$meta;
+    out.$id = `${this.$target.$id}${this.$direction}${this.$source.$id}`;
+    return out;
+  }
+
+  metamap<X>(callback: (metadata: K) => X) {
+    const metadata = this.$meta;
+    if (metadata === null) {
+      return this as any as Edge<T, X>;
+    }
+    const m = callback(metadata);
+    return new Edge(this.$source, this.$target, this.$direction, m);
+  }
+
+  get isUndirected() {
+    return this.$direction === "--";
+  }
+  get isDirected() {
+    return this.$direction === "-->";
+  }
+  get revid() {
+    return `${this.$target.$id}${this.$direction}${this.$source.$id}`;
+  }
+  copy() {
+    const out = new Edge(this.$source, this.$target, this.$direction);
+    return out;
+  }
+  undirected() {
+    if (!this.isDirected) return this;
+    return new Edge(this.$source, this.$target, "--", this.$meta);
+  }
+  direct() {
+    if (this.isDirected) return this;
+    return new Edge(this.$source, this.$target, "-->", this.$meta);
+  }
+}
+
+export function edge(
+  source: string | number | Vertex,
+  target: string | number | Vertex
+) {
+  return new Edge(
+    typeof source === "string" || typeof source === "number"
+      ? vertex(source)
+      : source,
+    typeof target === "string" || typeof target === "number"
+      ? vertex(target)
+      : target,
+    "--"
+  );
+}
+
+export function link(
+  source: string | number | Vertex,
+  target: string | number | Vertex
+) {
+  return new Edge(
+    typeof source === "string" || typeof source === "number"
+      ? vertex(source)
+      : source,
+    typeof target === "string" || typeof target === "number"
+      ? vertex(target)
+      : target,
+    "-->"
+  );
+}
+
+class Graph<T = any, K = any> {
+  $adjacency: Map<string | number, Vertex<T>[]>;
+  $vertices: Map<string | number, Vertex<T>>;
+  $edges: Map<string, Edge<T, K>>;
+  constructor() {
+    this.$adjacency = new Map();
+    this.$vertices = new Map();
+    this.$edges = new Map();
+  }
+
+  /** Returns all the neighbors of the given vertex. */
+  neighbors(vertex: Vertex) {
+    const out: Vertex[] = [];
+    this.$edges.forEach((e) => {
+      if (e.$source.$id === vertex.$id) out.push(e.$target);
+      else if (e.$target.$id === vertex.$id) out.push(e.$source);
+    });
+    return out;
+  }
+
+  /** Returns true if given source (referred to by id) is adjacent to the given target (by id). The edge type must be provided to ensure a correct result. */
+  adjacent(
+    sourceId: string | number,
+    direction: EdgeType,
+    targetId: string | number
+  ) {
+    const st = `${sourceId}${direction}${targetId}`;
+    const ts = `${targetId}${direction}${sourceId}`;
+    return this.$edges.has(st) || this.$edges.has(ts);
+  }
+
+  /** Returns the degree of the given vertex (referred to by id). */
+  deg(id: string | number) {
+    let degree = 0;
+    this.$edges.forEach((e) => {
+      const sourceId = e.$source.$id;
+      if (sourceId === id) {
+        degree++;
+      }
+    });
+    return degree;
+  }
+
+  /** Returns all the edges of this graph as an array. */
+  edgeList() {
+    const out: Edge[] = [];
+    this.$edges.forEach((e) => {
+      out.push(e);
+    });
+    return out;
+  }
+
+  /** Returns all the vertices of this graph as an array. */
+  vertexList() {
+    const out: Vertex[] = [];
+    this.$vertices.forEach((v) => {
+      out.push(v);
+    });
+    return out;
+  }
+
+  /** Returns true if this graph contains the given vertex (referred to by id). Otherwise, returns false. */
+  hasVertex(vertexID: string | number): boolean {
+    return this.$adjacency.has(vertexID);
+  }
+
+  /** Appends the given vertex, alongside its data, to this graph. */
+  vertex<T>(value: string | number | Vertex, data: T | null = null) {
+    const v =
+      typeof value === "string" || typeof value === "number"
+        ? vertex(value, data)
+        : value;
+    if (!this.hasVertex(v.$id)) {
+      this.$adjacency.set(v.$id, []);
+    }
+    this.$vertices.set(v.$id, v);
+    return v;
+  }
+
+  /** Appends the given edge to this graph. */
+  E(edge: Edge) {
+    const source = this.vertex(edge.$source);
+    const target = this.vertex(edge.$target);
+    this.$adjacency.get(source.$id)!.push(this.$vertices.get(target.$id)!);
+    this.$adjacency.get(target.$id)!.push(this.$vertices.get(source.$id)!);
+    this.$edges.set(edge.$id, edge);
+    const rev = edge.reverse();
+    this.$edges.set(rev.$id, rev);
+    return this;
+  }
+
+  /** Creates a new edge from the given `sourceID` and `targetID`, then appends the resulting edge to this graph. */
+  edge(sourceID: string | number | Vertex, targetID: string | number | Vertex) {
+    const E = edge(sourceID, targetID);
+    this.E(E);
+    return this;
+  }
+}
+
+/** Returns a new graph. */
+export function graph(adjacencyList?: Record<string, (string | number)[]>) {
+  const G = new Graph();
+  if (adjacencyList) {
+    Object.keys(adjacencyList).forEach((source) => {
+      const targets = adjacencyList[source];
+      const src = vertex(source);
+      targets.forEach((target) => {
+        const tar = vertex(target);
+        const e = edge(src, tar);
+        G.E(e);
+      });
+    });
+  }
+  return G;
+}
+
+class Particle {
+  /** The particle’s position vector. */
+  $p: Vector;
+
+  /** The particle’s velocity vector. */
+  $v: Vector = v2D(0, 0);
+
+  /** The particle’s force vector. */
+  $f: Vector = v2D(0, 0);
+
+  /** The particle’s unique identifier. */
+  $id: string | number;
+
+  /** The particle’s radius. */
+  $r: number = 3;
+  constructor(id: string | number, position: Vector) {
+    this.$p = position;
+    this.$id = id;
+  }
+}
+
+/** Returns a new particle. */
+function pt(id: string | number, position: Vector) {
+  return new Particle(id, position);
+}
+
+class ForceGraph extends GroupObj {
+  private $particles: Map<(string | number), Particle>;
+  private $graph: Graph;
+  $iterations: number = 100;
+  iterations(x: number) {
+    this.$iterations = x;
+    return this;
+  }
+  $epsilon: number = 0.5;
+  epsilon(e: number) {
+    this.$epsilon = e;
+    return this;
+  }
+  $stable: boolean = false;
+  $repulsion: number = 35;
+  repulsion(n: number) {
+    this.$repulsion = n;
+    return this;
+  }
+  $attraction: number = 0.1;
+  attraction(n: number) {
+    this.$attraction = n;
+    return this;
+  }
+  $decay: number = 0.3;
+  decay(n: number) {
+    this.$decay = n;
+    return this;
+  }
+  $children: GraphicsAtom[] = [];
+  constructor(graph: Graph) {
+    super([]);
+    this.$graph = graph;
+    this.$particles = new Map();
+  }
+
+  private forEachPt(callback: (particle: Particle) => void) {
+    this.$particles.forEach((p) => callback(p));
+  }
+
+  $domain: [number, number] = [-10, 10];
+  domain(interval: [number,number]) {
+    this.$domain = interval;
+    return this;
+  }
+  $range: [number, number] = [-10, 10];
+  range(interval: [number,number]) {
+    this.$range = interval;
+    return this;
+  }
+  private layout() {
+    const MIN_X = this.$domain[0];
+    const MAX_X = this.$domain[1];
+    const MIN_Y = this.$range[0];
+    const MAX_Y = this.$range[1];
+    for (let i = 0; i < this.$iterations; i++) {
+      this.iterate(MIN_X, MAX_X, MIN_Y, MAX_Y);
+      if (this.$stable) break;
+    }
+  }
+
+  private iterate(
+    MIN_X: number,
+    MAX_X: number,
+    MIN_Y: number,
+    MAX_Y: number,
+  ) {
+    const rsq = (v: Vector, u: Vector) => (
+      ((v.$x - u.$x) ** 2) + ((v.$y - u.$y) ** 2)
+    );
+    this.forEachPt((v) => {
+      v.$f = v2D(0, 0);
+      this.forEachPt((u) => {
+        if (v.$id !== u.$id) {
+          let d2 = rsq(v.$p, u.$p);
+          if (d2 === 0) d2 = 0.001;
+          const c = this.$repulsion / d2;
+          const f = (v.$p.sub(u.$p)).mul(c);
+          v.$f = v.$f.add(f);
+        }
+      });
+    });
+    this.$graph.$edges.forEach((e) => {
+      const u = this.$particles.get(e.$source.$id);
+      const v = this.$particles.get(e.$target.$id);
+      if (u && v) {
+        const f = (u.$p.sub(v.$p)).mul(this.$attraction);
+        v.$f = v.$f.add(f);
+      }
+    });
+    let displacement = 0;
+    this.forEachPt((v) => {
+      v.$v = (v.$v.add(v.$f)).mul(this.$decay);
+      displacement += (Math.abs(v.$v.$x)) + Math.abs(v.$v.$y);
+      v.$p = v.$p.add(v.$v);
+      v.$p.$x = clamp(MIN_X, v.$p.$x, MAX_X);
+      v.$p.$y = clamp(MIN_Y, v.$p.$y, MAX_Y);
+    });
+    this.$stable = displacement < this.$epsilon;
+  }
+
+  /** Sets the initial position of all particles. By default, particles are initially placed randomly. */
+  scatter() {
+    this.$graph.$vertices.forEach((v) => {
+      const x = randInt(-2, 2);
+      const y = randInt(-2, 2);
+      this.$particles.set(v.$id, pt(v.$id, v2D(x, y)));
+    });
+  }
+
+  $styles: {
+    $nodes: Partial<
+      {
+        fill: string;
+        radius: number;
+        fontColor: string;
+        fontSize: number;
+        fontFamily: string;
+      }
+    >;
+    $edges: Partial<{ stroke: string }>;
+  } = {
+    $nodes: { fill: "white", radius: 5 },
+    $edges: { stroke: "grey" },
+  };
+
+  get $nodeFontFamily() {
+    return this.$styles.$nodes.fontFamily ?? "inherit";
+  }
+  nodeFontFamily(font: string) {
+    this.$styles.$nodes.fontFamily = font;
+    return this;
+  }
+
+  get $nodeFontSize() {
+    return this.$styles.$nodes.fontSize ?? 12;
+  }
+  nodeFontSize(fontSize: number) {
+    this.$styles.$nodes.fontSize = fontSize;
+    return this;
+  }
+
+  get $nodeFontColor() {
+    return this.$styles.$nodes.fontColor ?? "initial";
+  }
+
+  nodeFontColor(color: string) {
+    this.$styles.$nodes.fontColor = color;
+    return this;
+  }
+
+  get $nodeRadius() {
+    return this.$styles.$nodes.radius ? this.$styles.$nodes.radius : 5;
+  }
+
+  get $nodeColor() {
+    return this.$styles.$nodes.fill ? this.$styles.$nodes.fill : "white";
+  }
+
+  get $edgeColor() {
+    return this.$styles.$edges.stroke ?? "grey";
+  }
+
+  edgeColor(color: string) {
+    this.$styles.$edges.stroke = color;
+    return this;
+  }
+
+  /** Sets the radius for all nodes in this graph. */
+  nodeRadius(r: number) {
+    this.$styles.$nodes.radius = r;
+    return this;
+  }
+
+  /** Sets the color for all nodes in this graph. */
+  nodeColor(value: string) {
+    this.$styles.$nodes.fill = value;
+    return this;
+  }
+
+  /**
+   * Begins drawing the force graph.
+   */
+  done() {
+    this.scatter();
+    this.layout();
+    const ids = new Set<string>();
+    this.$graph.$edges.forEach((e) => {
+      const source = this.$particles.get(e.$source.$id);
+      const target = this.$particles.get(e.$target.$id);
+      if (source && target && !ids.has(e.$id)) {
+        const x1 = source.$p.$x;
+        const y1 = source.$p.$y;
+        const x2 = target.$p.$x;
+        const y2 = target.$p.$y;
+        const l = line([x1, y1], [x2, y2]).stroke(this.$edgeColor);
+        if (e.isDirected) {
+          l.arrowEnd();
+        }
+        this.$children.push(l);
+      }
+      ids.add(e.$id);
+      ids.add(e.revid);
+    });
+    this.$particles.forEach((p) => {
+      const t = p.$id;
+      const c = circle(this.$nodeRadius, [p.$p.$x, p.$p.$y])
+        .fill(this.$nodeColor);
+      this.$children.push(c);
+      const label = text(t)
+        .position(p.$p.$x, p.$p.$y + p.$r)
+        .fontFamily(this.$nodeFontFamily)
+        .fontSize(this.$nodeFontSize)
+        .fill(this.$nodeFontColor);
+      this.$children.push(label);
+    });
+    return this;
+  }
+}
+
+/** Returns a new force layout graph. */
+export function forceGraph(graph: Graph) {
+  return (
+    new ForceGraph(graph)
+  );
 }
 
 /** A value native to Winnow. */
@@ -6943,11 +7483,13 @@ export function vars(expression: MathObj | string) {
           nonSumOperands.push(arg);
         }
       });
-      const x = Array.from(nonSumOperands.reduce(
-        (p, c) => union(p, f(c)),
-        cset<string>()
-      )).map(n => n.toString());
-      const result = union(cset(...(sumOperands.map(s=>s.toString()))), cset(...x));
+      const x = Array.from(
+        nonSumOperands.reduce((p, c) => union(p, f(c)), cset<string>())
+      ).map((n) => n.toString());
+      const result = union(
+        cset(...sumOperands.map((s) => s.toString())),
+        cset(...x)
+      );
       return result;
     }
     return cset(u.toString());
@@ -6956,7 +7498,6 @@ export function vars(expression: MathObj | string) {
   const out = f(expression);
   return Array.from(out);
 }
-
 
 // § Nodekind Enum
 enum nodekind {

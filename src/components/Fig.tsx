@@ -34,6 +34,8 @@ import {
   range,
   randInt,
   zip,
+  forceGraph,
+  graph,
 } from "@/algebron/main";
 
 import { CSSProperties, ReactNode, useEffect, useRef, useState } from "react";
@@ -557,6 +559,27 @@ export const DistanceBetweenPoints = () => {
   return <Fig data={d} width={45} />;
 };
 
+export const MidpointFig = () => {
+  const D = tuple(-5, 5);
+  const R = tuple(-5, 5);
+  const xAxis = axis("x", D, R);
+  const yAxis = axis("y", D, R);
+  const d = svg([
+    grid(D, R).done(),
+    xAxis,
+    yAxis,
+    line([0, 1], [-3, 4]).stroke("firebrick"),
+    circle(5, [0, 1]).fill("lightblue"),
+    circle(5, [-3, 4]).fill("lightblue"),
+    circle(5, [-1.5, 2.5]).fill("salmon"),
+  ])
+    .dimensions(400, 400)
+    .domain(D)
+    .range(R)
+    .done();
+  return <Fig data={d} width={45} />;
+};
+
 export const DistanceBetweenPoints2 = () => {
   const D = tuple(-5, 5);
   const R = tuple(-5, 5);
@@ -641,4 +664,36 @@ export const PlotTest = () => {
     .range(R)
     .done();
   return <Fig data={d} width={70} />;
+};
+
+export const GraphDemo = () => {
+  const N = 90;
+  const D = tuple(-N, N);
+  const R = tuple(-N, N);
+  const d = svg([
+    forceGraph(
+      graph({
+        a: ["b", "x", "n"],
+        b: ["c", "d", "g", "n"],
+        c: ["e", "g"],
+        d: ["j", "k", "e"],
+        e: ["k"],
+        j: ["x", "s", "a"],
+        k: ["j", "s"],
+        n: ["g", "x"],
+        x: ["s"],
+      })
+    )
+      .domain(D)
+      .range(R)
+      .nodeColor("salmon")
+      .edgeColor("firebrick")
+      .nodeRadius(3)
+      .done(),
+  ])
+    .dimensions(300,300)
+    .domain(D)
+    .range(R)
+    .done();
+  return <Fig data={d} width={60} paddingBottom={50} />;
 };

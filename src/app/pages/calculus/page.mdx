@@ -20,6 +20,7 @@ import MdxLayout from "@/components/mdx-layout";
     - [Polynomial Expressions](#polynomial-expressions)
   - [Cartesian Plane](#cartesian-plane)
     - [The Distance Between Two Points](#the-distance-between-two-points)
+    - [Midpoint Formula](#midpoint-formula)
 
 </TOC>
 
@@ -333,6 +334,21 @@ Thus, we have the following formula.
 > 
 > $$
 >    d = \sqrt{(x_2 - x_1)^2 + (y_2 - y_1)^2}.
+> $$
+
+### Midpoint Formula
+Given two points ${P(x_1, y_1)}$ and ${Q(x_2, y_2),}$ what is the midpoint of the line segment joining ${P}$ and ${Q}$? For example, consider the figure below. The midpoint is marked by the red point. What is the coordinate of this point?
+
+import {MidpointFig} from '@/components/Fig';
+
+<MidpointFig/>
+
+Here, we apply the midpoint formula:
+
+> __Midpoint Formula__. Given points ${P(x_1, y_1)}$ and ${Q(x_2, y_2),}$ the midpoint of the line segment joining ${P}$ and ${Q}$ has the coordinates:
+>
+> $$
+>    \left( \dfrac{x_1 + x_2}{2}, \dfrac{y_1 + y_2}{2} \right).
 > $$
 
 export default function MDXPage({ children }) {
