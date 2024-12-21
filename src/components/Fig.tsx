@@ -23,7 +23,6 @@ import {
   text,
   SVGObj,
   vector,
-  line3D,
   haxis,
   vaxis,
   Plot3D,
@@ -31,6 +30,7 @@ import {
   tree,
   subtree,
   leaf,
+  circle,
 } from "@/algebron/main";
 
 import { CSSProperties, ReactNode, useEffect, useRef, useState } from "react";
@@ -66,23 +66,23 @@ const axis = (
   }
 };
 
-type FigProps = { d: SVGObj; w?: number; p?: number };
+type FigProps = { data: SVGObj; width?: number; paddingBottom?: number };
 
 const FIGURE = ({ children }: { children: ReactNode }) => {
   return <figure className="algebron-fig">{children}</figure>;
 };
 
-const Fig = ({ d, w = 100, p = w }: FigProps) => {
+const Fig = ({ data, width = 100, paddingBottom = width }: FigProps) => {
   const par = "xMidYMid meet";
-  const width = d.$width;
-  const height = d.$height;
-  const viewbox = `0 0 ${width} ${height}`;
+  const w = data.$width;
+  const height = data.$height;
+  const viewbox = `0 0 ${w} ${height}`;
   const boxcss = {
     display: "block",
     margin: "0 auto",
     position: "relative",
-    width: `${w}%`,
-    paddingBottom: `${p}%`,
+    width: `${width}%`,
+    paddingBottom: `${paddingBottom}%`,
     overflow: "hidden",
   } as const;
   const svgcss = {
@@ -98,8 +98,8 @@ const Fig = ({ d, w = 100, p = w }: FigProps) => {
     <FIGURE>
       <div style={boxcss}>
         <svg viewBox={viewbox} preserveAspectRatio={par} style={svgcss}>
-          <DEF elements={d.$markers} />
-          <Fig2D elements={d.$children} />
+          <DEF elements={data.$markers} />
+          <Fig2D elements={data.$children} />
         </svg>
       </div>
     </FIGURE>
@@ -301,7 +301,7 @@ export const LA1 = () => {
     .domain(D)
     .range(R)
     .done();
-  return <Fig d={d} w={60} />;
+  return <Fig data={d} width={60} />;
 };
 
 export const LA2 = () => {
@@ -326,7 +326,7 @@ export const LA2 = () => {
     .domain(D)
     .range(R)
     .done();
-  return <Fig d={d} w={60} />;
+  return <Fig data={d} width={60} />;
 };
 
 export const LA3 = () => {
@@ -349,7 +349,7 @@ export const LA3 = () => {
     .domain(D)
     .range(R)
     .done();
-  return <Fig d={d} w={60} />;
+  return <Fig data={d} width={60} />;
 };
 
 export const LA4 = () => {
@@ -384,7 +384,7 @@ export const LA4 = () => {
     .domain(D)
     .range(R)
     .done();
-  return <Fig d={d} w={60} />;
+  return <Fig data={d} width={60} />;
 };
 
 export const LA5 = () => {
@@ -403,7 +403,7 @@ export const LA5 = () => {
     .domain(D)
     .range(R)
     .done();
-  return <Fig d={d} w={60} />;
+  return <Fig data={d} width={60} />;
 };
 
 export default Fig;
@@ -491,38 +491,41 @@ export function Plot3DTest() {
   const d = plot3D("fn z(x,y) = sin(x) + cos(y)").paramFn();
   return <PLOT3D element={d} />;
 }
+export function Plot3DDemo() {
+  const d = plot3D("fn z(x,y) = 4 * e^(-1/4 * y^2) * sin(2x - 1)").paramFn();
+  return <PLOT3D element={d} />;
+}
 
-export function TreeTest() {
+export const TreeTest = () => {
   const d = svg([
     tree(
       subtree("a").nodes([
         subtree("b").nodes([leaf("c"), leaf("d")]),
         subtree("e").nodes([
-          subtree("f").nodes([
-            subtree("g").nodes([leaf("h"), leaf("i")]),
-          ]),
+          leaf("j"),
+          subtree("f").nodes([subtree("g").nodes([leaf("h"), leaf("i")])]),
         ]),
       ])
     )
-      .nodeRadius(6)
-      .layout('hv')
+      .nodeFn((node) => circle(5, [node.$x, node.$y]).fill("salmon"))
+      .labelFn((node) =>
+        text(node.$name).position(node.$x, node.$y).dx(-10).dy(0)
+      )
+      .layout("reingold-tilford")
       .done(),
   ])
+    .dimensions(400, 300)
     .domain([-10, 10])
-    .range([-10, 10])
+    .range([-3, 3])
     .done();
-  return <Fig d={d} />;
-}
+  return <Fig data={d} width={70} paddingBottom={43} />;
+};
 
 export const PlotTest = () => {
   const D = tuple(-10, 10);
   const R = tuple(-10, 10);
-  const xmin = D[0];
-  const xmax = D[1];
-  const ymin = R[0];
-  const ymax = R[1];
-  const xaxis = line3D([xmin, 0, 1], [xmax, 0, 1]).stroke("grey");
-  const yaxis = line3D([0, ymin, 1], [0, ymax, 1]).stroke("grey");
+  const xaxis = axis("x", D, R);
+  const yaxis = axis("y", D, R);
   const d = svg([
     xaxis,
     yaxis,
@@ -535,5 +538,5 @@ export const PlotTest = () => {
     .domain(D)
     .range(R)
     .done();
-  return <Fig d={d} />;
+  return <Fig data={d} width={70} />;
 };

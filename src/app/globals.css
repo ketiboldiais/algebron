@@ -51,8 +51,8 @@ body {
 
 pre,
 code {
-  font-family: KaTeX_typewriter;
-  font-size: 0.93rem;
+  font-family: monospace;
+  font-size: 0.88rem;
 }
 
 textarea {
@@ -72,6 +72,8 @@ textarea {
 pre {
   padding: 0.8rem;
   border-radius: 0.2em;
+  border-top: solid thin lightgrey;
+  border-bottom: solid thin lightgrey;
   overflow-x: scroll;
   background-color: rgb(42, 50, 57);
   color: white;
@@ -92,6 +94,13 @@ pre {
 }
 .hljs-built_in {
   color: rgb(109, 197, 200);
+}
+.hljs-string {
+  color: rgb(182, 240, 165);
+}
+
+.function_ {
+  color: orange;
 }
 
 p {
@@ -271,9 +280,11 @@ li p {
     border-right: solid thin lightgrey;
     height: 97vh;
     padding: 1vh 1vw;
+    width: 22vw;
   }
   .toc ul, .toc ul ul, .toc ul ul ul {
     list-style: none;
     margin: 0 .5vw;
+    margin-right: 0;
   }
 }

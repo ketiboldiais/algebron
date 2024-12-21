@@ -1,10 +1,13 @@
 import MdxLayout from "@/components/mdx-layout";
+import { PlotTest } from "@/components/Fig";
+import { TreeTest } from "@/components/Fig";
+import { Plot3DDemo } from "@/components/Fig";
 
-# Liber
+# Algebron
 
 <TOC>
 
-- [Liber](#liber)
+- [Algebron](#algebron)
   - [Basic Number Types \& Arithmetic](#basic-number-types--arithmetic)
   - [Primitive Types](#primitive-types)
     - [Integers](#integers)
@@ -16,7 +19,15 @@ import MdxLayout from "@/components/mdx-layout";
   - [Data Structures](#data-structures)
     - [Lists](#lists)
     - [Vectors](#vectors)
+      - [Vector Class](#vector-class)
+        - [Vector.$elements](#vectorelements)
+        - [Vector.length](#vectorlength)
+        - [Vector.toString()](#vectortostring)
+        - [Vector.binop(operand, callback)](#vectorbinopoperand-callback)
     - [Matrices](#matrices)
+  - [CAS Modules](#cas-modules)
+    - [simplify(expression)](#simplifyexpression)
+    - [freeof(expr, subex)](#freeofexpr-subex)
   - [2D Graphics](#2d-graphics)
     - [Cartesian Plot](#cartesian-plot)
     - [Linear Axes](#linear-axes)
@@ -26,13 +37,15 @@ import MdxLayout from "@/components/mdx-layout";
     - [Graph Drawing](#graph-drawing)
   - [3D Graphics](#3d-graphics)
     - [3D Plot](#3d-plot)
+  - [React Components](#react-components)
 
 </TOC>
 
-Welcome to Liber. On this page's sections, click to the right of the dollar sign (`$:`) to begin typing expressions. Hit "Enter" to execute the expression. Some of the REPL windows have code preset and entered to serve as examples.
+Welcome to Algebron. On this page's sections, click to the right of the dollar sign (`$:`) to begin typing expressions. Hit "Enter" to execute the expression. Some of the REPL windows have code preset and entered to serve as examples.
 
 ## Basic Number Types & Arithmetic
-Liber supports basic arithmetic operations. Liber's core arithmetic operations are displayed in the REPL below.
+
+Algebron supports basic arithmetic operations. Algebron's core arithmetic operations are displayed in the REPL below.
 
 <REPL
   height={450}
@@ -76,7 +89,7 @@ We used integers for the examples above, but certain operations are free to take
   ]}
 />
 
-Integers and floats are considered **primitives** in Liber. The set of primitives also includes fractions. Fractions are written with the syntax ${a|b}$, where ${a}$ and ${b}$ are integers.
+Integers and floats are considered **primitives** in Algebron. The set of primitives also includes fractions. Fractions are written with the syntax ${a|b}$, where ${a}$ and ${b}$ are integers.
 
 <REPL
   height={200}
@@ -91,35 +104,241 @@ Integers and floats are considered **primitives** in Liber. The set of primitive
 />
 
 ## Primitive Types
+
+Primitive types in Algebron are expressions that cannot be reduced any further.
+
 ### Integers
-Integers are the most basic type in Liber. The largest possible integer in Liber is ${9,007,199,254,740,991}$ or ${2^{53} - 1.}$ Any integer greater than this will be cast to a [big integer](#big-integers).
+
+Integers are the most basic type in Algebron. The largest possible integer in Algebron is ${9,007,199,254,740,991}$ or ${2^{53} - 1.}$ Any integer greater than this will be cast to a [big integer](#big-integers).
 
 ### Floating Point Numbers
-Floating point numbers in Liber are represented in the 64-bit format.
+
+Floating point numbers in Algebron are represented in the 64-bit format.
 
 ### Fractions
-Fractions in Liber are implemented as JavaScript objects.
+
+Fractions in Algebron are implemented as JavaScript objects.
 
 ### Big Integers
+
+Integers larger than ${9,007,199,254,740,991}$ are automatically cast to big integers.
+
 ### Strings
+
+Strings in Algebron are _always_ double quoted.
+
+```ts
+"a string";
+```
+
 ### Symbolic Strings
+
+Any expression surrounded by the apostrophe (`'`) in Algebron is interpreted as a symbolic string. Symbolic strings are Algebron's data type for _algebraic expressions_, handled by Algebron's [CAS modules](#cas-modules).
+
 ## Data Structures
+
+Several data structures are implemented natively in Algebron: lists, vectors, and matrices.
+
 ### Lists
+
+A list is any linear sequence of data. In Algebron, a list is written with open and closing parentheses. For example, below is a list with four integers as elements:
+
+```ts
+1, 2, 3, 4;
+```
+
 ### Vectors
+
+A vector is similar to a list, except its elements can only be integers or floating point numbers, or expressions that reduce to integers or floating point numbers. Vectors are written with square brackets. For example:
+
+```ts
+[0, 1, 0, 1];
+```
+
+#### Vector Class
+
+Vectors in Algebron are implemented by the Vector class in the source code. This class is publicly available. New vectors can be instantiated with the function `vector` (this function is exported by the library):
+
+```ts
+const V = vector([1, 2, 3, 4]);
+```
+
+What follows are properties and methods of the `Vector` class.
+
+##### Vector.$elements
+
+The elements, or components, of a given Vector are stored in the Vector's `$elements` property. These elements are stored in a JavaScript array, and the elements _must_ be numbers. This rule is enforced because Vector class is also used considerably in Algebron's graphics modules. For linear sequences of types other than numbers, use Algebron's [LinkedList API](#lists).
+
+##### Vector.length
+
+The number of elements held by the Vector is given by its `length` property. This is JavaScript number.
+
+##### Vector.toString()
+
+Returns a string representation of the Vector. This takes the format:
+
+$$
+  \texttt{[} e_1, e_2, \ldots, e_n \texttt{],}
+$$
+
+where each ${e_i}$ is an element of the Vector, and ${n}$ is the Vector's length.
+
+##### Vector.binop(operand, callback)
+
+Where `operand` is a Vector, an array of numbers, or a number, and `callback` is a function with the signature:
+
+$$
+  \texttt{(} a: \texttt{number}, b: \texttt{number} \texttt{)} \to \texttt{number},
+$$
+
+applies the callback as a pairwise operation, taking corresponding elements of the Vector and the other vector. If the operand is an array of numbers, it is cast to a Vector, ensuring the new Vector is of equal length. If the operand is a number, creates a new vector of equal length, where each element is the number.
+
+_Remark._ This method is largely used internally to implement other methods of Vector.
+
 ### Matrices
+
+A matrix is a linear sequence of vectors. Expressions of nested vectors are automatically interpreted as matrices:
+
+```ts
+[
+  [1, 0, 0],
+  [0, 1, 0],
+  [0, 0, 1],
+];
+```
+
+Importantly, matrices in Algebron cannot be jagged. For example, the following matrix will return a syntax error:
+
+```ts
+[
+  [1, 0, 0],
+  [0, 1],
+  [0, 0, 1],
+];
+```
+
+To implement these jagged collections, a nested list should be used.
+
+## CAS Modules
+[Symbolic strings](#symbolic-strings) in Algebron are interpreted as algebraic expressions. At runtime, these expressions are represented by the Algebron `MathObj` class. From there, they can be passed to Algebron's various CAS (Computer Algebra System) modules. The functions below are exported by Algebron publicly.  
+
+### simplify(expression)
+Where `expression` is a string or MathObj, simplifies the expression. Below is an example of using simplify directly in TypeScript.
+
+~~~ts
+const x = simplify('(1/x) * x');
+console.log(x.toString()); // "1"
+~~~
+
+### freeof(expr, subex)
+Where `expr` and `subex` are strings or MathObjects, returns true if `expr` does not contain the `subex` and false otherwise.
+
+~~~ts
+const x = freeof('2x + 1', 'x');
+console.log(x); // false
+
+const y = freeof('3a^2 + 9b + c', 'y');
+console.log(y); // true
+~~~
+
 ## 2D Graphics
+
+Algebron provides an API for 2D graphics. This API only performs the mathematical computations and data processing necessary for 2D graphics. Algebron _does not_ provide actual drawing methods. Any actual rendering on a frontend is left to the user's frontend of choice (React, Svelte, etc.). For example, on this site, all diagrams are generated with React. Documentation of the React components used on this site are found in the [React Components](#react-components) section.
+
 ### Cartesian Plot
+
+Algebron can generate data for Cartesian plots with the `cplot` function. For example, the plot below is generated with the `cplot` function and React:
+
+<PlotTest />
+
+The code (using React) implementing this diagram:
+
+```ts
+export const PlotTest = () => {
+  const D = tuple(-10, 10);
+  const R = tuple(-10, 10);
+  const xaxis = axis("x", D, R);
+  const yaxis = axis("y", D, R);
+  const d = svg([
+    xaxis,
+    yaxis,
+    cplot("fn f(x) = sin(x)", D, R).stroke("red").done(),
+    cplot("fn g(x) = cos(x)", D, R).stroke("blue").done(),
+    cplot("fn h(x) = cos(x) + sin(x)", D, R).stroke("green").done(),
+    cplot("fn n(x) = 2cos(x)", D, R).stroke("purple").done(),
+  ])
+    .dimensions(600, 600)
+    .domain(D)
+    .range(R)
+    .done();
+  return <Fig data={d} width={70} />;
+};
+```
+
 ### Linear Axes
+
 ### Polar Plot
+
 ### Polar Axes
+
 ### Tree Drawing
+Trees can be generated with Algebron's `tree` function.
+
+<TreeTest/>
+
+For example, the diagram above is generated using React.
+
+~~~ts
+export const TreeTest = () => {
+  const d = svg([
+    tree(
+      subtree("a").nodes([
+        subtree("b").nodes([leaf("c"), leaf("d")]),
+        subtree("e").nodes([
+          leaf('j'),
+          subtree("f").nodes([
+            subtree("g").nodes([leaf("h"), leaf("i")]),
+          ]),
+        ]),
+      ])
+    )
+      .nodeFn(node => circle(5, [node.$x, node.$y]).fill('salmon'))
+      .labelFn(node => text(node.$name).position(node.$x, node.$y).dx(-10).dy(0))
+      .layout('reingold-tilford')
+      .done(),
+  ])
+    .dimensions(400,300)
+    .domain([-10, 10])
+    .range([-3, 3])
+    .done();
+  return <Fig data={d} width={70} paddingBottom={43}/>;
+}
+~~~
+
+
+
 ### Graph Drawing
+
 ## 3D Graphics
+
 ### 3D Plot
+Three-dimensional plots can be generated with Algebron's `plot3D` function:
+
+<Plot3DDemo/>
+
+The code implementing the diagram above (using React and ThreeJS):
+
+~~~ts
+export function Plot3DDemo() {
+  const d = plot3D("fn z(x,y) = 4 * e^(-1/4 * y^2) * sin(2x - 1)")
+    .paramFn();
+  return <PLOT3D element={d} />;
+}
+~~~
 
 
-
-import { FigTest, TreeTest } from "@/components/Fig";
+## React Components
+As mentioned earlier, Algebron does not provide any frontend components or do any rendering. This site, however, uses React and ThreeJS to render the data generated by Algebron's graphics modules. To provide users guidance on how to use Algebron's graphics modules, this section outlines the React components used by this site.   
 
 export default function MDXPage({ children }) {
     return <MdxLayout>{children}</MdxLayout>

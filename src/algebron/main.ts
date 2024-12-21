@@ -73,6 +73,7 @@ function isNothing(x: any): x is undefined | null {
   return x === undefined || x === null;
 }
 
+/** An object corresponding to nothing. */
 class None {
   _tag = "None" as const;
   constructor() {}
@@ -81,25 +82,33 @@ class None {
   }
 }
 
+/** An object corresponding to something. */
 class Some<T> {
   readonly value: T;
   _tag = "Some" as const;
   constructor(value: T) {
     this.value = value;
   }
+  /**
+   * Applies the given function `f` to
+   * the data held by this object.
+   */
   map<S>(f: (a: T) => S): Some<S> {
     return new Some(f(this.value));
   }
 }
 
+/** Returns a new Some with value of type `T`. */
 function some<T>(value: T) {
   return new Some<T>(value);
 }
 
+/** Returns a new None. */
 function none() {
   return new None();
 }
 
+/** A union type of None or Some<T>. */
 type Option<T> = None | Some<T>;
 
 /** A data structure with two pointers, left and right. */
@@ -112,6 +121,7 @@ class Binode<T> {
     this._R = none();
     this._L = none();
   }
+
   /**
    * Returns a copy of this bnode.
    */
@@ -123,17 +133,24 @@ class Binode<T> {
     out._R = right;
     return out;
   }
+
   /**
    * Flattens this bnode.
    */
   flatten(): Binode<T> | T {
     return this._data === null ? Binode.none<T>() : this._data;
   }
+
+  /**
+   * Applies the given callback to the data held
+   * by this binode.
+   */
   map<K>(callback: (data: T) => K) {
     if (this._data) {
       return Binode.some<K>(callback(this._data));
     } else return Binode.none<K>();
   }
+
   /**
    * Sets the value of this bnode.
    */
@@ -147,18 +164,23 @@ class Binode<T> {
     }
     return this;
   }
+
   isSomething() {
     return this._data !== null;
   }
+
   isNothing() {
     return this._data === null;
   }
+
   static none<T>() {
     return new Binode<T>(null);
   }
+
   static some<T>(data: T) {
     return new Binode(data);
   }
+
   get _prev() {
     if (this._L._tag === "None") {
       return new Binode<T>(null);
@@ -166,9 +188,11 @@ class Binode<T> {
       return this._L.value;
     }
   }
+
   set _prev(node: Binode<T>) {
     this._L = some(node);
   }
+
   get _next() {
     if (this._R._tag === "None") {
       return new Binode<T>(null);
@@ -176,18 +200,23 @@ class Binode<T> {
       return this._R.value;
     }
   }
+
   set _next(node: Binode<T>) {
     this._R = some(node);
   }
+
   get _left() {
     return this._prev;
   }
+
   set _left(node: Binode<T>) {
     this._prev = node;
   }
+
   get _right() {
     return this._next;
   }
+
   set _right(node: Binode<T>) {
     this._next = node;
   }
@@ -211,6 +240,11 @@ export function arraySplit<T>(array: T[]) {
   return [left, right] as [T[], T[]];
 }
 
+/**
+ * A data structure implementing
+ * a linked list with elements
+ * of type T.
+ */
 class LinkedList<T> {
   private head: Binode<T>;
   private tail: Binode<T>;
@@ -305,6 +339,7 @@ class LinkedList<T> {
     this.forEach((d) => list.push(d));
     return list;
   }
+
   #reduce<X>(
     from: 0 | 1,
     reducer: (
@@ -327,6 +362,7 @@ class LinkedList<T> {
     };
     return fn(this.clone(), initialValue);
   }
+
   reduceRight<X>(
     reducer: (
       accumulator: X,
@@ -338,6 +374,7 @@ class LinkedList<T> {
   ): X {
     return this.#reduce(1, reducer, initialValue);
   }
+
   reduce<X>(
     reducer: (
       accumulator: X,
@@ -764,6 +801,9 @@ export function randFloat(min: number, max: number) {
   return Math.random() * (max - min) + min;
 }
 
+/**
+ * An object implementing an n-length Vector.
+ */
 class Vector<T extends number[] = number[]> {
   $elements: T;
 
@@ -783,14 +823,14 @@ class Vector<T extends number[] = number[]> {
 
   /** Utility method for performing binary operations. */
   binop(
-    other: Vector | number[] | number,
-    op: (a: number, b: number) => number
+    operand: Vector | number[] | number,
+    callback: (a: number, b: number) => number
   ) {
-    const arg = isNumber(other)
-      ? homogenousVector(other, this.length)
-      : vector(other);
+    const arg = isNumber(operand)
+      ? homogenousVector(operand, this.length)
+      : vector(operand);
     const [A, B] = equalen(this, arg);
-    return vector(A.$elements.map((c, i) => op(c, B.$elements[i])));
+    return vector(A.$elements.map((c, i) => callback(c, B.$elements[i])));
   }
 
   /**
@@ -1184,18 +1224,35 @@ function equalen(vectorA: Vector, vectorB: Vector): [Vector, Vector] {
 /** Returns true if the given value is a vector, false otherwise. */
 const isVector = (value: any): value is Vector => value instanceof Vector;
 
+/**
+ * Returns true if the given value
+ * is a JavaScript number.
+ */
 function isNumber(u: any): u is number {
   return typeof u === "number";
 }
 
+/**
+ * Returns true if the given value is a
+ * JavaScript string.
+ */
 function isString(u: any): u is string {
   return typeof u === "string";
 }
 
+/**
+ * An object implementing a matrix.
+ */
 class Matrix {
+  /** The vectors comprising this matrix. */
   $vectors: Vector[];
+
+  /** The number of rows comprising this matrix. */
   readonly $R: number;
+
+  /** The number of columns comprising this matrix. */
   readonly $C: number;
+
   constructor(vectors: Vector[], rowcount: number, colcount: number) {
     this.$vectors = vectors;
     this.$R = rowcount;
@@ -1412,7 +1469,9 @@ function matrix(rows: Vector[] | number[][], cols?: number) {
 }
 
 /** Returns true if the given value is a matrix. */
-const isMatrix = (value: any): value is Matrix => value instanceof Matrix;
+function isMatrix(value: any): value is Matrix {
+  return value instanceof Matrix;
+}
 
 /** An object corresponding to a number of the form `m x 10^n`. */
 class Exponential {
@@ -1462,6 +1521,9 @@ enum pc {
   Z,
 }
 
+/**
+ * An object representing an SVG path command.
+ */
 export abstract class PathCommand {
   $type: pc;
   $end: Vector;
@@ -1625,6 +1687,7 @@ class CCommand extends PathCommand {
   }
 }
 
+/** An object corresponding to an SVG A-command. */
 class ACommand extends PathCommand {
   $type: pc.A;
   $rx: number = 1;
@@ -1675,6 +1738,7 @@ class ACommand extends PathCommand {
   }
 }
 
+/** An enum used to indicate a GraphicsObj's type. */
 enum graphics {
   line,
   path,
@@ -1702,6 +1766,7 @@ export abstract class GraphicsObj {
   $parentSVG: SVGObj | null = null;
 }
 
+/** An object holding SVG data. */
 export class SVGObj {
   $children: GraphicsObj[];
   $markers: Arrowhead[] = [];
@@ -1740,7 +1805,6 @@ export class SVGObj {
     this.$range = range;
     return this;
   }
-
   done() {
     this.$children.forEach((child) => {
       child.childOf(this);
@@ -1760,20 +1824,26 @@ abstract class GraphicsAtom extends GraphicsObj {
 
 export class Path extends GraphicsAtom {
   $stroke: string = "black";
+
   stroke(value: string) {
     this.$stroke = value;
     return this;
   }
+
   $fill: string = "none";
+
   fill(value: string) {
     this.$fill = value;
     return this;
   }
+
   $strokeWidth: string | number = 1;
+
   strokeWidth(value: string | number) {
     this.$strokeWidth = value;
     return this;
   }
+
   kind(): graphics {
     return graphics.path;
   }
@@ -3205,11 +3275,21 @@ class TreeObj extends GroupObj {
     }
   }
   $nodeRadius: number = 10;
-  nodeRadius(value:number) {
+  nodeRadius(value: number) {
     this.$nodeRadius = value;
     return this;
   }
   $nodeFill: string = "white";
+  $nodeFn: ((node: TreeChild) => GraphicsAtom) | null = null;
+  nodeFn(callback: (node: TreeChild) => GraphicsAtom) {
+    this.$nodeFn = callback;
+    return this;
+  }
+  $labelFn: ((node: TreeChild) => TextObj) | null = null;
+  labelFn(callback: (node: TreeChild) => TextObj) {
+    this.$labelFn = callback;
+    return this;
+  }
   done() {
     this.lay();
     this.$tree.bfs((node) => {
@@ -3222,15 +3302,23 @@ class TreeObj extends GroupObj {
     const nodes: GraphicsAtom[] = [];
     const labels: TextObj[] = [];
     this.$tree.bfs((node) => {
-      const x = node.$x;
-      const y = node.$y;
-      const c = circle(this.$nodeRadius, [x, y]).fill(this.$nodeFill);
-      nodes.push(c);
-      const t = text(node.$name)
-        .position(x, y)
-        .textAnchor("middle")
-        .dy(this.$nodeRadius * 2.2);
-      labels.push(t);
+      if (this.$nodeFn) {
+        nodes.push(this.$nodeFn(node));
+      } else {
+        const c = circle(this.$nodeRadius, [node.$x, node.$y]).fill(
+          this.$nodeFill
+        );
+        nodes.push(c);
+      }
+      if (this.$labelFn) {
+        labels.push(this.$labelFn(node));
+      } else {
+        const t = text(node.$name)
+          .position(node.$x, node.$y)
+          .textAnchor("middle")
+          .dy(this.$nodeRadius * 2);
+        labels.push(t);
+      }
     });
     nodes.forEach((c) => this.$children.push(c));
     labels.forEach((t) => this.$children.push(t));
