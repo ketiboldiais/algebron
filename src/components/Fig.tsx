@@ -39,9 +39,17 @@ import {
   randFloat,
   path,
   convexHull,
+  interpolator,
 } from "@/algebron/main";
 
-import { CSSProperties, ReactNode, useEffect, useRef, useState } from "react";
+import {
+  ChangeEvent,
+  CSSProperties,
+  ReactNode,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import katex from "katex";
 import {
   OrbitControls,
@@ -732,6 +740,61 @@ export const ConvexHullDemo = () => {
     .range(R)
     .done();
   return <Fig data={d} width={45} />;
+};
+
+export const AffineFunctionLab = () => {
+  const D = tuple(-10, 10);
+  const R = tuple(-10, 10);
+  const RI = tuple(0, 100);
+  const xaxis = axis("x", D, R);
+  const yaxis = axis("y", D, R);
+
+  const [AValue, setAValue] = useState(2);
+  const [BValue, setBValue] = useState(1);
+  const [fn, setFn] = useState(`f(x) = ${AValue}x + ${BValue}`);
+  const [latex, setLatex] = useState(`f(x) = ${AValue}x + ${BValue}`);
+  const X = interpolator(RI, D);
+
+  const handleARangeChange = (event: ChangeEvent<HTMLInputElement>) => {
+    event.preventDefault();
+    const value = Number.parseFloat(event.target.value);
+    setAValue(+X(value).toPrecision(3));
+  };
+  const handleBRangeChange = (event: ChangeEvent<HTMLInputElement>) => {
+    event.preventDefault();
+    const value = Number.parseFloat(event.target.value);
+    setBValue(+X(value).toPrecision(3));
+  };
+  useEffect(() => {
+    setFn(`f(x) = ${AValue} * x + ${BValue}`);
+    if (BValue < 0) {
+      setLatex(`f(x) = ${AValue}x - ${Math.abs(BValue)}`);
+    } else {
+      setLatex(`f(x) = ${AValue}x + ${BValue}`);
+    }
+  }, [AValue, BValue]);
+
+  const d = svg([xaxis, yaxis, cplot(`fn ${fn}`, D, R).stroke("red").done()])
+    .dimensions(500, 500)
+    .domain(D)
+    .range(R)
+    .done();
+  return (
+    <div>
+      <div className="flex flex-col">
+        <Tex content={`${latex}`} block />
+        <div className="flex">
+          <input type="range" onChange={handleARangeChange} />
+          <Tex content={`A = ${AValue}`} block />
+        </div>
+        <div className="flex">
+          <input type="range" onChange={handleBRangeChange} />
+          <Tex content={`B = ${BValue}`} block />
+        </div>
+      </div>
+      <Fig data={d} width={70} />
+    </div>
+  );
 };
 
 export default Fig;

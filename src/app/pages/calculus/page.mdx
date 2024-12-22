@@ -3,24 +3,25 @@ import MdxLayout from "@/components/mdx-layout";
 # Calculus
 <TOC>
 
-- [Calculus](#calculus)
-  - [Expressions](#expressions)
-  - [The Domain of an Expression](#the-domain-of-an-expression)
-  - [Solution Sets](#solution-sets)
-  - [Number Sets](#number-sets)
-  - [Relations](#relations)
-  - [Intervals](#intervals)
-  - [Absolute Value](#absolute-value)
-  - [Equations](#equations)
-  - [Families of Expressions](#families-of-expressions)
-    - [Linear Expressions](#linear-expressions)
-    - [Monomial Expressions](#monomial-expressions)
-    - [Quadratic Expressions](#quadratic-expressions)
-      - [The Quadratic Formula](#the-quadratic-formula)
-    - [Polynomial Expressions](#polynomial-expressions)
-  - [Cartesian Plane](#cartesian-plane)
-    - [The Distance Between Two Points](#the-distance-between-two-points)
-    - [Midpoint Formula](#midpoint-formula)
+- [Expressions](#expressions)
+- [The Domain of an Expression](#the-domain-of-an-expression)
+- [Solution Sets](#solution-sets)
+- [Number Sets](#number-sets)
+- [Relations](#relations)
+- [Intervals](#intervals)
+- [Absolute Value](#absolute-value)
+- [Equations](#equations)
+- [Families of Expressions](#families-of-expressions)
+  - [Linear Expressions](#linear-expressions)
+  - [Monomial Expressions](#monomial-expressions)
+  - [Quadratic Expressions](#quadratic-expressions)
+    - [The Quadratic Formula](#the-quadratic-formula)
+  - [Polynomial Expressions](#polynomial-expressions)
+- [Cartesian Plane](#cartesian-plane)
+  - [The Distance Between Two Points](#the-distance-between-two-points)
+  - [Midpoint Formula](#midpoint-formula)
+- [Real Functions](#real-functions)
+  - [Affine Functions](#affine-functions)
 
 </TOC>
 
@@ -194,7 +195,7 @@ The following principles apply to generating equivalent equations:
 
 Equations &mdash; and more generally, expressions &mdash; are simply succinct ways of expressing sentences that would otherwise be too cumbersome to write by prose. For example, consider the following sentence:
 
-> The integral with respect to ${z}$ from zero to three point eight of the quotient of the product of the fourth power of Pi, ${x,}$ and ${y}$ multiplied by the sum of ${a,}$ the product of eight, ${b,}$ and the cosine of the quotient of the product of Pi and ${z}$ divided by ${l,}$ the product of eighteen, ${c,}$ and the cosine of the quotient of two, Pi, and ${z,}$ and the square of the sine of the quotient of Pi and ${z}$ divided by ${l,}$ all divided by the the fourth power of ${l.}$
+- The integral with respect to ${z}$ from zero to three point eight of the quotient of the product of the fourth power of Pi, ${x,}$ and ${y}$ multiplied by the sum of ${a,}$ the product of eight, ${b,}$ and the cosine of the quotient of the product of Pi and ${z}$ divided by ${l,}$ the product of eighteen, ${c,}$ and the cosine of the quotient of two, Pi, and ${z,}$ and the square of the sine of the quotient of Pi and ${z}$ divided by ${l,}$ all divided by the the fourth power of ${l.}$
 
 This mouthful can be _expressed_ as:
 
@@ -227,7 +228,7 @@ In the definition above, we call the expressions ${ax}$ and ${b}$ the __terms__ 
 ### Monomial Expressions
 The terms of a linear expression are themselves a special type of expression called __monomial expressions__. The simplest monomial expression is the __univariate monomial expression__, or the __monomial expression in one variable__.
 
-> __Definition.__ Let ${u}$ be an expression. We say that ${u}$ is a __univariate monomial expression__ in a single variable ${x}$ if ${u}$ satisfies one of the following rules:
+> __Definition.__ Let ${u}$ be an expression. We say that ${u}$ is a _univariate monomial expression_ in a single variable ${x}$ if ${u}$ satisfies one of the following rules:
 >
 > 1. ${u}$ is an integer or fraction.
 > 2. ${u = x.}$
@@ -235,7 +236,6 @@ The terms of a linear expression are themselves a special type of expression cal
 > 4. ${u}$ is a product with two operands that satisfies either (1), (2), or (3).
 
 ### Quadratic Expressions
-
 > __Definition.__ A quadratic expression in one variable is an expression that can be written in the form 
 >
 > $$
@@ -350,6 +350,29 @@ Here, we apply the midpoint formula:
 > $$
 >    \left( \dfrac{x_1 + x_2}{2}, \dfrac{y_1 + y_2}{2} \right).
 > $$
+
+## Real Functions
+We now turn our attention towards the _real functions_ &mdash; functions with the signature ${A \to B,}$ where ${A \subseteq \reals}$ and ${B \subseteq \reals.}$ 
+
+### Affine Functions
+In the sea of real functions, affine functions are among the most desirable. They're easy to understand because they're easy to gut &mdash; internally, they have at most two operations: multiplication and addition. 
+
+> __Definition.__ Suppose ${A}$ and ${B}$ are real number constants. A function of the form
+>
+> $$
+>    f(x) = Ax + B
+> $$
+>
+> is called an _affine function_. In the case where ${A = 0,}$ then ${f(x) = B,}$ and we call ${f}$ a _constant function_. In the case where ${B = 0}$ and ${A \neq 0,}$ then ${f(x) = Ax,}$ and we call ${f}$ a _linear function_.  
+
+The graph of an affine function ${f}$ is a continuous straight line. If ${A \gt 0,}$ then ${f}$ is strictly increasing. If ${A \lt 0,}$ then ${f}$ is strictly decreasing. If ${A \neq 0,}$ then then ${f}$ has a unique zero ${x = -\dfrac{B}{A}.}$  
+
+To demonstrate these facts, consider the interactive figure below. Adjust the ${A}$ and ${B}$ values to see what happens to our line. 
+
+import {AffineFunctionLab} from "@/components/Fig";
+
+<AffineFunctionLab/>
+
 
 export default function MDXPage({ children }) {
     return <MdxLayout>{children}</MdxLayout>

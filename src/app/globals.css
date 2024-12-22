@@ -169,10 +169,16 @@ a {
 }
 
 blockquote {
-  padding: 0 0 0 1em;
+  padding: 6px 10px;
   width: 93%;
-  border-left: solid 2px rgb(188, 188, 188);
-  margin: auto;
+  /* border-left: solid 2px rgb(188, 188, 188); */
+  margin: 2vh auto;
+  background-color: rgb(227, 227, 227);
+  border-radius: 5px;
+}
+
+blockquote p {
+  margin: 0;
 }
 
 figcaption {
@@ -216,13 +222,14 @@ footer {
 
 figure {
   width: 100%;
-  margin: 5px;
+  margin: 5px auto;
 }
 
 strong em {
   font-variant: small-caps;
   font-weight: bold;
   font-style: normal;
+  font-size: 1.1rem;
 }
 
 aside {

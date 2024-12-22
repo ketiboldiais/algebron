@@ -2475,7 +2475,7 @@ export class Circle extends GraphicsAtom {
     this.$fillOpacity = value;
     return this;
   }
-  
+
   kind(): graphics {
     return graphics.circle;
   }
@@ -2878,6 +2878,7 @@ class CartesianPlot extends GroupObj {
     const e = engine();
     const fn = e.compile(this.$fn);
     if (!(fn instanceof Fn)) {
+      console.log(strof(fn))
       return this;
     }
     const dataset: [number, number][] = [];

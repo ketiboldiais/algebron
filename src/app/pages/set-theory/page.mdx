@@ -1,0 +1,118 @@
+import MdxLayout from "@/components/mdx-layout";
+
+# Set Theory
+
+<TOC>
+
+- [Foundations](#foundations)
+  - [The Empty Set](#the-empty-set)
+  - [Subsets](#subsets)
+  - [Equality of Sets](#equality-of-sets)
+  - [Power Sets](#power-sets)
+  - [Set Algebra](#set-algebra)
+    - [Intersection](#intersection)
+    - [Union](#union)
+  - [Special Number Sets](#special-number-sets)
+
+</TOC>
+
+## Foundations
+We begin by defining some basic terminology and fundamental axioms.
+
+> **Definition.** A **set** is a collection of objects, called the **elements** or **members** of the set. Given a set ${S,}$ if ${x}$ is an element of ${S,}$ we write ${x \in S.}$ If ${x}$ is not an element of ${S,}$ we write ${x \notin S.}$
+
+If we want to explicitly list the elements of a set, we use curly braces. For example, here is a set of two elements:
+
+$$
+    \lbrace 0, 1 \rbrace.
+$$
+
+A set is called a **finite set** if it contains a finite number of elements. A set is called an **infinite set** if it contains an infinite number of elements.
+
+> **Definition.** The number of distinct elements in a set ${S}$ is denoted ${n(S)}$ or ${\lvert S \rvert.}$ If ${S}$ is a finite set, we call ${n(S)}$ the **cardinality** or **cardinal number** of the set ${S.}$
+
+
+### The Empty Set
+> __Axiom.__ There is exactly one set with no elements, called the __empty set__ or __null set__, denoted ${\varnothing.}$
+
+### Subsets
+> __Definition.__ Given sets ${A}$ and ${B,}$ if every element of ${B}$ is also an element of ${A,}$ then ${B}$ is a __subset__ of ${A,}$ and we write ${B \subseteq A.}$
+
+From the definition above, we can see that every set is a subset of itself. Given a set ${A,}$ every element of ${A}$ is also an element of ${A.}$ Moreover, ${\varnothing}$ is a subset of every set ${A,}$ since every element of ${\varnothing}$ (nothing) is also an element of ${A.}$ Given a set ${A,}$ we call the subsets ${A}$ and ${\varnothing}$ the __trivial subsets__ of ${A.}$
+
+> __Definition.__ Let ${A}$ and ${B}$ be sets. If every element of ${B}$ is an element of ${A,}$ ${B \neq \varnothing,}$ and ${B \neq A,}$ then ${B}$ is a __proper subset__ of ${A,}$ and we write ${B \subset A.}$
+
+### Equality of Sets
+> __Definition.__ Two sets are equal if and only if they contain the same elements.
+
+__*example*__. Let ${A = \lbrace 1,2,3 \rbrace}$ and ${B = \lbrace 1,2,3 \rbrace.}$ The sets ${A}$ and ${B}$ contain the same elements, so ${A = B.}$ 
+
+Now that we have subsets, we can provide an alternative definition of equality:
+
+> __Definition.__ Two sets ${A}$ and ${B}$ are equal if and only if ${B \subseteq A}$ and ${A \subseteq B.}$
+
+From this definition, we see that two prove two sets are equal, we must prove that ${x \in A \implies x \in B,}$ and ${x \in B \implies x \in A.}$ 
+
+### Power Sets
+Consider the set ${A = \lbrace p, q, r, \rbrace.}$ What are all the possible ways we can reach into this set and pull a handful of these elements? Remember that sets are unordered collections. So, what we're asking for, formally, is what are all the possible subsets of ${A}$? We have following possible results:
+
+1. ${\varnothing}$ (we pull out nothing).
+2. ${\lbrace p \rbrace}$
+3. ${\lbrace q \rbrace}$
+4. ${\lbrace r \rbrace}$
+5. ${\lbrace p, q \rbrace}$
+6. ${\lbrace p, r \rbrace}$
+7. ${\lbrace q, r \rbrace}$
+8. ${\lbrace p, q, r \rbrace}$
+
+The set of all these results is called the _power set_ of ${A.}$ 
+
+> __Definition.__ Let ${A}$ be a set. Then the set of all subsets of ${A}$ is called the __power set__ of ${A,}$ denoted ${P(A).}$
+
+In our previous example, we saw that there are eight subsets. We generalize this result with the following counting theorem:
+
+> __Theorem.__ Let ${A}$ be a set. If ${\lvert A \rvert = n,}$ then ${\lvert P(A) \rvert = 2^n.}$
+
+### Set Algebra
+Set algebra refers to the definitions, theorems, and procedures for operations on sets.
+
+#### Intersection
+> __Definition: Intersection.__ Given sets ${A}$ and ${B,}$ the set of all elements common to both ${A}$ and ${B}$ is called the intersection of ${A}$ and ${B,}$ written ${A \cap B.}$ Symbolically:
+>
+> $$
+>    A \cap B \coloneqq \lbrace x ~|~ x \in A \land x \in B \rbrace.
+> $$
+
+Visually, the shaded region below corresponds to the intersection of the two sets.
+
+<figure style={{width: "20%"}}>
+
+![set intersection](https://res.cloudinary.com/sublimis/image/upload/v1661564689/math/set_intersection_qansev.svg)
+
+</figure>
+
+#### Union
+
+> __Definition.__ Given sets ${A}$ and ${B,}$ the set of all elements found in ${A}$ or ${B}$ (or both) is called the __union__ of ${A}$ and ${B,}$ written ${A \cup B.}$ Symbolically:
+>
+> $$
+>    A \cup B \coloneqq \lbrace x ~|~ x \in A \lor x \in B \rbrace.
+> $$
+
+### Special Number Sets
+Some sets are so often used that they're reserved special symbols:
+
+| Set             | Semantic                    | Explicit                                                              |
+| --------------- | --------------------------- | --------------------------------------------------------------------- |
+| ${\N}$          | The set of natural numbers. | ${\lbrace 0, 1, 2, 3, \ldots \rbrace}$                                |
+| ${\Z}$          | The set of integers.        | ${\lbrace \ldots, -2,-1, 0, 1, 2, \ldots \rbrace}$                    |
+| ${\mathbb{Q}}$  | The set of rationals.       | ${\left\lbrace x : x = \dfrac{a}{b}, b \neq 0 \right\rbrace}$         |
+| ${\mathbb{Q}'}$ | The set of irrationals.     | ${\lbrace \ldots, -\sqrt{2}, \ldots, \pi, \ldots, e, \ldots \rbrace}$ |
+| ${\reals}$      | The set of real numbers     | ${\mathbb{Q} \cup \mathbb{Q}'}$                                       |
+| ${\mathbb{C}}$  | The set of complex numbers  | ${\lbrace z : z = a + ib, ~ a,b \in \reals \rbrace}$                  |
+ 
+
+export default function MDXPage({ children }) {
+    return <MdxLayout>{children}</MdxLayout>
+
+}
