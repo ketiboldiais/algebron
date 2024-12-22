@@ -812,7 +812,7 @@ export function randFloat(min: number, max: number) {
 /**
  * An object implementing an n-length Vector.
  */
-class Vector<T extends number[] = number[]> {
+export class Vector<T extends number[] = number[]> {
   $elements: T;
 
   /** Returns the length of this vector. */
@@ -1486,6 +1486,34 @@ function isMatrix(value: any): value is Matrix {
   return value instanceof Matrix;
 }
 
+export function convexHull(points: Vector[]) {
+  const isLeftTurn = (p: Vector, q: Vector, r: Vector) => {
+    return (q.$x - p.$x) * (r.$y - p.$y) - (r.$x - p.$x) * (q.$y - p.$y) > 0;
+  };
+  if (points.length < 3) {
+    return { hull: points, leftmost: points[0] };
+  }
+  let leftmost = points[0];
+  for (let i = 1; i < points.length; i++) {
+    if (points[i].$x < leftmost.$x) {
+      leftmost = points[i];
+    }
+  }
+  const hull: Vector[] = [];
+  let current = leftmost;
+  do {
+    hull.push(current);
+    let next = points[0];
+    for (let i = 1; i < points.length; i++) {
+      if (current.equals(next) || isLeftTurn(current, next, points[i])) {
+        next = points[i];
+      }
+    }
+    current = next;
+  } while (!current.equals(leftmost));
+  return { hull, leftmost };
+}
+
 /** An object corresponding to a number of the form `m x 10^n`. */
 class Exponential {
   /** The mantissa in `m x 10^n`. */
@@ -1846,6 +1874,13 @@ abstract class GraphicsAtom extends GraphicsObj {
 }
 
 export class Path extends GraphicsAtom {
+  $fillOpacity: number | `${number}%` = 1;
+
+  fillOpacity(value: number | `${number}%`) {
+    this.$fillOpacity = value;
+    return this;
+  }
+
   $stroke: string = "black";
 
   stroke(value: string) {
@@ -2206,6 +2241,43 @@ export class Path extends GraphicsAtom {
     return this.push(PathCommand.L(x, y, z));
   }
 
+  Q(
+    to: [number, number] | [number, number, number],
+    ctrl: [number, number] | [number, number, number]
+  ) {
+    const x = to[0];
+    const y = to[1];
+    const z = to[2] !== undefined ? to[2] : 1;
+
+    const cx = ctrl[0];
+    const cy = ctrl[1];
+    const cz = ctrl[2] !== undefined ? ctrl[2] : 1;
+
+    return this.push(PathCommand.Q(x, y, z).ctrlPoint(cx, cy, cz));
+  }
+
+  C(
+    to: [number, number] | [number, number, number],
+    ctrl1: [number, number] | [number, number, number],
+    ctrl2: [number, number] | [number, number, number]
+  ) {
+    const x = to[0];
+    const y = to[1];
+    const z = to[2] !== undefined ? to[2] : 1;
+
+    const c1x = ctrl1[0];
+    const c1y = ctrl1[1];
+    const c1z = ctrl1[2] !== undefined ? ctrl1[2] : 1;
+
+    const c2x = ctrl2[0];
+    const c2y = ctrl2[1];
+    const c2z = ctrl2[2] !== undefined ? ctrl2[2] : 1;
+
+    return this.push(
+      PathCommand.C(x, y, z).ctrl1(c1x, c1y, c1z).ctrl2(c2x, c2y, c2z)
+    );
+  }
+
   /** Closes this path's command list. */
   Z() {
     return this.push(PathCommand.Z());
@@ -2397,6 +2469,13 @@ export function isLine(obj: GraphicsObj): obj is LineObj {
 }
 
 export class Circle extends GraphicsAtom {
+  $fillOpacity: number | `${number}%` = 1;
+
+  fillOpacity(value: number | `${number}%`) {
+    this.$fillOpacity = value;
+    return this;
+  }
+  
   kind(): graphics {
     return graphics.circle;
   }
@@ -3913,8 +3992,19 @@ export function link(
 }
 
 class Graph<T = any, K = any> {
+  /** The adjacency list comprising this graph. */
   $adjacency: Map<string | number, Vertex<T>[]>;
+  /**
+   * A map of the vertices comprising this graph.
+   * Each key is a vertex id, and its mapped-to value is
+   * the vertex with that id.
+   */
   $vertices: Map<string | number, Vertex<T>>;
+  /**
+   * A map of the edges comprising this graph.
+   * Each key is an edge id, and its mapped-to value
+   * is the edge with that id.
+   */
   $edges: Map<string, Edge<T, K>>;
   constructor() {
     this.$adjacency = new Map();
@@ -3932,13 +4022,20 @@ class Graph<T = any, K = any> {
     return out;
   }
 
-  /** Returns true if given source (referred to by id) is adjacent to the given target (by id). The edge type must be provided to ensure a correct result. */
+  /**
+   * Returns true if given source (referred to by id)
+   * is adjacent to the given target (by id).
+   * The edge type must be provided to ensure
+   * a correct result.
+   */
   adjacent(
     sourceId: string | number,
     direction: EdgeType,
     targetId: string | number
   ) {
+    // st: "source to target"
     const st = `${sourceId}${direction}${targetId}`;
+    // ts: target to source
     const ts = `${targetId}${direction}${sourceId}`;
     return this.$edges.has(st) || this.$edges.has(ts);
   }
@@ -6650,6 +6747,22 @@ function simplifySumRec(elts: MathObj[]): MathObj[] {
     const p = elts[0];
     const q = elts[1];
 
+    // special handling of trig identity
+    if (isPower(p) && isPower(q)) {
+      if (
+        isFunc(p.base) &&
+        isFunc(q.base) &&
+        p.base.op === "sin" &&
+        q.base.op === "cos" &&
+        isInt(p.exponent) &&
+        p.exponent.int === 2 &&
+        isInt(q.exponent) &&
+        q.exponent.int === 2
+      ) {
+        return [int(1)];
+      }
+    }
+
     if (term(p).equals(term(q))) {
       const S = simplifySum(sum(constant(p), constant(q)));
       const res = simplifyProduct(prod(term(p), S));
@@ -6828,23 +6941,32 @@ function simplifyDiff(u: Difference) {
 }
 
 function simplifyFunction(u: Func): MathObj {
-  if (u.op === "log") {
+  if (u.op === "ln") {
     if (u.args.length === 1) {
       const x = simplify(u.args[0]);
-      // log 1 = 0
+      // ln 1 -> 0
       if (x.equals(int(1))) return int(0);
-      // log 0 = undefined
+      // ln 0 -> undefined
       if (x.equals(int(0))) return UNDEFINED();
-      // log e = 1
+      // ln e -> 1
       if (x.equals(sym("e"))) return int(1);
+      // ln (e^x) -> x
+      if (isPower(x) && x.base.equals(sym("e"))) {
+        return x.exponent;
+      }
+      // ln (some number)
       if (isNum(x)) {
         const res = Math.log(x.value());
-        if (Number.isInteger(res)) return int(res);
-        return float64(res);
+        if (Number.isInteger(res)) {
+          return int(res);
+        } else {
+          return fn("ln", [x]).markSimplified();
+        }
       }
-      return fn("log", [x]).markSimplified();
+      return fn("ln", [x]).markSimplified();
+    } else {
+      throw algebraError("log takes only one argument");
     }
-    throw algebraError("log takes only one argument");
   }
   if (u.op === "sin") {
     if (u.args.length === 1) {
@@ -6852,19 +6974,21 @@ function simplifyFunction(u: Func): MathObj {
       // sin of some number -> number
       if (isNum(x)) {
         const res = Math.sin(x.value());
-        if (Number.isInteger(res)) return int(res);
-        return float64(res);
+        if (Number.isInteger(res)) {
+          return int(res);
+        } else {
+          return fn("sin", [x]).markSimplified();
+        }
       }
       // sin pi = 0
       if (isSym(x)) {
         if (x.sym === "pi") return int(0);
-        const res = Math.sin(Math.PI);
-        if (Number.isInteger(res)) return int(res);
-        return float64(res);
+        return fn("sin", [x]).markSimplified();
       }
       return fn("sin", [x]).markSimplified();
+    } else {
+      throw algebraError("sin takes only one argument");
     }
-    throw algebraError("sin takes only one argument");
   }
   if (u.op === "cos") {
     if (u.args.length === 1) {
@@ -6878,13 +7002,11 @@ function simplifyFunction(u: Func): MathObj {
       // sin pi = 0
       if (isSym(x)) {
         if (x.sym === "pi") return int(-1);
-        const res = Math.cos(Math.PI);
-        if (Number.isInteger(res)) return int(res);
-        return float64(res);
       }
-      return fn("sin", [x]).markSimplified();
+      return fn("cos", [x]).markSimplified();
+    } else {
+      throw algebraError("sin takes only one argument");
     }
-    throw algebraError("sin takes only one argument");
   }
   return fn(u.op, u.args).markSimplified();
 }
@@ -7229,7 +7351,7 @@ function union<T>(setA: Set<T>, setB: Set<T>) {
 /**
  * Returns the subexpressions of the given `expression`/
  */
-function subexs(expression: MathObj | string) {
+export function subexs(expression: MathObj | string) {
   const f = (expression: MathObj | string): Set<string> => {
     const u =
       typeof expression === "string" ? exp(expression).obj() : expression;
@@ -7245,6 +7367,10 @@ function subexs(expression: MathObj | string) {
   };
   const out = f(expression);
   return [...out];
+}
+
+export function lcGPE(expression: string | MathObj, variable: string | Sym) {
+  return coefGPE(expression, variable, gpeDeg(expression, [variable]));
 }
 
 /**
@@ -7387,7 +7513,7 @@ export function isPolynomial(
 
 function monDeg(
   expression: string | MathObj,
-  variables: string[] | Sym[]
+  variables: (string | Sym)[]
 ): Int {
   const vars: Sym[] = [];
   variables.forEach((v) => {
@@ -7424,7 +7550,7 @@ function monDeg(
  */
 export function gpeDeg(
   expression: string | MathObj,
-  variables: string[] | Sym[]
+  variables: (string | Sym)[]
 ): Int {
   const vars: Sym[] = [];
   variables.forEach((v) => {
@@ -7531,17 +7657,15 @@ export function coefGPE(
   variable: string | Sym,
   J: number | Int
 ) {
-  let u = typeof expression === 'string' ?
-    exp(expression).obj() : expression;
+  let u = typeof expression === "string" ? exp(expression).obj() : expression;
   u = simplify(u);
-  const x = typeof variable === 'string' ? sym(variable) : variable;
-  const j = typeof J === 'number' ? int(J) : J;
+  const x = typeof variable === "string" ? sym(variable) : variable;
+  const j = typeof J === "number" ? int(J) : J;
   if (!isSum(u)) {
-    const f = coefficientMonomialGPE(u,x);
+    const f = coefficientMonomialGPE(u, x);
     if (!Array.isArray(f) && isUndefined(f)) {
       return UNDEFINED();
-    }
-    else {
+    } else {
       if (j.equals(f[1])) {
         return f[0];
       } else {
@@ -7561,16 +7685,13 @@ export function coefGPE(
       const f = coefficientMonomialGPE(u.args[i], x);
       if (!Array.isArray(f) && isUndefined(f)) {
         return UNDEFINED();
-      }
-      else if (f[1].equals(j)) {
-        c = sum(c,f[0]);
+      } else if (f[1].equals(j)) {
+        c = sum(c, f[0]);
       }
     }
     return simplify(c);
   }
 }
-
-
 
 // § Nodekind Enum
 enum nodekind {

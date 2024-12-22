@@ -1,0 +1,38 @@
+import MdxLayout from "@/components/mdx-layout";
+
+# Number Theory
+
+<TOC>
+
+- [Number Theory](#number-theory)
+  - [The Integers](#the-integers)
+  - [Integer Division](#integer-division)
+
+</TOC>
+
+## The Integers
+The integers are the chief concern of number theory. For the next several sections, we will discuss properties of the integers.
+
+## Integer Division
+
+> __Theorem.__ For integers ${a}$ and ${b \neq 0,}$ there exist unique integers ${q}$ and ${r}$ such that
+>
+> $$
+>    a = qb + r
+> $$
+>
+> with ${0 \leq r \leq \vert b \vert - 1.}$ We denote ${r}$ with the expression ${a~\text{rem}~b}$ and ${q}$ with the expression ${a ~ \text{div} ~ b.}$
+
+In the theorem above, we call ${q}$ the __quotient__ and ${r}$ the __remainder__. When ${r = 0,}$ there exists a special relation between ${a}$ and ${b.}$ Namely, that ${b}$ is a __divisor__ of ${a}$ (i.e., ${b}$ divides ${a}$). We define this relation explicitly:
+
+> __Definition.__ Let ${a}$ and ${b}$ be integers, with ${b \neq 0.}$ We say that ${b}$ divides ${a}$ if there is an integer ${q}$ such that ${a = q \cdot b.}$ If ${b}$ divides ${a,}$ we write ${b~\vert~a.}$ If ${b}$ does not divide ${a,}$ we write ${b \not\vert ~~ a.}$
+
+Extending this definition, an integer that divides both ${a}$ and ${b}$ is called a __common divisor__ or __common factor__ of ${a}$ and ${b.}$
+
+> __Definition.__ Given integers ${a,}$ ${b,}$ and ${c,}$ we say that ${c}$ is a common divisor of ${a}$ and ${b}$ if, and only if, ${c ~ \vert ~ a}$ and ${c ~ \vert ~ b.}$
+
+
+export default function MDXPage({ children }) {
+    return <MdxLayout>{children}</MdxLayout>
+
+}

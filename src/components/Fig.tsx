@@ -36,6 +36,9 @@ import {
   zip,
   forceGraph,
   graph,
+  randFloat,
+  path,
+  convexHull,
 } from "@/algebron/main";
 
 import { CSSProperties, ReactNode, useEffect, useRef, useState } from "react";
@@ -148,6 +151,7 @@ const PATH = ({ data }: Path2DProps) => {
     <path
       d={data.toString()}
       fill={data.$fill}
+      fillOpacity={data.$fillOpacity}
       stroke={data.$stroke}
       strokeWidth={data.$strokeWidth}
     />
@@ -187,6 +191,7 @@ const CIRCLE = ({ data }: CircleProps) => {
       cy={data.$position.$y}
       r={data.$radius}
       fill={data.$fill}
+      fillOpacity={data.$fillOpacity}
       strokeWidth={data.$strokeWidth}
       stroke={data.$stroke}
     />
@@ -412,8 +417,6 @@ export const LA5 = () => {
     .done();
   return <Fig data={d} width={60} />;
 };
-
-export default Fig;
 
 function CameraController() {
   const { camera, gl } = useThree();
@@ -686,14 +689,49 @@ export const GraphDemo = () => {
     )
       .domain(D)
       .range(R)
-      .nodeColor("salmon")
-      .edgeColor("firebrick")
+      .nodeColor("lightblue")
+      .edgeColor("teal")
       .nodeRadius(3)
       .done(),
   ])
-    .dimensions(300,300)
+    .dimensions(300, 300)
     .domain(D)
     .range(R)
     .done();
-  return <Fig data={d} width={60} paddingBottom={50} />;
+  return <Fig data={d} width={60} paddingBottom={60} />;
 };
+
+export const ConvexHullDemo = () => {
+  const D = tuple(-5, 5);
+  const R = tuple(-5, 5);
+  const epsilon = 0.2;
+  const xAxis = axis("x", D, R);
+  const yAxis = axis("y", D, R);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const xs = range(-5, 5, epsilon).map((_) => randFloat(-4, 4));
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const ys = range(-5, 5, epsilon).map((_) => randFloat(-4, 4));
+  const points = zip(xs, ys).map(([x, y]) => vector([x, y]));
+  const chull = convexHull(points);
+  let p = path();
+  chull.hull.forEach((v, i) => {
+    if (i === 0) {
+      p = path(v.$x, v.$y);
+    } else {
+      p.L(v.$x, v.$y);
+    }
+  });
+  p.L(chull.leftmost.$x, chull.leftmost.$y);
+  p.stroke("olivedrab").strokeWidth(1).fill("lightgreen").fillOpacity("20%");
+  const cs = points.map((v) => {
+    return circle(5, [v.$x, v.$y]).fill("olivedrab").fillOpacity("50%");
+  });
+  const d = svg([grid(D, R).done(), xAxis, yAxis, p, ...cs])
+    .dimensions(400, 400)
+    .domain(D)
+    .range(R)
+    .done();
+  return <Fig data={d} width={45} />;
+};
+
+export default Fig;

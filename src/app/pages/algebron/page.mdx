@@ -1,7 +1,5 @@
 import MdxLayout from "@/components/mdx-layout";
-import { PlotTest } from "@/components/Fig";
-import { TreeTest } from "@/components/Fig";
-import { Plot3DDemo } from "@/components/Fig";
+import { PlotTest, TreeTest, Plot3DDemo, ConvexHullDemo } from "@/components/Fig";
 
 # Algebron
 
@@ -28,6 +26,7 @@ import { Plot3DDemo } from "@/components/Fig";
     - [Matrices](#matrices)
   - [CAS Modules](#cas-modules)
     - [simplify(u)](#simplifyu)
+    - [subexs(u)](#subexsu)
     - [freeOf(u,xs)](#freeofuxs)
     - [derive(u,x)](#deriveux)
     - [isMonomial(u,xs)](#ismonomialuxs)
@@ -35,6 +34,7 @@ import { Plot3DDemo } from "@/components/Fig";
     - [gpeDeg(u,xs)](#gpedeguxs)
     - [vars(u)](#varsu)
     - [coefGPE(u,x,j)](#coefgpeuxj)
+    - [lcGPE(u,x)](#lcgpeux)
   - [2D Graphics](#2d-graphics)
     - [Cartesian Plot](#cartesian-plot)
     - [Linear Axes](#linear-axes)
@@ -42,6 +42,7 @@ import { Plot3DDemo } from "@/components/Fig";
     - [Polar Axes](#polar-axes)
     - [Tree Drawing](#tree-drawing)
     - [Graph Drawing](#graph-drawing)
+    - [Convex Hull](#convex-hull)
   - [3D Graphics](#3d-graphics)
     - [3D Plot](#3d-plot)
   - [React Components](#react-components)
@@ -231,6 +232,14 @@ const x = simplify('(1/x) * x');
 console.log(x.strung()); // "1"
 ~~~
 
+### subexs(u)
+Where `u` is a string or MathObj corresponding to an algebraic expression, returns an array of the subexpressions of `u`.
+
+~~~ts
+const result = subexs('a * (x + 1) + 3')
+console.log(result); // ['a * (x + 1) + 3', 'a * (x + 1)', 'a', '(x + 1)', 'x', '1', '3']
+~~~
+
 ### freeOf(u,xs)
 Where `u` is a string or MathObj and `xs` is an array of strings or MathObjects, returns true if the expression `u` does not contain any of the subexpressions in `xs`; false otherwise.
 
@@ -307,11 +316,18 @@ const result2 = coefGPE('(3 * x * y^2) + (5 * x^2 * y) + (7 * x) + 9', 'x', 1); 
 console.log(result2.strung());
 ~~~
 
+### lcGPE(u,x)
+Where `u` is a string or MathObj (corresponding to a general polynomial expression), and `x` is a string or symbol (corresponding to a variable), returns the leading coefficient with respect to `x`.
+
+~~~ts
+const result1 = lcGPE('(3 * x * y^2) + (5 * x^2 * y) + (7 * x) + 9', 'y');
+console.log(result1.strung()); // 3x
+~~~
+
 ## 2D Graphics
 Algebron provides an API for 2D graphics. This API only performs the mathematical computations and data processing necessary for 2D graphics. Algebron _does not_ provide actual drawing methods. Any actual rendering on a frontend is left to the user's frontend of choice (React, Svelte, etc.). For example, on this site, all diagrams are generated with React. Documentation of the React components used on this site are found in the [React Components](#react-components) section.
 
 ### Cartesian Plot
-
 Algebron can generate data for Cartesian plots with the `cplot` function. For example, the plot below is generated with the `cplot` function and React:
 
 <PlotTest />
@@ -423,7 +439,14 @@ export const GraphDemo = () => {
 };
 ~~~
 
+### Convex Hull
+To find the convex hull of a set of points, use the `convexHull` function. Below is a visualization of `convexHull` applied to a set of random points, with the resulting convex hull outlined and shaded green:    
+
+<ConvexHullDemo/>
+
+
 ## 3D Graphics
+Algebron provides various functions and methods related to 3D graphics. On this site, 3D models are rendered with [React Three Fiber](https://r3f.docs.pmnd.rs/getting-started/introduction).
 
 ### 3D Plot
 Three-dimensional plots can be generated with Algebron's `plot3D` function:
