@@ -257,6 +257,7 @@ const LINE = ({ data }: L2DProps) => {
       y2={data.$end.$y}
       stroke={data.$stroke}
       strokeWidth={data.$strokeWidth}
+      strokeDasharray={data.$strokeDashArray}
       markerEnd={data.$arrowEnd ? `url(#${data.$id}-end)` : ""}
       markerStart={data.$arrowEnd ? `url(#${data.$id}-start)` : ""}
     />
@@ -712,7 +713,7 @@ export const GraphDemo = () => {
 export const ConvexHullDemo = () => {
   const D = tuple(-5, 5);
   const R = tuple(-5, 5);
-  const epsilon = 0.2;
+  const epsilon = 0.1;
   const xAxis = axis("x", D, R);
   const yAxis = axis("y", D, R);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -774,7 +775,23 @@ export const AffineFunctionLab = () => {
     }
   }, [AValue, BValue]);
 
-  const d = svg([xaxis, yaxis, cplot(`fn ${fn}`, D, R).stroke("red").done()])
+  const AB = () => {
+    const value = -BValue / AValue;
+    const string = value.toPrecision(3);
+    let latex = string;
+    if (!Number.isFinite(value)) {
+      latex = "\\infty";
+    }
+    return { value, string, latex };
+  };
+
+  const d = svg([
+    xaxis,
+    yaxis,
+    cplot(`fn ${fn}`, D, R).stroke("red").done(),
+    circle(5, [AB().value, 0]).fill("salmon"),
+    text(`(${AB().string}, 0)`).position(AB().value, 0.8).fill("firebrick"),
+  ])
     .dimensions(500, 500)
     .domain(D)
     .range(R)
@@ -783,13 +800,126 @@ export const AffineFunctionLab = () => {
     <div>
       <div className="flex flex-col">
         <Tex content={`${latex}`} block />
-        <div className="flex">
-          <input type="range" onChange={handleARangeChange} />
+        <div className="flex items-center">
+          <input
+            step={0.1}
+            className="mr-5"
+            type="range"
+            onChange={handleARangeChange}
+          />
           <Tex content={`A = ${AValue}`} block />
         </div>
-        <div className="flex">
-          <input type="range" onChange={handleBRangeChange} />
+        <div className="flex items-center">
+          <input
+            step={0.1}
+            className="mr-5"
+            type="range"
+            onChange={handleBRangeChange}
+          />
           <Tex content={`B = ${BValue}`} block />
+        </div>
+        <div>
+          <Tex content={`\\dfrac{B}{A} = ${AB().latex}`} />
+        </div>
+      </div>
+      <Fig data={d} width={70} />
+    </div>
+  );
+};
+
+export const QuadraticFunctionLab = () => {
+  const D = tuple(-10, 10);
+  const R = tuple(-10, 10);
+  const RI = tuple(0, 100);
+  const xaxis = axis("x", D, R);
+  const yaxis = axis("y", D, R);
+
+  const [AValue, setAValue] = useState(2);
+  const [BValue, setBValue] = useState(-2);
+  const [CValue, setCValue] = useState(-5);
+  const [vtx, setVTX] = useState({
+    x: -BValue / (2 * AValue),
+    y: (4 * AValue * CValue - BValue ** 2) / (4 * AValue),
+  });
+  const [fn, setFn] = useState(
+    `f(x) = (${AValue} * x^2) + (${BValue} * x) + ${CValue}`
+  );
+  const [latex, setLatex] = useState(`f(x) = ${AValue}x + ${BValue}`);
+  const X = interpolator(RI, D);
+
+  const handleARangeChange = (event: ChangeEvent<HTMLInputElement>) => {
+    event.preventDefault();
+    const value = Number.parseFloat(event.target.value);
+    setAValue(+X(value).toPrecision(3));
+  };
+  const handleBRangeChange = (event: ChangeEvent<HTMLInputElement>) => {
+    event.preventDefault();
+    const value = Number.parseFloat(event.target.value);
+    setBValue(+X(value).toPrecision(3));
+  };
+  const handleCRangeChange = (event: ChangeEvent<HTMLInputElement>) => {
+    event.preventDefault();
+    const value = Number.parseFloat(event.target.value);
+    setCValue(+X(value).toPrecision(3));
+  };
+  useEffect(() => {
+    setFn(`f(x) = (${AValue} * x^2) + (${BValue} * x) + ${CValue}`);
+    setLatex(
+      `f(x) = ${AValue}x^2 ${BValue < 0 ? "-" : "+"} ${Math.abs(BValue)}x ${
+        CValue < 0 ? "-" : "+"
+      } ${Math.abs(CValue)}`
+    );
+    setVTX({
+      x: -BValue / (2 * AValue),
+      y: (4 * AValue * CValue - BValue ** 2) / (4 * AValue),
+    });
+  }, [AValue, BValue, CValue]);
+
+  const d = svg([
+    xaxis,
+    yaxis,
+    cplot(`fn ${fn}`, D, R).stroke("teal").done(),
+    line([vtx.x, R[0]], [vtx.x, R[1]]).stroke('salmon').strokeDashArray(8),
+    circle(5, [vtx.x, vtx.y]).fill("lightblue"),
+    text(`(${vtx.x.toPrecision(3)}, ${vtx.y.toPrecision(3)})`)
+      .position(vtx.x, vtx.y)
+      .dx(50)
+      .fill("teal"),
+  ])
+    .dimensions(500, 500)
+    .domain(D)
+    .range(R)
+    .done();
+  return (
+    <div>
+      <div className="flex flex-col">
+        <Tex content={`${latex}`} block />
+        <div className="flex items-center">
+          <input
+            step={0.1}
+            className="mr-5"
+            type="range"
+            onChange={handleARangeChange}
+          />
+          <Tex content={`A = ${AValue}`} block />
+        </div>
+        <div className="flex items-center">
+          <input
+            step={0.1}
+            className="mr-5"
+            type="range"
+            onChange={handleBRangeChange}
+          />
+          <Tex content={`B = ${BValue}`} block />
+        </div>
+        <div className="flex items-center">
+          <input
+            step={0.1}
+            className="mr-5"
+            type="range"
+            onChange={handleCRangeChange}
+          />
+          <Tex content={`C = ${CValue}`} block />
         </div>
       </div>
       <Fig data={d} width={70} />

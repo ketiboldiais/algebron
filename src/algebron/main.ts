@@ -2390,6 +2390,11 @@ export function isArrowhead(obj: GraphicsObj): obj is Arrowhead {
 }
 
 export class LineObj extends GraphicsAtom {
+  $strokeDashArray: string | number = 0;
+  strokeDashArray(value: string|number) {
+    this.$strokeDashArray = value;
+    return this;
+  }
   $arrowEnd: null | Arrowhead = null;
   $arrowStart: null | Arrowhead = null;
 

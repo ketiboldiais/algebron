@@ -22,6 +22,8 @@ import MdxLayout from "@/components/mdx-layout";
   - [Midpoint Formula](#midpoint-formula)
 - [Real Functions](#real-functions)
   - [Affine Functions](#affine-functions)
+  - [Quadratic Functions](#quadratic-functions)
+    - [Quadratic Formula](#quadratic-formula)
 
 </TOC>
 
@@ -365,14 +367,49 @@ In the sea of real functions, affine functions are among the most desirable. The
 >
 > is called an _affine function_. In the case where ${A = 0,}$ then ${f(x) = B,}$ and we call ${f}$ a _constant function_. In the case where ${B = 0}$ and ${A \neq 0,}$ then ${f(x) = Ax,}$ and we call ${f}$ a _linear function_.  
 
-The graph of an affine function ${f}$ is a continuous straight line. If ${A \gt 0,}$ then ${f}$ is strictly increasing. If ${A \lt 0,}$ then ${f}$ is strictly decreasing. If ${A \neq 0,}$ then then ${f}$ has a unique zero ${x = -\dfrac{B}{A}.}$  
-
-To demonstrate these facts, consider the interactive figure below. Adjust the ${A}$ and ${B}$ values to see what happens to our line. 
+The graph of an affine function ${f}$ is a continuous straight line. If ${A \gt 0,}$ then ${f}$ is strictly increasing. If ${A \lt 0,}$ then ${f}$ is strictly decreasing. If ${A \neq 0,}$ then then ${f}$ has a unique zero ${x = -\dfrac{B}{A}.}$ To demonstrate these facts, consider the interactive figure below. Adjust the ${A}$ and ${B}$ values to see what happens to our line. 
 
 import {AffineFunctionLab} from "@/components/Fig";
 
 <AffineFunctionLab/>
 
+### Quadratic Functions
+
+> __Definition.__ Let ${A,}$ ${B,}$ and ${C}$ be real number constants, with ${A \neq 0.}$ A function of the form
+>
+> $$
+>    f(x) = Ax^2 + Bx + C
+> $$
+>
+> is called a _quadratic function_ with leading coefficient ${A.}$
+
+The graph of a quadratic function is called a __parabola__. Given the quadratic function ${f(x) = Ax^2 + Bx + C,}$ if ${A \gt 0,}$ then the parabola has a _local minimum_ at ${x = -\dfrac{B}{2A}}$ and the parabola is _convex_. If ${A \lt 0,}$ then the parabola has a _local maximum_ at ${x = - \dfrac{B}{2A}}$ and the parabola is _concave_.
+
+import {QuadraticFunctionLab} from "@/components/Fig";
+
+<QuadraticFunctionLab/>
+
+All parabolas have a special point called the __vertex__. This point is given by:
+
+$$
+    \left( -\dfrac{B}{2A}, \dfrac{4AC - B^2}{4A} \right).
+$$
+
+The quantity ${B^2 - 4AC}$ is called the __discriminant__ of ${Ax^2 + Bx + C.}$ The equation
+
+$$
+    y = A\left(x + \dfrac{B}{2A}\right)^2 + \dfrac{4AC - B^2}{4A}
+$$
+
+is called the __canonical equation__ of the parabola ${y = Ax^2 + Bx + C.}$ Notice that the parabola is symmetric about the vertical line ${x = -\dfrac{B}{2A},}$ passing through the vertex. This line, called the __axis of symmetry__, is parallel to the ${y}$-axis. Suppose ${(h,k)}$ is the parabola's vertex. Using the method of completing the square, the parabola's equation (with its axis of symmetry parallel to the ${y}$-axis) can be written in the form ${y = A(x - h)^2 + k.}$   
+
+#### Quadratic Formula
+
+> __Formula.__ Let ${A,}$ ${B,}$ and ${C}$ be constants in ${\reals.}$ The roots of the equation ${Ax^2 + Bx + C = 0}$ are given by the formula
+>
+> $$
+>    x = \dfrac{-B \pm \sqrt{B^2 - 4AC}}{2A}.
+> $$
 
 export default function MDXPage({ children }) {
     return <MdxLayout>{children}</MdxLayout>

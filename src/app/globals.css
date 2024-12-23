@@ -169,7 +169,7 @@ a {
 }
 
 blockquote {
-  padding: 6px 10px;
+  padding: 8px 10px;
   width: 93%;
   /* border-left: solid 2px rgb(188, 188, 188); */
   margin: 2vh auto;
@@ -208,7 +208,7 @@ ol {
 }
 
 article {
-  width: clamp(300px, 70%, 600px);
+  width: clamp(400px, 70%, 600px);
   margin: 0 auto;
   margin-bottom: 50vh;
 }
@@ -315,3 +315,42 @@ a {
     margin-right: 0;
   }
 }
+
+input[type="range"] {
+  /* removing default appearance */
+  -webkit-appearance: none;
+  appearance: none; 
+  /* creating a custom design */
+  /* width: 100%; */
+  cursor: pointer;
+  outline: none;
+  border-radius: 15px;
+  /*  overflow: hidden;  remove this line*/
+  
+  /* New additions */
+  height: 1px;
+  background: #a1a1a1;
+}
+
+/* Thumb: webkit */
+input[type="range"]::-webkit-slider-thumb {
+  /* removing default appearance */
+  -webkit-appearance: none;
+  appearance: none; 
+  /* creating a custom design */
+  height: 10px;
+  width: 10px;
+  background-color: rgb(100, 100, 100);
+  border-radius: 50%;
+  border: none;
+}
+
+/* Thumb: Firefox */
+input[type="range"]::-moz-range-thumb {
+  height: 10px;
+  width: 10px;
+  background-color: rgb(100, 100, 100);
+  border-radius: 50%;
+  border: none;
+}
+
