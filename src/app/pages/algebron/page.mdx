@@ -41,6 +41,7 @@ import { PlotTest, TreeTest, Plot3DDemo, ConvexHullDemo } from "@/components/Fig
   - [Polar Axes](#polar-axes)
   - [Tree Drawing](#tree-drawing)
   - [Graph Drawing](#graph-drawing)
+  - [Splines](#splines)
   - [Convex Hull](#convex-hull)
 - [3D Graphics](#3d-graphics)
   - [3D Plot](#3d-plot)
@@ -437,6 +438,13 @@ export const GraphDemo = () => {
   return <Fig data={d} width={60} paddingBottom={60} />;
 };
 ~~~
+
+### Splines
+Given a set of points, we often want to draw a line through these points. Algebron's spline functions provide this functionality.
+
+import {SplineLab} from "@/components/Fig"
+
+<SplineLab/>
 
 ### Convex Hull
 To find the convex hull of a set of points, use the `convexHull` function. Below is a visualization of `convexHull` applied to a set of random points, with the resulting convex hull outlined and shaded green:    

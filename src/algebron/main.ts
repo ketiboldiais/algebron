@@ -1865,8 +1865,8 @@ export class SVGObj {
   }
 }
 
-export function svg(children: GraphicsObj[]) {
-  return new SVGObj(children);
+export function svg(children: (GraphicsObj | GraphicsObj[] | boolean)[]) {
+  return new SVGObj(children.flat().filter((e) => e instanceof GraphicsObj));
 }
 
 abstract class GraphicsAtom extends GraphicsObj {
@@ -2209,6 +2209,16 @@ export class Path extends GraphicsAtom {
     return this.push(p);
   }
 
+  arcTo(
+    end: [number, number],
+    dimensions: [number, number] = [1, 1],
+    rotation: number = 0,
+    largeArc: 0 | 1 = 0,
+    sweep: 0 | 1 = 1
+  ) {
+    return this.A(end, dimensions, rotation, largeArc, sweep);
+  }
+
   /**
    * Appends a V-command to this path's command list, where
    * y is the coordinate to move vertically to.
@@ -2241,6 +2251,10 @@ export class Path extends GraphicsAtom {
     return this.push(PathCommand.L(x, y, z));
   }
 
+  lineTo(x: number, y: number, z: number = 1) {
+    return this.L(x, y, z);
+  }
+
   Q(
     to: [number, number] | [number, number, number],
     ctrl: [number, number] | [number, number, number]
@@ -2254,6 +2268,21 @@ export class Path extends GraphicsAtom {
     const cz = ctrl[2] !== undefined ? ctrl[2] : 1;
 
     return this.push(PathCommand.Q(x, y, z).ctrlPoint(cx, cy, cz));
+  }
+
+  quadraticCurveTo(
+    to: [number, number] | [number, number, number],
+    ctrl: [number, number] | [number, number, number]
+  ) {
+    return this.Q(to, ctrl);
+  }
+
+  bezierCurveTo(
+    to: [number, number] | [number, number, number],
+    ctrl1: [number, number] | [number, number, number],
+    ctrl2: [number, number] | [number, number, number]
+  ) {
+    return this.C(to, ctrl1, ctrl2);
   }
 
   C(
@@ -2391,7 +2420,7 @@ export function isArrowhead(obj: GraphicsObj): obj is Arrowhead {
 
 export class LineObj extends GraphicsAtom {
   $strokeDashArray: string | number = 0;
-  strokeDashArray(value: string|number) {
+  strokeDashArray(value: string | number) {
     this.$strokeDashArray = value;
     return this;
   }
@@ -2471,6 +2500,264 @@ export function line(start: [number, number], end: [number, number]) {
 
 export function isLine(obj: GraphicsObj): obj is LineObj {
   return obj.kind() === graphics.line;
+}
+
+export function curveLinear(points: (Vector | [number, number])[]) {
+  const pts: [number, number][] = [];
+  points.forEach((p) => {
+    if (Array.isArray(p)) {
+      pts.push(p);
+    } else {
+      pts.push([p.$x, p.$y]);
+    }
+  });
+  const p = path();
+  p.M(pts[0][0], pts[0][1]);
+  for (let i = 1; i < pts.length; i++) {
+    const [x, y] = pts[i];
+    p.L(x, y);
+  }
+  return p;
+}
+
+export function curveCatmullRom(
+  points: ([number, number] | Vector)[],
+  alpha: number = 0.5
+) {
+  const p = path();
+  const data = points.map((p) => {
+    if (Array.isArray(p)) return vector(p);
+    else return p;
+  });
+  const calcPoints = () => {
+    const result = [];
+    let lastStartPoint = data[0];
+    const length = data.length;
+    const alpha2 = alpha * 2;
+    for (let i = 0; i < length - 1; i++) {
+      const p0 = i === 0 ? data[0] : data[i - 1];
+      const p1 = data[i];
+      const p2 = data[i + 1];
+      const p3 = i + 2 < length ? data[i + 2] : p2;
+
+      const d1 = Math.sqrt((p0.$x - p1.$x) ** 2 + (p0.$y - p1.$y) ** 2);
+      const d2 = Math.sqrt((p1.$x - p2.$x) ** 2 + (p1.$y - p2.$y) ** 2);
+      const d3 = Math.sqrt((p2.$x - p3.$x) ** 2 + (p2.$y - p3.$y) ** 2);
+
+      // Apply parametrization
+      const d3powA = Math.pow(d3, alpha);
+      const d3pow2A = Math.pow(d3, alpha2);
+      const d2powA = Math.pow(d2, alpha);
+      const d2pow2A = Math.pow(d2, alpha2);
+      const d1powA = Math.pow(d1, alpha);
+      const d1pow2A = Math.pow(d1, alpha2);
+
+      const A = 2 * d1pow2A + 3 * d1powA * d2powA + d2pow2A;
+      const B = 2 * d3pow2A + 3 * d3powA * d2powA + d2pow2A;
+
+      let N = 3 * d1powA * (d1powA + d2powA);
+      if (N > 0) {
+        N = 1 / N;
+      }
+
+      let M = 3 * d3powA * (d3powA + d2powA);
+      if (M > 0) {
+        M = 1 / M;
+      }
+
+      let bp1 = vector([
+        (-d2pow2A * p0.$x + A * p1.$x + d1pow2A * p2.$x) * N,
+        (-d2pow2A * p0.$y + A * p1.$y + d1pow2A * p2.$y) * N,
+      ]);
+
+      let bp2 = vector([
+        (d3pow2A * p1.$x + B * p2.$x - d2pow2A * p3.$x) * M,
+        (d3pow2A * p1.$y + B * p2.$y - d2pow2A * p3.$y) * M,
+      ]);
+
+      if (bp1.$x === 0 && bp1.$y === 0) {
+        bp1 = p1;
+      }
+
+      if (bp2.$x === 0 && bp2.$y === 0) {
+        bp2 = p2;
+      }
+
+      result.push({ lastStartPoint, bp1, bp2, p2 });
+      lastStartPoint = p2;
+    }
+    return result;
+  };
+  const pts = calcPoints();
+  p.M(pts[0].lastStartPoint.$x, pts[0].lastStartPoint.$y);
+  for (let i = 0; i < pts.length; i++) {
+    const point = pts[i];
+    p.bezierCurveTo(
+      [point.p2.$x, point.p2.$y],
+      [point.bp1.$x, point.bp1.$y],
+      [point.bp2.$x, point.bp2.$y]
+    );
+  }
+  return p;
+}
+
+export function curveCardinal(
+  pathPoints: ([number, number] | Vector)[],
+  tension: number = 0.5,
+  numOfSeg: number = 25,
+  close: boolean = false
+) {
+  const points = pathPoints
+    .map((p) => {
+      if (Array.isArray(p)) return p;
+      return [p.$x, p.$y];
+    })
+    .flat();
+  const pts = points.slice(0);
+  let l = points.length;
+  let rPos = 0;
+  const rLen = (l - 2) * numOfSeg + 2 + (close ? 2 * numOfSeg : 0);
+  const res = new Float32Array(rLen);
+  const cache = new Float32Array((numOfSeg + 2) * 4);
+  let cachePtr = 4;
+  if (close) {
+    pts.unshift(points[l - 1]);
+    pts.unshift(points[l - 2]);
+    pts.push(points[0], points[1]);
+  } else {
+    pts.unshift(points[1]);
+    pts.unshift(points[0]);
+    pts.push(points[l - 2], points[l - 1]);
+  }
+  cache[0] = 1;
+  let i = 1;
+  for (; i < numOfSeg; i++) {
+    const st = i / numOfSeg;
+    const st2 = st * st;
+    const st3 = st2 * st;
+    const st23 = st3 * 2;
+    const st32 = st2 * 3;
+    cache[cachePtr++] = st23 - st32 + 1;
+    cache[cachePtr++] = st32 - st23;
+    cache[cachePtr++] = st3 - 2 * st2 + st;
+    cache[cachePtr++] = st3 - st2;
+  }
+  cache[++cachePtr] = 1;
+  parse(pts, cache, l);
+
+  function parse(pts: number[], cache: Float32Array, l: number) {
+    for (let i = 2, t; i < l; i += 2) {
+      const pt1 = pts[i];
+      const pt2 = pts[i + 1];
+      const pt3 = pts[i + 2];
+      const pt4 = pts[i + 3];
+      const t1x = (pt3 - pts[i - 2]) * tension;
+      const t1y = (pt4 - pts[i - 1]) * tension;
+      const t2x = (pts[i + 4] - pt1) * tension;
+      const t2y = (pts[i + 5] - pt2) * tension;
+      for (t = 0; t < numOfSeg; t++) {
+        const c = t << 2;
+        const c1 = cache[c];
+        const c2 = cache[c + 1];
+        const c3 = cache[c + 2];
+        const c4 = cache[c + 3];
+        res[rPos++] = c1 * pt1 + c2 * pt3 + c3 * t1x + c4 * t2x;
+        res[rPos++] = c1 * pt2 + c2 * pt4 + c3 * t1y + c4 * t2y;
+      }
+    }
+  }
+
+  // add last point
+  l = close ? 0 : points.length - 2;
+  res[rPos++] = points[l];
+  res[rPos] = points[l + 1];
+
+  const p = path();
+  p.M(points[0], points[1]);
+  for (i = 0, l = res.length; i < l; i += 2) {
+    p.lineTo(res[i], res[i + 1]);
+  }
+  return p;
+}
+
+export function curveCubicBezier(points: [number, number][], tension: number) {
+  const dista = (arr: number[], i: number, j: number) => {
+    return Math.sqrt(
+      Math.pow(arr[2 * i] - arr[2 * j], 2) +
+        Math.pow(arr[2 * i + 1] - arr[2 * j + 1], 2)
+    );
+  };
+  const va = (arr: number[], i: number, j: number) => {
+    return [arr[2 * j] - arr[2 * i], arr[2 * j + 1] - arr[2 * i + 1]];
+  };
+
+  const ctlpts = (
+    x1: number,
+    y1: number,
+    x2: number,
+    y2: number,
+    x3: number,
+    y3: number
+  ) => {
+    const t = tension;
+    const v = va([x1, y1, x2, y2, x3, y3], 0, 2);
+    const d01 = dista([x1, y1, x2, y2, x3, y3], 0, 1);
+    const d12 = dista([x1, y1, x2, y2, x3, y3], 1, 2);
+    const d012 = d01 + d12;
+    return [
+      x2 - (v[0] * t * d01) / d012,
+      y2 - (v[1] * t * d01) / d012,
+      x2 + (v[0] * t * d12) / d012,
+      y2 + (v[1] * t * d12) / d012,
+    ];
+  };
+
+  const drawCurvedPath = (cps: number[], pts: number[]) => {
+    const p = path();
+    p.M(pts[0], pts[1]);
+    const len = pts.length / 2;
+    if (len < 2) return p;
+    if (len == 2) {
+      p.M(pts[0], pts[1]);
+      p.lineTo(pts[2], pts[3]);
+      return p;
+    } else {
+      p.quadraticCurveTo([pts[2], pts[3]], [cps[0], cps[1]]);
+      let i = 2;
+      for (; i < len - 1; i++) {
+        const ctrl1 = tuple(
+          cps[(2 * (i - 1) - 1) * 2],
+          cps[(2 * (i - 1) - 1) * 2 + 1]
+        );
+        const ctrl2 = tuple(cps[2 * (i - 1) * 2], cps[2 * (i - 1) * 2 + 1]);
+        const end = tuple(pts[i * 2], pts[i * 2 + 1]);
+        p.bezierCurveTo(end, ctrl1, ctrl2);
+      }
+      p.quadraticCurveTo(
+        tuple(pts[i * 2], pts[i * 2 + 1]),
+        tuple(cps[(2 * (i - 1) - 1) * 2], cps[(2 * (i - 1) - 1) * 2 + 1])
+      );
+      return p;
+    }
+  };
+  const draw = () => {
+    const pts = points.flat();
+    let cps: number[] = [];
+    for (let i = 0; i < pts.length - 2; i++) {
+      cps = cps.concat(
+        ctlpts(
+          pts[2 * i],
+          pts[2 * i + 1],
+          pts[2 * i + 2],
+          pts[2 * i + 3],
+          pts[2 * i + 4],
+          pts[2 * i + 5]
+        )
+      );
+    }
+    return drawCurvedPath(cps, pts);
+  };
+  return draw();
 }
 
 export class Circle extends GraphicsAtom {
@@ -2883,7 +3170,7 @@ class CartesianPlot extends GroupObj {
     const e = engine();
     const fn = e.compile(this.$fn);
     if (!(fn instanceof Fn)) {
-      console.log(strof(fn))
+      console.log(strof(fn));
       return this;
     }
     const dataset: [number, number][] = [];

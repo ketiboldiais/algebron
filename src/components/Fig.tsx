@@ -40,6 +40,10 @@ import {
   path,
   convexHull,
   interpolator,
+  curveCubicBezier,
+  curveLinear,
+  curveCardinal,
+  curveCatmullRom,
 } from "@/algebron/main";
 
 import {
@@ -714,12 +718,10 @@ export const ConvexHullDemo = () => {
   const D = tuple(-5, 5);
   const R = tuple(-5, 5);
   const epsilon = 0.1;
-  const xAxis = axis("x", D, R);
-  const yAxis = axis("y", D, R);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const xs = range(-5, 5, epsilon).map((_) => randFloat(-4, 4));
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const ys = range(-5, 5, epsilon).map((_) => randFloat(-4, 4));
+  // const xAxis = axis("x", D, R);
+  // const yAxis = axis("y", D, R);
+  const xs = range(-5, 5, epsilon).map(() => randFloat(-4, 4));
+  const ys = range(-5, 5, epsilon).map(() => randFloat(-4, 4));
   const points = zip(xs, ys).map(([x, y]) => vector([x, y]));
   const chull = convexHull(points);
   let p = path();
@@ -735,7 +737,13 @@ export const ConvexHullDemo = () => {
   const cs = points.map((v) => {
     return circle(5, [v.$x, v.$y]).fill("olivedrab").fillOpacity("50%");
   });
-  const d = svg([grid(D, R).done(), xAxis, yAxis, p, ...cs])
+  const d = svg([
+    grid(D, R).done(),
+    // xAxis,
+    // yAxis,
+    p,
+    ...cs,
+  ])
     .dimensions(400, 400)
     .domain(D)
     .range(R)
@@ -879,7 +887,7 @@ export const QuadraticFunctionLab = () => {
     xaxis,
     yaxis,
     cplot(`fn ${fn}`, D, R).stroke("teal").done(),
-    line([vtx.x, R[0]], [vtx.x, R[1]]).stroke('salmon').strokeDashArray(8),
+    line([vtx.x, R[0]], [vtx.x, R[1]]).stroke("salmon").strokeDashArray(8),
     circle(5, [vtx.x, vtx.y]).fill("lightblue"),
     text(`(${vtx.x.toPrecision(3)}, ${vtx.y.toPrecision(3)})`)
       .position(vtx.x, vtx.y)
@@ -923,6 +931,129 @@ export const QuadraticFunctionLab = () => {
         </div>
       </div>
       <Fig data={d} width={70} />
+    </div>
+  );
+};
+
+export const SplineLab = () => {
+  const [linearCurveChecked, setLinearCurveChecked] = useState(true);
+  const [bezierCurveChecked, setBezierCurveChecked] = useState(false);
+  const [cardinalCurveChecked, setCardinalCurveChecked] = useState(false);
+  const [catmullRomCurveChecked, setCatmullRomCurveChecked] = useState(false);
+  const [alphaValue, setAlphaValue] = useState(0.5);
+  const [tensionValue, setTensionValue] = useState(0.5);
+  const alphaInterp = interpolator([0, 10], [0, 1]);
+  const handleTensionChange = (event: ChangeEvent<HTMLInputElement>) => {
+    event.preventDefault();
+    const value = Number.parseFloat(event.target.value);
+    setTensionValue(alphaInterp(value));
+  };
+  const handleAlphaChange = (event: ChangeEvent<HTMLInputElement>) => {
+    event.preventDefault();
+    const value = Number.parseFloat(event.target.value);
+    setAlphaValue(alphaInterp(value));
+  };
+  const D = tuple(-5, 5);
+  const R = tuple(-5, 5);
+  // const xAxis = axis("x", D, R);
+  // const yAxis = axis("y", D, R);
+  const pts = [
+    tuple(-4, -3),
+    tuple(-3, -2),
+    tuple(-1, -2),
+    tuple(1, 2),
+    tuple(3, 2),
+    tuple(4, 3),
+  ];
+  const circles = pts.map(([x, y]) => circle(5, [x, y]).fill("white"));
+  const lc = curveLinear(pts);
+  const cbc = curveCubicBezier(pts, 0.4);
+  const cc = curveCardinal(pts, tensionValue);
+  const ccr = curveCatmullRom(pts, alphaValue);
+  const d = svg([
+    linearCurveChecked && lc.stroke("salmon"),
+    bezierCurveChecked && cbc.stroke("lawngreen"),
+    cardinalCurveChecked && cc.stroke("magenta"),
+    catmullRomCurveChecked && ccr.stroke("cyan"),
+    circles,
+  ])
+    .dimensions(400, 400)
+    .domain(D)
+    .range(R)
+    .done();
+  return (
+    <div className="border rounded bg-slate-900">
+      <div className="m-2 font-mono bg-slate-700 text-sm text-white p-4 py-2 w-6/12 rounded">
+        <span>Curve:</span>
+        <div className="flex">
+          <input
+            type="checkbox"
+            checked={linearCurveChecked}
+            onChange={() => setLinearCurveChecked(!linearCurveChecked)}
+          />
+          <label className="ml-2">Linear</label>
+        </div>
+        <div className="flex">
+          <input
+            type="checkbox"
+            checked={bezierCurveChecked}
+            onChange={() => setBezierCurveChecked(!bezierCurveChecked)}
+          />
+          <label className="ml-2">Cubic Bezier</label>
+        </div>
+        <div className="flex">
+          <input
+            type="checkbox"
+            checked={cardinalCurveChecked}
+            onChange={() => setCardinalCurveChecked(!cardinalCurveChecked)}
+          />
+          <label className="ml-2">Cardinal</label>
+        </div>
+        <div>
+          {cardinalCurveChecked && (
+            <div className="ml-5 flex items-center">
+              <Tex content="\tau" />
+              <input
+                min={0}
+                max={10}
+                step={0.1}
+                className="ml-2"
+                type="range"
+                onChange={handleTensionChange}
+              />
+              <div>{tensionValue.toPrecision(2)}</div>
+            </div>
+          )}
+        </div>
+
+        <div>
+          <div className="flex items-center">
+            <input
+              type="checkbox"
+              checked={catmullRomCurveChecked}
+              onChange={() =>
+                setCatmullRomCurveChecked(!catmullRomCurveChecked)
+              }
+            />
+            <label className="ml-2">Catmull-Rom</label>
+          </div>
+          {catmullRomCurveChecked && (
+            <div className="ml-5 flex items-center">
+              <Tex content="\alpha" />
+              <input
+                min={0}
+                max={10}
+                step={0.1}
+                className="ml-2"
+                type="range"
+                onChange={handleAlphaChange}
+              />
+              <div>{alphaValue.toPrecision(2)}</div>
+            </div>
+          )}
+        </div>
+      </div>
+      <Fig data={d} width={60} />
     </div>
   );
 };
