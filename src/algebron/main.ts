@@ -5664,6 +5664,7 @@ abstract class MathObj {
     this.parenLevel++;
     return this;
   }
+  abstract copy(): MathObj;
   abstract kind(): expression_type;
   abstract equals(other: MathObj): boolean;
   abstract toString(): string;
@@ -5694,6 +5695,9 @@ class ListX extends MathObj {
   constructor(args: MathObj[]) {
     super();
     this.$args = args;
+  }
+  copy(): ListX {
+    return listx(this.$args.map(x => x.copy()))
   }
   operands(): MathObj[] {
     return this.$args;
@@ -5764,6 +5768,10 @@ function listx(expressions: MathObj[]) {
 }
 
 class Relation extends MathObj {
+  copy(): Relation {
+    const argscopy = this.args.map(x => x.copy());
+    return relate(this.op, argscopy);
+  }
   operandAt(i: number): MathObj {
     const out = this.args[i];
     if (out === undefined) {
@@ -5815,6 +5823,9 @@ function isRelation(u: MathObj): u is Relation {
 }
 
 class Boolean extends MathObj {
+  copy(): Boolean {
+    return bool(this.bool);
+  }
   strung(): string {
     return this.toString();
   }
@@ -5863,6 +5874,9 @@ abstract class Numeric extends MathObj {
 }
 
 class Int extends Numeric {
+  copy(): Int {
+    return int(this.int);
+  }
   abs() {
     return int(Math.abs(this.value()));
   }
@@ -5922,6 +5936,9 @@ function isInt(u: MathObj): u is Int {
 }
 
 class Float64 extends Numeric {
+  copy(): Float64 {
+    return float64(this.float);
+  }
   abs(): Numeric {
     return float64(Math.abs(this.float));
   }
@@ -5972,6 +5989,9 @@ function isFloat64(u: MathObj): u is Float64 {
 }
 
 class Sym extends MathObj {
+  copy(): Sym {
+    return sym(this.sym);
+  }
   strung(): string {
     return this.toString();
   }
@@ -6005,6 +6025,9 @@ class Sym extends MathObj {
 }
 
 class Undefined extends MathObj {
+  copy(): Undefined {
+    return UNDEFINED();
+  }
   strung(): string {
     return this.toString();
   }
@@ -6053,6 +6076,11 @@ function isSym(u: MathObj): u is Sym {
 }
 
 class Fraction extends Numeric {
+  copy(): Fraction {
+    const n = this.numerator.copy();
+    const d = this.denominator.copy();
+    return frac(n,d);
+  }
   /** Returns the given number as a fraction. */
   static from(value: number | Fraction) {
     // We use the method of continued fractions here.
@@ -6249,6 +6277,10 @@ function isFrac(u: MathObj): u is Fraction {
 }
 
 class Sum extends MathObj {
+  copy(): Sum {
+    const argscopy = this.args.map(x => x.copy());
+    return sum(...argscopy);
+  }
   strung(): string {
     const out = this.args.map((arg) => arg.strung()).join(" + ");
     return `(${out})`;
@@ -6307,6 +6339,10 @@ function isSum(u: MathObj): u is Sum {
 }
 
 class Difference extends MathObj {
+  copy(): Difference {
+    const argscopy = this.args.map(x => x.copy());
+    return diff(...argscopy);
+  }
   strung(): string {
     const out = this.args.map((arg) => arg.strung()).join(" - ");
     return `(${out})`;
@@ -6356,6 +6392,10 @@ function isDiff(u: MathObj): u is Difference {
 }
 
 class Product extends MathObj {
+  copy(): Product {
+    const argscopy = this.args.map(x => x.copy());
+    return prod(...argscopy);
+  }
   strung(): string {
     if (this.args.length === 2) {
       const left = this.args[0];
@@ -6422,6 +6462,10 @@ function isProduct(u: MathObj): u is Product {
 }
 
 class Quotient extends MathObj {
+  copy(): Quotient {
+    const argscopy = this.args.map(x => x.copy());
+    return quot(...argscopy);
+  }
   strung(): string {
     const out = this.args.map((arg) => arg.strung()).join(" / ");
     return `(${out})`;
@@ -6471,6 +6515,11 @@ function isQuotient(u: MathObj): u is Quotient {
 }
 
 class Power extends MathObj {
+  copy(): Power {
+    const base = this.base.copy();
+    const exponent = this.base.copy();
+    return pow(base, exponent);
+  }
   strung(): string {
     const left = this.base.strung();
     let right = this.exponent.strung();
@@ -6557,6 +6606,10 @@ function isPower(u: MathObj): u is Power {
 }
 
 class Func extends MathObj {
+  copy(): Func {
+    const argscopy = this.args.map(x => x.copy());
+    return fn(this.op, argscopy);
+  }
   strung(): string {
     const f = this.op;
     const args = this.args.map((arg) => arg.strung()).join(",");
