@@ -959,10 +959,10 @@ export const SplineLab = () => {
   // const yAxis = axis("y", D, R);
   const pts = [
     tuple(-4, -3),
-    tuple(-3, -2),
-    tuple(-1, -2),
+    tuple(-3, 1),
+    tuple(-1, 1),
     tuple(1, 2),
-    tuple(3, 2),
+    tuple(3, 1),
     tuple(4, 3),
   ];
   const circles = pts.map(([x, y]) => circle(5, [x, y]).fill("white"));

@@ -208,7 +208,7 @@ ol {
 }
 
 article {
-  width: clamp(400px, 70%, 600px);
+  width: clamp(300px, 70%, 600px);
   margin: 0 auto;
   margin-bottom: 50vh;
 }

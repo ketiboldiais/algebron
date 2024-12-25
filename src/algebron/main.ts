@@ -5811,7 +5811,7 @@ function cdr<T>(list: T[]) {
 }
 
 function reverse<T>(list: T[]) {
-  return list.slice().reverse();
+  return [...list].reverse();
 }
 
 enum expression_type {
@@ -7984,6 +7984,59 @@ export function coefGPE(
     }
     return simplify(c);
   }
+}
+
+function expandProduct(r: MathObj, s: MathObj): MathObj {
+  if (isSum(r)) {
+    const f = r.args[0];
+    const epfs = expandProduct(f, s);
+    const rmf = simplify(diff(r, f));
+    const eprmfs = expandProduct(rmf, s);
+    const out = sum(epfs, eprmfs);
+    return simplify(out);
+  }
+  if (isSum(s)) {
+    const epsr = expandProduct(s, r);
+    return simplify(epsr);
+  }
+  const out = prod(r, s);
+  return simplify(out);
+}
+
+/**
+ * Given an algebraic expression, returns the expanded form
+ * of the expression.
+ * @param expression The expression to expand.
+ * @returns A MathObj corresponding to the expanded form.
+ */
+export function expand(expression: MathObj | string): MathObj {
+  const u = typeof expression === "string" ? exp(expression).obj() : expression;
+  if (isSum(u)) {
+    const out = u.args.map((arg) => expand(arg));
+    return simplify(sum(...out));
+  }
+  if (isProduct(u)) {
+    const v = u.args[0];
+    const ev = expand(v);
+    const udv = simplify(quot(u, v));
+    const eudv = expand(udv);
+    const out = expandProduct(ev, eudv);
+    return simplify(out);
+  }
+  if (isPower(u)) {
+    const base = u.base;
+    const exponent = u.exponent;
+    if (isInt(exponent) && exponent.int >= 2) {
+      const exprs = [];
+      for (let i = 0; i < exponent.int; i++) {
+        const aeb = expand(base);
+        exprs.push(aeb);
+      }
+      const p = prod(...exprs);
+      return expand(p);
+    }
+  }
+  return u;
 }
 
 // § Nodekind Enum

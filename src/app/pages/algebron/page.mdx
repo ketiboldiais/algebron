@@ -34,6 +34,7 @@ import { PlotTest, TreeTest, Plot3DDemo, ConvexHullDemo } from "@/components/Fig
   - [vars(u)](#varsu)
   - [coefGPE(u,x,j)](#coefgpeuxj)
   - [lcGPE(u,x)](#lcgpeux)
+  - [expand(u)](#expandu)
 - [2D Graphics](#2d-graphics)
   - [Cartesian Plot](#cartesian-plot)
   - [Linear Axes](#linear-axes)
@@ -322,6 +323,17 @@ Where `u` is a string or MathObj (corresponding to a general polynomial expressi
 ~~~ts
 const result1 = lcGPE('(3 * x * y^2) + (5 * x^2 * y) + (7 * x) + 9', 'y');
 console.log(result1.strung()); // 3x
+~~~
+
+### expand(u)
+Where `u` is a MathObj or an algebraic expression, expands `u`.
+
+~~~ts
+const a = expand('(2x + 1)(x + 2)')
+console.log(a.strung()); // (2 + 5x + 2(x^2))
+
+const b = expand('(x + 2)(x + 3)(x + 4)'); 
+console.log(b.strung()); // (24 + 26x + 9(x^2) + (x^3))
 ~~~
 
 ## 2D Graphics
