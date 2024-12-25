@@ -3246,9 +3246,9 @@ export class Plot3D {
     return this;
   }
 
-  $fn: string[];
+  $fn: string;
 
-  constructor(fn: string[]) {
+  constructor(fn: string) {
     this.$fn = fn;
   }
 
@@ -3345,8 +3345,6 @@ export class Plot3D {
 
   $z: Fn3D = (a, b) => [a, b, 0];
 
-  $zFunctions: Fn3D[] = [];
-
   paramFn() {
     const makeZFn = (zFunctionString: string) => {
       const e = engine();
@@ -3365,34 +3363,13 @@ export class Plot3D {
       };
       return out;
     };
-    const e = engine();
-    const f = e.compile(this.$fn[0]);
-    if (!(f instanceof Fn)) {
-      return this;
-    }
-    const out = (x: number, y: number) => {
-      x = this.$xRange * x + this.$xMin;
-      y = this.$yRange * y + this.$yMin;
-      let z = f.call(e.compiler, [x, y]);
-      if (typeof z !== "number") {
-        z = NaN;
-      }
-      return tuple(x, y, z);
-    };
-    for (let i = 0; i < this.$fn.length; i++) {
-      const zFnString = this.$fn[i];
-      const zFnCompiled = makeZFn(zFnString);
-      this.$zFunctions.push(zFnCompiled);
-    }
-    this.$z = out;
+    const zFnString = this.$fn;
+    this.$z = makeZFn(zFnString);
     return this;
   }
 }
 
-export function plot3D(zfn: string[] | string) {
-  if (typeof zfn === "string") {
-    zfn = [zfn];
-  }
+export function plot3D(zfn: string) {
   return new Plot3D(zfn);
 }
 
@@ -4671,7 +4648,7 @@ type Primitive =
   | bigint
   | Exponential
   | MathObj
-  | FRACTION
+  | Fraction
   | Obj
   | Vector
   | Matrix
@@ -5333,7 +5310,7 @@ export function lexical(code: string) {
         const [a, b] = n.split("|");
         const N = Number.parseInt(a);
         const D = Number.parseInt(b);
-        return tkn(type).withLiteral(fraction(N, D));
+        return tkn(type).withLiteral(frac(N, D));
       }
       // handle scientific numbers
       case token_type.scientific: {
@@ -5639,165 +5616,6 @@ export function lexical(code: string) {
 }
 
 // § Primitives
-/** An object corresponding to a number of the form `n/d`, where `n` and `d` are integers. */
-class FRACTION {
-  arglen(): number {
-    return 0;
-  }
-  /** The numerator of this fraction. */
-  $n: number;
-  /** The denominator of this fraction. */
-  $d: number;
-  constructor(n: number, d: number) {
-    this.$n = n;
-    this.$d = d;
-  }
-
-  /** Returns this fraction as a string. */
-  toString() {
-    const out = `${this.$n}|${this.$d}`;
-    return out;
-  }
-
-  /** Negates this fraction. */
-  negate() {
-    return new FRACTION(-this.$n, this.$d);
-  }
-
-  /** Returns this fraction times the other fraction. */
-  times(other: FRACTION) {
-    return FRACTION.simplify(
-      new FRACTION(other.$n * this.$n, other.$d * this.$d)
-    );
-  }
-
-  /** Returns this fraction times the other fraction. */
-  divide(other: FRACTION) {
-    return FRACTION.simplify(
-      new FRACTION(this.$n * other.$d, this.$d * other.$n)
-    );
-  }
-
-  /** Returns this fraction plus the other fraction. */
-  plus(other: FRACTION) {
-    return FRACTION.simplify(
-      new FRACTION(this.$n * other.$d + other.$n * this.$d, this.$d * other.$d)
-    );
-  }
-
-  /** Returns this fraction minus the other fraction. */
-  minus(other: FRACTION) {
-    return FRACTION.simplify(
-      new FRACTION(this.$n * other.$d - other.$n * this.$d, this.$d * other.$d)
-    );
-  }
-
-  /** Returns true if this fraction is less than or equal to the other fraction. */
-  lte(other: FRACTION) {
-    const thisN = this.$n;
-    const thisD = this.$d;
-    const otherN = other.$n;
-    const otherD = other.$d;
-    return thisN * otherD <= otherN * thisD;
-  }
-
-  /** Returns true if this fraction is less than the other. */
-  lt(other: FRACTION) {
-    return this.lte(other) && !this.equals(other);
-  }
-
-  /** Returns true if this fraction is greater than the other. */
-  gt(other: FRACTION) {
-    return !this.lte(other);
-  }
-
-  /** Returns true if this fraction is greater than or equal to the other. */
-  gte(other: FRACTION) {
-    return this.gt(other) || this.equals(other);
-  }
-
-  /** Returns true if this fraction equals the other fraction. */
-  equals(other: FRACTION) {
-    const a = FRACTION.simplify(this);
-    const b = FRACTION.simplify(other);
-    return a.$n === b.$n && a.$d === b.$d;
-  }
-  float() {
-    return this.$n / this.$d;
-  }
-  /** Simplifies the given fraction. */
-  static simplify(frac: FRACTION) {
-    const numerator = frac.$n;
-    const denominator = frac.$d;
-    const sgn = Math.sign(numerator) * Math.sign(denominator);
-    const n = Math.abs(numerator);
-    const d = Math.abs(denominator);
-    const f = gcd(n, d);
-    return new FRACTION((sgn * n) / f, d / f);
-  }
-
-  /** Returns the given number as a fraction. */
-  static from(value: number | FRACTION) {
-    // We use the method of continued fractions here.
-    if (value instanceof FRACTION) {
-      return value;
-    } else if (Number.isInteger(value)) {
-      return new FRACTION(value, 1);
-    } else {
-      const eps = 1.0e-15;
-      let x = value;
-      let a = Math.floor(x);
-      let h1 = 1;
-      let h2: number;
-      let k1 = 0;
-      let k2: number;
-      let h = a;
-      let k = 1;
-
-      while (x - a > eps * k * k) {
-        x = 1 / (x - a);
-        a = Math.floor(x);
-        h2 = h1;
-        h1 = h;
-        k2 = k1;
-        k1 = k;
-        h = h2 + a * h1;
-        k = k2 + a * k1;
-      }
-
-      return new FRACTION(h, k);
-    }
-  }
-}
-
-/**
- * Returns a new FRACTION. Both arguments must be integers.
- * If the arguments are not integers, they will be floored.
- * @param n The numerator of this fraction (must be an integer).
- * @param d The denominator of this fraction (must be an integer).
- * @returns A new instance of a fraction.
- */
-function fraction(n: number, d: number) {
-  const N = Math.floor(n);
-  const D = Math.abs(Math.floor(d));
-  if (n < 0 && d < 0) {
-    return new FRACTION(Math.abs(N), Math.abs(D));
-  } else if (n < 0 && d > 0) {
-    return new FRACTION(N, D);
-  } else if (n > 0 && d < 0) {
-    return new FRACTION(-N, D);
-  } else if (d === 0) {
-    return new FRACTION(NaN, NaN);
-  } else {
-    return new FRACTION(Math.floor(n), Math.floor(d));
-  }
-}
-
-/** Returns true if the given object is a fraction. */
-function isFraction(u: any): u is FRACTION {
-  return u instanceof FRACTION;
-}
-
 function cons<T>(list: T[], x: T) {
   return [x, ...list];
 }
@@ -6235,6 +6053,18 @@ function isSym(u: MathObj): u is Sym {
 }
 
 class Fraction extends Numeric {
+  /** Returns the given number as a fraction. */
+  static from(value: number | Fraction) {
+    // We use the method of continued fractions here.
+    if (value instanceof Fraction) {
+      return value;
+    } else if (Number.isInteger(value)) {
+      return new Fraction(int(value), int(1));
+    } else {
+      const [h, k] = fracOf(value);
+      return new Fraction(int(h), int(k));
+    }
+  }
   abs() {
     return frac(this.numerator.abs(), this.denominator.abs());
   }
@@ -6279,7 +6109,7 @@ class Fraction extends Numeric {
     );
   }
 
-  div(other: Fraction) {
+  divide(other: Fraction) {
     return Fraction.simplify(
       frac(
         int(other.numerator.int * this.denominator.int),
@@ -6350,6 +6180,9 @@ class Fraction extends Numeric {
   map(): this {
     return this;
   }
+  float64() {
+    return float64(this.numerator.int / this.denominator.int);
+  }
   public readonly numerator: Int;
   public readonly denominator: Int;
   constructor(numerator: Int, denominator: Int) {
@@ -6362,12 +6195,57 @@ class Fraction extends Numeric {
   }
 }
 
-function frac(a: Int, b: Int) {
-  return new Fraction(a, b);
+/**
+ * Given the number value, returns a pair [h,k] where
+ * h corresponds to the numerator of a fraction and k
+ * corresponds to the denominator. An optional epsilon
+ * may be passed to set how exact the fraction should
+ * be. A small epsilon will result in more exact fractions,
+ * but at the cost of computation speed.
+ */
+export function fracOf(value: number, epsilon: number = 1.0e-15) {
+  let x = value;
+  let a = Math.floor(x);
+  let h1 = 1;
+  let h2: number;
+  let k1 = 0;
+  let k2: number;
+  let h = a;
+  let k = 1;
+
+  while (x - a > epsilon * k * k) {
+    x = 1 / (x - a);
+    a = Math.floor(x);
+    h2 = h1;
+    h1 = h;
+    k2 = k1;
+    k1 = k;
+    h = h2 + a * h1;
+    k = k2 + a * k1;
+  }
+  return tuple(h, k);
+}
+
+function frac(n: Int | number, d: Int | number) {
+  n = typeof n === "number" ? int(n) : n;
+  d = typeof d === "number" ? int(d) : d;
+  const N = Math.floor(n.int);
+  const D = Math.abs(Math.floor(d.int));
+  if (n.int < 0 && d.int < 0) {
+    return new Fraction(int(Math.abs(N)), int(Math.abs(D)));
+  } else if (n.int < 0 && d.int > 0) {
+    return new Fraction(int(N), int(D));
+  } else if (n.int > 0 && d.int < 0) {
+    return new Fraction(int(-N), int(D));
+  } else if (d.int === 0) {
+    return new Fraction(int(NaN), int(NaN));
+  } else {
+    return new Fraction(int(Math.floor(n.int)), int(Math.floor(d.int)));
+  }
 }
 
 function isFrac(u: MathObj): u is Fraction {
-  return u.kind() === expression_type.fraction;
+  return u instanceof MathObj && u.kind() === expression_type.fraction;
 }
 
 class Sum extends MathObj {
@@ -7571,8 +7449,8 @@ function exp(source: string) {
       if (match(token_type.symbol)) return sym(previous().$lexeme);
       if (match(token_type.native)) return sym(previous().$lexeme);
       if (match(token_type.fraction)) {
-        const f = previous().$literal as FRACTION;
-        return frac(int(f.$n), int(f.$d));
+        const f = previous().$literal as Fraction;
+        return f;
       }
       if (match(token_type.left_paren)) {
         let expr = expression();
@@ -9038,15 +8916,15 @@ class Frac extends Expr {
   toString(): string {
     return this.$value.toString();
   }
-  $value: FRACTION;
-  constructor(value: FRACTION) {
+  $value: Fraction;
+  constructor(value: Fraction) {
     super();
     this.$value = value;
   }
 }
 
 /* Returns a new fraction node. */
-function $frac(value: FRACTION) {
+function $frac(value: Fraction) {
   return new Frac(value);
 }
 
@@ -9870,7 +9748,7 @@ export function syntax(source: string) {
 
   /** Parses a fraction literal. */
   const fract = (op: Token) => {
-    if (op.isType(token_type.fraction) && op.$literal instanceof FRACTION) {
+    if (op.isType(token_type.fraction) && op.$literal instanceof Fraction) {
       return state.newExpr($frac(op.$literal));
     } else {
       return state.error(`Unexpected fraction`, op.$line);
@@ -10390,7 +10268,7 @@ function typename(x: Primitive): TypeName {
     return "big_integer";
   } else if (x instanceof MathObj) {
     return "math_object";
-  } else if (x instanceof FRACTION) {
+  } else if (x instanceof Fraction) {
     return "fraction";
   } else if (x instanceof Exponential) {
     return "exponential";
@@ -10415,9 +10293,11 @@ function typename(x: Primitive): TypeName {
 
 /** Returns a string form of the given Winnow primitive. */
 export function strof(u: Primitive): string {
-  if (
+  if (u === null || u === undefined) {
+    return "nil";
+  } else if (
     isExponential(u) ||
-    isFraction(u) ||
+    u instanceof Fraction ||
     isErr(u) ||
     u instanceof MathObj ||
     u instanceof Err ||
@@ -10432,8 +10312,6 @@ export function strof(u: Primitive): string {
   } else if (Array.isArray(u)) {
     const out = u.map((e) => strof(e)).join(", ");
     return `[${out}]`;
-  } else if (u === null) {
-    return "nil";
   } else {
     return `${u}`;
   }
@@ -11237,11 +11115,11 @@ class Compiler implements Visitor<Primitive> {
     let L = this.eval(node.$left) as any;
     let R = this.eval(node.$right) as any;
     const op = node.$op;
-    if ((isFraction(L) && isNumber(R)) || (isNumber(L) && isFraction(R))) {
-      L = FRACTION.from(L);
-      R = FRACTION.from(R);
+    if ((isFrac(L) && isNumber(R)) || (isNumber(L) && isFrac(R))) {
+      L = Fraction.from(L);
+      R = Fraction.from(R);
     }
-    if (isFraction(L) && isFraction(R)) {
+    if (isFrac(L) && isFrac(R)) {
       switch (op.$type) {
         case token_type.less:
           return L.lt(R);
@@ -11340,7 +11218,7 @@ class Compiler implements Visitor<Primitive> {
     const x = this.eval(node.$arg);
     if (typeof x === "number" || typeof x === "bigint") {
       return -x;
-    } else if (x instanceof FRACTION) {
+    } else if (x instanceof Fraction) {
       return x.negate();
     } else if (x instanceof Exponential) {
       return x.negate();
@@ -11356,7 +11234,7 @@ class Compiler implements Visitor<Primitive> {
     const x = this.eval(node.$arg);
     if (isNumber(x)) {
       return +x;
-    } else if (x instanceof FRACTION || x instanceof Exponential) {
+    } else if (x instanceof Fraction || x instanceof Exponential) {
       return x;
     } else {
       throw runtimeError(
@@ -11417,11 +11295,11 @@ class Compiler implements Visitor<Primitive> {
     let L = this.eval(node.$left) as any;
     let R = this.eval(node.$right) as any;
     const op = node.$op.$type;
-    if ((isFraction(L) && isNumber(R)) || (isNumber(L) && isFraction(R))) {
-      L = FRACTION.from(L);
-      R = FRACTION.from(R);
+    if ((isFrac(L) && isNumber(R)) || (isNumber(L) && isFrac(R))) {
+      L = Fraction.from(L);
+      R = Fraction.from(R);
     }
-    if (isFraction(L) && isFraction(R)) {
+    if (isFrac(L) && isFrac(R)) {
       switch (op) {
         case token_type.star:
           return L.times(R);
@@ -11432,7 +11310,7 @@ class Compiler implements Visitor<Primitive> {
         case token_type.minus:
           return L.minus(R);
         case token_type.percent:
-          return FRACTION.from(percent(L.float(), R.float()));
+          return Fraction.from(percent(L.float64().float, R.float64().value()));
         case token_type.rem:
           throw runtimeError(
             `Operator "rem" cannot be applied to fractions`,

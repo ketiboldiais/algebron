@@ -469,15 +469,6 @@ export function PLOT3D({ data }: Plot3DProps) {
       </>
     );
   };
-  const Paths = () => {
-    return (
-      <>
-        {d.$zFunctions.map((zfn, i) => (
-          <Plot3DPath key={`${d.$id}-${i}`} zfn={zfn} />
-        ))}
-      </>
-    );
-  };
   const containerStyles: CSSProperties = {
     width: d.$width,
     height: d.$height,
@@ -501,7 +492,7 @@ export function PLOT3D({ data }: Plot3DProps) {
           <primitive
             object={new GridHelper(10, 10, d.$gridColor, d.$gridColor)}
           />
-          <Paths />
+          <Plot3DPath key={`${d.$id}`} zfn={d.$z} />
         </Canvas>
       </div>
     </FIGURE>
