@@ -12,6 +12,8 @@ import MdxLayout from "@/components/mdx-layout";
   - [Set Algebra](#set-algebra)
     - [Intersection](#intersection)
     - [Union](#union)
+    - [Laws of Intersection \& Union](#laws-of-intersection--union)
+    - [Set Complement](#set-complement)
   - [Special Number Sets](#special-number-sets)
 
 </TOC>
@@ -85,19 +87,31 @@ Set algebra refers to the definitions, theorems, and procedures for operations o
 
 Visually, the shaded region below corresponds to the intersection of the two sets.
 
-<figure style={{width: "20%"}}>
-
-![set intersection](https://res.cloudinary.com/sublimis/image/upload/v1661564689/math/set_intersection_qansev.svg)
-
-</figure>
-
 #### Union
-
 > __Definition.__ Given sets ${A}$ and ${B,}$ the set of all elements found in ${A}$ or ${B}$ (or both) is called the __union__ of ${A}$ and ${B,}$ written ${A \cup B.}$ Symbolically:
 >
 > $$
 >    A \cup B \coloneqq \lbrace x ~|~ x \in A \lor x \in B \rbrace.
 > $$
+
+#### Laws of Intersection & Union
+Below are some basic laws of intersection and union.
+
+> - ${A \cap B \subseteq A \cup B}$
+> - If ${A \cup B = A \cap B,}$ then ${A = B.}$
+> - ${A \cup B = A}$ if and only if ${B \subseteq A.}$
+> - ${A \cap B = A}$ if and only if ${A \subseteq B.}$
+> - ${A \cap A = A}$ (_Indempotent Law_).
+> - ${A \cup A = A}$ (_Indempotent Law_).
+> - ${A \cap \varnothing = \varnothing.}$ (_Identity Law_).
+> - ${A \cup \varnothing = A.}$ (_Identity Law_).
+> - Let ${A \subset S.}$ Then ${A \cup S = S.}$
+> - Let ${A \subset S.}$ Then ${A \cap S = A.}$
+
+#### Set Complement
+
+> __Definition.__ Suppose ${A \subset S.}$ The _complement_ of ${A,}$ written ${A',}$ contains all elements of ${S}$ which are not in ${A.}$  
+
 
 ### Special Number Sets
 Some sets are so often used that they're reserved special symbols:

@@ -39,7 +39,6 @@
   font-style: normal;
 }
 
-
 html {
   font-size: 13px;
 }
@@ -47,7 +46,6 @@ html {
 .katex {
   font-size: inherit;
 }
-
 
 body {
   color: var(--foreground);
@@ -128,7 +126,6 @@ h1 {
   margin-top: 5vh;
 }
 
-
 .repl {
   font-size: 0.8rem;
 }
@@ -147,12 +144,17 @@ h6 {
 table,
 th,
 td {
-  border: solid thin lightgrey;
   margin: auto;
   width: fit-content;
 }
+
 table td {
-  padding: 2px;
+  padding: 2px 10px;
+}
+
+th,
+tr {
+  border-bottom: solid thin lightgrey;
 }
 
 h2,
@@ -186,7 +188,6 @@ figcaption {
   margin: 0 auto;
   width: 60%;
   text-align: center;
-  color: rgb(175, 175, 175);
 }
 
 figcaption p {
@@ -218,7 +219,7 @@ footer {
   width: fit-content;
   margin: 3vh auto;
   color: lightgray;
-} 
+}
 
 figure {
   width: 100%;
@@ -270,7 +271,6 @@ a {
   list-style: lower-roman;
 }
 
-
 .algebron-fig {
   font-family: KaTeX_main;
 }
@@ -278,13 +278,13 @@ a {
 /* Wide viewport */
 @media (min-width: 1000px) {
   aside {
-      float: right;
-      clear: right;
-      margin-right: -15vw;
-      text-align: left;
-      top: 3rem;
-      width: 14vw;
-      margin-top: 1rem;
+    float: right;
+    clear: right;
+    margin-right: -15vw;
+    text-align: left;
+    top: 3rem;
+    width: 14vw;
+    margin-top: 1rem;
   }
   article {
     margin-left: 20vw;
@@ -293,13 +293,13 @@ a {
   .toc {
     background-color: white;
     z-index: 100;
-    position:fixed;
+    position: fixed;
     float: left;
     margin-left: -24.5vw;
     margin-top: -12vh;
     border-right: solid thin lightgrey;
     height: 97vh;
-    padding: 1vh .5vw;
+    padding: 1vh 0.5vw;
     width: 22vw;
   }
   .toc > ul {
@@ -309,9 +309,10 @@ a {
     overflow-y: scroll;
     margin-left: 0;
   }
-  .toc ul ul, .toc ul ul ul {
+  .toc ul ul,
+  .toc ul ul ul {
     list-style: none;
-    margin: 0 .5vw;
+    margin: 0 0.5vw;
     margin-right: 0;
   }
 }
@@ -319,16 +320,16 @@ a {
 input[type="range"] {
   /* removing default appearance */
   -webkit-appearance: none;
-  appearance: none; 
+  appearance: none;
   /* creating a custom design */
   /* width: 100%; */
   cursor: pointer;
   outline: none;
   border-radius: 10px;
   /*  overflow: hidden;  remove this line*/
-  
+
   /* New additions */
-  height: 2px;
+  height: 1px;
   background: #a1a1a1;
 }
 
@@ -336,7 +337,7 @@ input[type="range"] {
 input[type="range"]::-webkit-slider-thumb {
   /* removing default appearance */
   -webkit-appearance: none;
-  appearance: none; 
+  appearance: none;
   /* creating a custom design */
   height: 8px;
   width: 8px;
@@ -354,3 +355,117 @@ input[type="range"]::-moz-range-thumb {
   border: none;
 }
 
+div.procedure {
+  counter-reset: lineNumber -1;
+  border-top: solid thin lightgray;
+  border-bottom: solid thin lightgray;
+  padding: 1em 0 1em 0;
+  margin: 1em 1.5em;
+  /* font-size: 0.9em; */
+  overflow-y: scroll;
+}
+div.procedure blockquote {
+  margin: 0;
+  padding: 0;
+  font-size: 1.1em;
+  border-bottom: solid thin lightgray;
+}
+div.procedure pre {
+  margin: 0;
+  border-top: 0;
+  border-bottom: 0;
+}
+/* div.procedure small { font-size: 1.1em; } */
+div.procedure p {
+  font-size: inherit;
+  padding: 0;
+  margin: 0;
+}
+div.procedure ol {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+div.procedure ol li {
+  margin: 0;
+  padding: 0;
+  display: block;
+}
+div.procedure ol li::before {
+  content: counter(lineNumber);
+  counter-increment: lineNumber;
+  font-family: KaTeX_Main;
+  position: relative;
+  display: inline-block;
+  min-width: 10px;
+}
+div.procedure ol ol {
+  border-left: solid thin rgb(226, 226, 226);
+}
+div.procedure ol {
+  margin-left: 1em;
+}
+div.procedure li em {
+  color: rgb(146, 171, 182);
+  font-style: italic;
+  font-size: 0.75rem;
+  display: inline;
+  text-align: left;
+  line-height: 1.3rem;
+  width: max-content;
+  margin: 0;
+  padding: 0;
+  float: right;
+}
+div.procedure ol li::before {
+  right: 1rem;
+}
+div.procedure ol li li::before {
+  right: 2.1rem;
+}
+div.procedure ol li li li::before {
+  right: 3.1rem;
+}
+div.procedure ol li li li li::before {
+  right: 4.1rem;
+}
+div.procedure ol li li li li li::before {
+  right: 5.1rem;
+}
+div.procedure ol li li li li li li::before {
+  right: 6.1rem;
+}
+div.procedure > ol {
+  margin-top: 6px;
+  /* margin-left: 1em; */
+}
+div.procedure ul {
+  list-style: none;
+}
+div.procedure ul {
+  padding: 0;
+  margin: 0;
+}
+div.procedure ul li {
+  padding: 0;
+  margin: 0;
+}
+div.procedure ul ul {
+  padding: 0 1em;
+  margin: 0;
+}
+/* div.procedure p:first-child span.textup {font-weight: 600;} */
+/* div.procedure p:first-child {font-variant: small-caps;} */
+div.procedure p:first-child {
+  padding: 2px 0;
+  margin-bottom: 5px;
+  /* border-bottom: solid thin lightgrey; */
+  font-size: 1em;
+}
+div.procedure li > p {
+  display: inline !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  line-height: 0 !important;
+  border: 0 !important;
+}

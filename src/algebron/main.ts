@@ -712,7 +712,7 @@ function gcd(a: number, b: number) {
 /** Returns an array of numbers running from start to stop exclusive. */
 export function range(start: number, stop: number, step = 1): number[] {
   const out = [];
-  for (let i = start + step; i < stop; i += step) {
+  for (let i = start; i <= stop; i += step) {
     out.push(i);
   }
   return out;
@@ -744,6 +744,13 @@ function factorialize(num: number) {
     num *= i;
   }
   return num;
+}
+
+export function isEven(value:number) {
+  return value % 2 === 0;
+}
+export function isOdd(value:number) {
+  return !isEven(value);
 }
 
 /** Returns the clamping of the given input. I.e., if `input` is less than `min`, returns `min`. If `input` is greater than `max`, returns `max`. Otherwise, returns `input`. */
@@ -1787,7 +1794,8 @@ enum graphics {
   group,
   text,
   arrowhead,
-  segment,
+  // segment,
+  rectangle,
 }
 
 /** An object corresponding to a 2D SVG object. */
@@ -1818,6 +1826,21 @@ export class SVGObj {
 
   $dimensions: [number, number] = [500, 500];
 
+  $margins: [number, number, number, number] = [10, 10, 10, 10];
+
+  get $mx() {
+    return this.$margins[1] + this.$margins[3];
+  }
+  get $my() {
+    return this.$margins[0] + this.$margins[2];
+  }
+  get $vw() {
+    return this.$width - this.$mx;
+  }
+  get $vh() {
+    return this.$height - this.$my;
+  }
+
   /** The width of this SVG. */
   get $width() {
     return this.$dimensions[0];
@@ -1831,6 +1854,10 @@ export class SVGObj {
   dimensions(width: number, height: number) {
     this.$dimensions = [width, height];
     return this;
+  }
+
+  get $marginedDimensions() {
+    return tuple(this.$vw, this.$vh);
   }
 
   $domain: [number, number] = [-5, 5];
@@ -1859,7 +1886,7 @@ export class SVGObj {
   done() {
     this.$children.forEach((child) => {
       child.childOf(this);
-      child.fit(this.$domain, this.$range, this.$dimensions);
+      child.fit(this.$domain, this.$range, this.$marginedDimensions);
     });
     return this;
   }
@@ -1878,6 +1905,11 @@ export class Path extends GraphicsAtom {
 
   fillOpacity(value: number | `${number}%`) {
     this.$fillOpacity = value;
+    return this;
+  }
+
+  at(x: number, y: number, z: number = 1) {
+    this.$origin = vector([x, y, z]);
     return this;
   }
 
@@ -2119,6 +2151,7 @@ export class Path extends GraphicsAtom {
     );
   }
 
+  /** Shears along the z-axis. */
   shearZ(dx: number, dy: number) {
     return this.tfm((v) =>
       v.vxm(
@@ -2131,6 +2164,20 @@ export class Path extends GraphicsAtom {
     );
   }
 
+  /** Shears along the y-axis. */
+  shearY(dx: number, dz: number) {
+    return this.tfm((v) =>
+      v.vxm(
+        matrix([
+          [1, 0, 0],
+          [dx, 1, dz],
+          [0, 0, 1],
+        ])
+      )
+    );
+  }
+
+  /** Shears along the x-axis. */
   shearX(dy: number, dz: number) {
     return this.tfm((v) =>
       v.vxm(
@@ -2333,6 +2380,34 @@ export function line3D(
 /** Returns true and asserts if the given object is an SVG Path object. */
 export function isPath(obj: GraphicsObj): obj is Path {
   return obj.kind() === graphics.path;
+}
+
+export class Quad extends Path {
+  $width: number;
+  $height: number;
+  constructor(width: number, height: number) {
+    super(0, 0);
+    this.$width = width;
+    this.$height = height;
+  }
+  end() {
+    const o = this.$origin;
+    const x = o.$x;
+    const y = o.$y;
+    const w = this.$width;
+    const h = this.$height;
+    this.$commands.push(PathCommand.M(x, y));
+    this.$commands.push(PathCommand.L(x + w, y));
+    this.$commands.push(PathCommand.L(x + w, y - h));
+    this.$commands.push(PathCommand.L(x, y - h));
+    this.$commands.push(PathCommand.L(x, y));
+    this.$commands.push(PathCommand.Z());
+    return this;
+  }
+}
+
+export function quad(width: number, height: number) {
+  return new Quad(width, height);
 }
 
 export class Arrowhead extends GraphicsAtom {
@@ -5678,6 +5753,51 @@ function isMathObj(u: any): u is MathObj {
   return u instanceof MathObj;
 }
 
+class Undefined extends MathObj {
+  copy(): Undefined {
+    return UNDEFINED();
+  }
+  strung(): string {
+    return this.toString();
+  }
+  operandAt(): MathObj {
+    return UNDEFINED();
+  }
+  operands(): MathObj[] {
+    return [];
+  }
+  kind(): expression_type {
+    return expression_type.undefined;
+  }
+  equals(other: MathObj): boolean {
+    return isUndefined(other);
+  }
+  toString(): string {
+    return this.sym;
+  }
+  map(): this {
+    return this;
+  }
+  sym: "UNDEFINED";
+  error: string = "";
+  setError(value: string) {
+    this.error = value;
+    return this;
+  }
+  constructor() {
+    super();
+    this.sym = "UNDEFINED";
+  }
+}
+
+function UNDEFINED() {
+  return new Undefined();
+}
+
+function isUndefined(u: MathObj): u is Undefined {
+  return u.kind() === expression_type.undefined;
+}
+
 type RelationOperator = "=" | "<" | ">" | "<=" | ">=" | "!=";
 
 function argsEqual(a: MathObj[], b: MathObj[]) {
@@ -5697,7 +5817,7 @@ class ListX extends MathObj {
     this.$args = args;
   }
   copy(): ListX {
-    return listx(this.$args.map(x => x.copy()))
+    return listx(this.$args.map((x) => x.copy()));
   }
   operands(): MathObj[] {
     return this.$args;
@@ -5769,7 +5889,7 @@ function listx(expressions: MathObj[]) {
 
 class Relation extends MathObj {
   copy(): Relation {
-    const argscopy = this.args.map(x => x.copy());
+    const argscopy = this.args.map((x) => x.copy());
     return relate(this.op, argscopy);
   }
   operandAt(i: number): MathObj {
@@ -5820,6 +5940,26 @@ function relate(op: RelationOperator, args: MathObj[]) {
 
 function isRelation(u: MathObj): u is Relation {
   return u.kind() === expression_type.relation;
+}
+
+class Equation extends Relation {
+  args: [MathObj, MathObj];
+  op: "=";
+  constructor(left: MathObj, right: MathObj) {
+    super("=", [left, right]);
+    this.args = [left, right];
+    this.op = "=";
+  }
+  get left() {
+    return this.args[0];
+  }
+  get right() {
+    return this.args[1];
+  }
+}
+
+export function equation(left: MathObj, right: MathObj) {
+  return new Equation(left, right);
 }
 
 class Boolean extends MathObj {
@@ -6024,49 +6164,6 @@ class Sym extends MathObj {
   }
 }
 
-class Undefined extends MathObj {
-  copy(): Undefined {
-    return UNDEFINED();
-  }
-  strung(): string {
-    return this.toString();
-  }
-  operandAt(): MathObj {
-    return UNDEFINED();
-  }
-  operands(): MathObj[] {
-    return [];
-  }
-  kind(): expression_type {
-    return expression_type.undefined;
-  }
-  equals(other: MathObj): boolean {
-    return isUndefined(other);
-  }
-  toString(): string {
-    return this.sym;
-  }
-  map(): this {
-    return this;
-  }
-  sym: "UNDEFINED";
-  error: string = "";
-  setError(value: string) {
-    this.error = value;
-    return this;
-  }
-  constructor() {
-    super();
-    this.sym = "UNDEFINED";
-  }
-}
-function UNDEFINED() {
-  return new Undefined();
-}
-function isUndefined(u: MathObj): u is Undefined {
-  return u.kind() === expression_type.undefined;
-}
-
 function sym(str: string) {
   return new Sym(str);
 }
@@ -6079,7 +6176,7 @@ class Fraction extends Numeric {
   copy(): Fraction {
     const n = this.numerator.copy();
     const d = this.denominator.copy();
-    return frac(n,d);
+    return frac(n, d);
   }
   /** Returns the given number as a fraction. */
   static from(value: number | Fraction) {
@@ -6278,7 +6375,7 @@ function isFrac(u: MathObj): u is Fraction {
 
 class Sum extends MathObj {
   copy(): Sum {
-    const argscopy = this.args.map(x => x.copy());
+    const argscopy = this.args.map((x) => x.copy());
     return sum(...argscopy);
   }
   strung(): string {
@@ -6340,7 +6437,7 @@ function isSum(u: MathObj): u is Sum {
 
 class Difference extends MathObj {
   copy(): Difference {
-    const argscopy = this.args.map(x => x.copy());
+    const argscopy = this.args.map((x) => x.copy());
     return diff(...argscopy);
   }
   strung(): string {
@@ -6393,7 +6490,7 @@ function isDiff(u: MathObj): u is Difference {
 
 class Product extends MathObj {
   copy(): Product {
-    const argscopy = this.args.map(x => x.copy());
+    const argscopy = this.args.map((x) => x.copy());
     return prod(...argscopy);
   }
   strung(): string {
@@ -6463,7 +6560,7 @@ function isProduct(u: MathObj): u is Product {
 
 class Quotient extends MathObj {
   copy(): Quotient {
-    const argscopy = this.args.map(x => x.copy());
+    const argscopy = this.args.map((x) => x.copy());
     return quot(...argscopy);
   }
   strung(): string {
@@ -6607,7 +6704,7 @@ function isPower(u: MathObj): u is Power {
 
 class Func extends MathObj {
   copy(): Func {
-    const argscopy = this.args.map(x => x.copy());
+    const argscopy = this.args.map((x) => x.copy());
     return fn(this.op, argscopy);
   }
   strung(): string {
@@ -7357,10 +7454,9 @@ function exp(source: string) {
 
     const equality = () => {
       let left = compare();
-      while (match(token_type.bang_equal, token_type.equal_equal)) {
-        const op = previous();
+      while (match(token_type.equal)) {
         const right = compare();
-        left = relate(op.$lexeme as RelationOperator, [left, right]);
+        left = equation(left, right);
       }
       return left;
     };
@@ -7372,7 +7468,8 @@ function exp(source: string) {
           token_type.greater,
           token_type.greater_equal,
           token_type.less,
-          token_type.less_equal
+          token_type.less_equal,
+          token_type.bang_equal
         )
       ) {
         const op = previous();

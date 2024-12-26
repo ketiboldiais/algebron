@@ -24,6 +24,8 @@ import MdxLayout from "@/components/mdx-layout";
   - [Affine Functions](#affine-functions)
   - [Quadratic Functions](#quadratic-functions)
     - [Quadratic Formula](#quadratic-formula)
+    - [Natural Even Power Functions](#natural-even-power-functions)
+  - [Cubic Functions](#cubic-functions)
 
 </TOC>
 
@@ -237,6 +239,36 @@ The terms of a linear expression are themselves a special type of expression cal
 > 3. ${u = x^n,}$ where ${n \in \Z}$ and ${n \gt 1.}$
 > 4. ${u}$ is a product with two operands that satisfies either (1), (2), or (3).
 
+Below is a procedure for determining whether a given expression is a univariate monomial in a variable ${x}$:
+
+<Procedure>
+
+- __Procedure__ isMonomial(${u}$, ${x}$)
+- __Input__
+  - ${u}$: An algebraic expression.
+  - ${x}$: A symbol.
+- __Output__
+  - true or false
+
+1. if ${u \in (\Z \cup \mathbb{Q})}$ then
+   1. return true
+2. else if ${u = x}$ then
+   1. return true
+3. else if ${u}$ is a power
+   1. ${base}$ ${\coloneqq}$ operand(${u}$, 1)
+   2. ${exponent}$ ${\coloneqq}$ operand(${u}$, 2) 
+   3. if ${(base = x) \land (base \in \Z) \land (exponent \gt 1)}$ then
+      1. return true 
+4. else if ${u}$ is a product
+   1. ${opcount \coloneqq operandCount(u,2)}$
+   2. ${r_1 \coloneqq isMonomial(operand(u,1),x)}$
+   3. ${r_2 \coloneqq isMonomial(operand(u,2), x)}$
+   4. return ${opcount \land r_1 \land r_2}$
+5. return false
+
+
+</Procedure>
+
 ### Quadratic Expressions
 > __Definition.__ A quadratic expression in one variable is an expression that can be written in the form 
 >
@@ -404,12 +436,45 @@ $$
 is called the __canonical equation__ of the parabola ${y = Ax^2 + Bx + C.}$ Notice that the parabola is symmetric about the vertical line ${x = -\dfrac{B}{2A},}$ passing through the vertex. This line, called the __axis of symmetry__, is parallel to the ${y}$-axis. Suppose ${(h,k)}$ is the parabola's vertex. Using the method of completing the square, the parabola's equation (with its axis of symmetry parallel to the ${y}$-axis) can be written in the form ${y = A(x - h)^2 + k.}$   
 
 #### Quadratic Formula
+The quadratic formula provides a quick and easy way to find the roots of a polynomial equation.
 
 > __Formula.__ Let ${A,}$ ${B,}$ and ${C}$ be constants in ${\reals.}$ The roots of the equation ${Ax^2 + Bx + C = 0}$ are given by the formula
 >
 > $$
 >    x = \dfrac{-B \pm \sqrt{B^2 - 4AC}}{2A}.
 > $$
+
+When can gain many insights about a particular quadratic by simply examining its determinant.
+
+> __Corollary.__ Suppose ${u}$ is the quadratic ${Ax^2 + Bx + C = 0}$ with ${A \neq 0,}$ ${B,}$ and ${C}$ as real constants. Then the following are true:
+>
+> 1. If ${B^2 - 4AC = 0,}$ then ${u}$ is tangent to the ${x}$-axis and has one (repeated) real root.
+> 2. If ${B^2 - 4AC \gt 0,}$ then the parabola has two distinct real roots. 
+> 3. If ${B^2 - 4AC \lt 0,}$ then the parabola has two complex roots.  
+> 4. If ${B^2 - 4AC \gt 0,}$ then ${u}$ has the same sign as ${A.}$
+
+#### Natural Even Power Functions
+The graphs of ${y = x^{2n + 2},}$ where ${n \in \natnums}$ (e.g., ${y = x^2,}$ ${y = x^4,}$ ${y = x^6,}$ etc.) look similar to one another. For ${-1 \leq x \leq 1,}$ the higher the exponent, the flatter the graph is along the ${x}$-axis. This follows from the fact that, where ${-1 \leq x \leq 1,}$ ${\lvert x \rvert \implies \ldots \lt x^6 \lt x^4 \lt x^2 \lt 1.}$ 
+
+import {Pow2FuncLab} from "@/components/Fig";
+
+<Pow2FuncLab/>
+
+### Cubic Functions
+> __Definition.__ Let ${A,}$ ${B,}$ ${C,}$ and ${D}$ be real number constants with ${A \neq 0.}$ A function of the form 
+>
+> $$
+>  f(x) = Ax^3 + Bx^2 + Cx + D
+> $$
+>
+> is called a _cubic function_. 
+
+The graph of a cubic function is a _cubic curve_. As seen from its general form, the cubic curve depends on four parameters: ${A,}$ ${B,}$ ${C,}$ and ${D.}$ Where ${A = 1,}$ ${B = 0,}$ ${C = 0,}$ ${D = 0,}$ we get the simplest cubic:
+
+$$
+  f(x) = x^3.
+$$
+
 
 export default function MDXPage({ children }) {
     return <MdxLayout>{children}</MdxLayout>

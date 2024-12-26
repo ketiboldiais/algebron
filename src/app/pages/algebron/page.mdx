@@ -25,6 +25,7 @@ import { PlotTest, TreeTest, Plot3DDemo, ConvexHullDemo } from "@/components/Fig
   - [Matrices](#matrices)
 - [CAS Modules](#cas-modules)
   - [simplify(u)](#simplifyu)
+    - [Algebraic Simplification](#algebraic-simplification)
   - [subexs(u)](#subexsu)
   - [freeOf(u,xs)](#freeofuxs)
   - [derive(u,x)](#deriveux)
@@ -232,6 +233,19 @@ Where `u` is a string or MathObj, simplifies the expression. Below is an example
 const x = simplify('(1/x) * x');
 console.log(x.strung()); // "1"
 ~~~
+
+#### Algebraic Simplification
+Algebraic simplification, in general, is a difficult problem. In designing a simplification algorithm, there is inevitably a conflict between the user's desired output and the software engineer's preferences. For example, the following mathematical expressions are all equivalent:
+
+$$
+\begin{aligned}
+  \left( \dfrac{\cos x}{\sin x} \right)^2 &~~~~ \dfrac{ \cos^2 x }{ \sin^2 x } \\[2em]
+  \dfrac{ \cos^2 x }{ 1 - \cos^2 x } &~~~~ \cot^2 x \\[2em]
+  \dfrac{ 1 }{ \tan^2 x } &~~~~ \csc^2 x - 1
+\end{aligned}
+$$
+
+If we passed an expression equivalent to either of those above, what should the expression simplify to? The engineer may be incentivized to only use sines and cosines. The user, however, may want the expression reduced to any one of these, depending on context. Of course, the more the engineer caters towards the user's preferences, the more complex the simplification algorithm.
 
 ### subexs(u)
 Where `u` is a string or MathObj corresponding to an algebraic expression, returns an array of the subexpressions of `u`.

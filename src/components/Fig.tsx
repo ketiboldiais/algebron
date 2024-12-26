@@ -86,17 +86,20 @@ const axis = (
   }
 };
 
-type FigProps = { data: SVGObj; width?: number; paddingBottom?: number };
-
 const FIGURE = ({ children }: { children: ReactNode }) => {
   return <figure className="algebron-fig">{children}</figure>;
 };
 
-const Fig = ({ data, width = 100, paddingBottom = width }: FigProps) => {
+type FigProps = {
+  data: SVGObj;
+  width?: number;
+  paddingBottom?: number;
+  title?: ReactNode;
+};
+
+const Fig = ({ data, width = 100, paddingBottom = width, title }: FigProps) => {
   const par = "xMidYMid meet";
-  const w = data.$width;
-  const height = data.$height;
-  const viewbox = `0 0 ${w} ${height}`;
+  const viewbox = `0 0 ${data.$width} ${data.$height}`;
   const boxcss = {
     display: "block",
     margin: "0 auto",
@@ -119,9 +122,12 @@ const Fig = ({ data, width = 100, paddingBottom = width }: FigProps) => {
       <div style={boxcss}>
         <svg viewBox={viewbox} preserveAspectRatio={par} style={svgcss}>
           <DEF elements={data.$markers} />
-          <Fig2D elements={data.$children} />
+          <g transform={`translate(5,10)`}>
+            <Fig2D elements={data.$children} />
+          </g>
         </svg>
       </div>
+      {title && <figcaption>{title}</figcaption>}
     </FIGURE>
   );
 };
@@ -962,10 +968,10 @@ export const SplineLab = () => {
   const cc = curveCardinal(pts, tensionValue);
   const ccr = curveCatmullRom(pts, alphaValue);
   const d = svg([
-    linearCurveChecked && lc.stroke("salmon"),
-    bezierCurveChecked && cbc.stroke("lawngreen"),
+    linearCurveChecked && lc.stroke("red"),
+    bezierCurveChecked && cbc.stroke("green"),
     cardinalCurveChecked && cc.stroke("magenta"),
-    catmullRomCurveChecked && ccr.stroke("cyan"),
+    catmullRomCurveChecked && ccr.stroke("blue"),
     circles,
   ])
     .dimensions(400, 400)
@@ -973,8 +979,8 @@ export const SplineLab = () => {
     .range(R)
     .done();
   return (
-    <div className="border rounded bg-slate-900">
-      <div className="m-2 font-mono bg-slate-700 text-sm text-white p-4 py-2 w-6/12 rounded">
+    <div>
+      <div className="m-2 font-mono text-sm p-4 py-2 w-6/12 rounded">
         <span>Curve:</span>
         <div className="flex">
           <input
@@ -1045,6 +1051,48 @@ export const SplineLab = () => {
         </div>
       </div>
       <Fig data={d} width={60} />
+    </div>
+  );
+};
+
+export const Pow2FuncLab = () => {
+  const D = tuple(-10, 10);
+  const R = tuple(-10, 10);
+
+  const d1 = svg([
+    vaxis(R, 1).stroke("grey").done(),
+    haxis(D, 1).stroke("grey").done(),
+    cplot(`fn f(x) = x^2`, D, R).stroke("red").strokeWidth(2).done(),
+  ])
+    .dimensions(500, 500)
+    .domain(D)
+    .range(R)
+    .done();
+
+  const d2 = svg([
+    vaxis(R, 1).stroke("grey").done(),
+    haxis(D, 1).stroke("grey").done(),
+    cplot(`fn f(x) = x^4`, D, R).stroke("teal").strokeWidth(2).done(),
+  ])
+    .dimensions(500, 500)
+    .domain(D)
+    .range(R)
+    .done();
+
+  const d3 = svg([
+    vaxis(R, 1).stroke("grey").done(),
+    haxis(D, 1).stroke("grey").done(),
+    cplot(`fn f(x) = x^16`, D, R).stroke("violet").strokeWidth(2).done(),
+  ])
+    .dimensions(300, 300)
+    .domain(D)
+    .range(R)
+    .done();
+  return (
+    <div className="grid grid-cols-3">
+      <Fig data={d1} width={100} title={<Tex content="y = x^2"/>}/>
+      <Fig data={d2} width={100} title={<Tex content="y = x^4"/>}/>
+      <Fig data={d3} width={100} title={<Tex content="y = x^{16}"/>}/>
     </div>
   );
 };

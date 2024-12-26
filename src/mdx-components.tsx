@@ -9,6 +9,11 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
   return {
     REPL,
     Terminal,
+    Procedure: (props) => (
+      <div className="procedure">
+        {props.children}
+      </div>
+    ),
     TOC: (props) => (
       <div className="toc">
         <Link href="/">Home</Link>
