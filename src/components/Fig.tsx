@@ -44,6 +44,7 @@ import {
   curveLinear,
   curveCardinal,
   curveCatmullRom,
+  quad,
 } from "@/algebron/main";
 
 import {
@@ -122,7 +123,7 @@ const Fig = ({ data, width = 100, paddingBottom = width, title }: FigProps) => {
       <div style={boxcss}>
         <svg viewBox={viewbox} preserveAspectRatio={par} style={svgcss}>
           <DEF elements={data.$markers} />
-          <g transform={`translate(5,10)`}>
+          <g transform={`translate(10,10)`}>
             <Fig2D elements={data.$children} />
           </g>
         </svg>
@@ -424,7 +425,6 @@ export const LA5 = () => {
   const xAxis = axis("x", D, R);
   const yAxis = axis("y", D, R);
   const d = svg([
-    grid(D, R).done(),
     xAxis,
     yAxis,
     cplot("fn f(x) = (5/4) - x", D, R).stroke("red").done(),
@@ -434,7 +434,7 @@ export const LA5 = () => {
     .domain(D)
     .range(R)
     .done();
-  return <Fig data={d} width={60} />;
+  return <Fig data={d} width={40} />;
 };
 
 function CameraController() {
@@ -812,7 +812,7 @@ export const AffineFunctionLab = () => {
             type="range"
             onChange={handleARangeChange}
           />
-          <Tex content={`A = ${AValue}`} block />
+          <Tex content={`a = ${AValue}`} block />
         </div>
         <div className="flex items-center">
           <input
@@ -821,10 +821,10 @@ export const AffineFunctionLab = () => {
             type="range"
             onChange={handleBRangeChange}
           />
-          <Tex content={`B = ${BValue}`} block />
+          <Tex content={`b = ${BValue}`} block />
         </div>
         <div>
-          <Tex content={`\\dfrac{B}{A} = ${AB().latex}`} />
+          <Tex content={`\\dfrac{b}{a} = ${AB().latex}`} />
         </div>
       </div>
       <Fig data={d} width={70} />
@@ -906,7 +906,7 @@ export const QuadraticFunctionLab = () => {
             type="range"
             onChange={handleARangeChange}
           />
-          <Tex content={`A = ${AValue}`} block />
+          <Tex content={`a = ${AValue}`} block />
         </div>
         <div className="flex items-center">
           <input
@@ -915,7 +915,7 @@ export const QuadraticFunctionLab = () => {
             type="range"
             onChange={handleBRangeChange}
           />
-          <Tex content={`B = ${BValue}`} block />
+          <Tex content={`b = ${BValue}`} block />
         </div>
         <div className="flex items-center">
           <input
@@ -924,7 +924,7 @@ export const QuadraticFunctionLab = () => {
             type="range"
             onChange={handleCRangeChange}
           />
-          <Tex content={`C = ${CValue}`} block />
+          <Tex content={`c = ${CValue}`} block />
         </div>
       </div>
       <Fig data={d} width={70} />
@@ -1090,10 +1090,61 @@ export const Pow2FuncLab = () => {
     .done();
   return (
     <div className="grid grid-cols-3">
-      <Fig data={d1} width={100} title={<Tex content="y = x^2"/>}/>
-      <Fig data={d2} width={100} title={<Tex content="y = x^4"/>}/>
-      <Fig data={d3} width={100} title={<Tex content="y = x^{16}"/>}/>
+      <Fig data={d1} width={100} title={<Tex content="y = x^2" />} />
+      <Fig data={d2} width={100} title={<Tex content="y = x^4" />} />
+      <Fig data={d3} width={100} title={<Tex content="y = x^{16}" />} />
     </div>
+  );
+};
+
+export const SubsetFig = () => {
+  const D = tuple(-7, 7);
+  const R = tuple(-7, 7);
+  const d = svg([
+    quad(8, 14).at(-4, 7).fill("#FFF2C2").end(),
+    text("A").latex("block").width(20).fontSize(18).position(-3.4, 6.5),
+    text("B").latex("block").width(20).fontSize(18).position(3, 2.2),
+    circle(70, [0, 0]).fill("none").fill("#F39E60"),
+    circle(40, [-0.75, 0]).fill("none").fill("#DF6D2D"),
+    line([-2.8, 4], [-1.7, 2]).arrowEnd(),
+    line([3, 0], [2.1, 0]).arrowEnd(),
+  ])
+    .dimensions(500, 200)
+    .domain(D)
+    .range(R)
+    .done();
+  return (
+    <Fig
+      data={d}
+      width={60}
+      paddingBottom={25}
+      title={<Tex content="A \subset B" />}
+    />
+  );
+};
+
+
+export const IntersectionFig = () => {
+  const D = tuple(-7, 7);
+  const R = tuple(-7, 7);
+  const d = svg([
+    quad(8, 14).at(-4, 7).fill("#FFF2C2").end(),
+    text("A").latex("block").width(20).fontSize(18).position(-3.4, 6.2),
+    text("B").latex("block").width(20).fontSize(18).position(2.8, 5.6),
+    circle(70, [1, 0]).fillOpacity(0.5).fill("none").fill("#FF748B"),
+    circle(70, [-1, 0]).fillOpacity(0.5).fill("none").fill("#81BFDA"),
+  ])
+    .dimensions(500, 200)
+    .domain(D)
+    .range(R)
+    .done();
+  return (
+    <Fig
+      data={d}
+      width={60}
+      paddingBottom={25}
+      title={<Tex content="A \cap B" />}
+    />
   );
 };
 

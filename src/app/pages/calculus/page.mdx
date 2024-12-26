@@ -17,6 +17,9 @@ import MdxLayout from "@/components/mdx-layout";
   - [Quadratic Expressions](#quadratic-expressions)
     - [The Quadratic Formula](#the-quadratic-formula)
   - [Polynomial Expressions](#polynomial-expressions)
+    - [Multivariate Polynomials](#multivariate-polynomials)
+    - [General Monomial Expressions](#general-monomial-expressions)
+    - [General Polynomial Expression](#general-polynomial-expression)
 - [Cartesian Plane](#cartesian-plane)
   - [The Distance Between Two Points](#the-distance-between-two-points)
   - [Midpoint Formula](#midpoint-formula)
@@ -26,6 +29,7 @@ import MdxLayout from "@/components/mdx-layout";
     - [Quadratic Formula](#quadratic-formula)
     - [Natural Even Power Functions](#natural-even-power-functions)
   - [Cubic Functions](#cubic-functions)
+    - [Natural Odd Power Functions](#natural-odd-power-functions)
 
 </TOC>
 
@@ -102,8 +106,6 @@ For the purposes of calculus, it suffices to give informal definitions of number
 > **Definition (informal): Real Numbers.** A real number is any number that can be expressed in decimal form. We denote the set of real numbers with the symbol ${\reals.}$
 
 The real numbers can be represented as points on a _number line_. A fundamental fact: There is a one-to-one correspondence between the set of real numbers and the set of points on a line. For each given point, the real number associated with that point is called the point's **coordinate**.
-
-![Real Line](https://res.cloudinary.com/sublimis/image/upload/v1653361169/math/number_line_rbz14e.svg)
 
 The naturals are the most basic numbers. These are the numbers we use for counting.
 
@@ -320,17 +322,53 @@ To aid our discussion on polynomials, we define the following operators.
 >
 > corresponds to the leading coefficient of ${u.}$ If the variable ${x}$ is clear from context, we use the shorthand notation ${\text{deg}(u)}$ and ${\text{lc}(u).}$
 
+#### Multivariate Polynomials
+A _multivariate polynomial_ is a polynomial that contains one or more variables.
+
+> __Definition.__ A _multivariate polynomial_ ${u}$ in the set of symbols ${\lbrace x_1, x_2, \ldots, x_m \rbrace}$ is a finite sum with one or more monomial terms of the form
+>
+> $$
+>  c x_1^{n_1} x_2^{n_2} \ldots x_m^{n_m},
+> $$
+>
+> where the coefficient ${c}$ is a rational number and the exponents ${n_j}$ are non-negative integers.
+
+__*example*__. ${x^2 - y^2}$
+
+__*example*__. ${mc^2}$
+
+__*example*__. ${a + \dfrac{1}{2}ax^2 + aby.}$
+
+__*example*__. ${ax^2 + bx + 3c.}$
+
+__*example*__. ${3x^2 + 4.}$ 
+
+From the last example, we see that all univariate polynomials are multivariate polynomials, since a multivariate polynomial is a polynomial that contains _one or more_ variables. 
+
+#### General Monomial Expressions
+> __Definition.__ Let ${c_1, c_2, \ldots, c_r}$ be algebraic expressions and let ${x_1, x_2, \ldots, x_m}$ be algebraic expressions that are not integers or fractions. A _general monomial expression_ (GME) in ${\lbrace x_1, x_2, \ldots, x_m \rbrace}$ is an expression of the form
+>
+> $$
+>  c_1 c_2 \ldots c_r x_1^{n_1} x_2^{n_2} \ldots x_m^{n_m},
+> $$
+>
+> where the exponents ${n_j}$ are non-negative integers and each ${c_i}$ does not contain an expression ${x_j}$ for ${j = 1,2,\ldots,m.}$ 
+
+In the definition above, the expressions ${x_j}$ are called _generalized variables_, and the expressions ${c_i}$ are called _generalized coefficients_. The expression ${x_1^{n_1} \ldots x_m^{n_m}}$ is called the _variable part_ of the monomial. If there aren't any generalized coefficients in the monomial, the coefficient is ${1.}$
+
+#### General Polynomial Expression
+> __Definition.__ A general polynomial expression (GPE) is a GME or a sum of GMEs.
  
 ## Cartesian Plane
-The __Cartesian plane__ is a plane constructed from two perpendicular real lines, called __axes__. The horizontal line is called the ${x}$-axis, and the vertical line is called the ${y}$-axis. If we place a point ${p}$ on this plane, then that point can be represented as a pair ${(x_p,y_p),}$ where ${x_p}$ is the point's coordinate on the ${x}$-axis and ${y_p}$ is the point's coordinate on the ${y}$-axis.  
+The _Cartesian plane_ is a plane constructed from two perpendicular real lines, called _axes_. The horizontal line is called the ${x}$-axis, and the vertical line is called the ${y}$-axis. If we place a point ${p}$ on this plane, then that point can be represented as a pair ${(x_p,y_p),}$ where ${x_p}$ is the point's coordinate on the ${x}$-axis and ${y_p}$ is the point's coordinate on the ${y}$-axis.  
 
 import {Calc1} from '@/components/Fig';
 
 <Calc1/>
 
-The point of intersection of the two axes is called the __origion__, usually denoted by the letter ${O.}$ The plane is divided into four regions called __quadrants__, often labeled ${\text{I}}$ through ${\text{IV}.}$
+The point of intersection of the two axes is called the _origin_, usually denoted by the letter ${O.}$ The plane is divided into four regions called _quadrants_, often labeled ${\text{I}}$ through ${\text{IV}.}$
 
-The pair ${(x_p, y_p)}$ is an example of an __ordered pair__. We call the coordinate ${x_p}$ the ordered pair's __abscissa__ and ${y_p}$ the __ordinate__. For brevity, the notation ${p(x, y)}$ means that the point ${p}$ has the coordinates ${(x,y).}$ 
+The pair ${(x_p, y_p)}$ is an example of an _ordered pair_. We call the coordinate ${x_p}$ the ordered pair's _abscissa_ and ${y_p}$ the _ordinate_. For brevity, the notation ${p(x, y)}$ means that the point ${p}$ has the coordinates ${(x,y).}$ 
 
 ### The Distance Between Two Points
 Suppose we're given two points ${P(x_P, y_P)}$ and ${Q(x_Q, y_Q).}$ We want to know the distance between these two points. For example, in the diagram below, what is the length of the red line between the red dots?
@@ -394,12 +432,12 @@ In the sea of real functions, affine functions are among the most desirable. The
 > __Definition.__ Suppose ${A}$ and ${B}$ are real number constants. A function of the form
 >
 > $$
->    f(x) = Ax + B
+>    f(x) = ax + b
 > $$
 >
-> is called an _affine function_. In the case where ${A = 0,}$ then ${f(x) = B,}$ and we call ${f}$ a _constant function_. In the case where ${B = 0}$ and ${A \neq 0,}$ then ${f(x) = Ax,}$ and we call ${f}$ a _linear function_.  
+> is called an _affine function_. In the case where ${a = 0,}$ then ${f(x) = b,}$ and we call ${f}$ a _constant function_. In the case where ${b = 0}$ and ${a \neq 0,}$ then ${f(x) = ax,}$ and we call ${f}$ a _linear function_.  
 
-The graph of an affine function ${f}$ is a continuous straight line. If ${A \gt 0,}$ then ${f}$ is strictly increasing. If ${A \lt 0,}$ then ${f}$ is strictly decreasing. If ${A \neq 0,}$ then then ${f}$ has a unique zero ${x = -\dfrac{B}{A}.}$ To demonstrate these facts, consider the interactive figure below. Adjust the ${A}$ and ${B}$ values to see what happens to our line. 
+The graph of an affine function ${f}$ is a continuous straight line. If ${a \gt 0,}$ then ${f}$ is strictly increasing. If ${a \lt 0,}$ then ${f}$ is strictly decreasing. If ${a \neq 0,}$ then then ${f}$ has a unique zero ${x = -\dfrac{b}{a}.}$ To demonstrate these facts, consider the interactive figure below. Adjust the ${a}$ and ${b}$ values to see what happens to our line. 
 
 import {AffineFunctionLab} from "@/components/Fig";
 
@@ -407,51 +445,51 @@ import {AffineFunctionLab} from "@/components/Fig";
 
 ### Quadratic Functions
 
-> __Definition.__ Let ${A,}$ ${B,}$ and ${C}$ be real number constants, with ${A \neq 0.}$ A function of the form
+> __Definition.__ Let ${a,}$ ${b,}$ and ${c}$ be real number constants, with ${a \neq 0.}$ A function of the form
 >
 > $$
->    f(x) = Ax^2 + Bx + C
+>    f(x) = ax^2 + bx + c
 > $$
 >
-> is called a _quadratic function_ with leading coefficient ${A.}$
+> is called a _quadratic function_ with leading coefficient ${a.}$
 
-The graph of a quadratic function is called a __parabola__. Given the quadratic function ${f(x) = Ax^2 + Bx + C,}$ if ${A \gt 0,}$ then the parabola has a _local minimum_ at ${x = -\dfrac{B}{2A}}$ and the parabola is _convex_. If ${A \lt 0,}$ then the parabola has a _local maximum_ at ${x = - \dfrac{B}{2A}}$ and the parabola is _concave_.
+The graph of a quadratic function is called a _parabola_. Given the quadratic function ${f(x) = ax^2 + bx + c,}$ if ${a \gt 0,}$ then the parabola has a _local minimum_ at ${x = -\dfrac{b}{2a}}$ and the parabola is _convex_. If ${a \lt 0,}$ then the parabola has a _local maximum_ at ${x = - \dfrac{b}{2a}}$ and the parabola is _concave_.
 
 import {QuadraticFunctionLab} from "@/components/Fig";
 
 <QuadraticFunctionLab/>
 
-All parabolas have a special point called the __vertex__. This point is given by:
+All parabolas have a special point called the _vertex_. This point is given by:
 
 $$
-    \left( -\dfrac{B}{2A}, \dfrac{4AC - B^2}{4A} \right).
+    \left( -\dfrac{b}{2a}, \dfrac{4ac - b^2}{4a} \right).
 $$
 
-The quantity ${B^2 - 4AC}$ is called the __discriminant__ of ${Ax^2 + Bx + C.}$ The equation
+The quantity ${b^2 - 4ac}$ is called the _discriminant_ of ${ax^2 + bx + c.}$ The equation
 
 $$
-    y = A\left(x + \dfrac{B}{2A}\right)^2 + \dfrac{4AC - B^2}{4A}
+    y = a\left(x + \dfrac{b}{2a}\right)^2 + \dfrac{4ac - b^2}{4a}
 $$
 
-is called the __canonical equation__ of the parabola ${y = Ax^2 + Bx + C.}$ Notice that the parabola is symmetric about the vertical line ${x = -\dfrac{B}{2A},}$ passing through the vertex. This line, called the __axis of symmetry__, is parallel to the ${y}$-axis. Suppose ${(h,k)}$ is the parabola's vertex. Using the method of completing the square, the parabola's equation (with its axis of symmetry parallel to the ${y}$-axis) can be written in the form ${y = A(x - h)^2 + k.}$   
+is called the _canonical equation_ of the parabola ${y = ax^2 + bx + c.}$ Notice that the parabola is symmetric about the vertical line ${x = -\dfrac{b}{2a},}$ passing through the vertex. This line, called the _axis of symmetry_, is parallel to the ${y}$-axis. Suppose ${(h,k)}$ is the parabola's vertex. Using the method of completing the square, the parabola's equation (with its axis of symmetry parallel to the ${y}$-axis) can be written in the form ${y = a(x - h)^2 + k.}$   
 
 #### Quadratic Formula
 The quadratic formula provides a quick and easy way to find the roots of a polynomial equation.
 
-> __Formula.__ Let ${A,}$ ${B,}$ and ${C}$ be constants in ${\reals.}$ The roots of the equation ${Ax^2 + Bx + C = 0}$ are given by the formula
+> __Formula.__ Let ${a,}$ ${b,}$ and ${c}$ be constants in ${\reals.}$ The roots of the equation ${ax^2 + bx + c = 0}$ are given by the formula
 >
 > $$
->    x = \dfrac{-B \pm \sqrt{B^2 - 4AC}}{2A}.
+>    x = \dfrac{-b \pm \sqrt{b^2 - 4ac}}{2a}.
 > $$
 
 When can gain many insights about a particular quadratic by simply examining its determinant.
 
-> __Corollary.__ Suppose ${u}$ is the quadratic ${Ax^2 + Bx + C = 0}$ with ${A \neq 0,}$ ${B,}$ and ${C}$ as real constants. Then the following are true:
+> __Corollary.__ Suppose ${u}$ is the quadratic ${ax^2 + bx + c = 0}$ with ${a \neq 0,}$ ${b,}$ and ${c}$ as real constants. Then the following are true:
 >
-> 1. If ${B^2 - 4AC = 0,}$ then ${u}$ is tangent to the ${x}$-axis and has one (repeated) real root.
-> 2. If ${B^2 - 4AC \gt 0,}$ then the parabola has two distinct real roots. 
-> 3. If ${B^2 - 4AC \lt 0,}$ then the parabola has two complex roots.  
-> 4. If ${B^2 - 4AC \gt 0,}$ then ${u}$ has the same sign as ${A.}$
+> 1. If ${b^2 - 4ac = 0,}$ then ${u}$ is tangent to the ${x}$-axis and has one (repeated) real root.
+> 2. If ${b^2 - 4ac \gt 0,}$ then the parabola has two distinct real roots. 
+> 3. If ${b^2 - 4ac \lt 0,}$ then the parabola has two complex roots.  
+> 4. If ${b^2 - 4ac \gt 0,}$ then ${u}$ has the same sign as ${A.}$
 
 #### Natural Even Power Functions
 The graphs of ${y = x^{2n + 2},}$ where ${n \in \natnums}$ (e.g., ${y = x^2,}$ ${y = x^4,}$ ${y = x^6,}$ etc.) look similar to one another. For ${-1 \leq x \leq 1,}$ the higher the exponent, the flatter the graph is along the ${x}$-axis. This follows from the fact that, where ${-1 \leq x \leq 1,}$ ${\lvert x \rvert \implies \ldots \lt x^6 \lt x^4 \lt x^2 \lt 1.}$ 
@@ -461,19 +499,35 @@ import {Pow2FuncLab} from "@/components/Fig";
 <Pow2FuncLab/>
 
 ### Cubic Functions
-> __Definition.__ Let ${A,}$ ${B,}$ ${C,}$ and ${D}$ be real number constants with ${A \neq 0.}$ A function of the form 
+> __Definition.__ Let ${a,}$ ${b,}$ ${c,}$ and ${d}$ be real number constants with ${a \neq 0.}$ A function of the form 
 >
 > $$
->  f(x) = Ax^3 + Bx^2 + Cx + D
+>  f(x) = ax^3 + bx^2 + cx + d
 > $$
 >
 > is called a _cubic function_. 
 
-The graph of a cubic function is a _cubic curve_. As seen from its general form, the cubic curve depends on four parameters: ${A,}$ ${B,}$ ${C,}$ and ${D.}$ Where ${A = 1,}$ ${B = 0,}$ ${C = 0,}$ ${D = 0,}$ we get the simplest cubic:
+The graph of a cubic function is a _cubic curve_. As seen from its general form, the cubic curve depends on four parameters: ${a,}$ ${b,}$ ${c,}$ and ${d.}$ Where ${a = 1,}$ ${b = 0,}$ ${c = 0,}$ ${d = 0,}$ we get the simplest cubic:
 
 $$
   f(x) = x^3.
 $$
+
+The graph of the cubic function ${f(x) = x^3}$ is concave when ${x \lt 0}$ and convex when ${x \gt 0.}$ Examining the behavior of ${f(x) = x^3,}$ we see that ${f}$ is an increasing odd function.
+
+#### Natural Odd Power Functions
+The graphs of ${y = x^{2n + 3},}$ ${n \in \natnums}$ (e.g., ${y = x^3,}$ ${y = x^5,}$ ${y = x^7,}$ etc.) look similar to one another. For ${-1 \leq x \leq 1,}$ the higher the exponent, the flatter the graph is to the ${x}$-axis, since
+
+$$
+  \lvert x \rvert \lt 1 \implies \ldots \lt \lvert x^7 \rvert \lt \lvert x^5 \rvert \lt \lvert x^3 \rvert \lt 1.
+$$
+
+For ${\lvert x \rvert \geq 1,}$ the higher the exponent, the steeper the graph will be. This follows from the fact that
+
+$$
+  \lvert x \rvert \gt 1 \implies \ldots \gt \lvert x^7 \rvert \gt \lvert x^5 \rvert \gt \lvert x^3 \rvert \gt 1.
+$$
+
 
 
 export default function MDXPage({ children }) {

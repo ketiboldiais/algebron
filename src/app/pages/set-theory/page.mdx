@@ -44,6 +44,10 @@ From the definition above, we can see that every set is a subset of itself. Give
 
 > __Definition.__ Let ${A}$ and ${B}$ be sets. If every element of ${B}$ is an element of ${A,}$ ${B \neq \varnothing,}$ and ${B \neq A,}$ then ${B}$ is a __proper subset__ of ${A,}$ and we write ${B \subset A.}$
 
+import { SubsetFig } from "@/components/Fig";
+
+<SubsetFig/>
+
 ### Equality of Sets
 > __Definition.__ Two sets are equal if and only if they contain the same elements.
 
@@ -85,7 +89,11 @@ Set algebra refers to the definitions, theorems, and procedures for operations o
 >    A \cap B \coloneqq \lbrace x ~|~ x \in A \land x \in B \rbrace.
 > $$
 
-Visually, the shaded region below corresponds to the intersection of the two sets.
+Below, the purple shaded region corresponds to the intersection of ${A}$ and ${B.}$
+
+import { IntersectionFig } from "@/components/Fig";
+
+<IntersectionFig/>
 
 #### Union
 > __Definition.__ Given sets ${A}$ and ${B,}$ the set of all elements found in ${A}$ or ${B}$ (or both) is called the __union__ of ${A}$ and ${B,}$ written ${A \cup B.}$ Symbolically:
