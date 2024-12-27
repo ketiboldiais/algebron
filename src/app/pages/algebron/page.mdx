@@ -36,6 +36,7 @@ import { PlotTest, TreeTest, Plot3DDemo, ConvexHullDemo } from "@/components/Fig
   - [coefGPE(u,x,j)](#coefgpeuxj)
   - [lcGPE(u,x)](#lcgpeux)
   - [expand(u)](#expandu)
+  - [collectTerms(𝑢,𝑆)](#collectterms𝑢𝑆)
 - [2D Graphics](#2d-graphics)
   - [Cartesian Plot](#cartesian-plot)
   - [Linear Axes](#linear-axes)
@@ -348,6 +349,32 @@ console.log(a.strung()); // (2 + 5x + 2(x^2))
 
 const b = expand('(x + 2)(x + 3)(x + 4)'); 
 console.log(b.strung()); // (24 + 26x + 9(x^2) + (x^3))
+~~~
+
+### collectTerms(𝑢,𝑆)
+Where ${u}$ is an algebraic expression (represented as either a string or a MathObj), and ${S}$ is a list of generalized variables (represented as an array of strings or MathObjs), returns a MathObj corresponding to the collected form of ${u.}$ If ${u}$ is not a general polynomial expression, returns the MathObj `Undefined`. 
+
+In the example below, we define ${u}$ to be:
+
+$$
+  2axy + 3bxy + 4ax + 5bx.
+$$
+
+The collected form of this expression, where ${S = \lbrack a, b \rbrack}$ is
+
+$$
+  a(2xy + 4x) + b(3xy + 5x).
+$$
+
+Note that the output string may not look exactly like the LaTeX expression above because of automatic simplification.
+
+~~~ts
+const x = collectTerms(
+  `(2 * a * x * y) + (3 * b * x * y) + (4 * a * x) + (5 * b * x)`,
+  ["a", "b"]
+);
+
+console.log(x.strung()); // a * (4 * x + 2 * x * y) + b * (5 * x + 3 * x * y)
 ~~~
 
 ## 2D Graphics

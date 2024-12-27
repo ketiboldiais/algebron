@@ -13,15 +13,25 @@ import MdxLayout from "@/components/mdx-layout";
     - [Intersection](#intersection)
     - [Union](#union)
     - [Laws of Intersection \& Union](#laws-of-intersection--union)
-    - [Set Complement](#set-complement)
+  - [Set Complement](#set-complement)
+  - [Disjoint Sets](#disjoint-sets)
   - [Special Number Sets](#special-number-sets)
+- [Ordered Pairs](#ordered-pairs)
+- [Cartesian Product](#cartesian-product)
+- [Relations](#relations)
+  - [Types of Relations](#types-of-relations)
+    - [Reflexive Relations](#reflexive-relations)
+    - [Symmetric Relations](#symmetric-relations)
+    - [Antisymmetric Relations](#antisymmetric-relations)
+    - [Transitive Relations](#transitive-relations)
+- [Functions](#functions)
 
 </TOC>
 
 ## Foundations
 We begin by defining some basic terminology and fundamental axioms.
 
-> **Definition.** A **set** is a collection of objects, called the **elements** or **members** of the set. Given a set ${S,}$ if ${x}$ is an element of ${S,}$ we write ${x \in S.}$ If ${x}$ is not an element of ${S,}$ we write ${x \notin S.}$
+> __*definition*__. A _set_ is a collection of objects, called the _elements_ or _members_ of the set. Given a set ${S,}$ if ${x}$ is an element of ${S,}$ we write ${x \in S.}$ If ${x}$ is not an element of ${S,}$ we write ${x \notin S.}$
 
 If we want to explicitly list the elements of a set, we use curly braces. For example, here is a set of two elements:
 
@@ -29,33 +39,33 @@ $$
     \lbrace 0, 1 \rbrace.
 $$
 
-A set is called a **finite set** if it contains a finite number of elements. A set is called an **infinite set** if it contains an infinite number of elements.
+A set is called a _finite set_ if it contains a finite number of elements. A set is called an _infinite set_ if it contains an infinite number of elements.
 
-> **Definition.** The number of distinct elements in a set ${S}$ is denoted ${n(S)}$ or ${\lvert S \rvert.}$ If ${S}$ is a finite set, we call ${n(S)}$ the **cardinality** or **cardinal number** of the set ${S.}$
+> __*definition*__. The number of distinct elements in a set ${S}$ is denoted ${n(S)}$ or ${\lvert S \rvert.}$ If ${S}$ is a finite set, we call ${n(S)}$ the _cardinality_ or _cardinal number_ of the set ${S.}$
 
 
 ### The Empty Set
-> __Axiom.__ There is exactly one set with no elements, called the __empty set__ or __null set__, denoted ${\varnothing.}$
+> __*axiom*__. There is exactly one set with no elements, called the _empty set_ or _null set_, denoted ${\varnothing.}$
 
 ### Subsets
-> __Definition.__ Given sets ${A}$ and ${B,}$ if every element of ${B}$ is also an element of ${A,}$ then ${B}$ is a __subset__ of ${A,}$ and we write ${B \subseteq A.}$
+> __*definition*__. Given sets ${A}$ and ${B,}$ if every element of ${B}$ is also an element of ${A,}$ then ${B}$ is a _subset_ of ${A,}$ and we write ${B \subseteq A.}$
 
-From the definition above, we can see that every set is a subset of itself. Given a set ${A,}$ every element of ${A}$ is also an element of ${A.}$ Moreover, ${\varnothing}$ is a subset of every set ${A,}$ since every element of ${\varnothing}$ (nothing) is also an element of ${A.}$ Given a set ${A,}$ we call the subsets ${A}$ and ${\varnothing}$ the __trivial subsets__ of ${A.}$
+From the definition above, we can see that every set is a subset of itself. Given a set ${A,}$ every element of ${A}$ is also an element of ${A.}$ Moreover, ${\varnothing}$ is a subset of every set ${A,}$ since every element of ${\varnothing}$ (nothing) is also an element of ${A.}$ Given a set ${A,}$ we call the subsets ${A}$ and ${\varnothing}$ the _trivial subsets_ of ${A.}$
 
-> __Definition.__ Let ${A}$ and ${B}$ be sets. If every element of ${B}$ is an element of ${A,}$ ${B \neq \varnothing,}$ and ${B \neq A,}$ then ${B}$ is a __proper subset__ of ${A,}$ and we write ${B \subset A.}$
+> __*definition*__. Let ${A}$ and ${B}$ be sets. If every element of ${B}$ is an element of ${A,}$ ${B \neq \varnothing,}$ and ${B \neq A,}$ then ${B}$ is a _proper subset_ of ${A,}$ and we write ${B \subset A.}$
 
 import { SubsetFig } from "@/components/Fig";
 
 <SubsetFig/>
 
 ### Equality of Sets
-> __Definition.__ Two sets are equal if and only if they contain the same elements.
+> __*definition*__. Two sets are equal if and only if they contain the same elements.
 
 __*example*__. Let ${A = \lbrace 1,2,3 \rbrace}$ and ${B = \lbrace 1,2,3 \rbrace.}$ The sets ${A}$ and ${B}$ contain the same elements, so ${A = B.}$ 
 
 Now that we have subsets, we can provide an alternative definition of equality:
 
-> __Definition.__ Two sets ${A}$ and ${B}$ are equal if and only if ${B \subseteq A}$ and ${A \subseteq B.}$
+> __*definition*__. Two sets ${A}$ and ${B}$ are equal if and only if ${B \subseteq A}$ and ${A \subseteq B.}$
 
 From this definition, we see that two prove two sets are equal, we must prove that ${x \in A \implies x \in B,}$ and ${x \in B \implies x \in A.}$ 
 
@@ -73,17 +83,17 @@ Consider the set ${A = \lbrace p, q, r, \rbrace.}$ What are all the possible way
 
 The set of all these results is called the _power set_ of ${A.}$ 
 
-> __Definition.__ Let ${A}$ be a set. Then the set of all subsets of ${A}$ is called the __power set__ of ${A,}$ denoted ${P(A).}$
+> __*definition*__. Let ${A}$ be a set. Then the set of all subsets of ${A}$ is called the _power set_ of ${A,}$ denoted ${P(A).}$
 
 In our previous example, we saw that there are eight subsets. We generalize this result with the following counting theorem:
 
-> __Theorem.__ Let ${A}$ be a set. If ${\lvert A \rvert = n,}$ then ${\lvert P(A) \rvert = 2^n.}$
+> __*theorem*__. Let ${A}$ be a set. If ${\lvert A \rvert = n,}$ then ${\lvert P(A) \rvert = 2^n.}$
 
 ### Set Algebra
 Set algebra refers to the definitions, theorems, and procedures for operations on sets.
 
 #### Intersection
-> __Definition: Intersection.__ Given sets ${A}$ and ${B,}$ the set of all elements common to both ${A}$ and ${B}$ is called the intersection of ${A}$ and ${B,}$ written ${A \cap B.}$ Symbolically:
+> __*definition*__. Given sets ${A}$ and ${B,}$ the set of all elements common to both ${A}$ and ${B}$ is called the intersection of ${A}$ and ${B,}$ written ${A \cap B.}$ Symbolically:
 >
 > $$
 >    A \cap B \coloneqq \lbrace x ~|~ x \in A \land x \in B \rbrace.
@@ -96,7 +106,7 @@ import { IntersectionFig } from "@/components/Fig";
 <IntersectionFig/>
 
 #### Union
-> __Definition.__ Given sets ${A}$ and ${B,}$ the set of all elements found in ${A}$ or ${B}$ (or both) is called the __union__ of ${A}$ and ${B,}$ written ${A \cup B.}$ Symbolically:
+> __*definition*__. Given sets ${A}$ and ${B,}$ the set of all elements found in ${A}$ or ${B}$ (or both) is called the __union__ of ${A}$ and ${B,}$ written ${A \cup B.}$ Symbolically:
 >
 > $$
 >    A \cup B \coloneqq \lbrace x ~|~ x \in A \lor x \in B \rbrace.
@@ -116,10 +126,11 @@ Below are some basic laws of intersection and union.
 > - Let ${A \subset S.}$ Then ${A \cup S = S.}$
 > - Let ${A \subset S.}$ Then ${A \cap S = A.}$
 
-#### Set Complement
+### Set Complement
+> __*definition*__. Suppose ${A \subset S.}$ The _complement_ of ${A,}$ written ${A',}$ contains all elements of ${S}$ which are not in ${A.}$  
 
-> __Definition.__ Suppose ${A \subset S.}$ The _complement_ of ${A,}$ written ${A',}$ contains all elements of ${S}$ which are not in ${A.}$  
-
+### Disjoint Sets
+Suppose ${A}$ and ${B}$ are sets. If ${A \cap B = \varnothing,}$ then ${A}$ and ${B}$ are said to be _disjoint_. Put differently: Two sets ${A}$ and ${B}$ are disjoints if they have no elements in common. Now suppose that ${A \cup B = S.}$ If ${A \cap B = \varnothing,}$ we say that ${A}$ and ${B}$ _partition_ ${S.}$ 
 
 ### Special Number Sets
 Some sets are so often used that they're reserved special symbols:
@@ -132,6 +143,64 @@ Some sets are so often used that they're reserved special symbols:
 | ${\mathbb{Q}'}$ | The set of irrationals.     | ${\lbrace \ldots, -\sqrt{2}, \ldots, \pi, \ldots, e, \ldots \rbrace}$ |
 | ${\reals}$      | The set of real numbers     | ${\mathbb{Q} \cup \mathbb{Q}'}$                                       |
 | ${\mathbb{C}}$  | The set of complex numbers  | ${\lbrace z : z = a + ib, ~ a,b \in \reals \rbrace}$                  |
+
+## Ordered Pairs
+
+> __*definition*__. An ordered pair ${(a,b)}$ is defined as
+>
+> $$
+>  (a,b) \coloneqq \lbrace \lbrace a \rbrace, \lbrace a, b \rbrace \rbrace.
+> $$
+
+> __*axiom*__. ${(a,b) = (c,d)}$ if and only if ${a = c}$ and ${b = d.}$
+
+## Cartesian Product
+
+> __*definition*__. Given two sets ${A}$ and ${B,}$ the set which contains all the ordered pairs (a,b) such that ${a \in A}$ and ${b \in B}$ is called the _Cartesian product_ of ${A}$ and ${B,}$ written ${A \times B.}$ I.e.,
+>
+> $$
+>   A \times B = \lbrace (a,b) ~|~ a \in A, b \in B \rbrace.
+> $$
+
+## Relations
+
+> __*definition*__. A _relation_ is any set of ordered pairs.
+
+From the definition above, given two sets ${A}$ and ${B,}$ any subset of ${A \times B}$ is a relation. If ${R}$ is a relation and ${(a,b) \in R}$ we may write ${a ~ R ~ b.}$ If ${R = A \times B,}$ we say that ${R}$ is a relation from ${A}$ to ${B.}$ We call ${A}$ the _domain_ of ${R}$ and ${B}$ its _range_. Thus, the domain consists of all possible first components of the ordered pairs in ${R,}$ and the range consists of all possible second components. From the definition of subsets, we can conclude that if ${R}$ is a relation from ${A}$ to ${B,}$ then the domain of ${R}$ is a subset of ${A,}$ and the range of ${R}$ is a subset of ${B.}$
+
+__*example*__. The set ${\lbrace (1,3), (2,4), (3,1), (3,4) \rbrace}$ is a relation in ${\natnums.}$
+
+__*example*__. The set ${\lt}$ is a relation: ${\lbrace (0,1), (2,3), (\pi, 5.25), \ldots  \rbrace.}$ Notice that: ${0 \lt 1,}$ ${2 \lt 3,}$ ${\pi \lt 5.25,}$ etc.
+
+__*example*__. The set ${\lbrace y = x^2 ~|~ x,y \in \reals \rbrace}$ is a relation.
+
+### Types of Relations
+Relations come in various types. We examine these types in the next sections.
+
+#### Reflexive Relations
+
+> __*definition*__. A relation ${R}$ in a set ${S}$ is _reflexive_ if, for all ${x \in S,}$ ${x ~R~ x.}$
+
+In other words, if we know that an element ${x}$ exists in a set ${S,}$ and ${R}$ is a reflexive relation on ${S,}$ then ${R}$ definitely has a pair ${(x,x).}$ 
+
+#### Symmetric Relations
+In a symmetric relation ${R,}$ if we know that a pair ${(a,b)}$ exists in ${R,}$ then the pair ${(b,a)}$ also exists in ${R.}$
+
+> __*definition*__. A relation ${R}$ in a set ${S}$ is _symmetric_ if, for all ${a,b \in S,}$ ${a ~ R ~ b \implies b ~ R ~ A.}$
+
+From this definition, we see that ${R}$ is not symmetric if it contains a pair ${(a,b)}$ but does not contain a pair ${(b,a).}$ If ${R}$ is not symmetric, we say that ${R}$ is _nonsymmetric_. The term _antisymmetric_ is a special case of non-symmetric relations, as we'll see shortly.  
+
+#### Antisymmetric Relations
+> __*definition*__. A relation ${R}$ in a set ${S}$ is _antisymmetric_ if, for all ${(x,y) \in R}$ and ${x \neq y,}$ ${(y,x) \notin R.}$ That is, if ${x \neq y}$ and ${x ~ R ~ y,}$ then ${y ~\cancel{R}~ x.}$ 
+
+#### Transitive Relations
+> __*definition*__. A relation ${R}$ in a set ${S}$ is _transitive_ if, for all ${a,b,c \in S:}$ If ${a ~ R ~ b}$ and ${b ~ R ~ c,}$ then ${a ~ R ~ c.}$ 
+
+## Functions
+
+import { FnDefFig } from "@/components/Fig";
+
+<FnDefFig/>
  
 
 export default function MDXPage({ children }) {

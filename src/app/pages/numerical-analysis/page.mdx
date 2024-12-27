@@ -5,11 +5,72 @@ import MdxLayout from "@/components/mdx-layout";
 <TOC>
 
 - [Binary Numbers](#binary-numbers)
+- [Decimal to Binary](#decimal-to-binary)
+  - [Converting Integers](#converting-integers)
+- [Converting Rationals](#converting-rationals)
+- [Floating Point Representation](#floating-point-representation)
 
 </TOC>
 
-
 ## Binary Numbers
+Internally, computers store information using electronic switches. These switches can be on (represented by the number ${1}$) or off (represented by the number ${1}$). If we can convert a decimal number into a binary number, then we can store that number in a computer. 
+
+> __Definition__. An ${n}$-digit binary number is a sequence
+> 
+> $$
+>     (b_{n-1}, \ldots, b_1, b_0)_2
+> $$
+> 
+> where ${b_i \in \set{0,1}}$ for ${0 \leq i \lt n.}$ 
+
+To distinguish between number systems, we will use the notation ${(x_{n-1}, \ldots, x_1, x_0)_b,}$ where ${x}$ is a digit in the number system and ${b}$ is the system's base. For example, the notation ${1011_2}$ represents the binary number ${1011,}$ while the notation ${1011_{10}}$ represents the decimal number ${1011.}$
+
+## Decimal to Binary
+### Converting Integers
+We convert decimal integers to binary by dividing by ${2}$ successively and recording the remainders until we reach a quotient of ${0.}$ For example, the number ${53:}$ 
+
+$$
+    \begin{aligned}
+    53 \div 2 = 26 ~\text{R}~ &1 \\[1em]
+    26 \div 2 = 13 ~\text{R}~ &0 \\[1em]
+    13 \div 2 = 6 ~\text{R}~ &1 \\[1em]
+    6 \div 2 = 3 ~\text{R}~ &0 \\[1em]
+    3 \div 2 = 1 ~\text{R}~ &1 \\[1em]
+    1 \div 2 = 0 ~\text{R}~ &1
+    \end{aligned}
+$$
+
+Reading the recorded remainders from top to bottom, we have the binary number ${101011_2.}$
+
+## Converting Rationals
+Converting rationals to binary is similar to converting integers, except the steps are reversed. We _multiply_ by two successively and record the integer parts, moving away from the decimal point towards the right. For example, the number ${0.7:}$
+
+$$
+    \begin{aligned}
+        .7 \times 2 = .4 + &1 \\[1em]
+        .4 \times 2 = .8 + &0 \\[1em]
+        .8 \times 2 = .6 + &1 \\[1em]
+        .6 \times 2 = .2 + &1 \\[1em]
+        .2 \times 2 = .4 + &0 \\[1em]
+        .4 \times 2 = .8 + &0 \\[1em]
+        \vdots
+    \end{aligned}
+$$
+
+Notice that the process repeats after four steps and continues indefinitely. Thus, 
+
+$$
+    0.7_{10} = .1011001100110\ldots_2 = .1\overline{0110}_2, 
+$$
+
+where the overbar notation denotes infinitely repeated digits. From these last two sections, we see that
+
+$$
+    53.7_{10} = 110101.1\overline{0110}_2.
+$$
+
+## Floating Point Representation
+
 
 
 export default function MDXPage({ children }) {

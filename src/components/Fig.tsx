@@ -45,6 +45,7 @@ import {
   curveCardinal,
   curveCatmullRom,
   quad,
+  curveBlob,
 } from "@/algebron/main";
 
 import {
@@ -715,8 +716,6 @@ export const ConvexHullDemo = () => {
   const D = tuple(-5, 5);
   const R = tuple(-5, 5);
   const epsilon = 0.1;
-  // const xAxis = axis("x", D, R);
-  // const yAxis = axis("y", D, R);
   const xs = range(-5, 5, epsilon).map(() => randFloat(-4, 4));
   const ys = range(-5, 5, epsilon).map(() => randFloat(-4, 4));
   const points = zip(xs, ys).map(([x, y]) => vector([x, y]));
@@ -952,8 +951,6 @@ export const SplineLab = () => {
   };
   const D = tuple(-5, 5);
   const R = tuple(-5, 5);
-  // const xAxis = axis("x", D, R);
-  // const yAxis = axis("y", D, R);
   const pts = [
     tuple(-4, -3),
     tuple(-3, 1),
@@ -1123,7 +1120,6 @@ export const SubsetFig = () => {
   );
 };
 
-
 export const IntersectionFig = () => {
   const D = tuple(-7, 7);
   const R = tuple(-7, 7);
@@ -1146,6 +1142,67 @@ export const IntersectionFig = () => {
       title={<Tex content="A \cap B" />}
     />
   );
+};
+
+export const FnDefFig = () => {
+  const D = tuple(-10, 10);
+  const R = tuple(-10, 10);
+
+  const pts1: [number, number][] = [
+    [-1, 1],
+    [-3, 2],
+    [-5, 3],
+    [-6, 0],
+    [-4, -2],
+  ];
+  const pts2: [number, number][] = [
+    [2, 1],
+    [3, 3],
+    [5, 4],
+    [7, 3],
+    [6, 2],
+    [7, 0],
+    [6, -2],
+    [4, -3],
+    [3, -1],
+  ];
+  const pts3: [number, number][] = [
+    [4, 3],
+    [3, 2],
+    [2.4, 1],
+    [3, 0],
+    [4, -1],
+    [5, -2],
+    [6, 0],
+  ];
+  const d = svg([
+    // grid(D, R).done(),
+    // axis("x", D, R),
+    // axis("y", D, R),
+    // pts1.map((p) => circle(2, p)),
+    // pts2.map((p) => circle(2, p)),
+    // pts3.map((p) => circle(2, p)),
+    curveBlob(pts1).fill("lightblue").stroke('teal').fillOpacity(0.5),
+    curveBlob(pts2).fill("tomato").stroke('tomato').fillOpacity(0.5),
+    curveBlob(pts3).fill("firebrick").stroke('firebrick').fillOpacity(0.4),
+    circle(2,[-4,2]),
+    circle(2,[-4,1]),
+    circle(2,[-4,0]),
+    circle(2,[-4,-1]),
+    line([-4, 2], [4, 2]).arrowEnd(),
+    line([-4, 1], [3, 1]).arrowEnd(),
+    line([-4, 0], [4, 0]).arrowEnd(),
+    line([-4, -1], [5, -1]).arrowEnd(),
+    text('\\text{Im}(f)').latex('block').position(3.5,1.5),
+    text('\\text{ran}(f)').latex('block').position(7,4),
+    text('\\text{dom}(f)').latex('block').position(-4.8,-2),
+    text('f').latex('block').fontSize(16).position(-1,3.6),
+  ])
+    .dimensions(500, 500)
+    .domain(D)
+    .range(R)
+    .done();
+  return <Fig data={d} width={80} paddingBottom={70}/>;
 };
 
 export default Fig;

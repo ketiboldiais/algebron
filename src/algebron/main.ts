@@ -746,10 +746,10 @@ function factorialize(num: number) {
   return num;
 }
 
-export function isEven(value:number) {
+export function isEven(value: number) {
   return value % 2 === 0;
 }
-export function isOdd(value:number) {
+export function isOdd(value: number) {
   return !isEven(value);
 }
 
@@ -2747,8 +2747,8 @@ export function curveCardinal(
   res[rPos++] = points[l];
   res[rPos] = points[l + 1];
 
-  const p = path();
-  p.M(points[0], points[1]);
+  const p = path(points[0], points[1]);
+  // p.M(points[0], points[1]);
   for (i = 0, l = res.length; i < l; i += 2) {
     p.lineTo(res[i], res[i + 1]);
   }
@@ -2833,6 +2833,57 @@ export function curveCubicBezier(points: [number, number][], tension: number) {
     return drawCurvedPath(cps, pts);
   };
   return draw();
+}
+
+export function curveBlob(points: [number, number][], smoothing: number = 0.2) {
+  const getCurvePathData = (points: Vector[], closed = true) => {
+    if (closed) {
+      points = points.concat(points.slice(0, 2));
+    }
+    const line = (pointA: Vector, pointB: Vector) => {
+      const lengthX = pointB.$x - pointA.$x;
+      const lengthY = pointB.$y - pointA.$y;
+      return {
+        length: Math.sqrt(Math.pow(lengthX, 2) + Math.pow(lengthY, 2)),
+        angle: Math.atan2(lengthY, lengthX),
+      };
+    };
+
+    const controlPoint = (
+      current: Vector,
+      previous: Vector,
+      next: Vector,
+      reverse: boolean
+    ) => {
+      const p = previous || current;
+      const n = next || current;
+      const o = line(p, n);
+      const angle = o.angle + (reverse ? Math.PI : 0);
+      const length = o.length * smoothing;
+      const x = current.$x + Math.cos(angle) * length;
+      const y = current.$y + Math.sin(angle) * length;
+      return vector([x, y]);
+    };
+
+    const p = path(points[0].$x, points[0].$y);
+    for (let i = 1; i < points.length; i++) {
+      const point = points[i];
+      const cp1 = controlPoint(points[i - 1], points[i - 2], point, false);
+      const cp2 = controlPoint(point, points[i - 1], points[i + 1], true);
+      p.C([point.$x, point.$y], [cp1.$x, cp1.$y], [cp2.$x, cp2.$y]);
+    }
+    if (closed) {
+      const comLast = p.$commands[p.$commands.length - 1] as CCommand;
+      const cp1 = comLast.$ctrl1;
+      const valuesFirstC = p.$commands[1] as CCommand;
+      p.$commands[1] = PathCommand.C(valuesFirstC.$end.$x, valuesFirstC.$end.$y)
+        .ctrl1(cp1.$x, cp1.$y)
+        .ctrl2(valuesFirstC.$ctrl2.$x, valuesFirstC.$ctrl2.$y);
+      p.$commands = p.$commands.slice(0, p.$commands.length - 1);
+    }
+    return p;
+  };
+  return getCurvePathData(points.map(([x, y]) => vector([x, y])));
 }
 
 export class Circle extends GraphicsAtom {
@@ -5726,8 +5777,36 @@ enum expression_type {
   infinity,
 }
 
+/** The binding power of a given operator. Values of type `bp` are used the parsers to determinate operator precedence (both the Twine and CAM parsers use Pratt parsing for expressions). */
+enum bp {
+  nil,
+  lowest,
+  stringop,
+  assign,
+  atom,
+  or,
+  nor,
+  and,
+  nand,
+  xor,
+  xnor,
+  not,
+  eq,
+  rel,
+  sum,
+  difference,
+  product,
+  quotient,
+  imul,
+  power,
+  dot_product,
+  postfix,
+  call,
+}
+
 abstract class MathObj {
   isSimplified: boolean = false;
+  abstract precedence(): bp;
   abstract operands(): MathObj[];
   abstract operandAt(i: number): MathObj;
   markSimplified() {
@@ -5754,6 +5833,9 @@ function isMathObj(u: any): u is MathObj {
 }
 
 class Undefined extends MathObj {
+  precedence(): bp {
+    return bp.atom;
+  }
   copy(): Undefined {
     return UNDEFINED();
   }
@@ -5815,6 +5897,9 @@ class ListX extends MathObj {
   constructor(args: MathObj[]) {
     super();
     this.$args = args;
+  }
+  precedence(): bp {
+    return bp.atom;
   }
   copy(): ListX {
     return listx(this.$args.map((x) => x.copy()));
@@ -5888,6 +5973,9 @@ function listx(expressions: MathObj[]) {
 }
 
 class Relation extends MathObj {
+  precedence(): bp {
+    return bp.rel;
+  }
   copy(): Relation {
     const argscopy = this.args.map((x) => x.copy());
     return relate(this.op, argscopy);
@@ -5963,6 +6051,9 @@ export function equation(left: MathObj, right: MathObj) {
 }
 
 class Boolean extends MathObj {
+  precedence(): bp {
+    return bp.atom;
+  }
   copy(): Boolean {
     return bool(this.bool);
   }
@@ -6014,6 +6105,9 @@ abstract class Numeric extends MathObj {
 }
 
 class Int extends Numeric {
+  precedence(): bp {
+    return bp.atom;
+  }
   copy(): Int {
     return int(this.int);
   }
@@ -6076,6 +6170,9 @@ function isInt(u: MathObj): u is Int {
 }
 
 class Float64 extends Numeric {
+  precedence(): bp {
+    return bp.atom;
+  }
   copy(): Float64 {
     return float64(this.float);
   }
@@ -6129,6 +6226,9 @@ function isFloat64(u: MathObj): u is Float64 {
 }
 
 class Sym extends MathObj {
+  precedence(): bp {
+    return bp.atom;
+  }
   copy(): Sym {
     return sym(this.sym);
   }
@@ -6173,6 +6273,9 @@ function isSym(u: MathObj): u is Sym {
 }
 
 class Fraction extends Numeric {
+  precedence(): bp {
+    return bp.atom;
+  }
   copy(): Fraction {
     const n = this.numerator.copy();
     const d = this.denominator.copy();
@@ -6374,13 +6477,27 @@ function isFrac(u: MathObj): u is Fraction {
 }
 
 class Sum extends MathObj {
+  precedence(): bp {
+    return bp.sum;
+  }
   copy(): Sum {
     const argscopy = this.args.map((x) => x.copy());
     return sum(...argscopy);
   }
   strung(): string {
-    const out = this.args.map((arg) => arg.strung()).join(" + ");
-    return `(${out})`;
+    const out = this.args
+      .map((arg) => {
+        let argstring = arg.strung();
+        if (
+          arg.precedence() < this.precedence() &&
+          arg.precedence() !== bp.atom
+        ) {
+          argstring = `(${argstring})`;
+        }
+        return argstring;
+      })
+      .join(" + ");
+    return `${out}`;
   }
   operandAt(i: number): MathObj {
     const out = this.args[i];
@@ -6436,6 +6553,9 @@ function isSum(u: MathObj): u is Sum {
 }
 
 class Difference extends MathObj {
+  precedence(): bp {
+    return bp.difference;
+  }
   copy(): Difference {
     const argscopy = this.args.map((x) => x.copy());
     return diff(...argscopy);
@@ -6489,30 +6609,27 @@ function isDiff(u: MathObj): u is Difference {
 }
 
 class Product extends MathObj {
+  precedence(): bp {
+    return bp.product;
+  }
   copy(): Product {
     const argscopy = this.args.map((x) => x.copy());
     return prod(...argscopy);
   }
   strung(): string {
-    if (this.args.length === 2) {
-      const left = this.args[0];
-      const right = this.args[1];
-      if (isNum(left) && isSym(right)) {
-        return `${left.strung()}${right.strung()}`;
-      }
-      if (isSym(left) && isNum(right)) {
-        if (right.value() === -1) {
-          return `-${left.strung()}`;
+    const out = this.args
+      .map((arg) => {
+        let argstring = arg.strung();
+        if (
+          arg.precedence() < this.precedence() &&
+          arg.precedence() !== bp.atom
+        ) {
+          argstring = `(${argstring})`;
         }
-      }
-      if (isNum(left) && isPower(right)) {
-        if (isSym(right.base)) {
-          return `${left.strung()}${right.strung()}`;
-        }
-      }
-    }
-    const out = this.args.map((arg) => arg.strung()).join(" * ");
-    return `(${out})`;
+        return argstring;
+      })
+      .join(" * ");
+    return `${out}`;
   }
   operandAt(i: number): MathObj {
     const out = this.args[i];
@@ -6559,6 +6676,9 @@ function isProduct(u: MathObj): u is Product {
 }
 
 class Quotient extends MathObj {
+  precedence(): bp {
+    return bp.quotient;
+  }
   copy(): Quotient {
     const argscopy = this.args.map((x) => x.copy());
     return quot(...argscopy);
@@ -6612,6 +6732,9 @@ function isQuotient(u: MathObj): u is Quotient {
 }
 
 class Power extends MathObj {
+  precedence(): bp {
+    return bp.power;
+  }
   copy(): Power {
     const base = this.base.copy();
     const exponent = this.base.copy();
@@ -6703,6 +6826,9 @@ function isPower(u: MathObj): u is Power {
 }
 
 class Func extends MathObj {
+  precedence(): bp {
+    return bp.call;
+  }
   copy(): Func {
     const argscopy = this.args.map((x) => x.copy());
     return fn(this.op, argscopy);
@@ -7764,9 +7890,9 @@ export function derive(
 
 export function isMonomial(
   expression: string | MathObj,
-  variables: string[] | Sym[]
+  variables: (string | MathObj)[]
 ): boolean {
-  const vars: Sym[] = [];
+  const vars: MathObj[] = [];
   variables.forEach((v) => {
     if (typeof v === "string") {
       vars.push(sym(v));
@@ -8066,6 +8192,86 @@ export function expand(expression: MathObj | string): MathObj {
   }
   return u;
 }
+
+/**
+ * Where `𝑢` is a general monomial expression and `𝑆`
+ * is an array of generalized variables, returns a pair with
+ * the coefficient part and variable part of `𝑢`.
+ */
+export function coeffVarMonomial(𝑢: MathObj | string, 𝑆: (string | MathObj)[]) {
+  const u = typeof 𝑢 === "string" ? exp(𝑢).obj() : 𝑢;
+  const v = 𝑆.map((x) => (typeof x === "string" ? exp(x).obj() : x));
+  if (!isMonomial(u, v)) {
+    return UNDEFINED();
+  }
+  const loop = (
+    coefficientPart: MathObj,
+    variables: MathObj[]
+  ): [MathObj, MathObj] => {
+    if (variables.length === 0) {
+      const variablePart = simplify(quot(u, coefficientPart));
+      return tuple(coefficientPart, variablePart);
+    } else if (freeOf(u, [variables[0]])) {
+      return loop(coefficientPart, cdr(variables));
+    } else {
+      const q = simplify(quot(coefficientPart, variables[0]));
+      const result = loop(q, cdr(variables));
+      return result;
+    }
+  };
+  const [a, b] = loop(u, v);
+  return tuple(simplify(a), simplify(b));
+}
+
+function collectTerms(𝑢: string | MathObj, 𝑆: (string | MathObj)[]) {
+  let u = typeof 𝑢 === "string" ? exp(𝑢).obj() : 𝑢;
+  const S = 𝑆.map((x) => (typeof x === "string" ? exp(x).obj() : x));
+  u = simplify(u);
+  if (!isSum(u)) {
+    const cvm = coeffVarMonomial(u, S);
+    if (cvm instanceof Undefined) {
+      return UNDEFINED();
+    }
+    return u;
+  } else {
+    if (listx(S).has(u)) {
+      return u;
+    }
+    let N = 0;
+    const T: Record<number, MathObj[]> = {};
+    for (let i = 0; i < u.args.length; i++) {
+      const f = coeffVarMonomial(u.operandAt(i), S);
+      if (f instanceof Undefined) {
+        return UNDEFINED();
+      } else {
+        let j = 1;
+        let combined = false;
+        while (!combined && j <= N) {
+          if (f[1].equals(T[j][1])) {
+            T[j] = tuple(sum(f[0], T[j][0]), f[1]);
+            combined = true;
+          }
+          j = j + 1;
+        }
+        if (!combined) {
+          T[N + 1] = f;
+          N = N + 1;
+        }
+      }
+    }
+    let v: MathObj = int(0);
+    for (let j = 1; j <= N; j++) {
+      v = sum(v, prod(T[j][0], T[j][1]));
+    }
+    return simplify(v);
+  }
+}
+
+const j = collectTerms(
+  `(2 * a * x * y) + (3 * b * x * y) + (4 * a * x) + (5 * b * x)`,
+  ["a", "b"]
+);
+console.log(j.strung());
 
 // § Nodekind Enum
 enum nodekind {
@@ -9409,33 +9615,6 @@ function enstate<EXPR extends TreeNode, STMT extends TreeNode>(
   emptyStmt: STMT
 ) {
   return new ParserState(nilExpr, emptyStmt);
-}
-
-/** The binding power of a given operator. Values of type `bp` are used the parsers to determinate operator precedence (both the Twine and CAM parsers use Pratt parsing for expressions). */
-enum bp {
-  nil,
-  lowest,
-  stringop,
-  assign,
-  atom,
-  or,
-  nor,
-  and,
-  nand,
-  xor,
-  xnor,
-  not,
-  eq,
-  rel,
-  sum,
-  difference,
-  product,
-  quotient,
-  imul,
-  power,
-  dot_product,
-  postfix,
-  call,
 }
 
 /** @internal A Pratt parsing function. */
