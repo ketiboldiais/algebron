@@ -84,11 +84,15 @@ pre {
   color: white;
 }
 
+.hljs-tag {
+  color: rgb(250, 236, 114);
+}
+
 .hljs-comment {
   color: rgb(136, 136, 136);
 }
 .hljs-keyword {
-  color: rgb(255, 123, 123);
+  color: rgb(255, 105, 105);
 }
 .hljs-attr,
 .hljs-property {

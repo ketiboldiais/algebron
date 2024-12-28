@@ -1,1 +1,1 @@
-This is the documentation website for Algebron.
+This is the documentation website for Algebron, a TypeScript math library for scientific and symbolic computation.

@@ -7491,6 +7491,64 @@ function simplify(expression: MathObj | string): MathObj {
   }
 }
 
+/**
+ * Where `𝑢` is an algebraic expression, returns the
+ * numerator of `𝑢`.
+ */
+export function numerator(𝑢: MathObj | string): MathObj {
+  let u = typeof 𝑢 === "string" ? exp(𝑢).obj() : 𝑢;
+  u = simplify(u);
+  if (u instanceof Fraction) {
+    return u.numerator;
+  }
+  if (u instanceof Power) {
+    if (
+      (isInt(u.exponent) && u.exponent.int < 0) ||
+      (isFrac(u.exponent) && u.exponent.value() < 0)
+    ) {
+      return int(1);
+    } else {
+      return u;
+    }
+  }
+  if (u instanceof Product) {
+    const v = u.args[0];
+    const vn = numerator(v);
+    const q = simplify(quot(u, v));
+    const w = numerator(q);
+    return simplify(prod(vn, w));
+  }
+  return u;
+}
+
+export function denominator(𝑢: MathObj|string): MathObj {
+  let u = typeof 𝑢 === 'string' ? exp(𝑢).obj() : 𝑢;
+  u = simplify(u);
+  if (u instanceof Fraction) {
+    return u.denominator;
+  }
+  if (u instanceof Power) {
+    if (
+      (isInt(u.exponent) && u.exponent.int < 0) ||
+      (isFrac(u.exponent) && u.exponent.value() < 0)
+    ) {
+      return pow(u, int(-1));
+    } else {
+      return int(1);
+    }
+  }
+  if (u instanceof Product) {
+    const v = u.args[0];
+    const vd = denominator(v);
+    const q = simplify(quot(u, v));
+    const w = denominator(q);
+    return simplify(prod(vd, w));
+  }
+  return int(1);
+
+}
+
+
 function freeofOne(
   expression1: MathObj | string,
   expression2: MathObj | string
@@ -8223,7 +8281,7 @@ export function coeffVarMonomial(𝑢: MathObj | string, 𝑆: (string | MathObj
   return tuple(simplify(a), simplify(b));
 }
 
-function collectTerms(𝑢: string | MathObj, 𝑆: (string | MathObj)[]) {
+export function collectTerms(𝑢: string | MathObj, 𝑆: (string | MathObj)[]) {
   let u = typeof 𝑢 === "string" ? exp(𝑢).obj() : 𝑢;
   const S = 𝑆.map((x) => (typeof x === "string" ? exp(x).obj() : x));
   u = simplify(u);
@@ -8266,12 +8324,6 @@ function collectTerms(𝑢: string | MathObj, 𝑆: (string | MathObj)[]) {
     return simplify(v);
   }
 }
-
-const j = collectTerms(
-  `(2 * a * x * y) + (3 * b * x * y) + (4 * a * x) + (5 * b * x)`,
-  ["a", "b"]
-);
-console.log(j.strung());
 
 // § Nodekind Enum
 enum nodekind {

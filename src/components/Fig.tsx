@@ -68,25 +68,19 @@ const axis = (
   on: "x" | "y",
   domain: [number, number],
   range: [number, number]
-) => {
-  if (on === "x") {
-    return haxis(domain, 1)
-      .ticks((t) => {
+) =>
+  (on === "x"
+    ? haxis(domain, 1).ticks((t) => {
         t.label.dy(15);
         return t;
       })
-      .stroke("grey")
-      .done();
-  } else {
-    return vaxis(range, 1)
-      .ticks((t) => {
+    : vaxis(range, 1).ticks((t) => {
         t.label.dy(5).dx(15);
         return t;
       })
-      .stroke("grey")
-      .done();
-  }
-};
+  )
+    .stroke("grey")
+    .done();
 
 const FIGURE = ({ children }: { children: ReactNode }) => {
   return <figure className="algebron-fig">{children}</figure>;
@@ -1176,33 +1170,37 @@ export const FnDefFig = () => {
     [6, 0],
   ];
   const d = svg([
-    // grid(D, R).done(),
-    // axis("x", D, R),
-    // axis("y", D, R),
-    // pts1.map((p) => circle(2, p)),
-    // pts2.map((p) => circle(2, p)),
-    // pts3.map((p) => circle(2, p)),
-    curveBlob(pts1).fill("lightblue").stroke('teal').fillOpacity(0.5),
-    curveBlob(pts2).fill("tomato").stroke('tomato').fillOpacity(0.5),
-    curveBlob(pts3).fill("firebrick").stroke('firebrick').fillOpacity(0.4),
-    circle(2,[-4,2]),
-    circle(2,[-4,1]),
-    circle(2,[-4,0]),
-    circle(2,[-4,-1]),
+    curveBlob(pts1).fill("lightblue").stroke("teal").fillOpacity(0.5),
+    curveBlob(pts2).fill("tomato").stroke("tomato").fillOpacity(0.5),
+    curveBlob(pts3).fill("firebrick").stroke("firebrick").fillOpacity(0.4),
+    circle(2, [-4, 2]),
+    circle(2, [-4, 1]),
+    circle(2, [-4, 0]),
+    circle(2, [-4, -1]),
     line([-4, 2], [4, 2]).arrowEnd(),
     line([-4, 1], [3, 1]).arrowEnd(),
     line([-4, 0], [4, 0]).arrowEnd(),
     line([-4, -1], [5, -1]).arrowEnd(),
-    text('\\text{Im}(f)').latex('block').position(3.5,1.5),
-    text('\\text{ran}(f)').latex('block').position(7,4),
-    text('\\text{dom}(f)').latex('block').position(-4.8,-2),
-    text('f').latex('block').fontSize(16).position(-1,3.6),
+    text("\\text{Im}(f)").latex("block").position(3.5, 1.5),
+    text("\\text{ran}(f)").latex("block").position(7, 4),
+    text("\\text{dom}(f)").latex("block").position(-4.8, -2),
+    text("f").latex("block").fontSize(16).position(-1, 3.6),
   ])
     .dimensions(500, 500)
     .domain(D)
     .range(R)
     .done();
-  return <Fig data={d} width={80} paddingBottom={70}/>;
+  return <Fig data={d} width={80} paddingBottom={70} />;
+};
+
+export const LinearAxesTest = () => {
+  const D = tuple(-10, 10);
+  const R = tuple(-10, 10);
+  const d = svg([axis("x", D, R), axis("y", D, R)])
+    .domain(D)
+    .range(R)
+    .done();
+  return <Fig data={d} width={70}/>;
 };
 
 export default Fig;

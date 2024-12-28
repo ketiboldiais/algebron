@@ -1,5 +1,11 @@
 import MdxLayout from "@/components/mdx-layout";
-import { PlotTest, TreeTest, Plot3DDemo, ConvexHullDemo } from "@/components/Fig";
+import {
+  PlotTest,
+  TreeTest,
+  Plot3DDemo,
+  ConvexHullDemo,
+  LinearAxesTest,
+} from "@/components/Fig";
 
 # Algebron
 
@@ -29,6 +35,8 @@ import { PlotTest, TreeTest, Plot3DDemo, ConvexHullDemo } from "@/components/Fig
   - [subexs(u)](#subexsu)
   - [freeOf(u,xs)](#freeofuxs)
   - [derive(u,x)](#deriveux)
+  - [numerator(𝑢)](#numerator𝑢)
+  - [denominator(𝑢)](#denominator𝑢)
   - [isMonomial(u,xs)](#ismonomialuxs)
   - [isPolynomial(u,xs)](#ispolynomialuxs)
   - [gpeDeg(u,xs)](#gpedeguxs)
@@ -52,12 +60,17 @@ import { PlotTest, TreeTest, Plot3DDemo, ConvexHullDemo } from "@/components/Fig
 
 </TOC>
 
-This article documents the Algebron library, alongside its scripting language __Praxis__. For the documentation sections on Praxis, various REPLs are provided. Click to the right of the dollar sign (`$:`) to begin typing expressions and hit "Enter" to execute the expression. Some of the REPL windows have code preset and entered to serve as examples.
+Algebron is a math library written in TypeScript. The library provides: implementations of common data structures; APIs for scientific computation, numeric analysis, and statistics; CAS (Computer Algebra System) functions; an API for 2D and 3D graphics processing; and a scripting language called _Praxis_. This page documents the Algebron library.
+
 
 ## Praxis
+
 Praxis is a scripting language built with TypeScript. The language is used in Algebron's library to compile user-defined functions and perform symbolic computation procedures. This section documents Praxis's syntax, grammar, and features.
 
+In the following sections, various REPLs and terminals are provided. For the REPLs: Click to the right of the dollar sign (`$:`) to begin typing expressions and hit "Enter" to execute your expression. Some of the REPL windows have code preset and entered to serve as examples. To clear a REPL, type and enter `clear`. Note that the REPLs are strictly for evaluating expressions. To execute a statement (or an entire program), use a terminal: Type your code, and click the `run` button to execute.
+
 ### Basic Number Types & Arithmetic
+
 Praxis supports basic arithmetic operations. Praxis's core arithmetic operations are displayed in the REPL below.
 
 <REPL
@@ -117,21 +130,27 @@ Integers and floats are considered **primitives** in Algebron. The set of primit
 />
 
 ### Primitive Types
+
 Primitive types in Praxis are expressions that cannot be reduced any further.
 
 #### Integers
+
 Integers are the most basic type in Praxis. The largest possible integer in Praxis is ${9,007,199,254,740,991}$ or ${2^{53} - 1.}$ Any integer greater than this will be cast to a [big integer](#big-integers).
 
 #### Floating Point Numbers
+
 Floating point numbers in Praxis are represented in the 64-bit format.
 
 #### Fractions
+
 Fractions in Praxis are implemented as JavaScript objects.
 
 #### Big Integers
+
 In Praxis, integers larger than ${9,007,199,254,740,991}$ are automatically cast to big integers.
 
 #### Strings
+
 Strings in Praxis are _always_ double quoted. This syntax is established to distinguish primitive strings from [symbolic strings](#symbolic-strings).
 
 ```ts
@@ -139,9 +158,11 @@ Strings in Praxis are _always_ double quoted. This syntax is established to dist
 ```
 
 #### Symbolic Strings
+
 Any expression surrounded by the apostrophe (`'`) in Praxis is interpreted as a symbolic string. Symbolic strings are Praxis's data type for _algebraic expressions_. Only symbolic strings in Praxis may be passed to Algebron's [CAS modules](#cas-modules).
 
 ## Data Structures
+
 Several data structures are implemented natively in Algebron: lists, vectors, and matrices.
 
 ### Lists
@@ -225,17 +246,20 @@ Importantly, matrices in Algebron cannot be jagged. For example, the following m
 To implement these jagged collections, a nested list should be used.
 
 ## CAS Modules
-[Symbolic strings](#symbolic-strings) in Algebron are interpreted as algebraic expressions. At runtime, these expressions are represented by the Algebron `MathObj` class. From there, they can be passed to Algebron's various CAS (Computer Algebra System) modules. The functions below are exported by Algebron publicly.  
+
+[Symbolic strings](#symbolic-strings) in Algebron are interpreted as algebraic expressions. At runtime, these expressions are represented by the Algebron `MathObj` class. From there, they can be passed to Algebron's various CAS (Computer Algebra System) modules. The functions below are exported by Algebron publicly.
 
 ### simplify(u)
+
 Where `u` is a string or MathObj, simplifies the expression. Below is an example of using simplify directly in TypeScript.
 
-~~~ts
-const x = simplify('(1/x) * x');
+```ts
+const x = simplify("(1/x) * x");
 console.log(x.strung()); // "1"
-~~~
+```
 
 #### Algebraic Simplification
+
 Algebraic simplification, in general, is a difficult problem. In designing a simplification algorithm, there is inevitably a conflict between the user's desired output and the software engineer's preferences. For example, the following mathematical expressions are all equivalent:
 
 $$
@@ -249,110 +273,138 @@ $$
 If we passed an expression equivalent to either of those above, what should the expression simplify to? The engineer may be incentivized to only use sines and cosines. The user, however, may want the expression reduced to any one of these, depending on context. Of course, the more the engineer caters towards the user's preferences, the more complex the simplification algorithm.
 
 ### subexs(u)
+
 Where `u` is a string or MathObj corresponding to an algebraic expression, returns an array of the subexpressions of `u`.
 
-~~~ts
-const result = subexs('a * (x + 1) + 3')
+```ts
+const result = subexs("a * (x + 1) + 3");
 console.log(result); // ['a * (x + 1) + 3', 'a * (x + 1)', 'a', '(x + 1)', 'x', '1', '3']
-~~~
+```
 
 ### freeOf(u,xs)
+
 Where `u` is a string or MathObj and `xs` is an array of strings or MathObjects, returns true if the expression `u` does not contain any of the subexpressions in `xs`; false otherwise.
 
-~~~ts
-const x = freeOf('2x + 1', ['x']);
+```ts
+const x = freeOf("2x + 1", ["x"]);
 console.log(x); // false
 
-const y = freeOf('3a^2 + 9b + c', ['y', 'z']);
+const y = freeOf("3a^2 + 9b + c", ["y", "z"]);
 console.log(y); // true
-~~~
+```
 
 ### derive(u,x)
-Where `u` is string or MathObj representing to an expression, and `x` is a string or MathObj representing a variable, returns a MathObj corresponding to the derivative of `u` with respect to `x`. 
+
+Where `u` is string or MathObj representing to an expression, and `x` is a string or MathObj representing a variable, returns a MathObj corresponding to the derivative of `u` with respect to `x`.
 
 Using the function directly in TypeScript:
 
-~~~ts
-const d = derive('2x^3 + 1', 'x');
+```ts
+const d = derive("2x^3 + 1", "x");
 console.log(d.strung()); // 6(x^2)
-~~~
+```
+
+### numerator(𝑢)
+
+Where ${u}$ is an algebraic expression, returns the numerator of ${u.}$
+
+```ts
+const x = `(2/3) * ((x * (x + 1)) / (x + 2)) * y^n`;
+console.log(numerator(x).strung()); // 2 * x * (1 + x) * (y^n)
+```
+
+### denominator(𝑢)
+
+Where ${u}$ is an algebraic expression, returns the denominator of ${u.}$
+
+```ts
+const k = `(2/3) * ((x * (x + 1)) / (x + 2)) * y^n`;
+console.log(denominator(k).strung()); // 3 * (2 + x)
+```
 
 ### isMonomial(u,xs)
-Where `u` is a string or MathObj representing an expression, and `xs` is an array of strings or MathObjs representing variables, returns true if `u` is a general monomial expression in the given variables; false otherwise. 
 
-~~~ts
-const result1 = isMonomial('ax^2y^2', ['x', 'y']);
+Where `u` is a string or MathObj representing an expression, and `xs` is an array of strings or MathObjs representing variables, returns true if `u` is a general monomial expression in the given variables; false otherwise.
+
+```ts
+const result1 = isMonomial("ax^2y^2", ["x", "y"]);
 console.log(result1); // true
 
-const result2 = isMonomial('x^2 + y^2', ['x', 'y']);
+const result2 = isMonomial("x^2 + y^2", ["x", "y"]);
 console.log(result2); // false
-~~~
+```
 
 ### isPolynomial(u,xs)
-Where `u` is a string or MathObj representing an expression, and `xs` is an array of strings or MathObjs representing variables, returns true if `u` is a general polynomial expression in the given variables; false otherwise. 
 
-~~~ts
-const result1 = isPolynomial('x^2 + y^2', ['x', 'y']);
+Where `u` is a string or MathObj representing an expression, and `xs` is an array of strings or MathObjs representing variables, returns true if `u` is a general polynomial expression in the given variables; false otherwise.
+
+```ts
+const result1 = isPolynomial("x^2 + y^2", ["x", "y"]);
 console.log(result1); // true
 
-const result2 = isPolynomial('(x + 1)(x + 3)', ['x']);
+const result2 = isPolynomial("(x + 1)(x + 3)", ["x"]);
 console.log(result2); // false
-~~~
+```
 
 ### gpeDeg(u,xs)
-Where `u` is a general polynomial expression and `xs` is a list of variables, returns the degree of `u` in `xs`. 
 
-~~~ts
-const result = gpeDeg('(a * x^2) + (b * x) + c', ['x']);
+Where `u` is a general polynomial expression and `xs` is a list of variables, returns the degree of `u` in `xs`.
+
+```ts
+const result = gpeDeg("(a * x^2) + (b * x) + c", ["x"]);
 console.log(result.strung()); // 2
 
-
-const result = gpeDeg('(2 * x^2 * y * z) + (w * x * z^6)', ['x', 'z']);
+const result = gpeDeg("(2 * x^2 * y * z) + (w * x * z^6)", ["x", "z"]);
 console.log(result.strung()); // 7
-~~~
+```
 
 ### vars(u)
+
 Where `u` is a general polynomial expression, returns an array of the variables in the expression.
 
-~~~ts
+```ts
 const result1 = vars("(x^3) + (3 * x^2 * y) + (3 * x * y^2) + (y^3)");
 console.log(result1); // ['x', 'y']
 
 const result2 = vars("(3 * x) * (x + 1) * (y^2) * z^n");
 console.log(result2); // ['1 + x', 'x', 'y', 'z^n']
-~~~
+```
 
 ### coefGPE(u,x,j)
+
 Where `u` is a string or MathObj, `x` is a string or symbol (corresponding to a variable), and `j` is a nonnegative integer, returns the sum of the coefficient parts of all monomials of `u` with variable part ${x^j.}$
 
-~~~ts
-const result1 = coefGPE('(a * x^2) + (b * x) + c', 'x', 2);
+```ts
+const result1 = coefGPE("(a * x^2) + (b * x) + c", "x", 2);
 console.log(result1.strung()); // a
-const result2 = coefGPE('(3 * x * y^2) + (5 * x^2 * y) + (7 * x) + 9', 'x', 1); // 7 + 3y^2
+const result2 = coefGPE("(3 * x * y^2) + (5 * x^2 * y) + (7 * x) + 9", "x", 1); // 7 + 3y^2
 console.log(result2.strung());
-~~~
+```
 
 ### lcGPE(u,x)
+
 Where `u` is a string or MathObj (corresponding to a general polynomial expression), and `x` is a string or symbol (corresponding to a variable), returns the leading coefficient with respect to `x`.
 
-~~~ts
-const result1 = lcGPE('(3 * x * y^2) + (5 * x^2 * y) + (7 * x) + 9', 'y');
+```ts
+const result1 = lcGPE("(3 * x * y^2) + (5 * x^2 * y) + (7 * x) + 9", "y");
 console.log(result1.strung()); // 3x
-~~~
+```
 
 ### expand(u)
+
 Where `u` is a MathObj or an algebraic expression, expands `u`.
 
-~~~ts
-const a = expand('(2x + 1)(x + 2)')
+```ts
+const a = expand("(2x + 1)(x + 2)");
 console.log(a.strung()); // (2 + 5x + 2(x^2))
 
-const b = expand('(x + 2)(x + 3)(x + 4)'); 
+const b = expand("(x + 2)(x + 3)(x + 4)");
 console.log(b.strung()); // (24 + 26x + 9(x^2) + (x^3))
-~~~
+```
 
 ### collectTerms(𝑢,𝑆)
-Where ${u}$ is an algebraic expression (represented as either a string or a MathObj), and ${S}$ is a list of generalized variables (represented as an array of strings or MathObjs), returns a MathObj corresponding to the collected form of ${u.}$ If ${u}$ is not a general polynomial expression, returns the MathObj `Undefined`. 
+
+Where ${u}$ is an algebraic expression (represented as either a string or a MathObj), and ${S}$ is a list of generalized variables (represented as an array of strings or MathObjs), returns a MathObj corresponding to the collected form of ${u.}$ If ${u}$ is not a general polynomial expression, returns the MathObj `Undefined`.
 
 In the example below, we define ${u}$ to be:
 
@@ -368,19 +420,21 @@ $$
 
 Note that the output string may not look exactly like the LaTeX expression above because of automatic simplification.
 
-~~~ts
+```ts
 const x = collectTerms(
   `(2 * a * x * y) + (3 * b * x * y) + (4 * a * x) + (5 * b * x)`,
   ["a", "b"]
 );
 
 console.log(x.strung()); // a * (4 * x + 2 * x * y) + b * (5 * x + 3 * x * y)
-~~~
+```
 
 ## 2D Graphics
+
 Algebron provides an API for 2D graphics. This API only performs the mathematical computations and data processing necessary for 2D graphics. Algebron _does not_ provide actual drawing methods. Any actual rendering on a frontend is left to the user's frontend of choice (React, Svelte, etc.). For example, on this site, all diagrams are generated with React. Documentation of the React components used on this site are found in the [React Components](#react-components) section.
 
 ### Cartesian Plot
+
 Algebron can generate data for Cartesian plots with the `cplot` function. For example, the plot below is generated with the `cplot` function and React:
 
 <PlotTest />
@@ -411,54 +465,92 @@ export const PlotTest = () => {
 
 ### Linear Axes
 
+Linear axes can be rendered with the `vaxis` and `haxis` functions.
+
+<LinearAxesTest />
+
+Below is the code rendering the figure above:
+
+```tsx
+const axis = (
+  on: "x" | "y",
+  domain: [number, number],
+  range: [number, number]
+) =>
+  (on === "x"
+    ? haxis(domain, 1).ticks((t) => {
+        t.label.dy(15);
+        return t;
+      })
+    : vaxis(range, 1).ticks((t) => {
+        t.label.dy(5).dx(15);
+        return t;
+      })
+  )
+    .stroke("grey")
+    .done();
+
+export const LinearAxesTest = () => {
+  const D = tuple(-10, 10);
+  const R = tuple(-10, 10);
+  const d = svg([axis("x", D, R), axis("y", D, R)])
+    .domain(D)
+    .range(R)
+    .done();
+  return <Fig data={d} width={70} />;
+};
+```
+
 ### Polar Plot
 
 ### Polar Axes
 
 ### Tree Drawing
+
 Trees can be generated with Algebron's `tree` function.
 
-<TreeTest/>
+<TreeTest />
 
 For example, the diagram above is generated using React.
 
-~~~ts
+```ts
 export const TreeTest = () => {
   const d = svg([
     tree(
       subtree("a").nodes([
         subtree("b").nodes([leaf("c"), leaf("d")]),
         subtree("e").nodes([
-          leaf('j'),
-          subtree("f").nodes([
-            subtree("g").nodes([leaf("h"), leaf("i")]),
-          ]),
+          leaf("j"),
+          subtree("f").nodes([subtree("g").nodes([leaf("h"), leaf("i")])]),
         ]),
       ])
     )
-      .nodeFn(node => circle(5, [node.$x, node.$y]).fill('salmon'))
-      .labelFn(node => text(node.$name).position(node.$x, node.$y).dx(-10).dy(0))
-      .layout('reingold-tilford')
+      .nodeFn((node) => circle(5, [node.$x, node.$y]).fill("salmon"))
+      .labelFn((node) =>
+        text(node.$name).position(node.$x, node.$y).dx(-10).dy(0)
+      )
+      .layout("reingold-tilford")
       .done(),
   ])
-    .dimensions(400,300)
+    .dimensions(400, 300)
     .domain([-10, 10])
     .range([-3, 3])
     .done();
-  return <Fig data={d} width={70} paddingBottom={43}/>;
-}
-~~~
+  return <Fig data={d} width={70} paddingBottom={43} />;
+};
+```
 
 ### Graph Drawing
-Graphs can be generated in Algebron with the `forceGraph` and `graph` functions. The `graph` function generates a graph data structure (implemented with an adjacency list). The `forceGraph` function uses a physics-based graph drawing algorithm to position each of the nodes and edges.  
 
-import {GraphDemo} from "@/components/Fig"
+Graphs can be generated in Algebron with the `forceGraph` and `graph` functions. The `graph` function generates a graph data structure (implemented with an adjacency list). The `forceGraph` function uses a physics-based graph drawing algorithm to position each of the nodes and edges.
 
-<GraphDemo/>
+import { GraphDemo } from "@/components/Fig";
+
+<GraphDemo />
 
 The code generating the graph above (using React):
 
-~~~ts
+```ts
 export const GraphDemo = () => {
   const N = 90;
   const D = tuple(-N, N);
@@ -490,42 +582,44 @@ export const GraphDemo = () => {
     .done();
   return <Fig data={d} width={60} paddingBottom={60} />;
 };
-~~~
+```
 
 ### Splines
+
 Given a set of points, we often want to draw a line through these points. Algebron's spline functions provide this functionality.
 
-import {SplineLab} from "@/components/Fig"
+import { SplineLab } from "@/components/Fig";
 
-<SplineLab/>
+<SplineLab />
 
 ### Convex Hull
-To find the convex hull of a set of points, use the `convexHull` function. Below is a visualization of `convexHull` applied to a set of random points, with the resulting convex hull outlined and shaded green:    
 
-<ConvexHullDemo/>
+To find the convex hull of a set of points, use the `convexHull` function. Below is a visualization of `convexHull` applied to a set of random points, with the resulting convex hull outlined and shaded green:
 
+<ConvexHullDemo />
 
 ## 3D Graphics
+
 Algebron provides various functions and methods related to 3D graphics. On this site, 3D models are rendered with [React Three Fiber](https://r3f.docs.pmnd.rs/getting-started/introduction).
 
 ### 3D Plot
+
 Three-dimensional plots can be generated with Algebron's `plot3D` function:
 
-<Plot3DDemo/>
+<Plot3DDemo />
 
 The code implementing the diagram above (using React and ThreeJS):
 
-~~~ts
+```ts
 export function Plot3DDemo() {
-  const d = plot3D("fn z(x,y) = 4 * e^(-1/4 * y^2) * sin(2x - 1)")
-    .paramFn();
+  const d = plot3D("fn z(x,y) = 4 * e^(-1/4 * y^2) * sin(2x - 1)").paramFn();
   return <PLOT3D element={d} />;
 }
-~~~
-
+```
 
 ## React Components
-As mentioned earlier, Algebron does not provide any frontend components or do any rendering. This site, however, uses React and ThreeJS to render the data generated by Algebron's graphics modules. To provide users guidance on how to use Algebron's graphics modules, this section outlines the React components used by this site.   
+
+As mentioned earlier, Algebron does not provide any frontend components or do any rendering. This site, however, uses React and ThreeJS to render the data generated by Algebron's graphics modules. To provide users guidance on how to use Algebron's graphics modules, this section outlines the React components used by this site.
 
 export default function MDXPage({ children }) {
     return <MdxLayout>{children}</MdxLayout>
