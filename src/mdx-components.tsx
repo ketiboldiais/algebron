@@ -4,11 +4,17 @@ import REPL from "./components/REPL";
 import Terminal from "./components/Terminal";
 import Image, { ImageProps } from "next/image";
 import Link from "next/link";
+import { ReactNode } from "react";
 
 export function useMDXComponents(components: MDXComponents): MDXComponents {
   return {
     REPL,
     Terminal,
+    Cols: (props: { children: ReactNode, of?: number}) => (
+      <div className={`grid grid-cols-${props.of ?? 2}`}>
+        {props.children}
+      </div>
+    ),
     Procedure: (props) => (
       <div className="procedure">
         {props.children}

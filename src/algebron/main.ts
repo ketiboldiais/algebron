@@ -3245,7 +3245,7 @@ class Grid extends GroupObj {
     }
     return this;
   }
-  $stroke: string = "lightgrey";
+  $stroke: string = "	#E5E4E2";
   $strokeWidth: string | number = 1;
   $step: number = 1;
   step(value: number) {
@@ -3364,6 +3364,84 @@ export function cplot(
 export type Triplet<T> = [T, T, T];
 export type Fn3D = (x: number, y: number) => Triplet<number>;
 
+export class Function3D {
+  $zFn: string;
+
+  $xDomain: [number, number];
+
+  xDomain(interval: [number, number]) {
+    this.$xDomain = interval;
+    return this;
+  }
+
+  $yDomain: [number, number];
+
+  yDomain(interval: [number, number]) {
+    this.$yDomain = interval;
+    return this;
+  }
+
+  get $xMin() {
+    return this.$xDomain[0];
+  }
+
+  get $xMax() {
+    return this.$xDomain[1];
+  }
+
+  get $yMin() {
+    return this.$yDomain[0];
+  }
+
+  get $yMax() {
+    return this.$yDomain[1];
+  }
+
+  get $xRange() {
+    return this.$xMax - this.$xMin;
+  }
+
+  get $yRange() {
+    return this.$yMax - this.$yMin;
+  }
+
+  constructor(
+    zFn: string,
+    xDomain: [number, number],
+    yDomain: [number, number]
+  ) {
+    this.$zFn = zFn;
+    this.$xDomain = xDomain;
+    this.$yDomain = yDomain;
+  }
+  $compiledFunction: Fn3D = (a, b) => [a, b, 0];
+  fn() {
+    const e = engine();
+    const f = e.compile(this.$zFn);
+    if (!(f instanceof Fn)) {
+      throw algebraError("f is not an instance of Fn");
+    }
+    this.$compiledFunction = (x: number, y: number) => {
+      x = this.$xRange * x + this.$xMin;
+      y = this.$yRange * y + this.$yMin;
+      let z = f.call(e.compiler, [x, y]);
+      if (typeof z !== "number") {
+        z = NaN;
+      }
+      return tuple(x, y, z);
+    };
+    return this;
+  }
+}
+
+export function f3D(
+  fn: string,
+  xDomain: [number, number] = [-10, 10],
+  yDomain: [number, number] = [-10, 10]
+) {
+  return new Function3D(fn, xDomain, yDomain);
+}
+
 export class Plot3D {
   $id: string | number = uid(10);
 
@@ -3372,10 +3450,10 @@ export class Plot3D {
     return this;
   }
 
-  $fn: string;
+  $functions: (string | Function3D)[];
 
-  constructor(fn: string) {
-    this.$fn = fn;
+  constructor(fn: (string | Function3D)[]) {
+    this.$functions = fn;
   }
 
   $segments: number = 200;
@@ -3415,12 +3493,15 @@ export class Plot3D {
   get $xMin() {
     return this.$xDomain[0];
   }
+
   get $xMax() {
     return this.$xDomain[1];
   }
+
   get $yMin() {
     return this.$yDomain[0];
   }
+
   get $yMax() {
     return this.$yDomain[1];
   }
@@ -3428,11 +3509,13 @@ export class Plot3D {
   get $xRange() {
     return this.$xMax - this.$xMin;
   }
+
   get $yRange() {
     return this.$yMax - this.$yMin;
   }
 
-  $scale: number = 0.6;
+  $scale: number = 0.5;
+
   scale(value: number) {
     this.$scale = value;
     return this;
@@ -3446,57 +3529,55 @@ export class Plot3D {
   }
 
   $width: number = 200;
+
   width(value: number) {
     this.$width = value;
     return this;
   }
 
   $height: number = 200;
+
   height(value: number) {
     this.$height = value;
     return this;
   }
 
-  $position: Triplet<number> = [12, 10, 12];
-  position(value: Triplet<number>) {
-    this.$position = value;
+  $cameraPosition: Triplet<number> = [12, 12, 12];
+
+  cameraPosition(value: Triplet<number>) {
+    this.$cameraPosition = value;
     return this;
   }
 
   $near: number = 0.1;
+
   near(value: number) {
     this.$near = value;
     return this;
   }
 
-  $z: Fn3D = (a, b) => [a, b, 0];
+  $compiledFunctions: Function3D[] = [];
 
-  paramFn() {
-    const makeZFn = (zFunctionString: string) => {
-      const e = engine();
-      const f = e.compile(zFunctionString);
-      if (!(f instanceof Fn)) {
-        throw algebraError("f is not an instance of Fn");
+  done() {
+    for (let i = 0; i < this.$functions.length; i++) {
+      const zfn = this.$functions[i];
+      if (typeof zfn === "string") {
+        const z = f3D(zfn, this.$xDomain, this.$yDomain).fn();
+        this.$compiledFunctions.push(z);
+      } else {
+        this.$compiledFunctions.push(zfn.fn());
       }
-      const out = (x: number, y: number) => {
-        x = this.$xRange * x + this.$xMin;
-        y = this.$yRange * y + this.$yMin;
-        let z = f.call(e.compiler, [x, y]);
-        if (typeof z !== "number") {
-          z = NaN;
-        }
-        return tuple(x, y, z);
-      };
-      return out;
-    };
-    const zFnString = this.$fn;
-    this.$z = makeZFn(zFnString);
+    }
     return this;
   }
 }
 
-export function plot3D(zfn: string) {
-  return new Plot3D(zfn);
+export function plot3D(zfn: string | string[]) {
+  if (typeof zfn === "string") {
+    return new Plot3D([zfn]);
+  } else {
+    return new Plot3D(zfn);
+  }
 }
 
 class TNode {
@@ -5775,6 +5856,7 @@ enum expression_type {
   call,
   undefined,
   infinity,
+  equation,
 }
 
 /** The binding power of a given operator. Values of type `bp` are used the parsers to determinate operator precedence (both the Twine and CAM parsers use Pratt parsing for expressions). */
@@ -6030,11 +6112,50 @@ function isRelation(u: MathObj): u is Relation {
   return u.kind() === expression_type.relation;
 }
 
-class Equation extends Relation {
+class Equation extends MathObj {
+  precedence(): bp {
+    return bp.eq;
+  }
+  operands(): MathObj[] {
+    return this.args.map((x) => x.copy());
+  }
+  operandAt(i: number): MathObj {
+    const out = this.args[i];
+    if (out === undefined) {
+      return UNDEFINED();
+    }
+    return out;
+  }
+  copy(): MathObj {
+    const [a, b] = this.args.map((x) => x.copy());
+    return equation(a, b);
+  }
+  kind(): expression_type {
+    return expression_type.equation;
+  }
+  equals(other: MathObj): boolean {
+    if (!isEquation(other)) {
+      return false;
+    } else {
+      return argsEqual(this.args, other.args);
+    }
+  }
+  toString(): string {
+    return `${this.left.toString()} = ${this.right.toString()}`;
+  }
+  strung(): string {
+    return `${this.left.toString()} = ${this.right.toString()}`;
+  }
+  map<T extends MathObj>(
+    callbackfn: (value: MathObj, index: number, array: MathObj[]) => T
+  ): MathObj {
+    this.args = this.args.map(callbackfn) as any as [MathObj, MathObj];
+    return this;
+  }
   args: [MathObj, MathObj];
   op: "=";
   constructor(left: MathObj, right: MathObj) {
-    super("=", [left, right]);
+    super();
     this.args = [left, right];
     this.op = "=";
   }
@@ -6048,6 +6169,10 @@ class Equation extends Relation {
 
 export function equation(left: MathObj, right: MathObj) {
   return new Equation(left, right);
+}
+
+export function isEquation(u: MathObj): u is Equation {
+  return u.kind() === expression_type.equation;
 }
 
 class Boolean extends MathObj {
@@ -6817,10 +6942,12 @@ class Power extends MathObj {
   }
 }
 
-function pow(base: MathObj, exponent: MathObj) {
-  return new Power(base, exponent);
+/** Returns a new power expression in the form `xⁿ`. */
+function pow(x: MathObj, n: MathObj) {
+  return new Power(x, n);
 }
 
+/** Returns true, and asserts, if `u` is a power expression. */
 function isPower(u: MathObj): u is Power {
   return u.kind() === expression_type.power;
 }
@@ -7041,18 +7168,25 @@ function simplifyRNE(u: MathObj) {
   return simplifyRationalNumber(v);
 }
 
-// O-3
-const O3 = (uElts: MathObj[], vElts: MathObj[]): boolean => {
+/**
+ * @internal Used by the order relation, implements
+ * rule O3 from Cohen.
+ */
+function O3(uElts: MathObj[], vElts: MathObj[]): boolean {
   if (uElts.length === 0) return true;
   if (vElts.length === 0) return false;
   const u = uElts[0];
   const v = vElts[0];
   return !u.equals(v) ? order(u, v) : O3(cdr(uElts), cdr(vElts));
-};
+}
 
-function order(u: MathObj | string, v: MathObj | string): boolean {
-  u = typeof u === "string" ? exp(u).obj() : u;
-  v = typeof v === "string" ? exp(v).obj() : v;
+/**
+ * Given expressions `𝑢` and `𝑣`, returns true if `𝑢 < 𝑣`
+ * according to Algebron's order relation rules.
+ */
+export function order(𝑢: MathObj | string, 𝑣: MathObj | string): boolean {
+  const u = typeof 𝑢 === "string" ? exp(𝑢).obj() : 𝑢;
+  const v = typeof 𝑣 === "string" ? exp(𝑣).obj() : 𝑣;
   // O-1
   if (isRational(u) && isRational(v)) {
     return u.rational().lt(v.rational());
@@ -7144,16 +7278,22 @@ function constant(u: MathObj) {
   return isProduct(u) && isNum(u.args[0]) ? u.args[0] : int(1);
 }
 
+/**
+ * Given two lists `pElts` and `qElts` corresponding to the
+ * operands of two sums `p` and `q`, returns a new list
+ * with `pElts` and `qElts` merged.
+ *
+ * @param pElts The operands of the first sum.
+ * @param qElts The operands of the second sum.
+ * @returns A new array with the operands merged.
+ */
 function mergeSums(pElts: MathObj[], qElts: MathObj[]): MathObj[] {
   if (qElts.length === 0) return pElts;
   if (pElts.length === 0) return qElts;
-
   const p = pElts[0];
   const ps = cdr(pElts);
-
   const q = qElts[0];
   const qs = cdr(qElts);
-
   const res = simplifySumRec([p, q]);
   if (res.length === 0) return mergeSums(ps, qs);
   if (res.length === 1) return cons(mergeSums(ps, qs), res[0]);
@@ -7387,6 +7527,14 @@ function simplifyDiff(u: Difference) {
   throw algebraError("simplifyDiff failed");
 }
 
+// TODO - There's still a lot of work that needs
+// to be done on the simplifyFunction algorithm.
+
+/**
+ * @internal Simplifies a function. Used by
+ * the automatic simplification algorithm.
+ * Users should not use this directly.
+ */
 function simplifyFunction(u: Func): MathObj {
   if (u.op === "ln") {
     if (u.args.length === 1) {
@@ -7458,9 +7606,12 @@ function simplifyFunction(u: Func): MathObj {
   return fn(u.op, u.args).markSimplified();
 }
 
-/** Attempts to simplify the given algebraic expression. */
-function simplify(expression: MathObj | string): MathObj {
-  const u = typeof expression === "string" ? exp(expression).obj() : expression;
+/**
+ * Given the expression 𝑢, returns 𝑢 automatically
+ * simplified.
+ */
+export function simplify(𝑢: MathObj | string): MathObj {
+  const u = typeof 𝑢 === "string" ? exp(𝑢).obj() : 𝑢;
   if (
     isInt(u) ||
     isSym(u) ||
@@ -7521,8 +7672,12 @@ export function numerator(𝑢: MathObj | string): MathObj {
   return u;
 }
 
-export function denominator(𝑢: MathObj|string): MathObj {
-  let u = typeof 𝑢 === 'string' ? exp(𝑢).obj() : 𝑢;
+/**
+ * Given the expression `𝑢`, returns the denominator
+ * of `𝑢`.
+ */
+export function denominator(𝑢: MathObj | string): MathObj {
+  let u = typeof 𝑢 === "string" ? exp(𝑢).obj() : 𝑢;
   u = simplify(u);
   if (u instanceof Fraction) {
     return u.denominator;
@@ -7545,9 +7700,13 @@ export function denominator(𝑢: MathObj|string): MathObj {
     return simplify(prod(vd, w));
   }
   return int(1);
-
 }
 
+/**
+ * @internal Determines if the given `expression1` does not contain
+ * the given `expression2`. Used in `freeOf`'s implementation. Users
+ * should not use this directly. Only `freeOf` is publicly available.
+ */
 function freeofOne(
   expression1: MathObj | string,
   expression2: MathObj | string
@@ -7590,7 +7749,7 @@ export function freeOf(
  * Given a string `source` corresponding to
  * an expression, returns an object with
  * the following methods:
- * 
+ *
  * 1. `ast()`: Returns the parsed MathObj as pretty-print string.
  * 2. `obj()`: Returns the parsed MathObj.
  * 3. `simplify()`: Returns the parsed MathObj reduced with

@@ -102,8 +102,11 @@ pre {
 .hljs-built_in {
   color: rgb(109, 197, 200);
 }
+
+.hljs-number,
 .hljs-string {
   color: rgb(195,147,128);
+  /* color: rgb(231, 188, 95); */
 }
 
 .function_ {
@@ -153,6 +156,10 @@ td {
 
 table td {
   padding: 2px 10px;
+}
+
+table p {
+  margin: 0;
 }
 
 th,

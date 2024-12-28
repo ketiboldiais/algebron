@@ -1,4 +1,17 @@
-import { LA1, LA2, LA3, LA4, LA5 } from "@/components/Fig";
+import {
+    LA1,
+    LA2,
+    LA3,
+    LA4,
+    LA5,
+    IntersectingLines,
+    ParallelLines,
+    CoincidentLines,
+    ParallelPlanes,
+    PlanesDemo2,
+    PlanesDemo3,
+    PlanesDemo4,
+} from "@/components/Fig";
 import MdxLayout from "@/components/mdx-layout";
 
 # Linear Algebra
@@ -8,7 +21,16 @@ import MdxLayout from "@/components/mdx-layout";
 - [Vectors](#vectors)
 - [Real Vectors](#real-vectors)
   - [Scalar Multiplication](#scalar-multiplication)
+- [Linear Equations](#linear-equations)
 - [Systems of Linear Equations](#systems-of-linear-equations)
+  - [Homogeneous Linear Systems](#homogeneous-linear-systems)
+  - [Augmented Matrices](#augmented-matrices)
+- [Gaussian Elimination](#gaussian-elimination)
+- [Row Reduction](#row-reduction)
+- [Graphical Solutions](#graphical-solutions)
+  - [Linear Systems in ℝ²](#linear-systems-in-ℝ)
+  - [Linear Systems in ℝ³](#linear-systems-in-ℝ-1)
+- [Matrices \& Linear Equations](#matrices--linear-equations)
 - [Matrices](#matrices)
   - [Matrix Addition](#matrix-addition)
   - [Matrix Multiplication](#matrix-multiplication)
@@ -19,6 +41,7 @@ import MdxLayout from "@/components/mdx-layout";
 </TOC>
 
 ## Vectors
+
 A vector is a mathematical object that can be added to another vector or multiplied by a scalar to produce another vector. This general definition yields numerous examples:
 
 1. **Geometric Vectors.** We can think of a vector as a geometric object with a magnitude (a line of given length) and a direction (an arrowhead). For example, consider two vectors ${a = [3,3]}$ and ${b = [4,1].}$ The sum of these vectors is ${a + b = [3 + 4, 3 + 1],}$ which reduces to ${[7,4].}$ Geometrically:
@@ -62,7 +85,7 @@ A vector is a mathematical object that can be added to another vector or multipl
 
 For now, we'll focus only on vectors in ${\reals^n.}$ That is, vectors with ${n}$ components, all of which are real numbers.
 
-> __*definition*__. The zero vector in ${\reals^n}$ is the vector ${\bold{0}^n,}$ whose components are all zero.
+> **_definition_**. The zero vector in ${\reals^n}$ is the vector ${\bold{0}^n,}$ whose components are all zero.
 >
 > $$
 >    \bold{0}^n = \begin{bmatrix}
@@ -83,7 +106,7 @@ The zero vector is special for a few reasons:
 
 Scalar multiplication is straightforward: We multiply each component of the vector by the given scalar ${k.}$ Geometrically (in ${\reals^2}$ or ${\reals^3}$), if ${k \gt 0,}$ this has the effect of making the vector shorter or longer.
 
-> __*definition*__. Let ${\bold{v}}$ be a vector in ${\reals^n,}$ and let ${k \in \reals}$ be a scalar. Then:
+> **_definition_**. Let ${\bold{v}}$ be a vector in ${\reals^n,}$ and let ${k \in \reals}$ be a scalar. Then:
 >
 > $$
 >     k \bold{v} = \begin{bmatrix}
@@ -118,7 +141,7 @@ $$
 
 Since ${k}$ can be any real number, scalar multiplication's definition implies that we can negate a vector and perform element-wise division.
 
-> __*definition*__. Given a vector ${\bold{v},}$ the negation of ${\bold{v},}$ denoted ${-\bold{v},}$ is:
+> **_definition_**. Given a vector ${\bold{v},}$ the negation of ${\bold{v},}$ denoted ${-\bold{v},}$ is:
 >
 > $$
 >     -\bold{v} = \begin{bmatrix}
@@ -139,11 +162,42 @@ Since ${k}$ can be any real number, scalar multiplication's definition implies t
 
 Geometrically, negating a vector ${\bold{v}}$ "switches" its direction.
 
+## Linear Equations
+
+> **_definition_**. A linear equation with variables ${x_1, x_2, \ldots, x_n}$ is an equation of the form
+>
+> $$
+>     a_1 x_1 + a_2 x_2 + \ldots + a_n x_n = b
+> $$
+>
+> where ${a_1, a_2, \ldots, a_n}$ are constants.
+
+If ${x_1 = c_1, x_2 = c_2, \ldots, x_n = c_n}$ satisfy the equation ${a_1x_1 + a_2x_2 + \ldots + a_nx_n = b,}$ we say that ${c_1, c_2, \ldots, c_n}$ is a _solution_ to the equation.
+
+**_example_**. Consider ${x_1 + 2x_2 - 3x_3 = 8.}$ One solution to the equation is ${x_1 = 3, x_2 = 4, x_3 = 1,}$ since ${3 + 2(4) - 3(1) = 8.}$ Another solution is ${x_1 = -1, x_2 = 3, x_3 = -1,}$ since ${-1 + 2(3) - 3(-1) = 8.}$ There are, in fact, an infinite number of solutions to the equation. We can express this infinite set of solutions as follows:
+
+$$
+    \begin{bmatrix}
+    x_1 \\
+    x_2 \\
+    x_3
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+    8 - 2s + 3t \\
+    s \\
+    t
+    \end{bmatrix}
+    ~~~~ (s, t \in \reals).
+$$
+
+The set of all solutions to a linear equation is called the linear equation's _solution space_.
+
 ## Systems of Linear Equations
 
 Many problems in mathematics can be reduced to systems of linear equations. Linear algebra provides us the tools for solving these systems.
 
-> __*definition*__. The system
+> **_definition_**. The system
 >
 > $$
 > \begin{aligned}
@@ -153,16 +207,18 @@ Many problems in mathematics can be reduced to systems of linear equations. Line
 > \end{aligned}
 > $$
 >
-> is called a **system of linear equations**, where ${a_{i,j}, b_{i} \in \reals}$ and each ${x_i}$ is a real number called an _unknown_ of the system.
+> is called an ${(m,n)}$ (or ${m \times n}$) _system of linear equations_, or _linear system_, where ${a_{i,j}, b_{i} \in \reals}$ and each ${x_i}$ is a real number called an _unknown_ of the system.
 
-Given a system of linear equations ${S,}$ each ${n}$-tuple ${(x_1, \ldots, x_n) \in \reals^n}$ that satisfies ${S}$ is called a _solution_ of ${S.}$ In a system with two unknowns ${x_1}$ and ${x_2,}$ each linear equation defines a line on the ${x_1}$-${x_2}$ plane. E.g.,
+Given a system of linear equations ${S,}$ each ${n}$-tuple ${(x_1, \ldots, x_n) \in \reals^n}$ that satisfies ${S}$ is called a _solution_ of ${S.}$ In a system with two unknowns ${x_1}$ and ${x_2,}$ each linear equation defines a line on the ${x_1}$-${x_2}$ plane.
+
+**_example_**. Consider the system
 
 $$
     4x_1 + 4x_2 = 5 \\
     2x_1 - 4x_2 = 1
 $$
 
-is such a system. Note that we chose the variables ${x_1}$ and ${x_2}$ arbitrarily. We could've just used ${x}$ and ${y:}$
+Note that we chose the variables ${x_1}$ and ${x_2}$ arbitrarily. We could've just used ${x}$ and ${y:}$
 
 $$
     4x + 4y = 5 \\
@@ -176,10 +232,289 @@ $$
     y = \dfrac{x}{2} - \dfrac{1}{4}.
 $$
 
-The point where these lines intersect is a solution to the system. In this case, the point ${(1, \frac{1}{4}).}$ Thus, the system above has the **solution space** of ${\lbrace (1, \frac{1}{4}) \rbrace.}$
+The point where these lines intersect is a solution to the system. In this case, the point ${(1, \frac{1}{4}).}$ Thus, the system above has the solution space of ${\lbrace (1, \frac{1}{4}) \rbrace.}$ Notice the graph for this system. What are the coordinates of the point where the two lines meet?
 
 <LA5 />
 
+An ${(m,n)}$ system of linear equations is _inconsistent_ if it has no solution (i.e., a solution space of ${\varnothing}$). The system is _consistent_ if it has at least one solution. An ${(m,n)}$ system of linear equations is _underspecified_ if it has more unknowns than equations ${(n \gt m).}$ If the system has more equations than unknowns ${(m \gt n),}$ then the system is _overspecified_. If an underspecified system of linear equations is consistent, then it will have infinitely many solutions.
+
+### Homogeneous Linear Systems
+
+Given the linear system
+
+$$
+    \begin{aligned}
+    a_{1,1} x_1 + a_{1,2}& x_2 + \ldots a_{1,n} x_n = b_1 \\
+    a_{2,1} x_1 + a_{2,2}& x_2 + \ldots a_{2,n} x_n = b_2 \\
+    a_{3,1} x_1 + a_{3,2}& x_2 + \ldots a_{3,n} x_n = b_3 \\
+     &\vdots \\
+    a_{m,1} x_1 + a_{m,2}& x_2 + \ldots a_{m,n} x_n = b_m
+    \end{aligned}
+$$
+
+If ${b_i = 0}$ for all ${i = 1,2,3,\ldots,n,}$ we say that the system is _homogeneous_. Homogeneous linear systems have a special property: If a system is homogeneous, then ${x_1 = x_2 = \ldots = x_n = 0}$ is always a solution (but not necessarily the only solution).
+
+### Augmented Matrices
+
+An ${(m,n)}$ linear system can be written as a rectangular array of ${m}$ by ${(n + 1)}$ numbers by leaving out the ${+}$ and ${=}$ signs and the variables. We call this an augmented matrix. The general system
+
+$$
+    \begin{aligned}
+    a_{1,1} x_1 + a_{1,2}& x_2 + \ldots a_{1,n} x_n = b_1 \\
+    a_{2,1} x_1 + a_{2,2}& x_2 + \ldots a_{2,n} x_n = b_2 \\
+    a_{3,1} x_1 + a_{3,2}& x_2 + \ldots a_{3,n} x_n = b_3 \\
+     &\vdots \\
+    a_{m,1} x_1 + a_{m,2}& x_2 + \ldots a_{m,n} x_n = b_m
+    \end{aligned}
+$$
+
+has the augmented matrix
+
+$$
+    \left\lbrack\hspace{-12pt}\begin{array}{ccccc|c}
+    &a_{1,1} & a_{1,2} & \ldots & a_{1,n} & b_1 \\
+    &a_{2,1} & a_{2,2} & \ldots & a_{2,n} & b_2 \\
+    &a_{3,1} & a_{3,2} & \ldots & a_{3,n} & b_3 \\
+    &\vdots &\vdots &\vdots &\vdots &\vdots \\
+    &a_{m,1} & a_{m,2} & \ldots & a_{m,n} & b_m \\
+    \end{array}\hspace{-3pt}\right\rbrack.
+$$
+
+## Gaussian Elimination
+
+We can solve a linear system (find its solution space) through _Gaussian elimination_. The method of Gaussian elmination employs three operations:
+
+1. **Swapping**: Interchange the equations.
+2. **Scaling**: Replace an equation by any nonzero multiple of itself.
+3. **Pivoting**: Replace an equation by a multiple of itself plus a multiple of another equation.
+
+**_example_**. Consider the system
+
+$$
+    \begin{cases}
+    2x + y = 17 \\
+    x - 3y = 17
+    \end{cases}.
+$$
+
+Swapping:
+
+$$
+    \begin{cases}
+    \textcolor{teal}{2x + y = 17} \\
+    x - 3y = 17
+    \end{cases}
+    \rightarrow
+    \begin{cases}
+    x - 3y = 17 \\
+    \textcolor{teal}{2x + y = 17}
+    \end{cases}.
+$$
+
+Scaling by the first equation ${-3}$:
+
+$$
+    \begin{cases}
+    -3(2x + y = -1) \\
+    x - 3y = 17
+    \end{cases}
+    \rightarrow
+    \begin{cases}
+    -6x - 3y = 3 \\
+    x - 3y = 17
+    \end{cases}
+$$
+
+Pivoting (replace the second equation by "two times the second equation minus the first equation"):
+
+1. Two times the second equation:
+   $$
+       2(x - 3y = 17) \\
+       \downarrow \\
+       2x - 6y = 34
+   $$
+2. Minus the first equation:
+   $$
+   \begin{align*}
+        2x - 6y &= 34 \\
+       -(2x + y &= -1) \\
+       \hline
+       -7y &= 35
+   \end{align*}
+   $$
+3. Result:
+   $$
+   \begin{cases}
+       2x + y = -1 \\
+       -7y = 35
+   \end{cases}.
+   $$
+
+## Row Reduction
+
+Since linear systems can be represented with augmented matrices, we can frame Gaussian elimination in terms of augmented matrices:
+
+1. **Swapping**: Interchange rows.
+2. **Scaling**: Replace any row by a non-zero multiple of itself.
+3. **Pivoting**: Replace any row by itself plus a multiple of another row.
+
+**_example_**. Using the augmented matrix for our previous system:
+
+$$
+    \begin{cases}
+    2x + y = 17 \\
+    x - 3y = 17
+    \end{cases}
+    \rightarrow
+    \left\lbrack\hspace{-5pt}\begin{array}{cc|c}
+    2 & 1 & -1 \\
+    1 & -3 & 17
+    \end{array}\hspace{-5pt}\right\rbrack.
+$$
+
+Swapping rows ${1}$ and ${2}$ (we can express this notationally with ${R_1 \harr R_2}$):
+
+$$
+    \left\lbrack\hspace{-5pt}\begin{array}{cc|c}
+    2 & 1 & -1 \\
+    1 & -3 & 17
+    \end{array}\hspace{-5pt}\right\rbrack
+    \rightarrow
+    \left\lbrack\hspace{-5pt}\begin{array}{cc|c}
+    1 & -3 & 17 \\
+    2 & 1 & -1
+    \end{array}\hspace{-5pt}\right\rbrack.
+$$
+
+Multiply row ${1}$ by ${-3}$ (scaling, expressed notationally as ${-3R_1 \rightarrow R_1}$):
+
+$$
+    \left\lbrack\hspace{-5pt}\begin{array}{cc|c}
+    2 & 1 & -1 \\
+    1 & -3 & 17
+    \end{array}\hspace{-5pt}\right\rbrack
+    \rightarrow
+    \left\lbrack\hspace{-5pt}\begin{array}{cc|c}
+    -6 & -3 & 3 \\
+    1 & -3 & 17
+    \end{array}\hspace{-5pt}\right\rbrack.
+$$
+
+Replace row ${2}$ by "${2}$ times row ${2}$ minus row ${1}$ (a pivot, expressed notationally as ${2R_2 - R_1 \rightarrow R_2}$):
+
+$$
+    \left\lbrack\hspace{-5pt}\begin{array}{cc|c}
+    2 & 1 & -1 \\
+    1 & -3 & 17
+    \end{array}\hspace{-5pt}\right\rbrack
+    \rightarrow
+    \left\lbrack\hspace{-5pt}\begin{array}{cc|c}
+    2 & 1 & -1 \\
+    0 & -7 & 35
+    \end{array}\hspace{-5pt}\right\rbrack.
+$$
+
+The goal of Gaussian elimination, as applied to augmented matrices, is _row reduction_: We use the elementary row operations to eliminate variables from selected rows of the augmented matrix until we obtain a solution space.
+
+## Graphical Solutions
+For linear systems in ${\reals^2}$ and ${\reals^3,}$ we can quickly see solutions with the aid of plotting.
+
+### Linear Systems in ℝ²
+A linear equation of the form ${ax + by = c,}$ where ${a,b,c}$ are real constants, graphically corresponds to a line in the Cartesian plane. Given two such lines (i.e., a ${2 \times 2}$ linear system), there are three possible cases which may occur:
+
+<table>
+  <thead>
+    <tr>
+      <th>Intersecting Lines</th>
+      <th>Parallel Lines</th>
+      <th>Coincident Lines</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+        <td>
+            One point of intersection; there is a unique solution.
+        </td>
+        <td>
+            No points of intersection; there are no solutions.
+        </td>
+        <td>
+            Infinitely many points of intersection; there are infinitely many solutions.
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <IntersectingLines/>
+        </td>
+        <td>
+            <ParallelLines/>
+        </td>
+        <td>
+            <CoincidentLines/>
+        </td>
+    </tr>
+  </tbody>
+</table>
+
+### Linear Systems in ℝ³
+In ${\reals^3,}$ parallel planes indicate there are no solutions, since there is no common intersection. For example, the system
+
+<Cols of={3}>
+$$
+    \begin{cases}
+    2x + 3y - z = -5 \\
+    2x + 3y - z = -2 \\
+    2x + 3y - z = 3
+    \end{cases}
+$$
+<ParallelPlanes/>
+</Cols>
+
+has no solution. Examining the plot above, there is no point of intersection since the resulting planes are parallel. The fact that planes intersect, however, does not imply that there is a solution. 
+
+Two parallel planes with no common intersection also indicates that the system has no solutions.  For example, the system
+
+<Cols of={3}>
+$$
+    \begin{cases}
+    x + 2y + z = -2 \\
+    x + 2y + z = -\frac{1}{4} \\
+    2x - y + z = 1
+    \end{cases}
+$$
+<PlanesDemo2/>
+</Cols>
+
+has no solution. While there are infinitely many points of intersection, there isn't a _common_ intersection.
+
+If the planes share a common intersection, then either the intersection is a line or a point. If it's a line, then there are infinitely many solutions, since the line comprises infinitely many points. For example, the system
+
+<Cols of={3}>
+$$
+    \begin{cases}
+     x + 2y + z = 2 \\
+     2x - y + z = 1
+    \end{cases}
+$$
+<PlanesDemo3/>
+</Cols>
+
+has infinitely many solutions since its common intersection is a line. If, however, the common intersection is a point, then there is exactly one solution. For example, the system
+
+<Cols of={3}>
+$$
+    \begin{cases}
+     3x + y + 2z = 0 \\
+     4x - y + 3z = -1 \\
+     x + y - z = -1
+    \end{cases}
+$$
+<PlanesDemo4/>
+</Cols>
+
+has exactly one solution, since the equations' corresponding planes intersect at a single, common point of intersection.
+
+## Matrices & Linear Equations
 We can represent a system of linear equations with matrices. We place the coefficients ${a_{i,j}}$ into vectors,
 
 $$
@@ -229,7 +564,7 @@ $$
 
 A matrix can be thought of as an array of arrays. They allow us to compactly represent a system of linear equations.
 
-> __*definition*__. Let ${m,n \in \N.}$ A real-valued ${(m,n)}$ matrix ${\bold{A}}$
+> **_definition_**. Let ${m,n \in \N.}$ A real-valued ${(m,n)}$ matrix ${\bold{A}}$
 > is an ${m \cdot n}$ tuple of elements ${a_{i,j},}$ ${i = 1, \ldots, m,}$ ${j =
 > 1, \ldots, n.}$ This tuple is ordered as a rectangle of ${m}$ rows and ${n}$
 > columns:
@@ -275,7 +610,7 @@ let C = [[1], [2], [3]];
 
 To add two matrices, we add each element of one matrix to the corresponding element (the element of the same indices) in the other matrix (element-wise sum).
 
-> __*definition*__. Let ${\bold{A} \in \R^{m \times n},}$ and let ${\bold{B} \in \R^{m \times n}.}$ Then the sum ${\bold{A} + \bold{B}}$ is defined as:
+> **_definition_**. Let ${\bold{A} \in \R^{m \times n},}$ and let ${\bold{B} \in \R^{m \times n}.}$ Then the sum ${\bold{A} + \bold{B}}$ is defined as:
 >
 > $$
 >     \bold{A} + \bold{B} :=
@@ -319,12 +654,14 @@ $$
 $$
 
 ### Matrix Multiplication
+
 There are three forms of matrix multiplication: **scalar multiplication**, the **Hadamard product**, and the **row-column dot product**.
 
 #### Hadamard Product
+
 The Hadamard product is simply element-wise multiplication.
 
-__*definition*__. Let ${\bold{A} \in \R^{m \times n},}$ and let ${\bold{B} \in \R^{m \times n}.}$ Then the Hadamard product ${\bold{A} \odot \bold{B}}$ is defined as:
+**_definition_**. Let ${\bold{A} \in \R^{m \times n},}$ and let ${\bold{B} \in \R^{m \times n}.}$ Then the Hadamard product ${\bold{A} \odot \bold{B}}$ is defined as:
 
 $$
     \bold{A} \odot \bold{B} :=
