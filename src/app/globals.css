@@ -68,48 +68,47 @@ textarea {
   font-family: monospace;
   font-weight: bold;
   color: #fff;
-  background-color: #333;
   border-radius: 4px;
   box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.5);
+  background-color: rgb(46,42,40);
   overflow: hidden;
 }
 
 pre {
   padding: 0.8rem;
   border-radius: 0.2em;
-  /* border-top: solid thin lightgrey; */
-  /* border-bottom: solid thin lightgrey; */
   overflow-x: scroll;
-  background-color: rgb(42, 50, 57);
-  color: white;
+  background-color: rgb(46,42,40);
+  color: rgb(181,200,180);
 }
 
 .hljs-tag {
-  color: rgb(250, 236, 114);
+  color: rgb(173,141,118);
+  font-weight: bold;
 }
 
 .hljs-comment {
   color: rgb(136, 136, 136);
 }
 .hljs-keyword {
-  color: rgb(255, 105, 105);
+  color: rgb(249, 107, 107);
+  font-weight: bold;
 }
 .hljs-attr,
 .hljs-property {
-  color: rgb(210, 149, 210);
+  color: rgb(207, 175, 159);
 }
-.hljs-variable {
-  color: rgb(255, 221, 0);
-}
+
 .hljs-built_in {
   color: rgb(109, 197, 200);
 }
 .hljs-string {
-  color: rgb(182, 240, 165);
+  color: rgb(195,147,128);
 }
 
 .function_ {
-  color: orange;
+  color: rgb(237, 161, 126);
+  font-weight: bold;
 }
 
 p {

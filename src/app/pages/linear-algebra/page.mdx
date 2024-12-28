@@ -62,7 +62,7 @@ A vector is a mathematical object that can be added to another vector or multipl
 
 For now, we'll focus only on vectors in ${\reals^n.}$ That is, vectors with ${n}$ components, all of which are real numbers.
 
-> **Definition: Real Zero Vector**. The zero vector in ${\reals^n}$ is the vector ${\bold{0}^n,}$ whose components are all zero.
+> __*definition*__. The zero vector in ${\reals^n}$ is the vector ${\bold{0}^n,}$ whose components are all zero.
 >
 > $$
 >    \bold{0}^n = \begin{bmatrix}
@@ -83,7 +83,7 @@ The zero vector is special for a few reasons:
 
 Scalar multiplication is straightforward: We multiply each component of the vector by the given scalar ${k.}$ Geometrically (in ${\reals^2}$ or ${\reals^3}$), if ${k \gt 0,}$ this has the effect of making the vector shorter or longer.
 
-> **Definition: Scalar Multiplication.** Let ${\bold{v}}$ be a vector in ${\reals^n,}$ and let ${k \in \reals}$ be a scalar. Then:
+> __*definition*__. Let ${\bold{v}}$ be a vector in ${\reals^n,}$ and let ${k \in \reals}$ be a scalar. Then:
 >
 > $$
 >     k \bold{v} = \begin{bmatrix}
@@ -118,7 +118,7 @@ $$
 
 Since ${k}$ can be any real number, scalar multiplication's definition implies that we can negate a vector and perform element-wise division.
 
-> **Definition: Vector Negation.** Given a vector ${\bold{v},}$ the negation of ${\bold{v},}$ denoted ${-\bold{v},}$ is:
+> __*definition*__. Given a vector ${\bold{v},}$ the negation of ${\bold{v},}$ denoted ${-\bold{v},}$ is:
 >
 > $$
 >     -\bold{v} = \begin{bmatrix}
@@ -143,7 +143,7 @@ Geometrically, negating a vector ${\bold{v}}$ "switches" its direction.
 
 Many problems in mathematics can be reduced to systems of linear equations. Linear algebra provides us the tools for solving these systems.
 
-> **Definition.** The system
+> __*definition*__. The system
 >
 > $$
 > \begin{aligned}
@@ -229,7 +229,7 @@ $$
 
 A matrix can be thought of as an array of arrays. They allow us to compactly represent a system of linear equations.
 
-> **Definition.** Let ${m,n \in \N.}$ A real-valued ${(m,n)}$ matrix ${\bold{A}}$
+> __*definition*__. Let ${m,n \in \N.}$ A real-valued ${(m,n)}$ matrix ${\bold{A}}$
 > is an ${m \cdot n}$ tuple of elements ${a_{i,j},}$ ${i = 1, \ldots, m,}$ ${j =
 > 1, \ldots, n.}$ This tuple is ordered as a rectangle of ${m}$ rows and ${n}$
 > columns:
@@ -275,18 +275,18 @@ let C = [[1], [2], [3]];
 
 To add two matrices, we add each element of one matrix to the corresponding element (the element of the same indices) in the other matrix (element-wise sum).
 
-**Definition.** Let ${\bold{A} \in \R^{m \times n},}$ and let ${\bold{B} \in \R^{m \times n}.}$ Then the sum ${\bold{A} + \bold{B}}$ is defined as:
-
-$$
-    \bold{A} + \bold{B} :=
-    \begin{bmatrix}
-    a_{1,1} + b_{1,1} & \ldots & a_{1,n} + b_{1,n} \\
-    \vdots & \vdots & \vdots \\
-    a_{m,1} + b_{m,1} & \ldots & a_{m,n} + b_{m,n}
-    \end{bmatrix}
-    \in
-    \reals^{m \times n}.
-$$
+> __*definition*__. Let ${\bold{A} \in \R^{m \times n},}$ and let ${\bold{B} \in \R^{m \times n}.}$ Then the sum ${\bold{A} + \bold{B}}$ is defined as:
+>
+> $$
+>     \bold{A} + \bold{B} :=
+>     \begin{bmatrix}
+>     a_{1,1} + b_{1,1} & \ldots & a_{1,n} + b_{1,n} \\
+>     \vdots & \vdots & \vdots \\
+>     a_{m,1} + b_{m,1} & \ldots & a_{m,n} + b_{m,n}
+>     \end{bmatrix}
+>     \in
+>     \reals^{m \times n}.
+> $$
 
 **_example_**.
 
@@ -319,14 +319,12 @@ $$
 $$
 
 ### Matrix Multiplication
-
 There are three forms of matrix multiplication: **scalar multiplication**, the **Hadamard product**, and the **row-column dot product**.
 
 #### Hadamard Product
-
 The Hadamard product is simply element-wise multiplication.
 
-**Definition.** Let ${\bold{A} \in \R^{m \times n},}$ and let ${\bold{B} \in \R^{m \times n}.}$ Then the Hadamard product ${\bold{A} \odot \bold{B}}$ is defined as:
+__*definition*__. Let ${\bold{A} \in \R^{m \times n},}$ and let ${\bold{B} \in \R^{m \times n}.}$ Then the Hadamard product ${\bold{A} \odot \bold{B}}$ is defined as:
 
 $$
     \bold{A} \odot \bold{B} :=

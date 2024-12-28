@@ -1200,6 +1200,24 @@ export const LinearAxesTest = () => {
     .domain(D)
     .range(R)
     .done();
+  return <Fig data={d} width={70} />;
+};
+
+export const Figy = () => {
+  const D = tuple(-10, 10);
+  const R = tuple(-10, 10);
+  const d = svg([
+    grid(D, R).done(),
+    axis("x", D, R),
+    axis("y", D, R),
+    circle(50, [0, 0])
+      .stroke("olivedrab")
+      .fill("yellowgreen")
+      .fillOpacity(0.4),
+  ])
+    .domain(D)
+    .range(R)
+    .done();
   return <Fig data={d} width={70}/>;
 };
 

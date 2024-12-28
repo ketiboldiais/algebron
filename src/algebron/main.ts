@@ -7548,7 +7548,6 @@ export function denominator(𝑢: MathObj|string): MathObj {
 
 }
 
-
 function freeofOne(
   expression1: MathObj | string,
   expression2: MathObj | string
@@ -7587,6 +7586,16 @@ export function freeOf(
   return true;
 }
 
+/**
+ * Given a string `source` corresponding to
+ * an expression, returns an object with
+ * the following methods:
+ * 
+ * 1. `ast()`: Returns the parsed MathObj as pretty-print string.
+ * 2. `obj()`: Returns the parsed MathObj.
+ * 3. `simplify()`: Returns the parsed MathObj reduced with
+ *    automatic simplification.
+ */
 function exp(source: string) {
   const parse = () => {
     let $current = 0;
