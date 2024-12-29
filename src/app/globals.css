@@ -190,6 +190,7 @@ a {
 
 blockquote {
   padding: 8px 10px;
+  padding-bottom: 13px;
   width: 93%;
   /* border-left: solid 2px rgb(188, 188, 188); */
   margin: 2vh auto;

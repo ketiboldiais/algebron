@@ -6,11 +6,7 @@ import { forwardRef, ReactNode, useEffect, useRef, useState } from "react";
 type Children = { children: ReactNode };
 
 const Container = ({ children }: Children) => {
-  return (
-    <div className="repl">
-      {children}
-    </div>
-  );
+  return <div className="repl">{children}</div>;
 };
 
 const InputCarat = ({
@@ -41,6 +37,7 @@ const ActiveInputLine = ({ children }: Children) => {
         alignItems: "center",
         marginTop: "10px",
         marginLeft: "8px",
+        marginBottom: "5px",
       }}
     >
       {children}

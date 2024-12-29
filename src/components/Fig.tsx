@@ -627,6 +627,16 @@ export const PlanesDemo4 = () => {
   return <PLOT3D data={d}/>
 }
 
+
+export const EchelonPlanes = () => {
+  const d = plot3D([
+    'fn a(x,y) = (9 - x - y)/2',
+    'fn b(x,y) = (1 - 2x - 4y)/(-3)',
+    'fn c(x,y) = (3x + 6y)/5',
+  ]).xDomain([-3,3]).yDomain([-3,3]).scale(1).done()
+  return <PLOT3D data={d}/>
+}
+
 export const Calc1 = () => {
   const D = tuple(-5, 5);
   const R = tuple(-5, 5);
@@ -664,6 +674,8 @@ export const Calc1 = () => {
     .done();
   return <Fig data={d} width={45} />;
 };
+
+
 
 export const DistanceBetweenPoints = () => {
   const D = tuple(-5, 5);

@@ -11,6 +11,7 @@ import {
     PlanesDemo2,
     PlanesDemo3,
     PlanesDemo4,
+    EchelonPlanes,
 } from "@/components/Fig";
 import MdxLayout from "@/components/mdx-layout";
 
@@ -30,13 +31,18 @@ import MdxLayout from "@/components/mdx-layout";
 - [Graphical Solutions](#graphical-solutions)
   - [Linear Systems in ℝ²](#linear-systems-in-ℝ)
   - [Linear Systems in ℝ³](#linear-systems-in-ℝ-1)
+- [Echelon Forms](#echelon-forms)
+- [Parametric Solutions](#parametric-solutions)
+- [Gauss-Jordan Elimination](#gauss-jordan-elimination)
 - [Matrices \& Linear Equations](#matrices--linear-equations)
 - [Matrices](#matrices)
+  - [Matrix Equality](#matrix-equality)
   - [Matrix Addition](#matrix-addition)
   - [Matrix Multiplication](#matrix-multiplication)
     - [Hadamard Product](#hadamard-product)
     - [Scalar Multiplication](#scalar-multiplication-1)
     - [Row-Column Dot Product](#row-column-dot-product)
+- [Matrices \& Linear Combinations](#matrices--linear-combinations)
 
 </TOC>
 
@@ -253,6 +259,18 @@ $$
 $$
 
 If ${b_i = 0}$ for all ${i = 1,2,3,\ldots,n,}$ we say that the system is _homogeneous_. Homogeneous linear systems have a special property: If a system is homogeneous, then ${x_1 = x_2 = \ldots = x_n = 0}$ is always a solution (but not necessarily the only solution).
+
+Every homogeneous linear system is consistent because all such systems have the solution ${x_1 = 0, x_2 = 0, \ldots, x_n = 0.}$ This solution is called the _trivial solution_. All other solutions (if there are any) are called _nontrivial solutions_. Because homogeneous systems always have the trivial solution, there are only two possibilities for their solutions:
+
+1. The system has only one solution (the trivial solution), or
+2. the system has infinitely many solutions, including the trivial solution.
+
+The one case where a homogeneous system _always_ has nontrivial solutions is the _underspecified homogenous linear system_ &mdash; a homogeneous linear system with more unknowns than equations. 
+
+> __*theorem*__. If a homogeneous linear system has ${n}$ unknowns, and if the reduced row echelon form of its augmented matrix has ${r}$ nonzero rows, then the system has ${n - r}$ free variables.
+
+
+> __*theorem*__. A homogeneous linear system with more unknowns than equations has infinitely many solutions.
 
 ### Augmented Matrices
 
@@ -512,7 +530,479 @@ $$
 <PlanesDemo4/>
 </Cols>
 
-has exactly one solution, since the equations' corresponding planes intersect at a single, common point of intersection.
+has exactly one solution, since the equations' corresponding planes intersect at a single, common point of intersection. Nevertheless, the following fact always applies, regardless of what linear system we're in:
+
+> __*theorem*__. Every system of linear equations has zero, one, or infinitely many solutions. There are no other possibilities.
+
+## Echelon Forms
+Consider the following system, with its corresponding augmented matrix and plot. 
+
+<Cols of={3}>
+$$
+    \begin{cases}
+    x + y + 2z = 9 \\
+    2x + 4y - 3z = 1 \\
+    3x + 6y - 5z = 0
+    \end{cases}
+$$
+$$
+    \left\lbrack\hspace{-5pt}\begin{array}{ccc|c}
+    1 & 1 & 2 & 9 \\
+    2 & 4 & -3 & 1 \\
+    3 & 6 & -5 & 0
+    \end{array}\hspace{-5pt}\right\rbrack.
+$$
+<EchelonPlanes/>
+</Cols>
+
+What is the solution space for this system? We will use the elementary row operations. 
+
+<Cols of={2}>
+<div>
+Add ${-2}$ times the first equation to the second equation. 
+
+$$
+    \begin{cases}
+    x + y + 2z = 9 \\
+    2y - 7z = -17 \\
+    3x + 6y - 5z = 0
+    \end{cases}
+$$
+</div>
+<div>
+Add ${-2}$ times the first row to the second row.
+
+$$
+    \left\lbrack\hspace{-5pt}\begin{array}{ccc|c}
+    1 & 1 & 2 & 9 \\
+    0 & 2 & -7 & -17 \\
+    3 & 6 & -5 & 0
+    \end{array}\hspace{-5pt}\right\rbrack.
+$$
+</div>
+</Cols>
+
+<Cols of={2}>
+<div>
+Add ${-3}$ times the first equation to the third equation. 
+
+$$
+    \begin{cases}
+    x + y + 2z = 9 \\
+    2y - 7z = -17 \\
+    3y - 11z = -27
+    \end{cases}
+$$
+</div>
+<div>
+Add ${-2}$ times the first row to the second row.
+
+$$
+    \left\lbrack\hspace{-5pt}\begin{array}{ccc|c}
+    1 & 1 & 2 & 9 \\
+    0 & 2 & -7 & -17 \\
+    0 & 3 & -11 & -27
+    \end{array}\hspace{-5pt}\right\rbrack.
+$$
+</div>
+</Cols>
+
+<Cols of={2}>
+<div>
+Multiply the second equation by ${\frac{1}{2}.}$
+
+$$
+    \begin{cases}
+    x + y + 2z = 9 \\
+    y - \frac{7}{2}z = -\frac{17}{2} \\
+    3y - 11z = -27
+    \end{cases}
+$$
+</div>
+<div>
+Multiply the second row by ${\frac{1}{2}.}$
+
+$$
+    \left\lbrack\hspace{-5pt}\begin{array}{ccc|c}
+    1 & 1 & 2 & 9 \\
+    0 & 1 & -\frac{7}{2} & -\frac{17}{2} \\
+    0 & 3 & -11 & -27
+    \end{array}\hspace{-5pt}\right\rbrack.
+$$
+</div>
+</Cols>
+
+<Cols of={2}>
+<div>
+Add ${-3}$ times the second equation to the third equation.
+
+$$
+    \begin{cases}
+    x + y + 2z = 9 \\
+    y - \frac{7}{2}z = -\frac{17}{2} \\
+    -\frac{1}{2}z = -\frac{3}{2}
+    \end{cases}
+$$
+</div>
+<div>
+Add ${-3}$ times the second row to the third row.
+
+$$
+    \left\lbrack\hspace{-5pt}\begin{array}{ccc|c}
+    1 & 1 & 2 & 9 \\
+    0 & 1 & -\frac{7}{2} & -\frac{17}{2} \\
+    0 & 0 & -\frac{1}{2} & -\frac{3}{2}
+    \end{array}\hspace{-5pt}\right\rbrack.
+$$
+</div>
+</Cols>
+
+<Cols of={2}>
+<div>
+Multiply the third equation by ${-2.}$
+
+$$
+    \begin{cases}
+    x + y + 2z = 9 \\
+    y - \frac{7}{2}z = -\frac{17}{2} \\
+    z = 3
+    \end{cases}
+$$
+</div>
+<div>
+Multiply the third row by ${-2.}$
+
+$$
+    \left\lbrack\hspace{-5pt}\begin{array}{ccc|c}
+    1 & 1 & 2 & 9 \\
+    0 & 1 & -\frac{7}{2} & -\frac{17}{2} \\
+    0 & 0 & 1 & 3
+    \end{array}\hspace{-5pt}\right\rbrack.
+$$
+</div>
+</Cols>
+
+<Cols of={2}>
+<div>
+Add ${-1}$ times the second equation to the first equation.
+
+$$
+    \begin{cases}
+    x + \frac{11}{2} z = \frac{35}{2} \\
+    y - \frac{7}{2}z = -\frac{17}{2} \\
+    z = 3
+    \end{cases}
+$$
+</div>
+<div>
+Add ${-1}$ times the second row to the first row.
+
+$$
+    \left\lbrack\hspace{-5pt}\begin{array}{ccc|c}
+    1 & 0 & \frac{11}{2} & \frac{35}{2} \\
+    0 & 1 & -\frac{7}{2} & -\frac{17}{2} \\
+    0 & 0 & 1 & 3
+    \end{array}\hspace{-5pt}\right\rbrack.
+$$
+</div>
+</Cols>
+
+<Cols of={2}>
+<div>
+Add ${-\frac{11}{2}}$ times the third equation to the first equation and ${\frac{7}{2}}$ times the third equation to the second equation.
+
+$$
+    \begin{cases}
+    x = 1 \\
+    y = 2 \\
+    z = 3
+    \end{cases}
+$$
+</div>
+<div>
+Add ${-\frac{11}{2}}$ times the third row to the first row and ${\frac{7}{2}}$ times the third row to the second row.
+
+$$
+    \left\lbrack\hspace{-5pt}\begin{array}{ccc|c}
+    1 & 0 & 0 & 1 \\
+    0 & 1 & 0 & 2 \\
+    0 & 0 & 1 & 3
+    \end{array}\hspace{-5pt}\right\rbrack.
+$$
+</div>
+</Cols>
+
+We see that the solution space comprises exactly one solution: 
+
+$$
+    \begin{bmatrix}
+    x \\ 
+    y \\
+    z
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+    1 \\ 
+    2 \\
+    3
+    \end{bmatrix}.
+$$
+
+If we rewrite the augmented matrix as a plain, old matrix
+
+$$
+    \begin{bmatrix}
+    1 & 0 & 0 & 1 \\
+    0 & 1 & 0 & 2 \\
+    0 & 0 & 1 & 3
+    \end{bmatrix}
+$$
+
+we get a particularly special kind of matrix &mdash; a matrix in _reduced row echelon form_. 
+
+> __*definition*__. A matrix ${M}$ is in _reduced row echelon form_ if, and only if, the following properties hold for ${M:}$ 
+>
+> 1. If a row does not consist entirely of zeros, then the first nonzero number in the row is ${1.}$ This is called the _leading 1_.
+> 2. If there are any rows that consist entirely of zeros, then they are grouped together at the bottom of the matrix.
+> 3. In any two successive rows that do not consist entirely of zeros, the leading ${1}$ in the lower row occurs farther to the right than the leading ${1}$ in the higher row. 
+> 4. Each column that contains a leading ${1}$ has zeros everywhere else in that column. 
+
+Variables that correspond to the leading ${1}$s are called _leading variables_, and all others _free variables_.
+
+Matrices that satisfy the first three properties are said to be in _row echelon form_. To be in _reduced row echelon form_, the matrix must satisfy all four properties.
+
+## Parametric Solutions
+Consider the augmented matrix below (vertical separator omitted):
+
+$$
+    \begin{bmatrix}
+    1 & 0 & 3 & -1 \\
+    0 & 1 & -4 & 2 \\
+    0 & 0 & 0 & 0
+    \end{bmatrix}.
+$$
+
+The last row maps to the equation ${0x + 0y + 0z = 0.}$ This is trivial and can be discarded since it holds no restrictions on ${x,}$ ${y,}$ or ${z.}$ Thus:
+
+
+$$
+    \begin{bmatrix}
+    1 & 0 & 3 & -1 \\
+    0 & 1 & -4 & 2 \\
+    \end{bmatrix}
+    \rightarrow
+    \begin{cases}
+    x + 3z = -1 \\
+    y - 4z = 2
+    \end{cases}
+    .
+$$
+
+Above, we see that the leading variables are ${x}$ and ${y,}$ with ${z}$ a free variable. If we solve for the leading variables in terms of the free variables, we get: 
+
+$$
+    x = -1 - 3z \\
+    y = 2 + 4z.
+$$
+
+It's now apparent that ${z}$ can be treated as a _parameter_. So we can express the solution space with the parametric equations 
+
+$$
+    \begin{cases}
+    x = -1 - 3t \\
+    y = 2 + 4t \\
+    z = t
+    \end{cases}
+    ~~~
+    t \in \reals.
+$$
+
+## Gauss-Jordan Elimination
+In the preceding examples, we saw that we can solve a linear system by casting its augmented matrix into reduced row echelon form. But how did we know which elementary operations to perform? Our choices seemed arbitrary, if not the result of trial and error. We now introduce an algorithm for reducing any matrix to reduced row echelon form &mdash; _Gauss-Jordan Elimination_. To illustrate, we will reduce this matrix:
+
+$$
+    \begin{bmatrix}
+    0 & 0 & -2 & 0 & 7 & 12 \\
+    2 & 4 & -10 & 6 & 12 & 28 \\
+    2 & 4 & -5 & 6 & -5 & -1
+    \end{bmatrix}.
+$$
+
+__Step 1.__ Find the leftmost column that does not consist entirely of zeros.
+
+<Cols of={2}>
+
+$$
+    \begin{bmatrix}
+    \color{red}{0} & 0 & -2 & 0 & 7 & 12 \\
+    \color{red}{2} & 4 & -10 & 6 & 12 & 28 \\
+    \color{red}{2} & 4 & -5 & 6 & -5 & -1
+    \end{bmatrix}.
+$$
+
+_The leftmost column not entirely of zeros is colored red._
+
+</Cols>
+
+__Step 2.__ Swap the top row with another row, if necessary, to bring a nonzero entry to the top of the column found in step ${1.}$
+
+
+<Cols of={2}>
+
+$$
+    \begin{bmatrix}
+    2 & 4 & -10 & 6 & 12 & 28 \\
+    0 & 0 & -2 & 0 & 7 & 12 \\
+    2 & 4 & -5 & 6 & -5 & -1
+    \end{bmatrix}.
+$$
+
+_We swapped the first and second rows._
+
+</Cols>
+
+__Step 3.__ If the entry on top of the column found in step ${1}$ is ${a,}$ multiply the first row by ${1/a}$ to introduce a leading ${1.}$
+
+<Cols of={2}>
+$$
+    \begin{bmatrix}
+    1 & 2 & -5 & 3 & 6 & 14 \\
+    0 & 0 & -2 & 0 & 7 & 12 \\
+    2 & 4 & -5 & 6 & -5 & -1
+    \end{bmatrix}.
+$$
+
+_We multiplied the first row by ${\frac{1}{2}.}$_
+
+</Cols>
+
+__Step 4.__ Add multiples of the top row to the rows below so that all entries below the leading ${1}$ become zeros.
+
+<Cols of={2}>
+$$
+    \begin{bmatrix}
+    1 & 2 & -5 & 3 & 6 & 14 \\
+    0 & 0 & -2 & 0 & 7 & 12 \\
+    0 & 0 & 5 & 0 & -17 & -29
+    \end{bmatrix}.
+$$
+
+_We added ${-2}$ times the first row of the preceding matrix to the third row._
+</Cols>
+
+__Step 5.__ Now cover (ignore) the top row in the matrix. With the remaining rows (the submatrix) repeat the process again starting from step ${1.}$ 
+
+<Cols of={2}>
+$$
+    \begin{bmatrix}
+    \color{lightgrey}{1} & \color{lightgrey}{2} & \color{lightgrey}{-5} & \color{lightgrey}{3} & \color{lightgrey}{6} & \color{lightgrey}{14} \\
+    0 & 0 & \color{red}{-2} & 0 & 7 & 12 \\
+    0 & 0 & \color{red}{5} & 0 & -17 & -29
+    \end{bmatrix}.
+$$
+
+_Leftmost nonzero column is colored red._
+</Cols>
+
+<Cols of={2}>
+$$
+    \begin{bmatrix}
+    \color{lightgrey}{1} & \color{lightgrey}{2} & \color{lightgrey}{-5} & \color{lightgrey}{3} & \color{lightgrey}{6} & \color{lightgrey}{14} \\
+    0 & 0 & 1 & 0 & -\frac{7}{2} & -6 \\
+    0 & 0 & 5 & 0 & -17 & -29
+    \end{bmatrix}.
+$$
+
+_We multiply the first row in the submatrix by ${-\frac{1}{2}}$ to introduce a leading ${1.}$_
+</Cols>
+
+<Cols of={2}>
+$$
+    \begin{bmatrix}
+    \color{lightgrey}{1} & \color{lightgrey}{2} & \color{lightgrey}{-5} & \color{lightgrey}{3} & \color{lightgrey}{6} & \color{lightgrey}{14} \\
+    0 & 0 & 1 & 0 & -\frac{7}{2} & -6 \\
+    0 & 0 & 0 & 0 & \frac{1}{2} & 1
+    \end{bmatrix}.
+$$
+
+_We add ${-5}$ times the first row of the submatrix to the second row of the submatrix to introduce a zero below the leading ${1.}$_
+</Cols>
+
+<Cols of={2}>
+$$
+    \begin{bmatrix}
+    \color{lightgrey}{1} & \color{lightgrey}{2} & \color{lightgrey}{-5} & \color{lightgrey}{3} & \color{lightgrey}{6} & \color{lightgrey}{14} \\
+    \color{lightgrey}{0} & \color{lightgrey}{0} & \color{lightgrey}{1} & \color{lightgrey}{0} & \color{lightgrey}{-\frac{7}{2}} & \color{lightgrey}{-6} \\
+    0 & 0 & 0 & 0 & \color{red}{\frac{1}{2}} & 1
+    \end{bmatrix}.
+$$
+
+_We cover the top row of the submatrix and return again to step ${1.}$ The leftmost nonzero column is colored red._
+</Cols>
+
+<Cols of={2}>
+$$
+    \begin{bmatrix}
+    \color{lightgrey}{1} & \color{lightgrey}{2} & \color{lightgrey}{-5} & \color{lightgrey}{3} & \color{lightgrey}{6} & \color{lightgrey}{14} \\
+    \color{lightgrey}{0} & \color{lightgrey}{0} & \color{lightgrey}{1} & \color{lightgrey}{0} & \color{lightgrey}{-\frac{7}{2}} & \color{lightgrey}{-6} \\
+    0 & 0 & 0 & 0 & 1 & 2
+    \end{bmatrix}.
+$$
+
+_The first (and only) row in the new submatrix is multiplied by ${2}$ to introduce a leading ${1.}$_
+</Cols>
+
+<Cols of={2}>
+$$
+    \begin{bmatrix}
+    {1} & {2} & {-5} & {3} & {6} & {14} \\
+    {0} & {0} & {1} & {0} & {-\frac{7}{2}} & {-6} \\
+    0 & 0 & 0 & 0 & 1 & 2
+    \end{bmatrix}.
+$$
+
+_The matrix is now in row echelon form. To find the reduced row echelon form, proceed to step ${6.}$_
+</Cols>
+
+__Step 6.__ Beginning with the last nonzero row and working upward, add suitable multiples of each row to the rows above to introduce zeros above the leading ${1s.}$
+
+<Cols of={2}>
+$$
+    \begin{bmatrix}
+    {1} & {2} & {-5} & {3} & {6} & {14} \\
+    {0} & {0} & {1} & {0} & {0} & {1} \\
+    0 & 0 & 0 & 0 & 1 & 2
+    \end{bmatrix}.
+$$
+
+_We added ${\frac{7}{2}}$ times the third row of the preceding matrix to the second row._
+</Cols>
+
+<Cols of={2}>
+$$
+    \begin{bmatrix}
+    {1} & {2} & {-5} & {3} & {0} & {2} \\
+    {0} & {0} & {1} & {0} & {0} & {1} \\
+    0 & 0 & 0 & 0 & 1 & 2
+    \end{bmatrix}.
+$$
+
+_We added ${-6}$ times the third row to the first row._
+</Cols>
+
+<Cols of={2}>
+$$
+    \begin{bmatrix}
+    {1} & {2} & {0} & {3} & {0} & {7} \\
+    {0} & {0} & {1} & {0} & {0} & {1} \\
+    0 & 0 & 0 & 0 & 1 & 2
+    \end{bmatrix}.
+$$
+
+_We added ${5}$ times the second row to the first row. The matrix is now in reduced row echelon form._
+</Cols>
+
+
 
 ## Matrices & Linear Equations
 We can represent a system of linear equations with matrices. We place the coefficients ${a_{i,j}}$ into vectors,
@@ -561,7 +1051,6 @@ $$
 $$
 
 ## Matrices
-
 A matrix can be thought of as an array of arrays. They allow us to compactly represent a system of linear equations.
 
 > **_definition_**. Let ${m,n \in \N.}$ A real-valued ${(m,n)}$ matrix ${\bold{A}}$
@@ -606,8 +1095,11 @@ let M = [
 let C = [[1], [2], [3]];
 ```
 
-### Matrix Addition
+### Matrix Equality
 
+> __*definition*__. Two matrices are equal if and only if they have the same size and their corresponding entries are equal.
+
+### Matrix Addition
 To add two matrices, we add each element of one matrix to the corresponding element (the element of the same indices) in the other matrix (element-wise sum).
 
 > **_definition_**. Let ${\bold{A} \in \R^{m \times n},}$ and let ${\bold{B} \in \R^{m \times n}.}$ Then the sum ${\bold{A} + \bold{B}}$ is defined as:
@@ -653,12 +1145,12 @@ $$
 \end{aligned}.
 $$
 
-### Matrix Multiplication
+From the definition, we see that matrices of different sizes _cannot_ be added.
 
+### Matrix Multiplication
 There are three forms of matrix multiplication: **scalar multiplication**, the **Hadamard product**, and the **row-column dot product**.
 
 #### Hadamard Product
-
 The Hadamard product is simply element-wise multiplication.
 
 **_definition_**. Let ${\bold{A} \in \R^{m \times n},}$ and let ${\bold{B} \in \R^{m \times n}.}$ Then the Hadamard product ${\bold{A} \odot \bold{B}}$ is defined as:
@@ -715,11 +1207,9 @@ $$
 $$
 
 #### Scalar Multiplication
-
 When we multiply a scalar to a matrix, we multiply each element of the matrix with the scalar.
 
 #### Row-Column Dot Product
-
 With matrix sums, we simply perform element-wise addition. Matrix multiplication, however, looks a little different:
 
 > **Definition.** Given matrices ${\bold{A} \in \reals^{m \times n}}$ and${\bold{B} \in \reals^{n \times k},}$ the elements ${c_{i,j}}$ of the product ${\bold{C} = \bold{A}\bold{B} \in \reals^{m \times k}}$ are computed as:
@@ -823,7 +1313,15 @@ $$
 
 Notice: Given a matrix ${\bold{A}}$ and a matrix ${\bold{B},}$ the row-column product ${\bold{A} \cdot \bold{B}}$ is defined only if the number of columns of ${\bold{A}}$ is equal to the number of rows of ${\bold{B}.}$ In general, given an ${m \times n}$ matrix ${\bold{A}}$ and an ${n \times k}$ matrix ${\bold{B},}$ ${\bold{A}\cdot\bold{B}}$ is defined only if the ${n}$s are the same. The result ${\bold{A} \cdot \bold{B}}$ is an ${m \times k}$ matrix.
 
+## Matrices & Linear Combinations
+> __*definition*__. If ${A_1, A_2, \ldots, A_r}$ are matrices of the same size, and if ${c_1, c_2, \ldots, c_r}$ are scalars, then an expression of the form
+>
+> $$
+>    c_1 A_1 + c_2 A_2 + \ldots + c_r A_r
+> $$
+>
+> is called a _linear combination_ of ${A_1, A_2, \ldots, A_r}$ with coefficients ${c_1, c_2, \ldots, c_r.}$
+
 export default function MDXPage({ children }) {
     return <MdxLayout>{children}</MdxLayout>
-
 }
