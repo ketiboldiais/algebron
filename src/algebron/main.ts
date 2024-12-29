@@ -3353,6 +3353,9 @@ class CartesianPlot extends GroupObj {
   }
 }
 
+/**
+ * Returns a new Cartesian plot.
+ */
 export function cplot(
   fn: string,
   domain: [number, number],
@@ -3362,6 +3365,7 @@ export function cplot(
 }
 
 export type Triplet<T> = [T, T, T];
+
 export type Fn3D = (x: number, y: number) => Triplet<number>;
 
 export class Function3D {
@@ -3434,6 +3438,19 @@ export class Function3D {
   }
 }
 
+/**
+ * Returns a new Function3D.
+ * @param fn - A string corresponding to the function. 
+ * E.g., `fn z(x,y) = x^2 + y^2`. The function must
+ * be binary (taking two number arguments) and return a 
+ * single number.
+ * @param xDomain - The domain of possible x-values. The
+ * domain must be specified as a pair `[a,b]`, where `a`
+ * is the smallest possible x-input and `b` is the largest.
+ * @param yDomain - The domain of possible y-values. The domain
+ * must be specified as a pair `[a,b]` where `a` is the smallest
+ * possible y-input, and `b` is the largest.
+ */
 export function f3D(
   fn: string,
   xDomain: [number, number] = [-10, 10],
@@ -3442,6 +3459,11 @@ export function f3D(
   return new Function3D(fn, xDomain, yDomain);
 }
 
+/**
+ * An object corresponding to a Plot3D specification.
+ * This object is designed under the assumption that
+ * ThreeJS will be used.
+ */
 export class Plot3D {
   $id: string | number = uid(10);
 
@@ -3490,26 +3512,32 @@ export class Plot3D {
     return this;
   }
 
+  /** The smallest possible x-value this plot can take. */
   get $xMin() {
     return this.$xDomain[0];
   }
 
+  /** The largest possible x-value this plot can take. */
   get $xMax() {
     return this.$xDomain[1];
   }
 
+  /** The smallest possible y-value this plot can take. */
   get $yMin() {
     return this.$yDomain[0];
   }
 
+  /** The largest possible y-value this plot can take. */
   get $yMax() {
     return this.$yDomain[1];
   }
 
+  /** The width of the x-domain ($xMax - $xMin). */
   get $xRange() {
     return this.$xMax - this.$xMin;
   }
 
+  /** The width of the y-domain ($yMax - $yMin). */
   get $yRange() {
     return this.$yMax - this.$yMin;
   }
@@ -6466,7 +6494,7 @@ class Fraction extends Numeric {
     return Fraction.simplify(
       frac(
         int(other.numerator.int * this.denominator.int),
-        int(this.denominator.int * other.denominator.int)
+        int(this.numerator.int * other.denominator.int)
       )
     );
   }
@@ -6528,7 +6556,7 @@ class Fraction extends Numeric {
     }
   }
   toString(): string {
-    return `${this.numerator.int}/${this.denominator.int}`;
+    return `${this.numerator.int}|${this.denominator.int}`;
   }
   map(): this {
     return this;
