@@ -40,17 +40,27 @@
 }
 
 html {
-  font-size: 13px;
+  font-size: 15px;
+}
+
+@media (min-width: 300px) and (max-width: 750px) {
+  html {
+    font-size: 13px;
+  }
 }
 
 .katex {
   font-size: inherit;
+}
+.katex-display {
+  margin: 0.8em 0;
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
   font-family: "tp";
+  /* font-family: KaTeX_Main; */
   padding: 1vh 5vw;
 }
 
@@ -230,7 +240,8 @@ ol {
 article {
   width: clamp(300px, 70%, 600px);
   margin: 0 auto;
-  margin-bottom: 50vh;
+  margin-bottom: 10vh;
+  overflow-x: hidden;
 }
 
 footer {

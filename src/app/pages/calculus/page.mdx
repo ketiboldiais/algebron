@@ -26,10 +26,16 @@ import MdxLayout from "@/components/mdx-layout";
 - [Real Functions](#real-functions)
   - [Affine Functions](#affine-functions)
   - [Quadratic Functions](#quadratic-functions)
+    - [The Discriminant](#the-discriminant)
     - [Quadratic Formula](#quadratic-formula)
-    - [Natural Even Power Functions](#natural-even-power-functions)
+    - [The Square Function](#the-square-function)
+    - [Even Power Functions](#even-power-functions)
   - [Cubic Functions](#cubic-functions)
-    - [Natural Odd Power Functions](#natural-odd-power-functions)
+    - [The Cube Function](#the-cube-function)
+    - [Odd Power Functions](#odd-power-functions)
+  - [Polynomial Functions](#polynomial-functions)
+    - [Graphs of Polynomial Functions](#graphs-of-polynomial-functions)
+  - [Rational Functions](#rational-functions)
 
 </TOC>
 
@@ -441,6 +447,8 @@ import {AffineFunctionLab} from "@/components/Fig";
 
 <AffineFunctionLab/>
 
+If ${f}$ is an affine function, then ${f}$ has a constant rate of change equal to the slope of its graph. Conversely, if a function ${f}$ has a constant rate of change, then ${f}$ must be an affine function.
+
 ### Quadratic Functions
 
 > __Definition.__ Let ${a,}$ ${b,}$ and ${c}$ be real number constants, with ${a \neq 0.}$ A function of the form
@@ -451,7 +459,13 @@ import {AffineFunctionLab} from "@/components/Fig";
 >
 > is called a _quadratic function_ with leading coefficient ${a.}$
 
+<aside>
+The word _quadratic_ is derived from the Latin _quadratus_, meaning "square."
+</aside>
+
 The graph of a quadratic function is called a _parabola_. Given the quadratic function ${f(x) = ax^2 + bx + c,}$ if ${a \gt 0,}$ then the parabola has a _local minimum_ at ${x = -\dfrac{b}{2a}}$ and the parabola is _convex_. If ${a \lt 0,}$ then the parabola has a _local maximum_ at ${x = - \dfrac{b}{2a}}$ and the parabola is _concave_.
+
+Below is an interactive plot of a quadratic.
 
 import {QuadraticFunctionLab} from "@/components/Fig";
 
@@ -463,6 +477,17 @@ $$
     \left( -\dfrac{b}{2a}, \dfrac{4ac - b^2}{4a} \right).
 $$
 
+A few observations playing with this plot: First, the graph of ${y = ax^2}$ is a parabola with its vertex at the origin. It is similar in shape to ${y = x^2.}$ Second, the parabola ${y = ax^2}$ opens upward if ${a \gt 0,}$ and downward if ${a \lt 0.}$ And third, the parabola ${y = ax^2}$ is narrower than ${y = x^2}$ if ${\lvert a \rvert \gt 1,}$ and wider than ${y = x^2}$ if ${\lvert a \rvert \lt 1.}$
+
+Importantly, through completing the square, the equation of the parabola ${y = ax^2 + bx + c}$ can always be written in the form
+
+$$
+  y = (x - h)^2 + k,
+$$
+
+where ${(h,k)}$ is the parabola's vertex and the axis of symmetry is the line ${x = h.}$ The parabola opens upward if ${a \lt 0}$ and downward if ${a \lt 0.}$
+
+#### The Discriminant
 The quantity ${b^2 - 4ac}$ is called the _discriminant_ of ${ax^2 + bx + c.}$ The equation
 
 $$
@@ -489,7 +514,17 @@ When can gain many insights about a particular quadratic by simply examining its
 > 3. If ${b^2 - 4ac \lt 0,}$ then the parabola has two complex roots.  
 > 4. If ${b^2 - 4ac \gt 0,}$ then ${u}$ has the same sign as ${A.}$
 
-#### Natural Even Power Functions
+#### The Square Function
+
+> __*definition*__. The square function is a function of the form
+>
+> $$
+>  f(x) = x^2.
+> $$
+
+Suppose ${f}$ is the square function ${f(x) = x^2.}$ Then: ${f}$ is an even function; its graph is symmetric about the ${y}$-axis. ${f}$ is an increasing function for ${x \gt 0,}$ and a decreasing function for ${x \lt 0.}$ ${f}$ has a minimum value at ${x = 0.}$ ${f(x)}$ becomes unbounded positive as ${x}$ becomes unbounded positive or negative. 
+
+#### Even Power Functions
 The graphs of ${y = x^{2n + 2},}$ where ${n \in \natnums}$ (e.g., ${y = x^2,}$ ${y = x^4,}$ ${y = x^6,}$ etc.) look similar to one another. For ${-1 \leq x \leq 1,}$ the higher the exponent, the flatter the graph is along the ${x}$-axis. This follows from the fact that, where ${-1 \leq x \leq 1,}$ ${\lvert x \rvert \implies \ldots \lt x^6 \lt x^4 \lt x^2 \lt 1.}$ 
 
 import {Pow2FuncLab} from "@/components/Fig";
@@ -513,7 +548,17 @@ $$
 
 The graph of the cubic function ${f(x) = x^3}$ is concave when ${x \lt 0}$ and convex when ${x \gt 0.}$ Examining the behavior of ${f(x) = x^3,}$ we see that ${f}$ is an increasing odd function.
 
-#### Natural Odd Power Functions
+#### The Cube Function
+
+> __*definition*__. The cube function ${f}$ is defined as
+>
+> $$
+>  f(x) = x^3.
+> $$
+
+Some properties of the cube function ${f:}$ ${f}$ is an odd function; its graph is symmetric about the origin. ${f}$ is an increasing function for all real numbers. ${f}$ has no maximum or minimum. ${f(x)}$ becomes unbounded positive as ${x}$ becomes unbounded positive. ${f(x)}$ becomes unbounded negative as ${x}$ becomes unbounded negative.
+
+#### Odd Power Functions
 The graphs of ${y = x^{2n + 3},}$ ${n \in \natnums}$ (e.g., ${y = x^3,}$ ${y = x^5,}$ ${y = x^7,}$ etc.) look similar to one another. For ${-1 \leq x \leq 1,}$ the higher the exponent, the flatter the graph is to the ${x}$-axis, since
 
 $$
@@ -526,7 +571,72 @@ $$
   \lvert x \rvert \gt 1 \implies \ldots \gt \lvert x^7 \rvert \gt \lvert x^5 \rvert \gt \lvert x^3 \rvert \gt 1.
 $$
 
+### Polynomial Functions
 
+> __*definition*__. A polynomial function ${f}$ is a function of the form
+>
+> $$
+>  f(x) = a_n x^n + a_{n-1} x^{n-1} + \ldots + a_1 x + a_0,
+> $$
+>
+> where ${n \in \natnums}$ and each ${a_i}$ is a constant. If ${a_n \neq 0,}$ the _degree_ of the polynomial function is ${n.}$
+
+Functions of the form ${y = x^n}$ with ${n \in \natnums}$ (e.g., the square and cubic functions) are called _power functions_. They are the simplest polynomial functions, and can be interpreted as the building blocks of more complex polynomial functions.
+
+#### Graphs of Polynomial Functions
+Suppose ${f}$ is a polynomial function. If ${\deg(u) = 0}$ or ${\deg(u) = 1,}$ then the graph of ${f}$ is a line. If ${\deg(u) \geq 2,}$ then the graph of ${f}$ is an unbroken smooth curve. The graph of a polynomial function of degree ${n}$ has at most ${n - 1}$ turning points. Regardless of the degree, as ${\lvert x \rvert}$ gets very large, ${\lvert y \rvert}$ grows very large (except, of course, for the constant function). The following theorem, stated informally, is often helpful for getting a rough idea of a given polynomial's behavior.
+
+> __*theorem*__. Suppose ${f}$ is a polynomial function of the form
+>
+> $$
+>  f(x) = a_n x^n + a_{n-1} x^{n-1} + \ldots + a_1 x + a_0
+> $$
+>
+> with ${a_n \neq 0.}$ Then
+>
+> $$
+>  f(x) \approx a_n x^n
+> $$
+>
+> when ${\lvert x \rvert}$ is very large.
+
+### Rational Functions
+
+> __*definition*__. A rational function ${r}$ is a function of the form
+>
+> $$
+>  r(x) = \dfrac{f(x)}{g(x)},
+> $$
+>
+> where ${f}$ and ${g}$ are [polynomial functions](#polynomial-functions).
+
+The graphs of rational functions differ from that of polynomial functions significantly because they employ the operation of _division_. That operation, as we all know, has a strict restriction: We cannot divide by ${0.}$ To illustrate, consider the graph of ${f(x) = 1/x}$ (drag the slider to change the ${x}$ value of the point on the graph).
+
+import {Rat1} from "@/components/Fig";
+
+<Rat1/>
+
+Notice that the graph comprises two separate curves, rather than the single continuous curve we see with polynomials. We call these curves the _branches_ or _arms_ of the rational function's graphs. The function ${f(x) = 1/x}$ has the following properties:
+
+1. ${f}$ is an odd function; its graph is symmetric about the origin.
+2. ${f}$ is decreasing for ${x \lt 0}$ and for ${x \gt 0.}$ 
+3. ${f}$ has no maximum or minimum.
+4. ${f(x)}$ approaches zero from above as ${x}$ becomes unbounded positive and from below as ${x}$ becomes unbounded negative.
+5. ${f(x)}$ becomes unbounded negative as ${x}$ approaches zero from the left and unbounded positive as ${x}$ approaches zero from the right. 
+
+Now consider the function ${g(x) = \dfrac{1}{x^2}.}$ This function has the following plot:
+
+import {Rat2} from "@/components/Fig"
+
+<Rat2/>
+
+Some properties of the graph of ${g(x) = \dfrac{1}{x^2}:}$
+
+1. ${g}$ is an even function; its graph is symmetric about the ${y}$-axis.
+2. ${g}$ is increasing on ${(-\infty, 0)}$ and decreasing on ${(0, \infty).}$
+3. ${g}$ has no maximum or minimum.
+4. ${g(x)}$ approaches zero from above as ${x}$ becomes unbounded positive or negative.
+5. ${g(x)}$ becomes unbounded positive as ${x}$ approaches zero from the left or right.
 
 export default function MDXPage({ children }) {
     return <MdxLayout>{children}</MdxLayout>

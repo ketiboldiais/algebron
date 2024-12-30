@@ -46,6 +46,7 @@ import {
   quad,
   curveBlob,
   Function3D,
+  isSafeNumber,
 } from "@/algebron/main";
 
 import {
@@ -65,28 +66,26 @@ import { Canvas, useThree } from "@react-three/fiber";
 import { AxesHelper, DoubleSide, GridHelper, Vector3 } from "three";
 
 type AxisSpec = {
-  on: 'x' | 'y',
-  domain: [number, number],
-  range: [number, number],
-  hideTicks?: boolean,
-}
+  on: "x" | "y";
+  domain: [number, number];
+  range: [number, number];
+  hideTicks?: boolean;
+};
 
 const axis = (spec: AxisSpec) => {
-  const out = spec.on === 'x'
-    ? haxis(spec.domain, 1)
-    : vaxis(spec.range, 1);
-  out.stroke('#B2BEB5');
+  const out = spec.on === "x" ? haxis(spec.domain, 1) : vaxis(spec.range, 1);
+  out.stroke("#B2BEB5");
   if (!spec.hideTicks) {
-    if (spec.on === 'x') {
-      out.ticks(t => {
+    if (spec.on === "x") {
+      out.ticks((t) => {
         t.label.dy(15);
         return t;
-      })
+      });
     } else {
-      out.ticks(t => {
+      out.ticks((t) => {
         t.label.dy(5).dx(15);
         return t;
-      })
+      });
     }
   }
   out.done();
@@ -319,8 +318,8 @@ export const Tex = ({ content, block, style }: TexProps) => {
 export const LA1 = () => {
   const D = tuple(-8, 8);
   const R = tuple(-8, 8);
-  const xAxis = axis({on: 'x', domain: D, range: R});
-  const yAxis = axis({on: 'y', domain: D, range: R});
+  const xAxis = axis({ on: "x", domain: D, range: R });
+  const yAxis = axis({ on: "y", domain: D, range: R });
   const j = vector([3, 3]);
   const k = vector([4, 1]);
   const n = j.add(k);
@@ -345,8 +344,8 @@ export const LA1 = () => {
 export const LA2 = () => {
   const D = tuple(-3, 8);
   const R = tuple(-3, 8);
-  const xAxis = axis({on: 'x', domain: D, range: R});
-  const yAxis = axis({on: 'y', domain: D, range: R});
+  const xAxis = axis({ on: "x", domain: D, range: R });
+  const yAxis = axis({ on: "y", domain: D, range: R });
   const d = svg([
     grid(D, R).done(),
     cplot("fn f(x) = 3x^2 + 4x - 1", D, R).stroke("red").done(),
@@ -370,8 +369,8 @@ export const LA2 = () => {
 export const LA3 = () => {
   const D = tuple(-8, 8);
   const R = tuple(-8, 8);
-  const xAxis = axis({on: 'x', domain: D, range: R});
-  const yAxis = axis({on: 'y', domain: D, range: R});
+  const xAxis = axis({ on: "x", domain: D, range: R });
+  const yAxis = axis({ on: "y", domain: D, range: R });
   const j = vector([3, 3]);
   const n = j.mul(2);
   const d = svg([
@@ -393,8 +392,8 @@ export const LA3 = () => {
 export const LA4 = () => {
   const D = tuple(-8, 8);
   const R = tuple(-8, 8);
-  const xAxis = axis({on: 'x', domain: D, range: R});
-  const yAxis = axis({on: 'y', domain: D, range: R});
+  const xAxis = axis({ on: "x", domain: D, range: R });
+  const yAxis = axis({ on: "y", domain: D, range: R });
   const d = svg([
     grid(D, R).done(),
     xAxis,
@@ -428,8 +427,8 @@ export const LA4 = () => {
 export const LA5 = () => {
   const D = tuple(-2, 5);
   const R = tuple(-2, 5);
-  const xAxis = axis({on: 'x', domain: D, range: R});
-  const yAxis = axis({on: 'y', domain: D, range: R});
+  const xAxis = axis({ on: "x", domain: D, range: R });
+  const yAxis = axis({ on: "y", domain: D, range: R });
   const d = svg([
     xAxis,
     yAxis,
@@ -443,16 +442,18 @@ export const LA5 = () => {
   return <Fig data={d} width={50} />;
 };
 
-
 export const CoincidentLines = () => {
   const D = tuple(-10, 10);
   const R = tuple(-10, 10);
-  const xAxis = axis({on: 'x', domain: D, range: R, hideTicks: true});
-  const yAxis = axis({on: 'y', domain: D, range: R, hideTicks: true});
+  const xAxis = axis({ on: "x", domain: D, range: R, hideTicks: true });
+  const yAxis = axis({ on: "y", domain: D, range: R, hideTicks: true });
   const d = svg([
     xAxis,
     yAxis,
-    cplot("fn f(x) = (1 - 2x)/3", [-9.5,9.5], R).stroke("red").strokeWidth(3).done(),
+    cplot("fn f(x) = (1 - 2x)/3", [-9.5, 9.5], R)
+      .stroke("red")
+      .strokeWidth(3)
+      .done(),
     cplot("fn g(x) = (2 - 4x)/6", D, R).stroke("blue").strokeWidth(1).done(),
   ])
     .dimensions(400, 400)
@@ -465,8 +466,8 @@ export const CoincidentLines = () => {
 export const ParallelLines = () => {
   const D = tuple(-10, 10);
   const R = tuple(-10, 10);
-  const xAxis = axis({on: 'x', domain: D, range: R, hideTicks: true});
-  const yAxis = axis({on: 'y', domain: D, range: R, hideTicks: true});
+  const xAxis = axis({ on: "x", domain: D, range: R, hideTicks: true });
+  const yAxis = axis({ on: "y", domain: D, range: R, hideTicks: true });
   const d = svg([
     xAxis,
     yAxis,
@@ -483,8 +484,8 @@ export const ParallelLines = () => {
 export const IntersectingLines = () => {
   const D = tuple(-10, 10);
   const R = tuple(-10, 10);
-  const xAxis = axis({on: 'x', domain: D, range: R, hideTicks: true});
-  const yAxis = axis({on: 'y', domain: D, range: R, hideTicks: true});
+  const xAxis = axis({ on: "x", domain: D, range: R, hideTicks: true });
+  const yAxis = axis({ on: "y", domain: D, range: R, hideTicks: true });
   const d = svg([
     xAxis,
     yAxis,
@@ -561,7 +562,7 @@ export function PLOT3D({ data }: Plot3DProps) {
           <primitive
             object={new GridHelper(10, 10, d.$gridColor, d.$gridColor)}
           />
-          {d.$compiledFunctions.map(f => (
+          {d.$compiledFunctions.map((f) => (
             <Plot3DPath key={`${f.$zFn}`} zfn={f} />
           ))}
         </Canvas>
@@ -581,67 +582,84 @@ export function Plot3DDemo() {
 
 export const MultiPlot3DDemo = () => {
   const d = plot3D([
-    'fn z(x,y) = 5 + 2x + 3y',
-    'fn h(x,y) = 2 + 2x + 3y',
-    'fn h(x,y) = -3 + 2x + 3y',
-  ]).xDomain([-1,1]).yDomain([-1,1]).scale(0.8).done()
-  return <PLOT3D data={d}/>
-}
-
+    "fn z(x,y) = 5 + 2x + 3y",
+    "fn h(x,y) = 2 + 2x + 3y",
+    "fn h(x,y) = -3 + 2x + 3y",
+  ])
+    .xDomain([-1, 1])
+    .yDomain([-1, 1])
+    .scale(0.8)
+    .done();
+  return <PLOT3D data={d} />;
+};
 
 export const ParallelPlanes = () => {
   const d = plot3D([
-    'fn z(x,y) = 5 + 2x + 3y',
-    'fn h(x,y) = 2 + 2x + 3y',
-    'fn h(x,y) = -3 + 2x + 3y',
-  ]).cameraPosition([-7,12,12]).xDomain([-1,1]).yDomain([-1,1]).scale(0.8).done()
-  return <PLOT3D data={d}/>
-}
-
+    "fn z(x,y) = 5 + 2x + 3y",
+    "fn h(x,y) = 2 + 2x + 3y",
+    "fn h(x,y) = -3 + 2x + 3y",
+  ])
+    .cameraPosition([-7, 12, 12])
+    .xDomain([-1, 1])
+    .yDomain([-1, 1])
+    .scale(0.8)
+    .done();
+  return <PLOT3D data={d} />;
+};
 
 export const PlanesDemo2 = () => {
   const d = plot3D([
-    'fn a(x,y) = 2 - x - 2y',
-    'fn b(x,y) = -0.25 - x - 2y',
-    'fn c(x,y) = 1 - 2x + y',
-  ]).xDomain([-1,1]).yDomain([-1,1]).scale(0.8).done()
-  return <PLOT3D data={d}/>
-}
-
+    "fn a(x,y) = 2 - x - 2y",
+    "fn b(x,y) = -0.25 - x - 2y",
+    "fn c(x,y) = 1 - 2x + y",
+  ])
+    .xDomain([-1, 1])
+    .yDomain([-1, 1])
+    .scale(0.8)
+    .done();
+  return <PLOT3D data={d} />;
+};
 
 export const PlanesDemo3 = () => {
-  const d = plot3D([
-    'fn a(x,y) = 2 - x - 2y',
-    'fn b(x,y) = 1 - 2x + y',
-  ]).xDomain([-1,1]).yDomain([-1,1]).scale(0.8).done()
-  return <PLOT3D data={d}/>
-}
-
+  const d = plot3D(["fn a(x,y) = 2 - x - 2y", "fn b(x,y) = 1 - 2x + y"])
+    .xDomain([-1, 1])
+    .yDomain([-1, 1])
+    .scale(0.8)
+    .done();
+  return <PLOT3D data={d} />;
+};
 
 export const PlanesDemo4 = () => {
   const d = plot3D([
-    'fn a(x,y) = (3x + y)/(-2)',
-    'fn b(x,y) = (1 - (-4x + y))/(-3)',
-    'fn c(x,y) = 1 + x - y',
-  ]).xDomain([-2,2]).yDomain([-2,2]).scale(0.8).done()
-  return <PLOT3D data={d}/>
-}
-
+    "fn a(x,y) = (3x + y)/(-2)",
+    "fn b(x,y) = (1 - (-4x + y))/(-3)",
+    "fn c(x,y) = 1 + x - y",
+  ])
+    .xDomain([-2, 2])
+    .yDomain([-2, 2])
+    .scale(0.8)
+    .done();
+  return <PLOT3D data={d} />;
+};
 
 export const EchelonPlanes = () => {
   const d = plot3D([
-    'fn a(x,y) = (9 - x - y)/2',
-    'fn b(x,y) = (1 - 2x - 4y)/(-3)',
-    'fn c(x,y) = (3x + 6y)/5',
-  ]).xDomain([-3,3]).yDomain([-3,3]).scale(1).done()
-  return <PLOT3D data={d}/>
-}
+    "fn a(x,y) = (9 - x - y)/2",
+    "fn b(x,y) = (1 - 2x - 4y)/(-3)",
+    "fn c(x,y) = (3x + 6y)/5",
+  ])
+    .xDomain([-3, 3])
+    .yDomain([-3, 3])
+    .scale(1)
+    .done();
+  return <PLOT3D data={d} />;
+};
 
 export const Calc1 = () => {
   const D = tuple(-5, 5);
   const R = tuple(-5, 5);
-  const xAxis = axis({on: 'x', domain: D, range: R});
-  const yAxis = axis({on: 'y', domain: D, range: R});
+  const xAxis = axis({ on: "x", domain: D, range: R });
+  const yAxis = axis({ on: "y", domain: D, range: R });
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const xs = range(-5, 5, 0.5).map((_) => randInt(-4, 4));
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -675,13 +693,11 @@ export const Calc1 = () => {
   return <Fig data={d} width={45} />;
 };
 
-
-
 export const DistanceBetweenPoints = () => {
   const D = tuple(-5, 5);
   const R = tuple(-5, 5);
-  const xAxis = axis({on: 'x', domain: D, range: R});
-  const yAxis = axis({on: 'y', domain: D, range: R});
+  const xAxis = axis({ on: "x", domain: D, range: R });
+  const yAxis = axis({ on: "y", domain: D, range: R });
   const d = svg([
     grid(D, R).done(),
     xAxis,
@@ -700,8 +716,8 @@ export const DistanceBetweenPoints = () => {
 export const MidpointFig = () => {
   const D = tuple(-5, 5);
   const R = tuple(-5, 5);
-  const xAxis = axis({on: 'x', domain: D, range: R});
-  const yAxis = axis({on: 'y', domain: D, range: R});
+  const xAxis = axis({ on: "x", domain: D, range: R });
+  const yAxis = axis({ on: "y", domain: D, range: R });
   const d = svg([
     grid(D, R).done(),
     xAxis,
@@ -721,8 +737,8 @@ export const MidpointFig = () => {
 export const DistanceBetweenPoints2 = () => {
   const D = tuple(-5, 5);
   const R = tuple(-5, 5);
-  const xAxis = axis({on: 'x', domain: D, range: R});
-  const yAxis = axis({on: 'y', domain: D, range: R});
+  const xAxis = axis({ on: "x", domain: D, range: R });
+  const yAxis = axis({ on: "y", domain: D, range: R });
   const d = svg([
     grid(D, R).done(),
     xAxis,
@@ -787,8 +803,8 @@ export const TreeTest = () => {
 export const PlotTest = () => {
   const D = tuple(-10, 10);
   const R = tuple(-10, 10);
-  const xAxis = axis({on: 'x', domain: D, range: R});
-  const yAxis = axis({on: 'y', domain: D, range: R});
+  const xAxis = axis({ on: "x", domain: D, range: R });
+  const yAxis = axis({ on: "y", domain: D, range: R });
   const d = svg([
     xAxis,
     yAxis,
@@ -875,8 +891,8 @@ export const AffineFunctionLab = () => {
   const D = tuple(-10, 10);
   const R = tuple(-10, 10);
   const RI = tuple(0, 100);
-  const xAxis = axis({on: 'x', domain: D, range: R});
-  const yAxis = axis({on: 'y', domain: D, range: R});
+  const xAxis = axis({ on: "x", domain: D, range: R });
+  const yAxis = axis({ on: "y", domain: D, range: R });
   const [AValue, setAValue] = useState(2);
   const [BValue, setBValue] = useState(1);
   const [fn, setFn] = useState(`f(x) = ${AValue}x + ${BValue}`);
@@ -958,8 +974,8 @@ export const QuadraticFunctionLab = () => {
   const D = tuple(-10, 10);
   const R = tuple(-10, 10);
   const RI = tuple(0, 100);
-  const xAxis = axis({on: 'x', domain: D, range: R});
-  const yAxis = axis({on: 'y', domain: D, range: R});
+  const xAxis = axis({ on: "x", domain: D, range: R });
+  const yAxis = axis({ on: "y", domain: D, range: R });
 
   const [AValue, setAValue] = useState(2);
   const [BValue, setBValue] = useState(-2);
@@ -1217,6 +1233,79 @@ export const Pow2FuncLab = () => {
   );
 };
 
+export const Rat1 = () => {
+  const domain = tuple(-10, 10);
+  const range = tuple(-10, 10);
+  const c = cplot("fn f(x) = 1/x", domain, range)
+    .stroke("yellowgreen")
+    .strokeWidth(1.5)
+    .done();
+  const xInterp = interpolator([0, 100], domain);
+  const [xValue, setXValue] = useState(-10);
+  const [yValue, setYValue] = useState(0);
+  const handleXValueChange = (event: ChangeEvent<HTMLInputElement>) => {
+    event.preventDefault();
+    const value = Number.parseFloat(event.target.value);
+    setXValue(xInterp(value));
+  };
+  useEffect(() => {
+    if (c.$compiledFunction) {
+      const y = c.$compiledFunction.call(c.$engine.compiler, [xValue]);
+      if (isSafeNumber(y)) {
+        setYValue(y);
+      }
+    }
+  }, [xValue, c.$compiledFunction, c.$engine]);
+  const d = svg([
+    cplot("fn f(x) = 1/x", domain, range)
+      .stroke("yellowgreen")
+      .strokeWidth(1.5)
+      .done(),
+    circle(5, [xValue, yValue]).stroke("olivedrab").fill("yellowgreen"),
+    text(`(${xValue.toPrecision(2)}, ${yValue.toPrecision(2)})`)
+      .position(xValue, yValue)
+      .dy(-10)
+      .fill("slategrey"),
+    axis({ on: "x", domain, range }).done(),
+    axis({ on: "y", domain, range }).done(),
+  ])
+    .domain(domain)
+    .range(range)
+    .done();
+  return (
+    <div>
+      <Fig data={d} width={70} />
+      <div className="flex items-center">
+        <input
+          step={0.1}
+          className="mr-5"
+          type="range"
+          onChange={handleXValueChange}
+        />
+        <Tex content={`x = ${xValue.toPrecision(2)}`} block />
+      </div>
+    </div>
+  );
+};
+
+export const Rat2 = () => {
+  const domain = tuple(-10, 10);
+  const range = tuple(-3, 10);
+  const d = svg([
+    cplot("fn f(x) = 1/x^2", domain, range)
+      .samples(600)
+      .stroke("violet")
+      .strokeWidth(1.5)
+      .done(),
+    axis({ on: "x", domain, range }),
+    axis({ on: "y", domain, range }),
+  ])
+    .domain(domain)
+    .range(range)
+    .done();
+  return <Fig data={d} width={60} />;
+};
+
 export const SubsetFig = () => {
   const D = tuple(-7, 7);
   const R = tuple(-7, 7);
@@ -1325,12 +1414,9 @@ export const FnDefFig = () => {
 export const LinearAxesTest = () => {
   const D = tuple(-10, 10);
   const R = tuple(-10, 10);
-  const xAxis = axis({on: 'x', domain: D, range: R});
-  const yAxis = axis({on: 'y', domain: D, range: R});
-  const d = svg([xAxis, yAxis])
-    .domain(D)
-    .range(R)
-    .done();
+  const xAxis = axis({ on: "x", domain: D, range: R });
+  const yAxis = axis({ on: "y", domain: D, range: R });
+  const d = svg([xAxis, yAxis]).domain(D).range(R).done();
   return <Fig data={d} width={70} />;
 };
 
@@ -1339,8 +1425,8 @@ export const Figy = () => {
   const R = tuple(-10, 10);
   const d = svg([
     grid(D, R).done(),
-    axis({on: 'x', domain: D, range: R}),
-    axis({on: 'y', domain: D, range: R}),
+    axis({ on: "x", domain: D, range: R }),
+    axis({ on: "y", domain: D, range: R }),
     circle(50, [0, 0]).stroke("olivedrab").fill("yellowgreen").fillOpacity(0.4),
   ])
     .domain(D)

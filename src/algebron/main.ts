@@ -1252,6 +1252,16 @@ function isNumber(u: any): u is number {
   return typeof u === "number";
 }
 
+export function isSafeNumber(x: any): x is number {
+  return (
+    typeof x === "number" &&
+    !Number.isNaN(x) &&
+    Number.isFinite(x) &&
+    x < Number.MAX_SAFE_INTEGER &&
+    x > Number.MIN_SAFE_INTEGER
+  );
+}
+
 /**
  * Returns true if the given value is a
  * JavaScript string.
@@ -3287,22 +3297,26 @@ class CartesianPlot extends GroupObj {
     return this;
   }
 
+  $compiledFunction: Fn | null = null;
+  $engine = engine();
+
   done() {
     const out: PathCommand[] = [];
     const xmin = this.$xPlotDomain[0];
     const xmax = this.$xPlotDomain[1];
     const ymin = this.$yPlotRange[0];
     const ymax = this.$yPlotRange[1];
-    const e = engine();
-    const fn = e.compile(this.$fn);
+    // const e = engine();
+    const fn = this.$engine.compile(this.$fn);
     if (!(fn instanceof Fn)) {
       console.log(strof(fn));
       return this;
     }
+    this.$compiledFunction = fn;
     const dataset: [number, number][] = [];
     for (let i = -this.$samples; i < this.$samples; i++) {
       const x = (i / this.$samples) * xmax;
-      const _y = fn.call(e.compiler, [x]);
+      const _y = fn.call(this.$engine.compiler, [x]);
       if (typeof _y !== "number") continue;
       const y = _y;
       const point: [number, number] = [x, y];
@@ -3440,9 +3454,9 @@ export class Function3D {
 
 /**
  * Returns a new Function3D.
- * @param fn - A string corresponding to the function. 
+ * @param fn - A string corresponding to the function.
  * E.g., `fn z(x,y) = x^2 + y^2`. The function must
- * be binary (taking two number arguments) and return a 
+ * be binary (taking two number arguments) and return a
  * single number.
  * @param xDomain - The domain of possible x-values. The
  * domain must be specified as a pair `[a,b]`, where `a`
@@ -5868,6 +5882,7 @@ function reverse<T>(list: T[]) {
 }
 
 enum expression_type {
+  complex,
   relation,
   list,
   int,
@@ -6241,23 +6256,25 @@ class Boolean extends MathObj {
     this.bool = value;
   }
 }
+
 function bool(value: boolean) {
   return new Boolean(value);
 }
+
 function isBool(u: MathObj): u is Boolean {
   return u.kind() === expression_type.boolean;
 }
 
-abstract class Numeric extends MathObj {
+abstract class Real extends MathObj {
   abstract value(): number;
-  abstract negate(): Numeric;
-  abstract abs(): Numeric;
+  abstract negate(): Real;
+  abstract abs(): Real;
   isZero() {
     return this.value() === 0;
   }
 }
 
-class Int extends Numeric {
+class Int extends Real {
   precedence(): bp {
     return bp.atom;
   }
@@ -6322,14 +6339,14 @@ function isInt(u: MathObj): u is Int {
   return u.kind() === expression_type.int;
 }
 
-class Float64 extends Numeric {
+class Float64 extends Real {
   precedence(): bp {
     return bp.atom;
   }
   copy(): Float64 {
     return float64(this.float);
   }
-  abs(): Numeric {
+  abs(): Real {
     return float64(Math.abs(this.float));
   }
   strung(): string {
@@ -6338,7 +6355,7 @@ class Float64 extends Numeric {
   operandAt(): MathObj {
     return UNDEFINED();
   }
-  negate(): Numeric {
+  negate(): Real {
     return float64(-this.float);
   }
   operands(): MathObj[] {
@@ -6378,54 +6395,7 @@ function isFloat64(u: MathObj): u is Float64 {
   return u.kind() === expression_type.float64;
 }
 
-class Sym extends MathObj {
-  precedence(): bp {
-    return bp.atom;
-  }
-  copy(): Sym {
-    return sym(this.sym);
-  }
-  strung(): string {
-    return this.toString();
-  }
-  operandAt(): MathObj {
-    return UNDEFINED();
-  }
-  operands(): MathObj[] {
-    return [];
-  }
-  kind(): expression_type {
-    return expression_type.symbol;
-  }
-  equals(other: MathObj): boolean {
-    if (!isSym(other)) {
-      return false;
-    } else {
-      return this.sym === other.sym;
-    }
-  }
-  toString(): string {
-    return this.sym;
-  }
-  map(): this {
-    return this;
-  }
-  sym: string;
-  constructor(sym: string) {
-    super();
-    this.sym = sym;
-  }
-}
-
-function sym(str: string) {
-  return new Sym(str);
-}
-
-function isSym(u: MathObj): u is Sym {
-  return u.kind() === expression_type.symbol;
-}
-
-class Fraction extends Numeric {
+class Fraction extends Real {
   precedence(): bp {
     return bp.atom;
   }
@@ -6629,6 +6599,105 @@ function isFrac(u: MathObj): u is Fraction {
   return u instanceof MathObj && u.kind() === expression_type.fraction;
 }
 
+class Complex extends MathObj {
+  precedence(): bp {
+    return bp.atom;
+  }
+  operands(): MathObj[] {
+    return [];
+  }
+  operandAt(): MathObj {
+    return UNDEFINED();
+  }
+  copy(): Complex {
+    const r = this.real.copy() as Real;
+    return new Complex(r);
+  }
+  kind(): expression_type {
+    return expression_type.complex;
+  }
+  equals(other: MathObj): boolean {
+    if (!(other instanceof Complex)) {
+      return false;
+    } else {
+      return this.real.equals(other.real);
+    }
+  }
+  toString(): string {
+    return `${this.real.toString()}i`;
+  }
+  strung(): string {
+    return this.toString();
+  }
+  map(): MathObj {
+    return this;
+  }
+  real: Real;
+  imaginary: "i" = "i" as const;
+  constructor(real: Real) {
+    super();
+    this.real = real;
+  }
+}
+
+export function complex(value: Real | number) {
+  if (isSafeNumber(value)) {
+    if (Number.isInteger(value)) {
+      return complex(int(value));
+    } else {
+      return complex(float64(value));
+    }
+  }
+  return new Complex(value);
+}
+
+class Sym extends MathObj {
+  precedence(): bp {
+    return bp.atom;
+  }
+  copy(): Sym {
+    return sym(this.sym);
+  }
+  strung(): string {
+    return this.toString();
+  }
+  operandAt(): MathObj {
+    return UNDEFINED();
+  }
+  operands(): MathObj[] {
+    return [];
+  }
+  kind(): expression_type {
+    return expression_type.symbol;
+  }
+  equals(other: MathObj): boolean {
+    if (!isSym(other)) {
+      return false;
+    } else {
+      return this.sym === other.sym;
+    }
+  }
+  toString(): string {
+    return this.sym;
+  }
+  map(): this {
+    return this;
+  }
+  sym: string;
+  constructor(sym: string) {
+    super();
+    this.sym = sym;
+  }
+}
+
+function sym(str: string) {
+  return new Sym(str);
+}
+
+function isSym(u: MathObj): u is Sym {
+  return u.kind() === expression_type.symbol;
+}
+
 class Sum extends MathObj {
   precedence(): bp {
     return bp.sum;
@@ -6674,7 +6743,7 @@ class Sum extends MathObj {
     let out = this.args.map((arg) => arg.toString()).join(" + ");
     if (
       this.args.length === 2 &&
-      isNum(this.args[1]) &&
+      isReal(this.args[1]) &&
       this.args[1].value() < 0
     ) {
       const left = this.args[0].toString();
@@ -6899,10 +6968,10 @@ class Power extends MathObj {
     if (!isAtom(this.exponent)) {
       right = `(${right})`;
     }
-    if (isNum(this.exponent) && this.exponent.value() < 0) {
+    if (isReal(this.exponent) && this.exponent.value() < 0) {
       right = `(${right})`;
     }
-    if (isNum(this.exponent) && this.exponent.value() < 0) {
+    if (isReal(this.exponent) && this.exponent.value() < 0) {
       return `1/${this.base.strung()}^${this.exponent.abs()}`;
     }
     const out = `${left}^${right}`;
@@ -6932,7 +7001,7 @@ class Power extends MathObj {
     if (!isAtom(this.exponent)) {
       right = `(${right})`;
     }
-    if (isNum(this.exponent) && this.exponent.value() < 0) {
+    if (isReal(this.exponent) && this.exponent.value() < 0) {
       right = `(${right})`;
     }
     const out = `${left}^${right}`;
@@ -7041,8 +7110,8 @@ function isFunc(u: MathObj): u is Func {
   return u.kind() === expression_type.call;
 }
 
-function isAtom(u: MathObj): u is Numeric | Sym {
-  return isNum(u) || isSym(u);
+function isAtom(u: MathObj): u is Real | Sym {
+  return isReal(u) || isSym(u);
 }
 
 function simplifyRationalNumber(u: MathObj) {
@@ -7066,7 +7135,7 @@ function isRational(v: MathObj): v is Rational {
   return isInt(v) || isFrac(v);
 }
 
-function isNum(v: MathObj): v is Numeric {
+function isReal(v: MathObj): v is Real {
   return isRational(v) || isFloat64(v);
 }
 
@@ -7231,7 +7300,7 @@ export function order(𝑢: MathObj | string, 𝑣: MathObj | string): boolean {
   if (isFrac(u) && isFloat64(v)) {
     return u.numerator.int / u.denominator.int < v.float;
   }
-  if (isNum(u) && isNum(v)) {
+  if (isReal(u) && isReal(v)) {
     return u.value() < v.value();
   }
   // O-2
@@ -7252,7 +7321,7 @@ export function order(𝑢: MathObj | string, 𝑣: MathObj | string): boolean {
   if (isFunc(u) && isFunc(v)) {
     return u.op === v.op ? O3(u.args, v.args) : u.op < v.op;
   }
-  if (isNum(u) && !isNum(v)) {
+  if (isReal(u) && !isReal(v)) {
     return true;
   }
   if (isProduct(u) && (isPower(v) || isSum(v) || isFunc(v) || isSym(v))) {
@@ -7294,7 +7363,7 @@ function exponent(u: MathObj) {
 
 /** Returns the term of the given math object. */
 function term(u: MathObj) {
-  if (isProduct(u) && isNum(u.args[0])) {
+  if (isProduct(u) && isReal(u.args[0])) {
     return prod(...cdr(u.args));
   }
   if (isProduct(u)) return u;
@@ -7303,7 +7372,7 @@ function term(u: MathObj) {
 
 /** Returns the constant of the given math object. */
 function constant(u: MathObj) {
-  return isProduct(u) && isNum(u.args[0]) ? u.args[0] : int(1);
+  return isProduct(u) && isReal(u.args[0]) ? u.args[0] : int(1);
 }
 
 /**
@@ -7347,15 +7416,15 @@ function simplifySumRec(elts: MathObj[]): MathObj[] {
       (isInt(elts[1]) || isFrac(elts[1]))
     ) {
       const P = simplifyRNE(sum(elts[0], elts[1]));
-      if (isNum(P) && P.value() === 0) return [];
+      if (isReal(P) && P.value() === 0) return [];
       return [P];
     }
 
-    if (isNum(elts[0]) && elts[0].value() === 0) {
+    if (isReal(elts[0]) && elts[0].value() === 0) {
       return [elts[1]];
     }
 
-    if (isNum(elts[1]) && elts[1].value() === 0) {
+    if (isReal(elts[1]) && elts[1].value() === 0) {
       return [elts[0]];
     }
 
@@ -7381,7 +7450,7 @@ function simplifySumRec(elts: MathObj[]): MathObj[] {
     if (term(p).equals(term(q))) {
       const S = simplifySum(sum(constant(p), constant(q)));
       const res = simplifyProduct(prod(term(p), S));
-      if (isNum(res) && res.value() === 0) return [];
+      if (isReal(res) && res.value() === 0) return [];
       return [res];
     }
     if (order(q, p)) return [q, p];
@@ -7444,17 +7513,17 @@ function simplifyProductRec(elts: MathObj[]): MathObj[] {
       (isInt(elts[1]) || isFrac(elts[1]))
     ) {
       const P = simplifyRNE(prod(elts[0], elts[1]));
-      if (isNum(P) && P.value() === 1) {
+      if (isReal(P) && P.value() === 1) {
         return [];
       }
       return [P];
     }
 
     // left side is 1; 1 * u = u
-    if (isNum(elts[0]) && elts[0].value() === 1) return [elts[1]];
+    if (isReal(elts[0]) && elts[0].value() === 1) return [elts[1]];
 
     // right side is 1; u * 1 = u
-    if (isNum(elts[1]) && elts[1].value() === 1) return [elts[0]];
+    if (isReal(elts[1]) && elts[1].value() === 1) return [elts[0]];
 
     // float * float
     if (isFloat64(elts[0]) && isFloat64(elts[1])) {
@@ -7483,7 +7552,7 @@ function simplifyProductRec(elts: MathObj[]): MathObj[] {
     if (base(p).equals(base(q))) {
       const S = simplifySum(sum(exponent(p), exponent(q)));
       const res = simplifyPower(pow(base(p), S));
-      if (isNum(res) && res.value() === 1) return [];
+      if (isReal(res) && res.value() === 1) return [];
       return [res];
     }
     if (order(q, p)) return [q, p];
@@ -7504,7 +7573,7 @@ function simplifyProduct(u: Product): MathObj {
       return UNDEFINED();
     }
     // SPRD-2
-    if (isNum(arg) && arg.isZero()) {
+    if (isReal(arg) && arg.isZero()) {
       return int(0);
     }
   }
@@ -7518,10 +7587,10 @@ function simplifyProduct(u: Product): MathObj {
 function simplifyPower(u: Power): MathObj {
   const v = u.base;
   const w = u.exponent;
-  if (isNum(v) && v.value() === 0) return int(0);
-  if (isNum(v) && v.value() === 1) return int(1);
-  if (isNum(w) && w.value() === 0) return int(1);
-  if (isNum(w) && w.value() === 1) return v;
+  if (isReal(v) && v.value() === 0) return int(0);
+  if (isReal(v) && v.value() === 1) return int(1);
+  if (isReal(w) && w.value() === 0) return int(1);
+  if (isReal(w) && w.value() === 1) return v;
   const n = w;
   if ((isInt(v) || isFrac(v)) && isInt(n)) {
     return simplifyRNE(pow(v, n));
@@ -7578,7 +7647,7 @@ function simplifyFunction(u: Func): MathObj {
         return x.exponent;
       }
       // ln (some number)
-      if (isNum(x)) {
+      if (isReal(x)) {
         const res = Math.log(x.value());
         if (Number.isInteger(res)) {
           return int(res);
@@ -7595,7 +7664,7 @@ function simplifyFunction(u: Func): MathObj {
     if (u.args.length === 1) {
       const x = simplify(u.args[0]);
       // sin of some number -> number
-      if (isNum(x)) {
+      if (isReal(x)) {
         const res = Math.sin(x.value());
         if (Number.isInteger(res)) {
           return int(res);
@@ -7617,7 +7686,7 @@ function simplifyFunction(u: Func): MathObj {
     if (u.args.length === 1) {
       const x = simplify(u.args[0]);
       // sin of some number -> number
-      if (isNum(x)) {
+      if (isReal(x)) {
         const res = Math.cos(x.value());
         if (Number.isInteger(res)) return int(res);
         return float64(res);
@@ -7745,7 +7814,7 @@ function freeofOne(
     typeof expression2 === "string" ? exp(expression2).obj() : expression2;
   if (u.equals(t)) {
     return false;
-  } else if (isNum(u) || isSym(u)) {
+  } else if (isReal(u) || isSym(u)) {
     return true;
   } else {
     for (let i = 0; i < u.operands().length; i++) {
@@ -8339,7 +8408,7 @@ function coefficientMonomialGPE(
       const f = coefficientMonomialGPE(u.args[i], x);
       if (!Array.isArray(f) && isUndefined(f)) {
         return UNDEFINED();
-      } else if (isNum(f[1]) && f[1].value() !== 0) {
+      } else if (isReal(f[1]) && f[1].value() !== 0) {
         m = f[1];
         c = quot(u, pow(x, m));
       }
@@ -8903,7 +8972,6 @@ abstract class Expr extends ASTNode {
     return true;
   }
 }
-
 
 /** An AST node corresponding to an indexing expression. */
 class IndexExpr extends Expr {
@@ -12101,4 +12169,3 @@ export function engine() {
     tokens,
   };
 }
-
