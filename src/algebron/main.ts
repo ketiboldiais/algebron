@@ -2277,6 +2277,66 @@ export class Path extends GraphicsAtom {
   }
 
   /**
+   *
+   * @param center The center of the circular arc segment.
+   * @param radius The radius of the circular arc segment.
+   * @param startAngle The starting angle.
+   * @param endAngle The ending angle.
+   * @param counterclockwise 0 or 1 (true = 'clockwise', false = 'counterclockwise').
+   * @returns
+   */
+  arc(
+    center: [number, number],
+    radius: number,
+    startAngle: number,
+    endAngle: number,
+    counterclockwise: 0 | 1 = 0
+  ) {
+    const [x, y] = center;
+    const r = radius;
+    const a0 = startAngle;
+    const a1 = endAngle;
+    const ccw = !!counterclockwise;
+    const tau = 2 * Math.PI;
+    const epsilon = 1e-6;
+    const tauEpsilon = tau - epsilon;
+    if (radius < 0) {
+      radius = Math.abs(radius);
+    }
+    const dx = r * Math.cos(a0);
+    const dy = r * Math.sin(a0);
+    const x0 = x + dx;
+    const y0 = y + dy;
+    const cw = 1 ^ (ccw as any as number);
+    let da = ccw ? a0 - a1 : a1 - a0;
+    if (
+      Math.abs(this.$cursor.$x - x0) > epsilon ||
+      Math.abs(this.$cursor.$y - y0) > epsilon
+    ) {
+      this.lineTo(x0, y0);
+    }
+    if (!r) {
+      return this;
+    }
+    if (da < 0) {
+      da = (da % tau) + tau;
+    }
+    if (da > tauEpsilon) {
+      this.A([x - dx, y - dy], [r, r], 0, 1, cw as 0 | 1);
+      this.A([x0, y0], [r, r], 0, 1, cw as 0 | 1);
+    } else if (da > epsilon) {
+      this.A(
+        [x + r * Math.cos(a1), y + r * Math.sin(a1)],
+        [r, r],
+        0,
+        +(da >= Math.PI) as 0 | 1,
+        cw as 0 | 1
+      );
+    }
+    return this;
+  }
+
+  /**
    * Appends a V-command to this path's command list, where
    * y is the coordinate to move vertically to.
    */

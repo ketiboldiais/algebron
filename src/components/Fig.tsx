@@ -1331,6 +1331,62 @@ export const Exp1 = () => {
   return <Fig data={d} width={60} />;
 };
 
+export const Exp2 = () => {
+  const domain = tuple(-3, 4);
+  const range = tuple(-2, 9);
+  const d = svg([
+    cplot("fn f(x) = e^x", domain, range)
+      .stroke("dodgerblue")
+      .strokeWidth(2)
+      .done(),
+    axis({ on: "x", domain, range }),
+    axis({ on: "y", domain, range }),
+  ])
+    .domain(domain)
+    .range(range)
+    .done();
+  return <Fig data={d} width={60} />;
+};
+
+export const LogFig1 = () => {
+  const domain = tuple(-1, 15);
+  const range = tuple(-2, 8);
+  const d = svg([
+    cplot("fn f(x) = log(x)", domain, range)
+      .samples(900)
+      .stroke("yellowgreen")
+      .strokeWidth(2)
+      .done(),
+    cplot("fn f(x) = lg(x)", domain, range)
+      .samples(900)
+      .stroke("salmon")
+      .strokeWidth(2)
+      .done(),
+    cplot("fn f(x) = ln(x)", domain, range)
+      .samples(900)
+      .stroke("dodgerblue")
+      .strokeWidth(2)
+      .done(),
+    axis({ on: "x", domain, range }),
+    axis({ on: "y", domain, range }),
+    text("\\ln x")
+      .latex("block")
+      .fontSize(20)
+      .position(7, 3)
+      .fill("dodgerblue"),
+    text("\\lg x").latex("block").fontSize(20).position(5, 3.5).fill("salmon"),
+    text("\\log x")
+      .latex("block")
+      .fontSize(20)
+      .position(5, 1.7)
+      .fill("yellowgreen"),
+  ])
+    .domain(domain)
+    .range(range)
+    .done();
+  return <Fig data={d} width={60} />;
+};
+
 export const SubsetFig = () => {
   const D = tuple(-7, 7);
   const R = tuple(-7, 7);
@@ -1458,6 +1514,48 @@ export const Figy = () => {
     .range(R)
     .done();
   return <Fig data={d} width={70} />;
+};
+
+export function angleMarker(
+  pt3: [number, number],
+  pt2: [number, number],
+  pt1: [number, number],
+  radius = 0.3,
+) {
+  const [pt1x, pt1y] = pt1;
+  const [pt2x, pt2y] = pt2;
+  const [pt3x, pt3y] = pt3;
+  const dx1 = pt1x - pt2x;
+  const dy1 = pt1y - pt2y;
+  const dx2 = pt3x - pt2x;
+  const dy2 = pt3y - pt2y;
+  const a1 = Math.atan2(dy1, dx1);
+  const a2 = Math.atan2(dy2, dx2);
+  // const a = ((a2 - a1) * 180 / Math.PI + 360) % 360
+  const p = path(pt2x, pt2y);
+  p.arc([pt2x, pt2y], radius, a1, a2);
+  p.Z();
+  return p;
+}
+
+export const AngleLab = () => {
+  const D = tuple(-10, 10);
+  const R = tuple(-10, 10);
+  const d = svg([
+    axis({ on: "x", domain: D, range: R }),
+    axis({ on: "y", domain: D, range: R }),
+    line([0,0], [5,0]).stroke('salmon').arrowEnd(),
+    line([0,0], [-1,5]).stroke('salmon').arrowEnd(),
+  ])
+    .domain(D)
+    .range(R)
+    .done();
+
+  return (
+    <div>
+      <Fig data={d} width={70} />
+    </div>
+  );
 };
 
 export default Fig;

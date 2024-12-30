@@ -10,7 +10,7 @@ export default function Home() {
         <div className="main-gallery">
           <Plot3DTest />
         </div>
-        <article>
+        <article className="article-main">
           <p>
             Algebron is a JavaScript math library written in TypeScript. The
             library provides:

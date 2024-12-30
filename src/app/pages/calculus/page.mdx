@@ -1,6 +1,7 @@
 import MdxLayout from "@/components/mdx-layout";
 
 # Calculus
+
 <TOC>
 
 - [Expressions](#expressions)
@@ -38,9 +39,13 @@ import MdxLayout from "@/components/mdx-layout";
   - [Rational Functions](#rational-functions)
     - [Graphs of 1/𝑥ⁿ](#graphs-of-1𝑥ⁿ)
   - [Exponential Functions](#exponential-functions)
+    - [The Exponential Function ${y = e^x}$](#the-exponential-function-y--ex)
+  - [Logarithmic Functions](#logarithmic-functions)
+    - [Logarithms](#logarithms)
+    - [Manipulating Logarithms](#manipulating-logarithms)
+    - [Logarithmic Behavior](#logarithmic-behavior)
 
 </TOC>
-
 
 ## Expressions
 
@@ -134,6 +139,7 @@ Any number that does not satisfy the definition of rational numbers is called an
 Examples of irrational numbers include ${\sqrt{2},}$ ${\pi,}$ and Euler's number ${e.}$ None of these numbers can be written as a ratio of integers.
 
 ## Relations
+
 In mathematics, a **relation** is the definition of some relationship between mathematical objects. We can relate one real to another in terms of their position on the real line. For example, viewing the real line, we can say that ${0}$ is "to the left" of ${1,}$ or, more succinctly, ${0 \lt 1.}$ We can talk about the reals in terms of their relations to other reals because of the fact that the real numbers are _ordered_: ${2}$ comes after ${1,}$ ${3}$ comes after ${2,}$ ${0}$ comes before ${1,}$ ${\pi}$ comes before ${4,}$ etc.
 
 | Notation     | Definition                               | Example                     |
@@ -144,6 +150,7 @@ In mathematics, a **relation** is the definition of some relationship between ma
 | ${a \geq b}$ | ${a}$ is greater than or equal to ${b.}$ | ${1 \gt 1, 1 \gt 0.}$       |
 
 ## Intervals
+
 When we work with ${\reals,}$ we often want to talk about sections of the real line (or, in terms of set theory, subsets of ${\reals}$). These sections, or subsets, can be defined in terms of intervals.
 
 > **Definition.** The open interval ${(a,b)}$ consists of all reals ${x}$ such that ${a \lt x \lt b.}$ The closed interval ${[a,b]}$ consists of all reals ${x}$ such that ${a \leq x \leq b.}$ The left-inclusive interval ${[a,b)}$ consists of all reals ${x}$ such that ${a \leq x \lt b.}$ The right-inclusive interval ${(a,b]}$ consits of all reals ${x}$ such that ${a \lt x \leq b.}$
@@ -173,9 +180,9 @@ For some problems, we want to think about how far a given real number ${x}$ is f
 
 **_example_**. ${|6 - 7| = |-1| = 1.}$
 
-Given that real numbers can be interpreted as points on a number line, the distance between two real numbers is the absolute value of their difference. 
+Given that real numbers can be interpreted as points on a number line, the distance between two real numbers is the absolute value of their difference.
 
-> __Property.__ Given ${a, b \in \R,}$ the distance between ${a}$ and ${b}$ is ${\vert a - b \vert = \vert b - a \vert.}$
+> **Property.** Given ${a, b \in \R,}$ the distance between ${a}$ and ${b}$ is ${\vert a - b \vert = \vert b - a \vert.}$
 
 Below are some additional properties of the absolute value.
 
@@ -191,18 +198,19 @@ Below are some additional properties of the absolute value.
 | ${\vert a + b \vert \leq \vert a \vert + \vert b \vert}$                       | This is a rather famous property, called the **triangle inequality**. |
 
 ## Equations
+
 We now examine equations. Recall that an equation is a special type of mathematical statement. Specifically, one that claims: "The expression on the left of the "${=}$" is the same, in every way, as the expression on the right of the "${=.}$"
 
-__*example*__. ${a = b}$ means "${a}$ is the same, in every way, as ${b.}$" 
+**_example_**. ${a = b}$ means "${a}$ is the same, in every way, as ${b.}$"
 
-When equations contain variables, they belong to a type of mathematical statement called an __open sentence__ &mdash; a statement that contains one or more variables, and becomes a proposition when each variable is substituted with an element from the expression's domain. For example, the equation ${a = b}$ is true when ${a = 1}$ and ${b = 1,}$ but false when ${a = 0}$ and ${b = 1.}$ 
+When equations contain variables, they belong to a type of mathematical statement called an **open sentence** &mdash; a statement that contains one or more variables, and becomes a proposition when each variable is substituted with an element from the expression's domain. For example, the equation ${a = b}$ is true when ${a = 1}$ and ${b = 1,}$ but false when ${a = 0}$ and ${b = 1.}$
 
-When a value is substituted for a variable in an equation such that the equation is true, we say that the value __satisfies__ the equation, and that the value is a __solution__ to the equation. When two equations have the exact same set of solutions, we say that the two equations are __equivalent__. A common procedure in algebra is solving for a given variable. This is done by writing a sequence of equivalent equations until we get to the form ${\text{variable} = \text{constant}}$ (e.g., ${x = 1}$ or ${z = \pi}$).
+When a value is substituted for a variable in an equation such that the equation is true, we say that the value **satisfies** the equation, and that the value is a **solution** to the equation. When two equations have the exact same set of solutions, we say that the two equations are **equivalent**. A common procedure in algebra is solving for a given variable. This is done by writing a sequence of equivalent equations until we get to the form ${\text{variable} = \text{constant}}$ (e.g., ${x = 1}$ or ${z = \pi}$).
 
 The following principles apply to generating equivalent equations:
 
-1. Adding or subtracting the same quantity on both sides of an equation produces an equivalent equation. 
-2. Multiplying or dividing both sides of an equation by the same nonzero quantity produces an equivalent equation. 
+1. Adding or subtracting the same quantity on both sides of an equation produces an equivalent equation.
+2. Multiplying or dividing both sides of an equation by the same nonzero quantity produces an equivalent equation.
 3. Simplifying an expression on either side of an equation produces an equivalent equation.
 
 Equations &mdash; and more generally, expressions &mdash; are simply succinct ways of expressing sentences that would otherwise be too cumbersome to write by prose. For example, consider the following sentence:
@@ -216,18 +224,20 @@ $$
 $$
 
 ## Families of Expressions
-When we examine the variety of expressions found in mathematics, we find that certain groups of expressions share similiar patterns and properties. To try and organize this vast variety, we will organize these expressions into _families of expressions_, or _kinds of expressions_. 
+
+When we examine the variety of expressions found in mathematics, we find that certain groups of expressions share similiar patterns and properties. To try and organize this vast variety, we will organize these expressions into _families of expressions_, or _kinds of expressions_.
 
 ### Linear Expressions
-The simplest family of expressions is the __linear expression in one variable__. As simple as such expressions are, many real world problems can be reduced to linear expressions, or more specifically, linear equations.
+
+The simplest family of expressions is the **linear expression in one variable**. As simple as such expressions are, many real world problems can be reduced to linear expressions, or more specifically, linear equations.
 
 <aside>
 
-Complex problems can be reduced to _systems of linear equations_. Analyzing these systems is a key topic in the study of [linear algebra](/pages/linear-algebra). 
+Complex problems can be reduced to _systems of linear equations_. Analyzing these systems is a key topic in the study of [linear algebra](/pages/linear-algebra).
 
 </aside>
 
-> __Definition.__ A linear expression in one variable is an expression that can be written in the form 
+> **Definition.** A linear expression in one variable is an expression that can be written in the form
 >
 > $$
 >    ax + b,
@@ -235,12 +245,13 @@ Complex problems can be reduced to _systems of linear equations_. Analyzing thes
 >
 > where ${a}$ and ${b}$ are real numbers and ${a \neq 0.}$
 
-In the definition above, we call the expressions ${ax}$ and ${b}$ the __terms__ &mdash; or, more generally, the __subexpressions__ &mdash; of the linear expression.
+In the definition above, we call the expressions ${ax}$ and ${b}$ the **terms** &mdash; or, more generally, the **subexpressions** &mdash; of the linear expression.
 
 ### Monomial Expressions
-The terms of a linear expression are themselves a special type of expression called __monomial expressions__. The simplest monomial expression is the __univariate monomial expression__, or the __monomial expression in one variable__.
 
-> __Definition.__ Let ${u}$ be an expression. We say that ${u}$ is a _univariate monomial expression_ in a single variable ${x}$ if ${u}$ satisfies one of the following rules:
+The terms of a linear expression are themselves a special type of expression called **monomial expressions**. The simplest monomial expression is the **univariate monomial expression**, or the **monomial expression in one variable**.
+
+> **Definition.** Let ${u}$ be an expression. We say that ${u}$ is a _univariate monomial expression_ in a single variable ${x}$ if ${u}$ satisfies one of the following rules:
 >
 > 1. ${u}$ is an integer or fraction.
 > 2. ${u = x.}$
@@ -251,11 +262,11 @@ Below is a procedure for determining whether a given expression is a univariate 
 
 <Procedure>
 
-- __Procedure__ isMonomial(${u}$, ${x}$)
-- __Input__
+- **Procedure** isMonomial(${u}$, ${x}$)
+- **Input**
   - ${u}$: An algebraic expression.
   - ${x}$: A symbol.
-- __Output__
+- **Output**
   - true or false
 
 1. if ${u \in (\Z \cup \mathbb{Q})}$ then
@@ -264,9 +275,9 @@ Below is a procedure for determining whether a given expression is a univariate 
    1. return true
 3. else if ${u}$ is a power
    1. ${base}$ ${\coloneqq}$ operand(${u}$, 1)
-   2. ${exponent}$ ${\coloneqq}$ operand(${u}$, 2) 
+   2. ${exponent}$ ${\coloneqq}$ operand(${u}$, 2)
    3. if ${(base = x) \land (base \in \Z) \land (exponent \gt 1)}$ then
-      1. return true 
+      1. return true
 4. else if ${u}$ is a product
    1. ${opcount \coloneqq operandCount(u,2)}$
    2. ${r_1 \coloneqq isMonomial(operand(u,1),x)}$
@@ -274,11 +285,11 @@ Below is a procedure for determining whether a given expression is a univariate 
    4. return ${opcount \land r_1 \land r_2}$
 5. return false
 
-
 </Procedure>
 
 ### Quadratic Expressions
-> __Definition.__ A quadratic expression in one variable is an expression that can be written in the form 
+
+> **Definition.** A quadratic expression in one variable is an expression that can be written in the form
 >
 > $$
 >    ax^2 + bx + c,
@@ -288,21 +299,23 @@ Below is a procedure for determining whether a given expression is a univariate 
 
 The following property is often useful to solving quadratic equations:
 
-> __Property.__ ${pq = 0}$ if and only if ${p = 0}$ or ${q = 0.}$
+> **Property.** ${pq = 0}$ if and only if ${p = 0}$ or ${q = 0.}$
 
 #### The Quadratic Formula
+
 We can also solve quadratic equations directly with the quadratic formula:
 
-> __Formula.__ The solutions of the quadratic equation ${ax^2 + bx + c = 0,}$ where ${a \neq 0,}$ are given by
+> **Formula.** The solutions of the quadratic equation ${ax^2 + bx + c = 0,}$ where ${a \neq 0,}$ are given by
 >
 > $$
 >    x = \dfrac{-b \pm \sqrt{b^2 - 4ac}}{2a}.
 > $$
 
 ### Polynomial Expressions
-Quadratic expressions can be generalized as polynomial expressions in one variable. I.e., they are a specific type of polynomial expression in one variable. 
 
-> __Definition.__ A polynomial ${u}$ in one variable is an expression of the form:
+Quadratic expressions can be generalized as polynomial expressions in one variable. I.e., they are a specific type of polynomial expression in one variable.
+
+> **Definition.** A polynomial ${u}$ in one variable is an expression of the form:
 >
 > $$
 >    u_nx^n + u_{n-1}x^{n-1} + \ldots + u_1x + u_0,
@@ -310,14 +323,14 @@ Quadratic expressions can be generalized as polynomial expressions in one variab
 >
 > where the coefficients ${u_j}$ are rational numbers, and ${n}$ is a non-negative integer.
 
-If ${u_n \neq 0,}$ we call ${u_n}$ the __leading coefficient__ of ${u}$ and ${n}$ the __degree__ of ${u.}$ The expression ${u = 0}$ is called the __zero polynomial__. By convention, the zero polynomial has leading coefficient ${0}$ and, according to mathematical convention, has degree ${-\infty.}$
+If ${u_n \neq 0,}$ we call ${u_n}$ the **leading coefficient** of ${u}$ and ${n}$ the **degree** of ${u.}$ The expression ${u = 0}$ is called the **zero polynomial**. By convention, the zero polynomial has leading coefficient ${0}$ and, according to mathematical convention, has degree ${-\infty.}$
 
-To aid our discussion on polynomials, we define the following operators. 
+To aid our discussion on polynomials, we define the following operators.
 
-> __Definition.__ Let ${u}$ be a polynomial expression in a single variable ${x.}$ Then:
+> **Definition.** Let ${u}$ be a polynomial expression in a single variable ${x.}$ Then:
 >
 > $$
->    \text{deg}(u,x) 
+>    \text{deg}(u,x)
 > $$
 >
 > corresponds to the degree of ${u}$ and
@@ -329,9 +342,10 @@ To aid our discussion on polynomials, we define the following operators.
 > corresponds to the leading coefficient of ${u.}$ If the variable ${x}$ is clear from context, we use the shorthand notation ${\text{deg}(u)}$ and ${\text{lc}(u).}$
 
 #### Multivariate Polynomials
+
 A _multivariate polynomial_ is a polynomial that contains one or more variables.
 
-> __Definition.__ A _multivariate polynomial_ ${u}$ in the set of symbols ${\lbrace x_1, x_2, \ldots, x_m \rbrace}$ is a finite sum with one or more monomial terms of the form
+> **Definition.** A _multivariate polynomial_ ${u}$ in the set of symbols ${\lbrace x_1, x_2, \ldots, x_m \rbrace}$ is a finite sum with one or more monomial terms of the form
 >
 > $$
 >  c x_1^{n_1} x_2^{n_2} \ldots x_m^{n_m},
@@ -339,53 +353,57 @@ A _multivariate polynomial_ is a polynomial that contains one or more variables.
 >
 > where the coefficient ${c}$ is a rational number and the exponents ${n_j}$ are non-negative integers.
 
-__*example*__. ${x^2 - y^2}$
+**_example_**. ${x^2 - y^2}$
 
-__*example*__. ${mc^2}$
+**_example_**. ${mc^2}$
 
-__*example*__. ${a + \dfrac{1}{2}ax^2 + aby.}$
+**_example_**. ${a + \dfrac{1}{2}ax^2 + aby.}$
 
-__*example*__. ${ax^2 + bx + 3c.}$
+**_example_**. ${ax^2 + bx + 3c.}$
 
-__*example*__. ${3x^2 + 4.}$ 
+**_example_**. ${3x^2 + 4.}$
 
-From the last example, we see that all univariate polynomials are multivariate polynomials, since a multivariate polynomial is a polynomial that contains _one or more_ variables. 
+From the last example, we see that all univariate polynomials are multivariate polynomials, since a multivariate polynomial is a polynomial that contains _one or more_ variables.
 
 #### General Monomial Expressions
-> __Definition.__ Let ${c_1, c_2, \ldots, c_r}$ be algebraic expressions and let ${x_1, x_2, \ldots, x_m}$ be algebraic expressions that are not integers or fractions. A _general monomial expression_ (GME) in ${\lbrace x_1, x_2, \ldots, x_m \rbrace}$ is an expression of the form
+
+> **Definition.** Let ${c_1, c_2, \ldots, c_r}$ be algebraic expressions and let ${x_1, x_2, \ldots, x_m}$ be algebraic expressions that are not integers or fractions. A _general monomial expression_ (GME) in ${\lbrace x_1, x_2, \ldots, x_m \rbrace}$ is an expression of the form
 >
 > $$
 >  c_1 c_2 \ldots c_r x_1^{n_1} x_2^{n_2} \ldots x_m^{n_m},
 > $$
 >
-> where the exponents ${n_j}$ are non-negative integers and each ${c_i}$ does not contain an expression ${x_j}$ for ${j = 1,2,\ldots,m.}$ 
+> where the exponents ${n_j}$ are non-negative integers and each ${c_i}$ does not contain an expression ${x_j}$ for ${j = 1,2,\ldots,m.}$
 
 In the definition above, the expressions ${x_j}$ are called _generalized variables_, and the expressions ${c_i}$ are called _generalized coefficients_. The expression ${x_1^{n_1} \ldots x_m^{n_m}}$ is called the _variable part_ of the monomial. If there aren't any generalized coefficients in the monomial, the coefficient is ${1.}$
 
 #### General Polynomial Expression
-> __Definition.__ A general polynomial expression (GPE) is a GME or a sum of GMEs.
- 
+
+> **Definition.** A general polynomial expression (GPE) is a GME or a sum of GMEs.
+
 ## Cartesian Plane
-The _Cartesian plane_ is a plane constructed from two perpendicular real lines, called _axes_. The horizontal line is called the ${x}$-axis, and the vertical line is called the ${y}$-axis. If we place a point ${p}$ on this plane, then that point can be represented as a pair ${(x_p,y_p),}$ where ${x_p}$ is the point's coordinate on the ${x}$-axis and ${y_p}$ is the point's coordinate on the ${y}$-axis.  
 
-import {Calc1} from '@/components/Fig';
+The _Cartesian plane_ is a plane constructed from two perpendicular real lines, called _axes_. The horizontal line is called the ${x}$-axis, and the vertical line is called the ${y}$-axis. If we place a point ${p}$ on this plane, then that point can be represented as a pair ${(x_p,y_p),}$ where ${x_p}$ is the point's coordinate on the ${x}$-axis and ${y_p}$ is the point's coordinate on the ${y}$-axis.
 
-<Calc1/>
+import { Calc1 } from "@/components/Fig";
+
+<Calc1 />
 
 The point of intersection of the two axes is called the _origin_, usually denoted by the letter ${O.}$ The plane is divided into four regions called _quadrants_, often labeled ${\text{I}}$ through ${\text{IV}.}$
 
-The pair ${(x_p, y_p)}$ is an example of an _ordered pair_. We call the coordinate ${x_p}$ the ordered pair's _abscissa_ and ${y_p}$ the _ordinate_. For brevity, the notation ${p(x, y)}$ means that the point ${p}$ has the coordinates ${(x,y).}$ 
+The pair ${(x_p, y_p)}$ is an example of an _ordered pair_. We call the coordinate ${x_p}$ the ordered pair's _abscissa_ and ${y_p}$ the _ordinate_. For brevity, the notation ${p(x, y)}$ means that the point ${p}$ has the coordinates ${(x,y).}$
 
 ### The Distance Between Two Points
+
 Suppose we're given two points ${P(x_P, y_P)}$ and ${Q(x_Q, y_Q).}$ We want to know the distance between these two points. For example, in the diagram below, what is the length of the red line between the red dots?
 
-import {DistanceBetweenPoints} from '@/components/Fig';
+import { DistanceBetweenPoints } from "@/components/Fig";
 
-<DistanceBetweenPoints/>
+<DistanceBetweenPoints />
 
 We can solve this problem by employing one of the oldest theorems in mathematics:
 
-> __Pythagorean Theorem.__ In a right triangle, the lengths of the sides are related by the equation
+> **Pythagorean Theorem.** In a right triangle, the lengths of the sides are related by the equation
 >
 > $$
 >    a^2 + b^2 = c^2,
@@ -393,7 +411,7 @@ We can solve this problem by employing one of the oldest theorems in mathematics
 >
 > where ${a}$ and ${b}$ are the lengths of the sides forming the right triangle and ${c}$ is the length of the hyptonuse (the side opposite the right angle).
 
-So, if we suppose that the red line in our diagram is ${c,}$ then the length of that line is found by solving for ${c:}$ 
+So, if we suppose that the red line in our diagram is ${c,}$ then the length of that line is found by solving for ${c:}$
 
 $$
     c = \sqrt{a^2 + b^2}.
@@ -401,59 +419,61 @@ $$
 
 But what are ${a}$ and ${b}$? They must be the lengths of the other sides of the right triangle:
 
+import { DistanceBetweenPoints2 } from "@/components/Fig";
 
-import {DistanceBetweenPoints2} from '@/components/Fig';
+<DistanceBetweenPoints2 />
 
-<DistanceBetweenPoints2/>
+Thus, we have the following formula.
 
-Thus, we have the following formula. 
-
-> __Distance Formula__. The distance ${d}$ between points ${(x_1, y_1)}$ and ${(x_2, y_2)}$ is given by
-> 
+> **Distance Formula**. The distance ${d}$ between points ${(x_1, y_1)}$ and ${(x_2, y_2)}$ is given by
+>
 > $$
 >    d = \sqrt{(x_2 - x_1)^2 + (y_2 - y_1)^2}.
 > $$
 
 ### Midpoint Formula
+
 Given two points ${P(x_1, y_1)}$ and ${Q(x_2, y_2),}$ what is the midpoint of the line segment joining ${P}$ and ${Q}$? For example, consider the figure below. The midpoint is marked by the red point. What is the coordinate of this point?
 
-import {MidpointFig} from '@/components/Fig';
+import { MidpointFig } from "@/components/Fig";
 
-<MidpointFig/>
+<MidpointFig />
 
 Here, we apply the midpoint formula:
 
-> __Midpoint Formula__. Given points ${P(x_1, y_1)}$ and ${Q(x_2, y_2),}$ the midpoint of the line segment joining ${P}$ and ${Q}$ has the coordinates:
+> **Midpoint Formula**. Given points ${P(x_1, y_1)}$ and ${Q(x_2, y_2),}$ the midpoint of the line segment joining ${P}$ and ${Q}$ has the coordinates:
 >
 > $$
 >    \left( \dfrac{x_1 + x_2}{2}, \dfrac{y_1 + y_2}{2} \right).
 > $$
 
 ## Real Functions
-We now turn our attention towards the _real functions_ &mdash; functions with the signature ${A \to B,}$ where ${A \subseteq \reals}$ and ${B \subseteq \reals.}$ 
+
+We now turn our attention towards the _real functions_ &mdash; functions with the signature ${A \to B,}$ where ${A \subseteq \reals}$ and ${B \subseteq \reals.}$
 
 ### Affine Functions
-In the sea of real functions, affine functions are among the most desirable. They're easy to understand because they're easy to gut &mdash; internally, they have at most two operations: multiplication and addition. 
 
-> __Definition.__ Suppose ${A}$ and ${B}$ are real number constants. A function of the form
+In the sea of real functions, affine functions are among the most desirable. They're easy to understand because they're easy to gut &mdash; internally, they have at most two operations: multiplication and addition.
+
+> **Definition.** Suppose ${A}$ and ${B}$ are real number constants. A function of the form
 >
 > $$
 >    f(x) = ax + b
 > $$
 >
-> is called an _affine function_. In the case where ${a = 0,}$ then ${f(x) = b,}$ and we call ${f}$ a _constant function_. In the case where ${b = 0}$ and ${a \neq 0,}$ then ${f(x) = ax,}$ and we call ${f}$ a _linear function_.  
+> is called an _affine function_. In the case where ${a = 0,}$ then ${f(x) = b,}$ and we call ${f}$ a _constant function_. In the case where ${b = 0}$ and ${a \neq 0,}$ then ${f(x) = ax,}$ and we call ${f}$ a _linear function_.
 
-The graph of an affine function ${f}$ is a continuous straight line. If ${a \gt 0,}$ then ${f}$ is strictly increasing. If ${a \lt 0,}$ then ${f}$ is strictly decreasing. If ${a \neq 0,}$ then then ${f}$ has a unique zero ${x = -\dfrac{b}{a}.}$ To demonstrate these facts, consider the interactive figure below. Adjust the ${a}$ and ${b}$ values to see what happens to our line. 
+The graph of an affine function ${f}$ is a continuous straight line. If ${a \gt 0,}$ then ${f}$ is strictly increasing. If ${a \lt 0,}$ then ${f}$ is strictly decreasing. If ${a \neq 0,}$ then then ${f}$ has a unique zero ${x = -\dfrac{b}{a}.}$ To demonstrate these facts, consider the interactive figure below. Adjust the ${a}$ and ${b}$ values to see what happens to our line.
 
-import {AffineFunctionLab} from "@/components/Fig";
+import { AffineFunctionLab } from "@/components/Fig";
 
-<AffineFunctionLab/>
+<AffineFunctionLab />
 
 If ${f}$ is an affine function, then ${f}$ has a constant rate of change equal to the slope of its graph. Conversely, if a function ${f}$ has a constant rate of change, then ${f}$ must be an affine function.
 
 ### Quadratic Functions
 
-> __Definition.__ Let ${a,}$ ${b,}$ and ${c}$ be real number constants, with ${a \neq 0.}$ A function of the form
+> **Definition.** Let ${a,}$ ${b,}$ and ${c}$ be real number constants, with ${a \neq 0.}$ A function of the form
 >
 > $$
 >    f(x) = ax^2 + bx + c
@@ -462,16 +482,16 @@ If ${f}$ is an affine function, then ${f}$ has a constant rate of change equal t
 > is called a _quadratic function_ with leading coefficient ${a.}$
 
 <aside>
-The word _quadratic_ is derived from the Latin _quadratus_, meaning "square."
+  The word _quadratic_ is derived from the Latin _quadratus_, meaning "square."
 </aside>
 
 The graph of a quadratic function is called a _parabola_. Given the quadratic function ${f(x) = ax^2 + bx + c,}$ if ${a \gt 0,}$ then the parabola has a _local minimum_ at ${x = -\dfrac{b}{2a}}$ and the parabola is _convex_. If ${a \lt 0,}$ then the parabola has a _local maximum_ at ${x = - \dfrac{b}{2a}}$ and the parabola is _concave_.
 
 Below is an interactive plot of a quadratic.
 
-import {QuadraticFunctionLab} from "@/components/Fig";
+import { QuadraticFunctionLab } from "@/components/Fig";
 
-<QuadraticFunctionLab/>
+<QuadraticFunctionLab />
 
 All parabolas have a special point called the _vertex_. This point is given by:
 
@@ -490,18 +510,20 @@ $$
 where ${(h,k)}$ is the parabola's vertex and the axis of symmetry is the line ${x = h.}$ The parabola opens upward if ${a \lt 0}$ and downward if ${a \lt 0.}$
 
 #### The Discriminant
+
 The quantity ${b^2 - 4ac}$ is called the _discriminant_ of ${ax^2 + bx + c.}$ The equation
 
 $$
     y = a\left(x + \dfrac{b}{2a}\right)^2 + \dfrac{4ac - b^2}{4a}
 $$
 
-is called the _canonical equation_ of the parabola ${y = ax^2 + bx + c.}$ Notice that the parabola is symmetric about the vertical line ${x = -\dfrac{b}{2a},}$ passing through the vertex. This line, called the _axis of symmetry_, is parallel to the ${y}$-axis. Suppose ${(h,k)}$ is the parabola's vertex. Using the method of completing the square, the parabola's equation (with its axis of symmetry parallel to the ${y}$-axis) can be written in the form ${y = a(x - h)^2 + k.}$   
+is called the _canonical equation_ of the parabola ${y = ax^2 + bx + c.}$ Notice that the parabola is symmetric about the vertical line ${x = -\dfrac{b}{2a},}$ passing through the vertex. This line, called the _axis of symmetry_, is parallel to the ${y}$-axis. Suppose ${(h,k)}$ is the parabola's vertex. Using the method of completing the square, the parabola's equation (with its axis of symmetry parallel to the ${y}$-axis) can be written in the form ${y = a(x - h)^2 + k.}$
 
 #### Quadratic Formula
+
 The quadratic formula provides a quick and easy way to find the roots of a polynomial equation.
 
-> __Formula.__ Let ${a,}$ ${b,}$ and ${c}$ be constants in ${\reals.}$ The roots of the equation ${ax^2 + bx + c = 0}$ are given by the formula
+> **Formula.** Let ${a,}$ ${b,}$ and ${c}$ be constants in ${\reals.}$ The roots of the equation ${ax^2 + bx + c = 0}$ are given by the formula
 >
 > $$
 >    x = \dfrac{-b \pm \sqrt{b^2 - 4ac}}{2a}.
@@ -509,38 +531,40 @@ The quadratic formula provides a quick and easy way to find the roots of a polyn
 
 When can gain many insights about a particular quadratic by simply examining its determinant.
 
-> __Corollary.__ Suppose ${u}$ is the quadratic ${ax^2 + bx + c = 0}$ with ${a \neq 0,}$ ${b,}$ and ${c}$ as real constants. Then the following are true:
+> **Corollary.** Suppose ${u}$ is the quadratic ${ax^2 + bx + c = 0}$ with ${a \neq 0,}$ ${b,}$ and ${c}$ as real constants. Then the following are true:
 >
 > 1. If ${b^2 - 4ac = 0,}$ then ${u}$ is tangent to the ${x}$-axis and has one (repeated) real root.
-> 2. If ${b^2 - 4ac \gt 0,}$ then the parabola has two distinct real roots. 
-> 3. If ${b^2 - 4ac \lt 0,}$ then the parabola has two complex roots.  
+> 2. If ${b^2 - 4ac \gt 0,}$ then the parabola has two distinct real roots.
+> 3. If ${b^2 - 4ac \lt 0,}$ then the parabola has two complex roots.
 > 4. If ${b^2 - 4ac \gt 0,}$ then ${u}$ has the same sign as ${A.}$
 
 #### The Square Function
 
-> __*definition*__. The square function is a function of the form
+> **_definition_**. The square function is a function of the form
 >
 > $$
 >  f(x) = x^2.
 > $$
 
-Suppose ${f}$ is the square function ${f(x) = x^2.}$ Then: ${f}$ is an even function; its graph is symmetric about the ${y}$-axis. ${f}$ is an increasing function for ${x \gt 0,}$ and a decreasing function for ${x \lt 0.}$ ${f}$ has a minimum value at ${x = 0.}$ ${f(x)}$ becomes unbounded positive as ${x}$ becomes unbounded positive or negative. 
+Suppose ${f}$ is the square function ${f(x) = x^2.}$ Then: ${f}$ is an even function; its graph is symmetric about the ${y}$-axis. ${f}$ is an increasing function for ${x \gt 0,}$ and a decreasing function for ${x \lt 0.}$ ${f}$ has a minimum value at ${x = 0.}$ ${f(x)}$ becomes unbounded positive as ${x}$ becomes unbounded positive or negative.
 
 #### Even Power Functions
-The graphs of ${y = x^{2n + 2},}$ where ${n \in \natnums}$ (e.g., ${y = x^2,}$ ${y = x^4,}$ ${y = x^6,}$ etc.) look similar to one another. For ${-1 \leq x \leq 1,}$ the higher the exponent, the flatter the graph is along the ${x}$-axis. This follows from the fact that, where ${-1 \leq x \leq 1,}$ ${\lvert x \rvert \implies \ldots \lt x^6 \lt x^4 \lt x^2 \lt 1.}$ 
 
-import {Pow2FuncLab} from "@/components/Fig";
+The graphs of ${y = x^{2n + 2},}$ where ${n \in \natnums}$ (e.g., ${y = x^2,}$ ${y = x^4,}$ ${y = x^6,}$ etc.) look similar to one another. For ${-1 \leq x \leq 1,}$ the higher the exponent, the flatter the graph is along the ${x}$-axis. This follows from the fact that, where ${-1 \leq x \leq 1,}$ ${\lvert x \rvert \implies \ldots \lt x^6 \lt x^4 \lt x^2 \lt 1.}$
 
-<Pow2FuncLab/>
+import { Pow2FuncLab } from "@/components/Fig";
+
+<Pow2FuncLab />
 
 ### Cubic Functions
-> __Definition.__ Let ${a,}$ ${b,}$ ${c,}$ and ${d}$ be real number constants with ${a \neq 0.}$ A function of the form 
+
+> **Definition.** Let ${a,}$ ${b,}$ ${c,}$ and ${d}$ be real number constants with ${a \neq 0.}$ A function of the form
 >
 > $$
 >  f(x) = ax^3 + bx^2 + cx + d
 > $$
 >
-> is called a _cubic function_. 
+> is called a _cubic function_.
 
 The graph of a cubic function is a _cubic curve_. As seen from its general form, the cubic curve depends on four parameters: ${a,}$ ${b,}$ ${c,}$ and ${d.}$ Where ${a = 1,}$ ${b = 0,}$ ${c = 0,}$ ${d = 0,}$ we get the simplest cubic:
 
@@ -552,7 +576,7 @@ The graph of the cubic function ${f(x) = x^3}$ is concave when ${x \lt 0}$ and c
 
 #### The Cube Function
 
-> __*definition*__. The cube function ${f}$ is defined as
+> **_definition_**. The cube function ${f}$ is defined as
 >
 > $$
 >  f(x) = x^3.
@@ -561,6 +585,7 @@ The graph of the cubic function ${f(x) = x^3}$ is concave when ${x \lt 0}$ and c
 Some properties of the cube function ${f:}$ ${f}$ is an odd function; its graph is symmetric about the origin. ${f}$ is an increasing function for all real numbers. ${f}$ has no maximum or minimum. ${f(x)}$ becomes unbounded positive as ${x}$ becomes unbounded positive. ${f(x)}$ becomes unbounded negative as ${x}$ becomes unbounded negative.
 
 #### Odd Power Functions
+
 The graphs of ${y = x^{2n + 3},}$ ${n \in \natnums}$ (e.g., ${y = x^3,}$ ${y = x^5,}$ ${y = x^7,}$ etc.) look similar to one another. For ${-1 \leq x \leq 1,}$ the higher the exponent, the flatter the graph is to the ${x}$-axis, since
 
 $$
@@ -575,7 +600,7 @@ $$
 
 ### Polynomial Functions
 
-> __*definition*__. A polynomial function ${f}$ is a function of the form
+> **_definition_**. A polynomial function ${f}$ is a function of the form
 >
 > $$
 >  f(x) = a_n x^n + a_{n-1} x^{n-1} + \ldots + a_1 x + a_0,
@@ -586,9 +611,10 @@ $$
 Functions of the form ${y = x^n}$ with ${n \in \natnums}$ (e.g., the square and cubic functions) are called _power functions_. They are the simplest polynomial functions, and can be interpreted as the building blocks of more complex polynomial functions.
 
 #### Graphs of Polynomial Functions
+
 Suppose ${f}$ is a polynomial function. If ${\deg(u) = 0}$ or ${\deg(u) = 1,}$ then the graph of ${f}$ is a line. If ${\deg(u) \geq 2,}$ then the graph of ${f}$ is an unbroken smooth curve. The graph of a polynomial function of degree ${n}$ has at most ${n - 1}$ turning points. Regardless of the degree, as ${\lvert x \rvert}$ gets very large, ${\lvert y \rvert}$ grows very large (except, of course, for the constant function). The following theorem, stated informally, is often helpful for getting a rough idea of a given polynomial's behavior.
 
-> __*theorem*__. Suppose ${f}$ is a polynomial function of the form
+> **_theorem_**. Suppose ${f}$ is a polynomial function of the form
 >
 > $$
 >  f(x) = a_n x^n + a_{n-1} x^{n-1} + \ldots + a_1 x + a_0
@@ -604,7 +630,7 @@ Suppose ${f}$ is a polynomial function. If ${\deg(u) = 0}$ or ${\deg(u) = 1,}$ t
 
 ### Rational Functions
 
-> __*definition*__. A rational function ${r}$ is a function of the form
+> **_definition_**. A rational function ${r}$ is a function of the form
 >
 > $$
 >  r(x) = \dfrac{f(x)}{g(x)},
@@ -614,23 +640,23 @@ Suppose ${f}$ is a polynomial function. If ${\deg(u) = 0}$ or ${\deg(u) = 1,}$ t
 
 The graphs of rational functions differ from that of polynomial functions significantly because they employ the operation of _division_. That operation, as we all know, has a strict restriction: We cannot divide by ${0.}$ To illustrate, consider the graph of ${f(x) = 1/x}$ (drag the slider to change the ${x}$ value of the point on the graph).
 
-import {Rat1} from "@/components/Fig";
+import { Rat1 } from "@/components/Fig";
 
-<Rat1/>
+<Rat1 />
 
 Notice that the graph comprises two separate curves, rather than the single continuous curve we see with polynomials. We call these curves the _branches_ or _arms_ of the rational function's graphs. The function ${f(x) = 1/x}$ has the following properties:
 
 1. ${f}$ is an odd function; its graph is symmetric about the origin.
-2. ${f}$ is decreasing for ${x \lt 0}$ and for ${x \gt 0.}$ 
+2. ${f}$ is decreasing for ${x \lt 0}$ and for ${x \gt 0.}$
 3. ${f}$ has no maximum or minimum.
 4. ${f(x)}$ approaches zero from above as ${x}$ becomes unbounded positive and from below as ${x}$ becomes unbounded negative.
-5. ${f(x)}$ becomes unbounded negative as ${x}$ approaches zero from the left and unbounded positive as ${x}$ approaches zero from the right. 
+5. ${f(x)}$ becomes unbounded negative as ${x}$ approaches zero from the left and unbounded positive as ${x}$ approaches zero from the right.
 
 Now consider the function ${g(x) = \dfrac{1}{x^2}.}$ This function has the following plot:
 
-import {Rat2} from "@/components/Fig"
+import { Rat2 } from "@/components/Fig";
 
-<Rat2/>
+<Rat2 />
 
 Some properties of the graph of ${g(x) = \dfrac{1}{x^2}:}$
 
@@ -640,11 +666,13 @@ Some properties of the graph of ${g(x) = \dfrac{1}{x^2}:}$
 4. ${g(x)}$ approaches zero from above as ${x}$ becomes unbounded positive or negative.
 5. ${g(x)}$ becomes unbounded positive as ${x}$ approaches zero from the left or right.
 
-#### Graphs of 1/𝑥ⁿ 
+#### Graphs of 1/𝑥ⁿ
+
 In general, the graph of ${f(x) = 1/x^n}$ where ${n \in \Z^+}$ will resemble either ${1/x^2}$ or ${1/x.}$ If ${n}$ is an even integer, then ${f}$'s graph will resember ${1/x^2.}$ If ${n}$ is an odd integer, then ${f}$'s graph will resember ${1/x.}$
 
 ### Exponential Functions
-> __*definition*__. Let ${b}$ denote an arbitrary constant, with ${b \gt 0}$ and ${b \neq 1.}$ The exponential function ${f}$ with base ${b}$ is a function of the form
+
+> **_definition_**. Let ${b}$ denote an arbitrary constant, with ${b \gt 0}$ and ${b \neq 1.}$ The exponential function ${f}$ with base ${b}$ is a function of the form
 >
 > $$
 >  f(x) = ab^{kx},
@@ -652,11 +680,11 @@ In general, the graph of ${f(x) = 1/x^n}$ where ${n \in \Z^+}$ will resemble eit
 >
 > where ${a,}$ ${b,}$ and ${k}$ are real constants.
 
-__*example*__. ${f(x) = 2^x.}$ Below is ${f}$'s graph.
+**_example_**. ${f(x) = 2^x.}$ Below is ${f}$'s graph.
 
-import {Exp1} from "@/components/Fig";
+import { Exp1 } from "@/components/Fig";
 
-<Exp1/>
+<Exp1 />
 
 Some observations of ${f(x) = 2^x}$ and its graph:
 
@@ -667,8 +695,117 @@ Some observations of ${f(x) = 2^x}$ and its graph:
 5. ${f}$ becomes unbounded positive as ${x}$ becomes unbounded positive.
 6. The function is one-to-one.
 
+More generally, for the function ${f(x) = b^x}$ with ${b \gt 0}$ and ${b \neq 1,}$
 
+1. For ${b \gt 1,}$ ${f}$ approaches zero from above as ${x}$ becomes unbounded negative, and becomes unbounded positive as ${x}$ becomes unbounded positive.
+2. For ${0 \lt b \lt 1,}$ ${b^x}$ becomes unbounded positive as ${x}$ becomes unbounded negative and approaches zero from above as ${x}$ becomes unbounded positive.
+
+#### The Exponential Function ${y = e^x}$
+
+Euler's number ${e}$ is an irrational number:
+
+$$
+  e = 2.7182818284\ldots
+$$
+
+This number is particularly special because it makes handling exponentials much simpler. The graph of ${f(x) = e^x:}$
+
+import { Exp2 } from "@/components/Fig";
+
+<Exp2 />
+
+### Logarithmic Functions
+
+To study the logarithmic functions, we must first study logarithms as expressions and operators.
+
+#### Logarithms
+
+> **_definition_**. The expression
+>
+> $$
+>  \log_b x
+> $$
+>
+> means, "the exponent to which ${b}$ must be raised to yield ${x.}$" We read the expression, "log base ${b}$ of ${x}$" or "the logarithm of ${x}$ to the base ${b.}$"
+
+The logarithm is a binary operator. It takes two arguments: First, a base ${b,}$ and second, some real number ${x:}$
+
+$$
+  \log(b,x) \mapsto y
+$$
+
+When we evaluate this expression, we get a real number ${y}$ that satisfies the following relation:
+
+$$
+  b^y = x.
+$$
+
+In other words, the logarithm answers the question, "What is the number I must raise ${b}$ to, such that I get ${x?}$" Following convention, instead of writing ${\log(b,x),}$ we will instead write:
+
+$$
+  \log_b x.
+$$
+
+Using this notation, we state the following equivalence:
+
+$$
+  y = \log_b x \iff x = b^y.
+$$
+
+The equation ${y = \log_b x}$ is in _logarithmic form_, and the equation ${x = b^y}$ is in _exponential form_. Some logarithms of a particular base are given special symbols as operators:
+
+| Symbol  | Meaning                                                                          |
+| ------- | -------------------------------------------------------------------------------- |
+| ${\ln}$ | ${\log_e}$ (log of base ${e}$, called the _natural logarithm_ or _natural log_). |
+| ${\lg}$ | ${\log_2}$ (log of base ${2}$, called the _binary logarithm_ or _binary log_).   |
+
+In this text, we will use the following conventions: ${\log}$ is assumed to be ${\log_{10},}$ ${\ln}$ is the natural log, ${\lg}$ is the binary log, and all other logarithms will have a specified base.
+
+#### Manipulating Logarithms
+The following properties are essential to working with logarithms efficiently and cleanly.
+
+<Cols of={2}>
+
+<div>
+
+- ${\log_n b = 1.}$
+- ${\log_n 1 = 0.}$
+- ${\log_n ab = \log_n a + \log_n b.}$
+- ${\log_n \frac{a}{b} = \log_n a - \log_n b.}$
+
+</div>
+<div>
+
+- ${\log_n \frac{1}{x} = - \log_n x.}$
+- ${\log_n x^r = r \log_n x}$ for all ${x \in \reals.}$
+- ${n^{\log_n x} = x.}$
+- ${\log_n n^x = x}$ for all ${x \in \reals.}$
+
+</div>
+
+</Cols>
+
+The following equation is another useful fact to keep in mind. As its name implies, this equation allows us to rewrite logarithms as logarithms of different bases.
+
+> __*change of base.*__ ${\log_a x = \dfrac{\log_b x}{\log_b a}.}$
+
+
+#### Logarithmic Behavior
+Below are graphs of various logarithmic functions:
+
+import {LogFig1} from "@/components/Fig";
+
+<LogFig1/>
+
+Notice that ${f(x)}$ grows or increases _very_ slowly. It is always increasing as ${x}$ increases, just very, very slowly. Given a function of the form ${f(x) = \log_b x,}$ with ${b \gt 1,}$ we have the following properties:
+
+1. ${\text{dom}(f) = \reals^+}$ (all positive real numbers).
+2. ${\text{ran}(f) = \reals.}$
+3. There is no ${y}$-intercept.
+4. The ${x}$-intercept is ${1.}$
+5. The assymptote is ${x = 0}$ (i.e., ${y}$-axis).
+6. End behavior: ${f}$ becomes unbounded negative as ${x}$ approaches ${0}$ from the right and becomes unbounded positive as ${x}$ becomes unbounded positive. 
 
 export default function MDXPage({ children }) {
-    return <MdxLayout>{children}</MdxLayout>
+  return <MdxLayout>{children}</MdxLayout>;
 }

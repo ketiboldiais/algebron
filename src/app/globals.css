@@ -321,6 +321,9 @@ a {
     margin-left: 20vw;
     /* width: 80%; */
   }
+  .article-main {
+    margin: 0 auto;
+  }
   .toc {
     background-color: var(--background);
     z-index: 100;
