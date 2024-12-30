@@ -3015,6 +3015,11 @@ export class TextObj extends GraphicsAtom {
     this.$textAnchor = value;
     return this;
   }
+  $fontStyle?: string;
+  fontStyle(value: string) {
+    this.$fontStyle = value;
+    return this;
+  }
   $fontFamily?: string;
   fontFamily(value: string) {
     this.$fontFamily = value;
@@ -3255,7 +3260,7 @@ class Grid extends GroupObj {
     }
     return this;
   }
-  $stroke: string = "	#E5E4E2";
+  $stroke: string = "rgb(214, 225, 217)";
   $strokeWidth: string | number = 1;
   $step: number = 1;
   step(value: number) {
@@ -3911,12 +3916,23 @@ class TreeObj extends GroupObj {
     this.$labelFn = callback;
     return this;
   }
+  $edgeColor: string = "salmon";
+  edgeColor(color: string) {
+    this.$edgeColor = color;
+    return this;
+  }
+  $textColor: string = this.$edgeColor;
+  textColor(color: string) {
+    this.$textColor = color;
+    return this;
+  }
   done() {
     this.lay();
     this.$tree.bfs((node) => {
       const p = node.$parent;
       if (p) {
         const l = line([p.$x, p.$y], [node.$x, node.$y]);
+        l.stroke(this.$edgeColor);
         this.$children.push(l);
       }
     });
@@ -3926,9 +3942,9 @@ class TreeObj extends GroupObj {
       if (this.$nodeFn) {
         nodes.push(this.$nodeFn(node));
       } else {
-        const c = circle(this.$nodeRadius, [node.$x, node.$y]).fill(
-          this.$nodeFill
-        );
+        const c = circle(this.$nodeRadius, [node.$x, node.$y])
+          .fill(this.$nodeFill)
+          .stroke(this.$edgeColor);
         nodes.push(c);
       }
       if (this.$labelFn) {
@@ -3937,6 +3953,7 @@ class TreeObj extends GroupObj {
         const t = text(node.$name)
           .position(node.$x, node.$y)
           .textAnchor("middle")
+          .fill(this.$textColor)
           .dy(this.$nodeRadius * 2);
         labels.push(t);
       }
@@ -4781,6 +4798,7 @@ class ForceGraph extends GroupObj {
       fontColor: string;
       fontSize: number;
       fontFamily: string;
+      fontStyle: string;
     }>;
     $edges: Partial<{ stroke: string }>;
   } = {
@@ -4796,6 +4814,15 @@ class ForceGraph extends GroupObj {
     return this;
   }
 
+  get $nodeFontStyle() {
+    return this.$styles.$nodes.fontStyle ?? "italic";
+  }
+
+  nodeFontStyle(style: string) {
+    this.$styles.$nodes.fontStyle = style;
+    return this;
+  }
+
   get $nodeFontSize() {
     return this.$styles.$nodes.fontSize ?? 12;
   }
@@ -4805,7 +4832,7 @@ class ForceGraph extends GroupObj {
   }
 
   get $nodeFontColor() {
-    return this.$styles.$nodes.fontColor ?? "initial";
+    return this.$styles.$nodes.fontColor ?? "#B2BEB5";
   }
 
   nodeFontColor(color: string) {
@@ -4875,6 +4902,7 @@ class ForceGraph extends GroupObj {
       const label = text(t)
         .position(p.$p.$x, p.$p.$y + p.$r)
         .fontFamily(this.$nodeFontFamily)
+        .fontStyle(this.$nodeFontStyle)
         .fontSize(this.$nodeFontSize)
         .fill(this.$nodeFontColor);
       this.$children.push(label);
@@ -6265,16 +6293,24 @@ function isBool(u: MathObj): u is Boolean {
   return u.kind() === expression_type.boolean;
 }
 
-abstract class Real extends MathObj {
+abstract class Numeric extends MathObj {
+  abstract negate(): Numeric;
+  abstract abs(): Numeric;
+}
+
+abstract class Real extends Numeric {
   abstract value(): number;
-  abstract negate(): Real;
-  abstract abs(): Real;
   isZero() {
     return this.value() === 0;
   }
 }
 
 class Int extends Real {
+  toFrac() {
+    const n = int(this.int);
+    const d = int(1);
+    return frac(n, d);
+  }
   precedence(): bp {
     return bp.atom;
   }
@@ -6599,7 +6635,13 @@ function isFrac(u: MathObj): u is Fraction {
   return u instanceof MathObj && u.kind() === expression_type.fraction;
 }
 
-class Complex extends MathObj {
+class Complex extends Numeric {
+  negate(): Complex {
+    throw algebraError("complex negation unimplemented");
+  }
+  abs(): Complex {
+    throw algebraError("complex absolute value unimplemented");
+  }
   precedence(): bp {
     return bp.atom;
   }
@@ -6610,8 +6652,9 @@ class Complex extends MathObj {
     return UNDEFINED();
   }
   copy(): Complex {
-    const r = this.real.copy() as Real;
-    return new Complex(r);
+    const r = this.re.copy() as Real;
+    const i = this.re.copy() as Real;
+    return new Complex(r, i);
   }
   kind(): expression_type {
     return expression_type.complex;
@@ -6620,11 +6663,11 @@ class Complex extends MathObj {
     if (!(other instanceof Complex)) {
       return false;
     } else {
-      return this.real.equals(other.real);
+      return this.re.equals(other.re);
     }
   }
   toString(): string {
-    return `${this.real.toString()}i`;
+    return `${this.re.toString()}i`;
   }
   strung(): string {
     return this.toString();
@@ -6632,23 +6675,84 @@ class Complex extends MathObj {
   map(): MathObj {
     return this;
   }
-  real: Real;
-  imaginary: "i" = "i" as const;
-  constructor(real: Real) {
+  re: Real;
+  im: Real;
+  constructor(real: Real, imaginary: Real) {
     super();
-    this.real = real;
+    this.re = real;
+    this.im = imaginary;
   }
 }
 
-export function complex(value: Real | number) {
-  if (isSafeNumber(value)) {
-    if (Number.isInteger(value)) {
-      return complex(int(value));
+export function complex(real: Real | number, imaginary: Real | number = 1) {
+  const r = isSafeNumber(real)
+    ? Number.isInteger(real)
+      ? int(real)
+      : float64(real)
+    : real;
+  const i = isSafeNumber(imaginary)
+    ? Number.isInteger(imaginary)
+      ? int(imaginary)
+      : float64(imaginary)
+    : imaginary;
+  return new Complex(r, i);
+}
+
+export function isComplex(u: any) {
+  return u instanceof Complex;
+}
+
+class Inf extends Numeric {
+  negate(): Numeric {
+    return this.sign === "-" ? inf("+") : inf("-");
+  }
+  abs(): Numeric {
+    return inf("+");
+  }
+  precedence(): bp {
+    return bp.atom;
+  }
+  operands(): MathObj[] {
+    return [];
+  }
+  operandAt(): MathObj {
+    return UNDEFINED();
+  }
+  copy(): MathObj {
+    return inf(this.sign);
+  }
+  kind(): expression_type {
+    return expression_type.infinity;
+  }
+  equals(other: MathObj): boolean {
+    if (!isInf(other)) {
+      return false;
     } else {
-      return complex(float64(value));
+      return other.sign === this.sign;
     }
   }
-  return new Complex(value);
+  toString(): string {
+    return `${this.sign}Inf`;
+  }
+  strung(): string {
+    return this.toString();
+  }
+  map(): MathObj {
+    return this;
+  }
+  sign: "+" | "-";
+  constructor(sign: "+" | "-") {
+    super();
+    this.sign = sign;
+  }
+}
+
+function inf(sign: "+" | "-" = "+") {
+  return new Inf(sign);
+}
+
+function isInf(u: any) {
+  return u instanceof Inf;
 }
 
 class Sym extends MathObj {

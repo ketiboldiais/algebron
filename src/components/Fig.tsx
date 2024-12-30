@@ -234,6 +234,7 @@ const TEXT = ({ data }: TextProps) => {
         height={data.$height}
         color={data.$fill}
         fontSize={data.$fontSize ? data.$fontSize : "inherit"}
+        fontStyle={data.$fontStyle ? data.$fontStyle : "inherit"}
       >
         <Tex content={data.$content} block={block} />
       </foreignObject>
@@ -242,6 +243,7 @@ const TEXT = ({ data }: TextProps) => {
   return (
     <text
       textAnchor={data.$textAnchor}
+      fontStyle={data.$fontStyle}
       x={data.$position.$x}
       y={data.$position.$y}
       dx={data.$dx}
@@ -782,9 +784,15 @@ export const TreeTest = () => {
         ]),
       ])
     )
-      .nodeFn((node) => circle(5, [node.$x, node.$y]).fill("salmon"))
+      .nodeFn((node) =>
+        circle(5, [node.$x, node.$y]).stroke("firebrick").fill("salmon")
+      )
       .labelFn((node) =>
-        text(node.$name).position(node.$x, node.$y).dx(-10).dy(0)
+        text(node.$name)
+          .fill("#B2BEB5")
+          .position(node.$x, node.$y)
+          .dx(-10)
+          .dy(0)
       )
       .layout("reingold-tilford")
       .done(),
@@ -1306,15 +1314,32 @@ export const Rat2 = () => {
   return <Fig data={d} width={60} />;
 };
 
+export const Exp1 = () => {
+  const domain = tuple(-3, 4);
+  const range = tuple(-2, 9);
+  const d = svg([
+    cplot("fn f(x) = 2^x", domain, range)
+      .stroke("salmon")
+      .strokeWidth(2)
+      .done(),
+    axis({ on: "x", domain, range }),
+    axis({ on: "y", domain, range }),
+  ])
+    .domain(domain)
+    .range(range)
+    .done();
+  return <Fig data={d} width={60} />;
+};
+
 export const SubsetFig = () => {
   const D = tuple(-7, 7);
   const R = tuple(-7, 7);
   const d = svg([
-    quad(8, 14).at(-4, 7).fill("#FFF2C2").end(),
+    quad(8, 14).at(-4, 7).fill("silver").end(),
     text("A").latex("block").width(20).fontSize(18).position(-3.4, 6.5),
     text("B").latex("block").width(20).fontSize(18).position(3, 2.2),
-    circle(70, [0, 0]).fill("none").fill("#F39E60"),
-    circle(40, [-0.75, 0]).fill("none").fill("#DF6D2D"),
+    circle(70, [0, 0]).fill("none").fill("gainsboro"),
+    circle(40, [-0.75, 0]).fill("none").fill("darkgray"),
     line([-2.8, 4], [-1.7, 2]).arrowEnd(),
     line([3, 0], [2.1, 0]).arrowEnd(),
   ])
@@ -1336,7 +1361,7 @@ export const IntersectionFig = () => {
   const D = tuple(-7, 7);
   const R = tuple(-7, 7);
   const d = svg([
-    quad(8, 14).at(-4, 7).fill("#FFF2C2").end(),
+    quad(8, 14).at(-4, 7).fill("lightgrey").end(),
     text("A").latex("block").width(20).fontSize(18).position(-3.4, 6.2),
     text("B").latex("block").width(20).fontSize(18).position(2.8, 5.6),
     circle(70, [1, 0]).fillOpacity(0.5).fill("none").fill("#FF748B"),

@@ -36,6 +36,8 @@ import MdxLayout from "@/components/mdx-layout";
   - [Polynomial Functions](#polynomial-functions)
     - [Graphs of Polynomial Functions](#graphs-of-polynomial-functions)
   - [Rational Functions](#rational-functions)
+    - [Graphs of 1/𝑥ⁿ](#graphs-of-1𝑥ⁿ)
+  - [Exponential Functions](#exponential-functions)
 
 </TOC>
 
@@ -638,7 +640,35 @@ Some properties of the graph of ${g(x) = \dfrac{1}{x^2}:}$
 4. ${g(x)}$ approaches zero from above as ${x}$ becomes unbounded positive or negative.
 5. ${g(x)}$ becomes unbounded positive as ${x}$ approaches zero from the left or right.
 
+#### Graphs of 1/𝑥ⁿ 
+In general, the graph of ${f(x) = 1/x^n}$ where ${n \in \Z^+}$ will resemble either ${1/x^2}$ or ${1/x.}$ If ${n}$ is an even integer, then ${f}$'s graph will resember ${1/x^2.}$ If ${n}$ is an odd integer, then ${f}$'s graph will resember ${1/x.}$
+
+### Exponential Functions
+> __*definition*__. Let ${b}$ denote an arbitrary constant, with ${b \gt 0}$ and ${b \neq 1.}$ The exponential function ${f}$ with base ${b}$ is a function of the form
+>
+> $$
+>  f(x) = ab^{kx},
+> $$
+>
+> where ${a,}$ ${b,}$ and ${k}$ are real constants.
+
+__*example*__. ${f(x) = 2^x.}$ Below is ${f}$'s graph.
+
+import {Exp1} from "@/components/Fig";
+
+<Exp1/>
+
+Some observations of ${f(x) = 2^x}$ and its graph:
+
+1. The domain of ${f}$ is ${\reals.}$ The range is ${\reals^+.}$
+2. The ${y}$-intercept is ${1.}$ The graph never crosses the ${x}$-axis, so ${f}$ has no ${x}$-intercept.
+3. For ${x \gt 0,}$ ${f}$ increases rapidly.
+4. For ${x \lt 0,}$ ${f}$ rapidly approaches the ${x}$-axis. The ${x}$-axis is a horizontal asymptote for the graph; ${f}$ approaches zero from above as ${x}$ becomes unbounded negative.
+5. ${f}$ becomes unbounded positive as ${x}$ becomes unbounded positive.
+6. The function is one-to-one.
+
+
+
 export default function MDXPage({ children }) {
     return <MdxLayout>{children}</MdxLayout>
-
 }
