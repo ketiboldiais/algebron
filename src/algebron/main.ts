@@ -3408,6 +3408,16 @@ class Grid extends GroupObj {
   }
 }
 
+/**
+ * Returns a new 2D grid.
+ * @param xDomain A pair `[xMin,xMax]` where `xMin` and `xMax`
+ * are numbers: `xMin` corresponding to the smallest x-coordinate
+ * and `xMax` corresponding to the largest.
+ * @param yRange A pair `[yMin,yMax]` where `yMin` and `yMax`
+ * are numbers: `yMin` corresponding to the smallest y-coordinate
+ * and `yMax` corresponding to the largest.
+ * @returns A new Grid.
+ */
 export function grid(xDomain: [number, number], yRange: [number, number]) {
   return new Grid(xDomain, yRange);
 }
@@ -3615,6 +3625,89 @@ export class PolarPlot2D extends GroupObj {
 
 export function plotPolar(fn: string) {
   return new PolarPlot2D(fn);
+}
+
+class Disc extends Path {
+  $radius: number;
+  constructor(radius: number) {
+    super(0, 0, 1);
+    this.$radius = radius;
+    this.$commands.push(
+      PathCommand.M(this.$origin.$x, this.$origin.$y + radius, this.$origin.$z),
+      PathCommand.A(this.$origin.$x, this.$origin.$y - radius, this.$origin.$z),
+      PathCommand.A(this.$origin.$x, this.$origin.$y + radius, this.$origin.$z)
+    );
+  }
+
+  radius(R: number) {
+    this.$radius = R;
+    return this;
+  }
+
+  at(x: number, y: number, z: number = 1) {
+    const radius = this.$radius;
+    const r = radius / 2;
+    this.$commands = [
+      PathCommand.M(x + r, y + r, z),
+      PathCommand.A(x - r, y - r, z),
+      PathCommand.A(x + r, y + r, z),
+    ];
+    return this;
+  }
+}
+
+export function disc(radius: number) {
+  return new Disc(radius);
+}
+
+export class PolarAxes extends GroupObj {
+  $domain: [number, number];
+  constructor(domain: [number, number]) {
+    super([]);
+    this.$domain = domain;
+  }
+  $tickCount: number = 6;
+  $axisColor: string = "grey";
+  axisColor(value: string) {
+    this.$axisColor = value;
+    return this;
+  }
+  $axisOpacity: `${number}%` | number = 1;
+  done() {
+    const lineLabels: TextObj[] = [];
+    for (let i = 1; i < this.$domain[1] * this.$tickCount; i++) {
+      const c = disc(i)
+        .fill("none")
+        .stroke(this.$axisColor)
+        .fillOpacity(this.$axisOpacity);
+      const t = text(i)
+        .position(0, i)
+        .fill(this.$axisColor)
+        .textAnchor("middle")
+        .dy(-0.15);
+      lineLabels.push(t);
+      this.$children.push(c);
+    }
+    const lineCoords = range(0, 360, 45);
+    console.log(lineCoords);
+    const axes: LineObj[] = [];
+    const k = this.$domain[1] + lineCoords.length - (this.$tickCount - 1);
+    lineCoords.forEach((n) => {
+      const x = Math.cos(toRadians(n)) * k;
+      const y = Math.sin(toRadians(n)) * k;
+      const L = line([0, 0], [x, y])
+        .stroke(this.$axisColor)
+        .strokeOpacity(this.$axisOpacity);
+      axes.push(L);
+    });
+    axes.forEach((l) => this.$children.push(l));
+    lineLabels.forEach((t) => this.$children.push(t));
+    return this;
+  }
+}
+
+export function polarAxes(domain: [number, number]) {
+  return new PolarAxes(domain);
 }
 
 export type Triplet<T> = [T, T, T];
@@ -6126,23 +6219,49 @@ export function lexical(code: string) {
   return { stream, scan, atEnd };
 }
 
-// § Primitives
+// § Array Operators
+
+// The following functions are used to
+// handle arrays. These functions are
+// used extensively in the CAS modules,
+// so any changes to them should be
+// handled with care.
+
+/**
+ * Given the array of elements `list` and an element
+ * `x`, returns a copy of `list` with `x` as the
+ * first element.
+ */
 function cons<T>(list: T[], x: T) {
   return [x, ...list];
 }
 
-function cdr<T>(list: T[]) {
-  if (list.length === 0) {
+/**
+ * Given the array of elements, returns a copy
+ * of the array without the first element.
+ */
+function cdr<T>(array: T[]) {
+  if (array.length === 0) {
     return [];
   } else {
-    return list.slice(1);
+    return array.slice(1);
   }
 }
 
+/**
+ * Given the array of elements, returns a copy
+ * of the array with the elements reversed.
+ */
 function reverse<T>(list: T[]) {
   return [...list].reverse();
 }
 
+/**
+ * An enum of flags corresponding to expression
+ * types for MathObjs. This enum is used to 
+ * check whether a given MathObj is of a
+ * particular type. 
+ */
 enum expression_type {
   complex,
   relation,
@@ -6164,7 +6283,11 @@ enum expression_type {
   equation,
 }
 
-/** The binding power of a given operator. Values of type `bp` are used the parsers to determinate operator precedence (both the Twine and CAM parsers use Pratt parsing for expressions). */
+/**
+ * The binding power of a given operator. 
+ * Values of type `bp` are used the parsers
+ * to determinate operator precedence.
+ */
 enum bp {
   nil,
   lowest,
@@ -6191,6 +6314,10 @@ enum bp {
   call,
 }
 
+/**
+ * An object corresponding to a
+ * mathematical expression.
+ */
 abstract class MathObj {
   isSimplified: boolean = false;
   abstract precedence(): bp;
@@ -6215,10 +6342,18 @@ abstract class MathObj {
   ): MathObj;
 }
 
+/**
+ * Returns true, and asserts, if a given
+ * object `u` is a MathObj.
+ */
 function isMathObj(u: any): u is MathObj {
   return u instanceof MathObj;
 }
 
+/**
+ * An object corresponding to the
+ * global symbol Undefined.
+ */
 class Undefined extends MathObj {
   precedence(): bp {
     return bp.atom;
@@ -6259,16 +6394,35 @@ class Undefined extends MathObj {
   }
 }
 
+/**
+ * Returns a new Undefined
+ * symbol.
+ */
 function UNDEFINED() {
   return new Undefined();
 }
 
+/**
+ * Returns true, and type-asserts, if the given
+ * MathObj `u` is the global symbol `Undefined`.
+ */
 function isUndefined(u: MathObj): u is Undefined {
   return u.kind() === expression_type.undefined;
 }
 
+/**
+ * The operators recognized as relation operators
+ * in symbolic strings. Note that the `=` sign in
+ * a symbolic string is seen as a relation operator
+ * rather than assignment, since assignment is handled
+ * by the Praxis interpreter.
+ */
 type RelationOperator = "=" | "<" | ">" | "<=" | ">=" | "!=";
 
+/**
+ * Given two lists of MathObjs `a` and `b`, returns
+ * true if `a` and `b` are equal to one another.
+ */
 function argsEqual(a: MathObj[], b: MathObj[]) {
   if (a.length !== b.length) return false;
   if (a.length === 1 && b.length === 1) return a[0].equals(b[0]);
@@ -6279,6 +6433,7 @@ function argsEqual(a: MathObj[], b: MathObj[]) {
   return false;
 }
 
+/** An object corresponding to a list of MathObjs. */
 class ListX extends MathObj {
   $args: MathObj[];
   constructor(args: MathObj[]) {
@@ -6355,10 +6510,17 @@ class ListX extends MathObj {
   }
 }
 
+/**
+ * Returns a new list of MathObjs.
+ */
 function listx(expressions: MathObj[]) {
   return new ListX(expressions);
 }
 
+/**
+ * An object corresponding to a relation
+ * expression.
+ */
 class Relation extends MathObj {
   precedence(): bp {
     return bp.rel;
@@ -6409,10 +6571,17 @@ class Relation extends MathObj {
   }
 }
 
+/**
+ * Returns a new MathObj relation expression.
+ */
 function relate(op: RelationOperator, args: MathObj[]) {
   return new Relation(op, args);
 }
 
+/**
+ * Returns true, and type-asserts, if the given
+ * MathObj `u` is a Relation expression.
+ */
 function isRelation(u: MathObj): u is Relation {
   return u.kind() === expression_type.relation;
 }

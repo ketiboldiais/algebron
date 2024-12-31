@@ -6,12 +6,12 @@
   --background: #ffffff;
   --foreground: #171717;
   --blockquote-bg: rgb(227, 227, 227);
-  --red: firebrick;
+  --red: tomato;
   --blue: dodgerblue;
   --green: yellowgreen;
   --lightgrey: #B2BEB5;
-  --dimgrey: rgb(214, 225, 217);
-  --purple: violet;
+  --dimgrey: rgb(184, 199, 188);
+  --purple: rgb(232, 100, 232);
   --code-bg: rgb(46,42,40);
   --aside-color: #209797;
 }

@@ -48,6 +48,7 @@ import {
   Function3D,
   isSafeNumber,
   plotPolar,
+  polarAxes,
 } from "@/algebron/main";
 
 import {
@@ -1644,13 +1645,16 @@ export const AngleLab = () => {
 };
 
 export const PolarPlotTest = () => {
+  const f = "fn f(x) = e^(sin(x)) - 2cos(4x) + (sin((2x - pi)/24))^5";
   const d = svg([
-    plotPolar("fn f(x) = e^(sin(x)) - 2cos(4x) + (sin((2x - pi)/24))^5")
-      .stroke(cssvar('purple'))
+    polarAxes([-1,1]).axisColor(cssvar('dimgrey')).done(),
+    plotPolar(f)
+      .strokeWidth(1.5)
+      .stroke(cssvar("purple"))
       .cycles(24 * Math.PI)
       .done(),
   ]).done();
-  return <Fig data={d} width={70}/>;
+  return <Fig data={d} width={70} />;
 };
 
 export default Fig;
