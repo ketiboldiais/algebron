@@ -47,6 +47,7 @@ import {
   curveBlob,
   Function3D,
   isSafeNumber,
+  plotPolar,
 } from "@/algebron/main";
 
 import {
@@ -1590,7 +1591,7 @@ export const LineSegment1 = () => {
     // axis({ on: "x", domain: D, range: R }),
     // axis({ on: "y", domain: D, range: R }),
     line([8, 0], [-8, 0])
-      .fillOpacity(0.3)
+      .strokeOpacity(0.3)
       .stroke(cssvar("blue"))
       .arrowEnd()
       .arrowStart(),
@@ -1610,7 +1611,7 @@ export const LineSegment1 = () => {
 
   return (
     <div>
-      <Fig data={d} width={70} paddingBottom={20}/>
+      <Fig data={d} width={70} paddingBottom={20} />
     </div>
   );
 };
@@ -1640,6 +1641,16 @@ export const AngleLab = () => {
       <Fig data={d} width={70} />
     </div>
   );
+};
+
+export const PolarPlotTest = () => {
+  const d = svg([
+    plotPolar("fn f(x) = e^(sin(x)) - 2cos(4x) + (sin((2x - pi)/24))^5")
+      .stroke(cssvar('purple'))
+      .cycles(24 * Math.PI)
+      .done(),
+  ]).done();
+  return <Fig data={d} width={70}/>;
 };
 
 export default Fig;

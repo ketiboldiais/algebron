@@ -2624,7 +2624,7 @@ export class LineObj extends GraphicsAtom {
     return this;
   }
   $strokeOpacity: number | string = 1;
-  fillOpacity(value: number | string) {
+  strokeOpacity(value: number | string) {
     this.$strokeOpacity = value;
     return this;
   }
@@ -3513,6 +3513,108 @@ export function cplot(
   range: [number, number]
 ) {
   return new CartesianPlot(fn, domain, range);
+}
+
+export class PolarPlot2D extends GroupObj {
+  $f: string;
+  $domain: [number, number];
+  $range: [number, number];
+  constructor(f: string) {
+    super([]);
+    this.$f = f;
+    this.$domain = [-10, 10];
+    this.$range = [-10, 10];
+  }
+  $cycles: number = 2 * Math.PI;
+  cycles(n: number) {
+    this.$cycles = n;
+    return this;
+  }
+  radius(r: number) {
+    if (r > 0) {
+      this.$domain = [-r, r];
+      this.$range = [-r, r];
+    } else {
+      console.warn("Invalid radius passed to PolarPlot2D; defaults applied.");
+    }
+    return this;
+  }
+  $axisColor: string = "initial";
+  axisColor(color: string) {
+    this.$axisColor = color;
+    return this;
+  }
+  $compiledFunction: Fn | null = null;
+
+  done() {
+    const out: PathCommand[] = [];
+    const e = engine();
+    const fn = e.compile(this.$f);
+    if (!(fn instanceof Fn)) {
+      console.error(strof(fn));
+      return this;
+    }
+    this.$compiledFunction = fn;
+    const dataset: [number, number][] = [];
+    for (let i = 0; i < this.$cycles; i += 0.01) {
+      const r = this.$compiledFunction.call(e.compiler, [i]);
+      if (typeof r !== "number") {
+        continue;
+      }
+      const x = r * Math.cos(i);
+      const y = r * Math.sin(i);
+      dataset.push([x, y]);
+    }
+    let moved = false;
+    for (let i = 0; i < dataset.length; i++) {
+      const [x, y] = dataset[i];
+      if (!Number.isNaN(y)) {
+        if (!moved) {
+          out.push(PathCommand.M(x, y, 1));
+          moved = true;
+        } else {
+          out.push(PathCommand.L(x, y, 1));
+        }
+      } else {
+        const next = dataset[i + 1];
+        if (next !== undefined) {
+          out.push(PathCommand.M(x, y, 1));
+        }
+      }
+    }
+
+    const p = path(out[0].$end.$x, out[0].$end.$y, out[0].$end.$z)
+      .stroke(this.$stroke)
+      .strokeWidth(this.$strokeWidth);
+
+    for (let i = 1; i < out.length; i++) {
+      p.$commands.push(out[i]);
+    }
+
+    this.$children.push(p);
+
+    return this;
+  }
+
+  $tickCount: number = 2.6;
+
+  $stroke: string = "tomato";
+
+  stroke(value: string) {
+    this.$stroke = value;
+    return this;
+  }
+
+  $strokeWidth: number = 1;
+
+  strokeWidth(value: number) {
+    this.$strokeWidth = value;
+    return this;
+  }
+}
+
+export function plotPolar(fn: string) {
+  return new PolarPlot2D(fn);
 }
 
 export type Triplet<T> = [T, T, T];
