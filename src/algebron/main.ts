@@ -1,5 +1,22 @@
+// Copyright (C) 2025 Ketib Oldiais - All Rights Reserved.
+// You may use, distribute, and modify this code under the
+// terms of the MIT license.
+
+// Disabling TypeScript's no-explicity-any rule because we
+// have to do some heavy recursion in the CAS modules;
+// TypeScript goes insane with certain recursive types,
+// and it's far too cumbersome to remedy the compiler
+// with explicit types.
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
 // § Utility Functions
+
+// Start off by writing a pretty-print string for ASTs.
+// We'll be using this for quickly debugging/verifying
+// the parsers are behaving correctly. 
+
+
 /** Returns a pretty-print tree of the given Object `Obj`. */
 export function treestring<T extends object>(
   Obj: T,
@@ -72,6 +89,12 @@ export function treestring<T extends object>(
 function isNothing(x: any): x is undefined | null {
   return x === undefined || x === null;
 }
+
+// Now we'll write some common functional programming
+// types for boxes. The following types, `None` and
+// `Some`, correspond to functional option types.
+// We will use these types extensively when implementing
+// the linked list.  
 
 /** An object corresponding to nothing. */
 class None {
@@ -6258,9 +6281,9 @@ function reverse<T>(list: T[]) {
 
 /**
  * An enum of flags corresponding to expression
- * types for MathObjs. This enum is used to 
+ * types for MathObjs. This enum is used to
  * check whether a given MathObj is of a
- * particular type. 
+ * particular type.
  */
 enum expression_type {
   complex,
@@ -6284,7 +6307,7 @@ enum expression_type {
 }
 
 /**
- * The binding power of a given operator. 
+ * The binding power of a given operator.
  * Values of type `bp` are used the parsers
  * to determinate operator precedence.
  */
