@@ -1270,6 +1270,42 @@ function isString(u: any): u is string {
   return typeof u === "string";
 }
 
+/** Returns the distance between two points `p1` and `p2`. */
+export function dist2D(
+  p1: [number, number] | Vector,
+  p2: [number, number] | Vector
+) {
+  p1 = Array.isArray(p1) ? vector(p1) : p1;
+  p2 = Array.isArray(p2) ? vector(p2) : p2;
+  const x1 = p1.$x,
+    y1 = p1.$y,
+    x2 = p2.$x,
+    y2 = p2.$y;
+  return Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
+}
+
+/**
+ * Returns the direction of a line based on the line's start and end points.
+ * @param startPoint The line's starting point.
+ * @param endPoint The line's ending point.
+ */
+export function dir2D(
+  startPoint: [number, number] | Vector,
+  endPoint: [number, number] | Vector
+) {
+  startPoint = Array.isArray(startPoint) ? vector(startPoint) : startPoint;
+  endPoint = Array.isArray(endPoint) ? vector(endPoint) : endPoint;
+  const x = startPoint.$x,
+    y = startPoint.$y,
+    xx = endPoint.$x,
+    yy = endPoint.$y;
+  let angV = Math.acos(
+    (xx - x) / Math.sqrt(Math.pow(x - xx, 2) + Math.pow(y - yy, 2))
+  );
+  if (y - yy > 0) angV = -angV;
+  return (angV + Math.PI * 2) % (Math.PI * 2);
+}
+
 /**
  * An object implementing a matrix.
  */
@@ -1861,6 +1897,18 @@ export class SVGObj {
     return this.$dimensions[1];
   }
 
+  /** Sets the height of this SVG. */
+  height(value: number) {
+    this.$dimensions[1] = value;
+    return this;
+  }
+
+  /** Sets the width of this SVG. */
+  width(value: number) {
+    this.$dimensions[0] = value;
+    return this;
+  }
+
   dimensions(width: number, height: number) {
     this.$dimensions = [width, height];
     return this;
@@ -2290,7 +2338,7 @@ export class Path extends GraphicsAtom {
     radius: number,
     startAngle: number,
     endAngle: number,
-    counterclockwise: 0 | 1 = 0
+    counterclockwise: 0 | 1 = 1
   ) {
     const [x, y] = center;
     const r = radius;
@@ -2493,6 +2541,12 @@ export class Arrowhead extends GraphicsAtom {
     return this;
   }
 
+  $fillOpacity: string | number = 1;
+  fillOpacity(value: string | number) {
+    this.$fillOpacity = value;
+    return this;
+  }
+
   $type: "start" | "end" = "end";
 
   type(value: "start" | "end") {
@@ -2569,7 +2623,13 @@ export class LineObj extends GraphicsAtom {
     this.$strokeDashArray = value;
     return this;
   }
+  $strokeOpacity: number | string = 1;
+  fillOpacity(value: number | string) {
+    this.$strokeOpacity = value;
+    return this;
+  }
   $arrowEnd: null | Arrowhead = null;
+
   $arrowStart: null | Arrowhead = null;
 
   arrowStart(arrow?: Arrowhead) {
@@ -2579,6 +2639,7 @@ export class LineObj extends GraphicsAtom {
       this.$arrowStart = arrowhead(this.$id)
         .type("start")
         .fill(this.$stroke)
+        .fillOpacity(this.$strokeOpacity)
         .stroke("none");
     }
     return this;
@@ -2588,7 +2649,10 @@ export class LineObj extends GraphicsAtom {
     if (arrow) {
       this.$arrowEnd = arrow;
     } else {
-      this.$arrowEnd = arrowhead(this.$id).fill(this.$stroke).stroke("none");
+      this.$arrowEnd = arrowhead(this.$id)
+        .fillOpacity(this.$strokeOpacity)
+        .fill(this.$stroke)
+        .stroke("none");
     }
     return this;
   }
@@ -3321,7 +3385,15 @@ class Grid extends GroupObj {
     return this;
   }
   $stroke: string = "rgb(214, 225, 217)";
+  stroke(color: string) {
+    this.$stroke = color;
+    return this;
+  }
   $strokeWidth: string | number = 1;
+  strokeWidth(value: string | number) {
+    this.$strokeWidth = value;
+    return this;
+  }
   $step: number = 1;
   step(value: number) {
     this.$step = value;

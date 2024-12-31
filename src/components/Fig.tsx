@@ -65,6 +65,8 @@ import {
 import { Canvas, useThree } from "@react-three/fiber";
 import { AxesHelper, DoubleSide, GridHelper, Vector3 } from "three";
 
+const cssvar = (varname: string) => `var(--${varname})`;
+
 type AxisSpec = {
   on: "x" | "y";
   domain: [number, number];
@@ -74,7 +76,7 @@ type AxisSpec = {
 
 const axis = (spec: AxisSpec) => {
   const out = spec.on === "x" ? haxis(spec.domain, 1) : vaxis(spec.range, 1);
-  out.stroke("#B2BEB5");
+  out.stroke(cssvar("lightgrey"));
   if (!spec.hideTicks) {
     if (spec.on === "x") {
       out.ticks((t) => {
@@ -150,6 +152,7 @@ const DEF = ({ elements }: DEFProps) => {
         if (isArrowhead(e)) {
           return (
             <marker
+              fillOpacity={e.$fillOpacity}
               key={`${e.$id}-${e.$type}-${i}`}
               id={`${e.$id}-${e.$type}`}
               markerWidth={e.$markerWidth}
@@ -278,6 +281,7 @@ const LINE = ({ data }: L2DProps) => {
       strokeDasharray={data.$strokeDashArray}
       markerEnd={data.$arrowEnd ? `url(#${data.$id}-end)` : ""}
       markerStart={data.$arrowEnd ? `url(#${data.$id}-start)` : ""}
+      strokeOpacity={data.$strokeOpacity}
     />
   );
 };
@@ -326,13 +330,13 @@ export const LA1 = () => {
   const k = vector([4, 1]);
   const n = j.add(k);
   const d = svg([
-    grid(D, R).done(),
-    line([0, 0], [3, 3]).stroke("red").arrowEnd(),
-    line([0, 0], [4, 1]).stroke("red").arrowEnd(),
-    line([0, 0], [n.$x, n.$y]).stroke("blue").arrowEnd(),
-    text("a").position(2.5, 4).fill("red").latex("inline"),
-    text("b").position(3.5, 2).fill("red").latex("inline"),
-    text("a + b").position(5, 5.5).fill("blue").latex("inline"),
+    grid(D, R).stroke(cssvar("dimgrey")).done(),
+    line([0, 0], [3, 3]).stroke(cssvar("red")).arrowEnd(),
+    line([0, 0], [4, 1]).stroke(cssvar("red")).arrowEnd(),
+    line([0, 0], [n.$x, n.$y]).stroke(cssvar("blue")).arrowEnd(),
+    text("a").position(2.5, 4).fill(cssvar("red")).latex("inline"),
+    text("b").position(3.5, 2).fill(cssvar("red")).latex("inline"),
+    text("a + b").position(5, 5.5).fill(cssvar("blue")).latex("inline"),
     xAxis,
     yAxis,
   ])
@@ -349,13 +353,17 @@ export const LA2 = () => {
   const xAxis = axis({ on: "x", domain: D, range: R });
   const yAxis = axis({ on: "y", domain: D, range: R });
   const d = svg([
-    grid(D, R).done(),
-    cplot("fn f(x) = 3x^2 + 4x - 1", D, R).stroke("red").done(),
-    cplot("fn f(x) = 4x^2 - 2x + 2", D, R).stroke("blue").done(),
-    text("3x^2 + 4x - 1").fill("red").position(1, 2).width(100).latex("inline"),
+    grid(D, R).stroke(cssvar("dimgrey")).done(),
+    cplot("fn f(x) = 3x^2 + 4x - 1", D, R).stroke(cssvar("red")).done(),
+    cplot("fn f(x) = 4x^2 - 2x + 2", D, R).stroke(cssvar("blue")).done(),
+    text("3x^2 + 4x - 1")
+      .fill(cssvar("red"))
+      .position(1, 2)
+      .width(100)
+      .latex("inline"),
     text("4x^2 - 2x + 2")
       .position(1.5, 6)
-      .fill("blue")
+      .fill(cssvar("blue"))
       .width(100)
       .latex("inline"),
     xAxis,
@@ -376,9 +384,9 @@ export const LA3 = () => {
   const j = vector([3, 3]);
   const n = j.mul(2);
   const d = svg([
-    grid(D, R).done(),
-    line([0, 0], [n.$x, n.$y]).stroke("blue").arrowEnd(),
-    line([0, 0], [3, 3]).stroke("red").arrowEnd(),
+    grid(D, R).stroke(cssvar("dimgrey")).done(),
+    line([0, 0], [n.$x, n.$y]).stroke(cssvar("blue")).arrowEnd(),
+    line([0, 0], [3, 3]).stroke(cssvar("red")).arrowEnd(),
     text("v").position(2.5, 4).latex("inline"),
     text("2v").position(5, 5.5).latex("inline"),
     xAxis,
@@ -397,24 +405,24 @@ export const LA4 = () => {
   const xAxis = axis({ on: "x", domain: D, range: R });
   const yAxis = axis({ on: "y", domain: D, range: R });
   const d = svg([
-    grid(D, R).done(),
+    grid(D, R).stroke(cssvar("dimgrey")).done(),
     xAxis,
     yAxis,
-    cplot("fn f(x) = sin(x)", D, R).stroke("red").done(),
-    cplot("fn g(x) = cos(x)", D, R).stroke("blue").done(),
-    cplot("fn h(x) = cos(x) + sin(x)", D, R).stroke("green").done(),
+    cplot("fn f(x) = sin(x)", D, R).stroke(cssvar("red")).done(),
+    cplot("fn g(x) = cos(x)", D, R).stroke(cssvar("blue")).done(),
+    cplot("fn h(x) = cos(x) + sin(x)", D, R).stroke(cssvar("green")).done(),
     text("f(x) = \\sin(x)")
-      .fill("red")
-      .position(-6, 2.5)
+      .fill(cssvar("red"))
+      .position(-6, 3)
       .width(100)
       .latex("inline"),
     text("g(x) = \\cos(x)")
-      .fill("blue")
+      .fill(cssvar("blue"))
       .position(-4, -2)
       .width(100)
       .latex("inline"),
     text("h(x) = \\cos(x) + \\sin(x)")
-      .fill("green")
+      .fill(cssvar("green"))
       .position(1.5, 4)
       .width(150)
       .latex("inline"),
@@ -434,8 +442,8 @@ export const LA5 = () => {
   const d = svg([
     xAxis,
     yAxis,
-    cplot("fn f(x) = (5/4) - x", D, R).stroke("red").done(),
-    cplot("fn g(x) = (x/2) - (1/4)", D, R).stroke("blue").done(),
+    cplot("fn f(x) = (5/4) - x", D, R).stroke(cssvar("red")).done(),
+    cplot("fn g(x) = (x/2) - (1/4)", D, R).stroke(cssvar("blue")).done(),
   ])
     .dimensions(400, 400)
     .domain(D)
@@ -453,10 +461,13 @@ export const CoincidentLines = () => {
     xAxis,
     yAxis,
     cplot("fn f(x) = (1 - 2x)/3", [-9.5, 9.5], R)
-      .stroke("red")
+      .stroke(cssvar("red"))
       .strokeWidth(3)
       .done(),
-    cplot("fn g(x) = (2 - 4x)/6", D, R).stroke("blue").strokeWidth(1).done(),
+    cplot("fn g(x) = (2 - 4x)/6", D, R)
+      .stroke(cssvar("blue"))
+      .strokeWidth(1)
+      .done(),
   ])
     .dimensions(400, 400)
     .domain(D)
@@ -473,8 +484,8 @@ export const ParallelLines = () => {
   const d = svg([
     xAxis,
     yAxis,
-    cplot("fn f(x) = (1 - 2x)/3", D, R).stroke("red").done(),
-    cplot("fn g(x) = (7 - 2x)/3", D, R).stroke("blue").done(),
+    cplot("fn f(x) = (1 - 2x)/3", D, R).stroke(cssvar("red")).done(),
+    cplot("fn g(x) = (7 - 2x)/3", D, R).stroke(cssvar("blue")).done(),
   ])
     .dimensions(400, 400)
     .domain(D)
@@ -491,8 +502,8 @@ export const IntersectingLines = () => {
   const d = svg([
     xAxis,
     yAxis,
-    cplot("fn f(x) = (1 - 2x)/3", D, R).stroke("red").done(),
-    cplot("fn g(x) = (8 - x)/(-2)", D, R).stroke("blue").done(),
+    cplot("fn f(x) = (1 - 2x)/3", D, R).stroke(cssvar("red")).done(),
+    cplot("fn g(x) = (8 - x)/(-2)", D, R).stroke(cssvar("blue")).done(),
   ])
     .dimensions(400, 400)
     .domain(D)
@@ -675,16 +686,18 @@ export const Calc1 = () => {
         (x === -2 && y === -2)
       )
   );
-  const cs = xys.map(([x, y]) => circle(5, [x, y]).fill("lightblue"));
-  const ts = xys.map(([x, y]) => text(`(${x},${y})`).position(x, y).dy(-10));
+  const cs = xys.map(([x, y]) => circle(5, [x, y]).fill(cssvar("blue")));
+  const ts = xys.map(([x, y]) =>
+    text(`(${x},${y})`).fill(cssvar("foreground")).position(x, y).dy(-10)
+  );
   const d = svg([
-    grid(D, R).done(),
+    grid(D, R).stroke(cssvar("dimgrey")).done(),
     xAxis,
     yAxis,
-    text("I").position(2, 2),
-    text("IV").position(2, -2),
-    text("II").position(-2, 2),
-    text("III").position(-2, -2),
+    text("I").fill(cssvar("foreground")).position(2, 2),
+    text("IV").fill(cssvar("foreground")).position(2, -2),
+    text("II").fill(cssvar("foreground")).position(-2, 2),
+    text("III").fill(cssvar("foreground")).position(-2, -2),
     ...cs,
     ...ts,
   ])
@@ -701,12 +714,12 @@ export const DistanceBetweenPoints = () => {
   const xAxis = axis({ on: "x", domain: D, range: R });
   const yAxis = axis({ on: "y", domain: D, range: R });
   const d = svg([
-    grid(D, R).done(),
+    grid(D, R).stroke(cssvar("dimgrey")).done(),
     xAxis,
     yAxis,
-    line([1, 1], [-3, 4]).stroke("firebrick"),
-    circle(5, [1, 1]).fill("salmon"),
-    circle(5, [-3, 4]).fill("salmon"),
+    line([1, 1], [-3, 4]).stroke(cssvar("red")),
+    circle(5, [1, 1]).fill(cssvar("red")),
+    circle(5, [-3, 4]).fill(cssvar("red")),
   ])
     .dimensions(400, 400)
     .domain(D)
@@ -721,13 +734,13 @@ export const MidpointFig = () => {
   const xAxis = axis({ on: "x", domain: D, range: R });
   const yAxis = axis({ on: "y", domain: D, range: R });
   const d = svg([
-    grid(D, R).done(),
+    grid(D, R).stroke(cssvar("dimgrey")).done(),
     xAxis,
     yAxis,
-    line([0, 1], [-3, 4]).stroke("firebrick"),
-    circle(5, [0, 1]).fill("lightblue"),
-    circle(5, [-3, 4]).fill("lightblue"),
-    circle(5, [-1.5, 2.5]).fill("salmon"),
+    line([0, 1], [-3, 4]).stroke(cssvar("red")),
+    circle(5, [0, 1]).fill(cssvar("blue")),
+    circle(5, [-3, 4]).fill(cssvar("blue")),
+    circle(5, [-1.5, 2.5]).fill(cssvar("red")),
   ])
     .dimensions(400, 400)
     .domain(D)
@@ -742,15 +755,15 @@ export const DistanceBetweenPoints2 = () => {
   const xAxis = axis({ on: "x", domain: D, range: R });
   const yAxis = axis({ on: "y", domain: D, range: R });
   const d = svg([
-    grid(D, R).done(),
+    grid(D, R).stroke(cssvar("dimgrey")).done(),
     xAxis,
     yAxis,
-    line([1, 1], [-3, 4]).stroke("firebrick"),
-    line([-3, 1], [-3, 4]).stroke("firebrick"),
-    line([-3, 1], [1, 1]).stroke("firebrick"),
-    circle(5, [1, 1]).fill("salmon"),
-    circle(5, [-3, 4]).fill("salmon"),
-    circle(5, [-3, 1]).fill("salmon"),
+    line([1, 1], [-3, 4]).stroke(cssvar("red")),
+    line([-3, 1], [-3, 4]).stroke(cssvar("red")),
+    line([-3, 1], [1, 1]).stroke(cssvar("red")),
+    circle(5, [1, 1]).fill(cssvar("red")),
+    circle(5, [-3, 4]).fill(cssvar("red")),
+    circle(5, [-3, 1]).fill(cssvar("red")),
     text("(x_P, y_P)").latex("inline").position(-2.9, 4.7),
     text("(x_Q, y_Q)").latex("inline").position(1, 1.2),
     text("(x_P, y_Q)").latex("inline").position(-4, 1.2),
@@ -816,10 +829,10 @@ export const PlotTest = () => {
   const d = svg([
     xAxis,
     yAxis,
-    cplot("fn f(x) = sin(x)", D, R).stroke("red").done(),
-    cplot("fn g(x) = cos(x)", D, R).stroke("blue").done(),
-    cplot("fn h(x) = cos(x) + sin(x)", D, R).stroke("green").done(),
-    cplot("fn n(x) = 2cos(x)", D, R).stroke("purple").done(),
+    cplot("fn f(x) = sin(x)", D, R).stroke(cssvar("red")).done(),
+    cplot("fn g(x) = cos(x)", D, R).stroke(cssvar("blue")).done(),
+    cplot("fn h(x) = cos(x) + sin(x)", D, R).stroke(cssvar("green")).done(),
+    cplot("fn n(x) = 2cos(x)", D, R).stroke(cssvar("purple")).done(),
   ])
     .dimensions(600, 600)
     .domain(D)
@@ -877,12 +890,15 @@ export const ConvexHullDemo = () => {
     }
   });
   p.L(chull.leftmost.$x, chull.leftmost.$y);
-  p.stroke("olivedrab").strokeWidth(1).fill("lightgreen").fillOpacity("20%");
+  p.stroke(cssvar("green"))
+    .strokeWidth(1)
+    .fill(cssvar("green"))
+    .fillOpacity("20%");
   const cs = points.map((v) => {
-    return circle(5, [v.$x, v.$y]).fill("olivedrab").fillOpacity("50%");
+    return circle(5, [v.$x, v.$y]).fill(cssvar("green")).fillOpacity("50%");
   });
   const d = svg([
-    grid(D, R).done(),
+    grid(D, R).stroke(cssvar("dimgrey")).done(),
     // xAxis,
     // yAxis,
     p,
@@ -939,9 +955,9 @@ export const AffineFunctionLab = () => {
   const d = svg([
     xAxis,
     yAxis,
-    cplot(`fn ${fn}`, D, R).stroke("red").done(),
-    circle(5, [AB().value, 0]).fill("salmon"),
-    text(`(${AB().string}, 0)`).position(AB().value, 0.8).fill("firebrick"),
+    cplot(`fn ${fn}`, D, R).stroke(cssvar("red")).done(),
+    circle(5, [AB().value, 0]).fill(cssvar("red")),
+    text(`(${AB().string}, 0)`).position(AB().value, 0.8).fill(cssvar("red")),
   ])
     .dimensions(500, 500)
     .domain(D)
@@ -1112,10 +1128,10 @@ export const SplineLab = () => {
   const cc = curveCardinal(pts, tensionValue);
   const ccr = curveCatmullRom(pts, alphaValue);
   const d = svg([
-    linearCurveChecked && lc.stroke("red"),
-    bezierCurveChecked && cbc.stroke("green"),
-    cardinalCurveChecked && cc.stroke("magenta"),
-    catmullRomCurveChecked && ccr.stroke("blue"),
+    linearCurveChecked && lc.stroke(cssvar("red")),
+    bezierCurveChecked && cbc.stroke(cssvar("green")),
+    cardinalCurveChecked && cc.stroke(cssvar("purple")),
+    catmullRomCurveChecked && ccr.stroke(cssvar("blue")),
     circles,
   ])
     .dimensions(400, 400)
@@ -1520,7 +1536,7 @@ export function angleMarker(
   pt3: [number, number],
   pt2: [number, number],
   pt1: [number, number],
-  radius = 0.3,
+  radius = 0.3
 ) {
   const [pt1x, pt1y] = pt1;
   const [pt2x, pt2y] = pt2;
@@ -1538,14 +1554,82 @@ export function angleMarker(
   return p;
 }
 
+export const Line1 = () => {
+  const D = tuple(-10, 10);
+  const R = tuple(-10, 10);
+  const d = svg([
+    grid(D, R).stroke(cssvar("dimgrey")).done(),
+    axis({ on: "x", domain: D, range: R }),
+    axis({ on: "y", domain: D, range: R }),
+    line([7, 7], [-7, -7]).stroke(cssvar("red")).arrowEnd().arrowStart(),
+    circle(4, [0, 0]).fill(cssvar("red")),
+    circle(4, [2, 2]).fill(cssvar("red")),
+    circle(4, [-4, -4]).fill(cssvar("red")),
+    circle(4, [6, 6]).fill(cssvar("red")),
+    text("A").latex("block").position(6, 6).fill(cssvar("foreground")),
+    text("B").latex("block").position(2, 2).fill(cssvar("foreground")),
+    text("C").latex("block").position(0, 0).fill(cssvar("foreground")),
+    text("D").latex("block").position(-4, -4).fill(cssvar("foreground")),
+  ])
+    .domain(D)
+    .range(R)
+    .done();
+
+  return (
+    <div>
+      <Fig data={d} width={70} />
+    </div>
+  );
+};
+
+export const LineSegment1 = () => {
+  const D = tuple(-10, 10);
+  const R = tuple(-5, 5);
+  const d = svg([
+    // grid(D, R).stroke(cssvar("dimgrey")).done(),
+    // axis({ on: "x", domain: D, range: R }),
+    // axis({ on: "y", domain: D, range: R }),
+    line([8, 0], [-8, 0])
+      .fillOpacity(0.3)
+      .stroke(cssvar("blue"))
+      .arrowEnd()
+      .arrowStart(),
+    line([4, 0], [-4, 0]).stroke(cssvar("blue")),
+    circle(4, [0, 0]).fill(cssvar("blue")),
+    circle(4, [-4, 0]).fill(cssvar("blue")),
+    circle(4, [4, 0]).fill(cssvar("blue")),
+    circle(4, [6, 6]).fill(cssvar("blue")),
+    text("A").latex("block").position(-5, 0).fill(cssvar("foreground")),
+    text("B").latex("block").position(-1, 0).fill(cssvar("foreground")),
+    text("C").latex("block").position(3, 0).fill(cssvar("foreground")),
+  ])
+    .height(200)
+    .domain(D)
+    .range(R)
+    .done();
+
+  return (
+    <div>
+      <Fig data={d} width={70} paddingBottom={20}/>
+    </div>
+  );
+};
+
 export const AngleLab = () => {
   const D = tuple(-10, 10);
   const R = tuple(-10, 10);
   const d = svg([
+    grid(D, R).stroke(cssvar("dimgrey")).done(),
     axis({ on: "x", domain: D, range: R }),
     axis({ on: "y", domain: D, range: R }),
-    line([0,0], [5,0]).stroke('salmon').arrowEnd(),
-    line([0,0], [-1,5]).stroke('salmon').arrowEnd(),
+    line([0, 0], [5, 0]).stroke(cssvar("red")).arrowEnd(),
+    line([0, 0], [2, 4]).stroke(cssvar("red")).arrowEnd(),
+    circle(4, [0, 0]).fill(cssvar("red")),
+    circle(4, [1, 2]).fill(cssvar("red")),
+    circle(4, [3, 0]).fill(cssvar("red")),
+    text("A").latex("block").position(-0.5, 3.5).fill(cssvar("foreground")),
+    text("B").latex("block").position(-1.8, 1).fill(cssvar("foreground")),
+    text("C").latex("block").position(2, -0.2).fill(cssvar("foreground")),
   ])
     .domain(D)
     .range(R)

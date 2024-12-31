@@ -1,12 +1,41 @@
 import MdxLayout from "@/components/mdx-layout";
+import { Line1 } from "@/components/Fig";
 
 # Geometry
 
 <TOC>
 
+- [Point](#point)
+- [Line](#line)
+- [Line Segments](#line-segments)
 - [Trigonometry](#trigonometry)
 
 </TOC>
+
+## Point
+A _point_ is a location. It is represented as a dot, but has no dimensions. Below is a set of randomly plotted points. 
+
+import { Calc1 } from "@/components/Fig";
+
+<Calc1/>
+
+## Line
+A _line_ is an infinite set of points. Given any two points on a line, there is always a point that lies between them on that line. Below, the points ${A,}$ ${B,}$ ${C,}$ and ${D}$ are _collinear_. Points that do not lie on the same line are said to be _collinear_. We will denote lines with an overline double-ended arrow. For example, the line below can be denoted with the notation,
+
+$$
+  \overleftrightarrow{AD}.
+$$
+
+<Line1/>
+
+## Line Segments
+A _line segment_ is a subset of a line. It comprises two distinct points on the line, called the line segment's _endpoints_, and every point in between. We denote a line segments with its two labeled endpoints, overlined. For example, the line above contains the segment ${\overline{BC}.}$ 
+
+In the figure below, the point ${B}$ lies between ${A}$ and ${C}$ on ${\overline{AC}.}$ If ${\lvert \overline{AB} \rvert = \lvert \overline{BC} \rvert,}$ then ${B}$ is the _midpoint_ of ${\overline{AC}.}$ 
+
+import { LineSegment1 } from "@/components/Fig";
+
+<LineSegment1/>
 
 ## Trigonometry
 An _angle_ is a figure formed by two rays with a common endpoint called the _vertex_.
@@ -14,6 +43,8 @@ An _angle_ is a figure formed by two rays with a common endpoint called the _ver
 import {AngleLab} from "@/components/Fig";
 
 <AngleLab/>
+
+The symbol ${\theta}$ is often used to denote an angle. We can also label points on the angle's arms and vertex, and use those labels to name the angle. For example, we may refer to the angle above with the notation ${\angle ABC}$ (the middle letter is always reserved for the vertex).  
 
 export default function MDXPage({ children }) {
   return <MdxLayout>{children}</MdxLayout>;

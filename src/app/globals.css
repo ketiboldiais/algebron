@@ -6,13 +6,29 @@
   --background: #ffffff;
   --foreground: #171717;
   --blockquote-bg: rgb(227, 227, 227);
+  --red: firebrick;
+  --blue: dodgerblue;
+  --green: yellowgreen;
+  --lightgrey: #B2BEB5;
+  --dimgrey: rgb(214, 225, 217);
+  --purple: violet;
+  --code-bg: rgb(46,42,40);
+  --aside-color: #209797;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #2a2a2a;
     --foreground: #ededed;
-    --blockquote-bg: rgb(75, 75, 75); 
+    --blockquote-bg: rgb(60, 60, 60); 
+    --red: tomato;
+    --blue: cyan;
+    --green: rgb(155, 255, 133);
+    --purple: violet;
+    --dimgrey: rgb(62, 62, 62);
+    --lightgrey: #6a726c;
+    --code-bg: rgb(55, 55, 55);
+    --aside-color: #62f6f6;
   }
 }
 
@@ -42,7 +58,7 @@
 }
 
 html {
-  font-size: 15px;
+  font-size: 14px;
 }
 
 @media (min-width: 300px) and (max-width: 750px) {
@@ -81,7 +97,7 @@ textarea {
   font-weight: bold;
   color: #fff;
   border-radius: 4px;
-  background-color: rgb(46,42,40);
+  background-color: var(--code-bg);
   overflow: hidden;
 }
 
@@ -89,7 +105,7 @@ pre {
   padding: 0.8rem;
   border-radius: 0.2em;
   overflow-x: scroll;
-  background-color: rgb(46,42,40);
+  background-color:var(--code-bg);
   color: rgb(181,200,180);
 }
 
@@ -265,12 +281,13 @@ strong em {
 }
 
 aside {
-  color: #209797;
+  color: var(--aside-color);
   font-size: 85%;
   position: relative;
-  border-top: solid thin #88c6c6;
-  border-bottom: solid thin #88c6c6;
+  border-top: solid thin var(--aside-color);
+  border-bottom: solid thin var(--aside-color);
 }
+
 aside p {
   margin: 1vh 0;
 }
