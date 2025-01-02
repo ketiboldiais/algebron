@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 // Copyright (C) 2025 Ketib Oldiais - All Rights Reserved.
 // You may use, distribute, and modify this code under the
 // terms of the MIT license.
@@ -14,8 +15,7 @@
 
 // Start off by writing a pretty-print string for ASTs.
 // We'll be using this for quickly debugging/verifying
-// the parsers are behaving correctly. 
-
+// the parsers are behaving correctly.
 
 /** Returns a pretty-print tree of the given Object `Obj`. */
 export function treestring<T extends object>(
@@ -94,7 +94,7 @@ function isNothing(x: any): x is undefined | null {
 // types for boxes. The following types, `None` and
 // `Some`, correspond to functional option types.
 // We will use these types extensively when implementing
-// the linked list.  
+// the linked list.
 
 /** An object corresponding to nothing. */
 class None {
@@ -732,6 +732,19 @@ function gcd(a: number, b: number) {
   return a;
 }
 
+export function polarToCartesian(
+  centerX: number,
+  centerY: number,
+  radius: number,
+  angleInDegrees: number
+) {
+  const angleInRadians = toRadians(angleInDegrees);
+  return vector([
+    centerX + radius * Math.cos(angleInRadians),
+    centerY + radius * Math.sin(angleInRadians),
+  ]);
+}
+
 /** Returns an array of numbers running from start to stop exclusive. */
 export function range(start: number, stop: number, step = 1): number[] {
   const out = [];
@@ -777,7 +790,7 @@ export function isOdd(value: number) {
 }
 
 /** Returns the clamping of the given input. I.e., if `input` is less than `min`, returns `min`. If `input` is greater than `max`, returns `max`. Otherwise, returns `input`. */
-function clamp(minimum: number, input: number, maximum: number) {
+export function clamp(minimum: number, input: number, maximum: number) {
   return min(max(input, minimum), maximum);
 }
 
@@ -1229,7 +1242,7 @@ function homogenousVector(value: number, length: number) {
 }
 
 /** Returns a new 2D vector. */
-function v2D(x: number, y: number) {
+export function v2D(x: number, y: number) {
   return new Vector([x, y]);
 }
 
@@ -1626,1114 +1639,586 @@ function isExponential(u: any): u is Exponential {
   return u instanceof Exponential;
 }
 
-/** An enum of types mapped to SVG path command prefixes. */
-enum pc {
-  M,
-  L,
-  H,
-  V,
-  Q,
-  C,
-  A,
-  Z,
-}
-
 /**
- * An object representing an SVG path command.
+ * An object corresponding to an SVG element, or some
+ * other element that can be rendered.
  */
-export abstract class PathCommand {
-  $type: pc;
-  $end: Vector;
-  constructor(type: pc, end: Vector) {
-    this.$type = type;
-    this.$end = end;
+export abstract class Renderable {
+  abstract render(fx: (x: number) => number, fy: (y: number) => number): this;
+  _id: string | number;
+  constructor(id: string | number) {
+    this._id = id;
   }
-
-  /** Returns this command as a string, per SVG grammar. */
-  abstract toString(): string;
-
-  /** Returns a new M-command. */
-  static M(x: number, y: number, z: number = 1) {
-    return new MCommand(x, y, z);
-  }
-
-  /** Returns a new L-command. */
-  static L(x: number, y: number, z: number = 1) {
-    return new LCommand(x, y, z);
-  }
-
-  /** Returns a new Z-command. */
-  static Z() {
-    return new ZCommand();
-  }
-
-  /** Returns a new V-command. */
-  static V(x: number, y: number, z: number = 1) {
-    return new VCommand(x, y, z);
-  }
-
-  /** Returns a new H-command. */
-  static H(x: number, y: number, z: number = 1) {
-    return new HCommand(x, y, z);
-  }
-
-  /** Returns a new Q-command. */
-  static Q(x: number, y: number, z: number = 1) {
-    return new QCommand(x, y, z);
-  }
-
-  /** Returns a new C-command. */
-  static C(x: number, y: number, z: number = 1) {
-    return new CCommand(x, y, z);
-  }
-
-  /** Returns a new A-command. */
-  static A(x: number, y: number, z: number = 1) {
-    return new ACommand(x, y, z);
-  }
-}
-
-/** An object corresponding to an SVG M-command. */
-class MCommand extends PathCommand {
-  $type: pc.M;
-  constructor(x: number, y: number, z: number) {
-    super(pc.M, vector([x, y, z]));
-    this.$type = pc.M;
-  }
-  toString(): string {
-    return `M${this.$end.$x},${this.$end.$y}`;
-  }
-}
-
-/** An object corresponding to an SVG L-command. */
-class LCommand extends PathCommand {
-  $type: pc.L;
-  constructor(x: number, y: number, z: number) {
-    super(pc.L, vector([x, y, z]));
-    this.$type = pc.L;
-  }
-  toString(): string {
-    return `L${this.$end.$x},${this.$end.$y}`;
-  }
-}
-
-/** An object corresponding to an SVG Z-command. */
-class ZCommand extends PathCommand {
-  $type: pc.Z;
-  constructor() {
-    super(pc.Z, vector([0, 0, 0]));
-    this.$type = pc.Z;
-  }
-  toString(): string {
-    return "Z";
-  }
-}
-
-/** An object corresponding to an SVG V-command. */
-class VCommand extends PathCommand {
-  $type: pc.V;
-  constructor(x: number, y: number, z: number) {
-    super(pc.V, vector([x, y, z]));
-    this.$type = pc.V;
-  }
-  toString(): string {
-    return `V${this.$end.$x},${this.$end.$y}`;
-  }
-}
-
-/** An object corresponding to an SVG H-command. */
-class HCommand extends PathCommand {
-  $type: pc.H;
-  constructor(x: number, y: number, z: number) {
-    super(pc.H, vector([x, y, z]));
-    this.$type = pc.H;
-  }
-  toString(): string {
-    return `H${this.$end.$x},${this.$end.$y}`;
-  }
-}
-
-/** An object corresponding to an SVG Q-command. */
-class QCommand extends PathCommand {
-  $type: pc.Q;
-  $ctrl1: Vector;
-  constructor(x: number, y: number, z: number) {
-    super(pc.Q, vector([x, y, z]));
-    this.$type = pc.Q;
-    this.$ctrl1 = vector([x, y, z]);
-  }
-  ctrlPoint(x: number, y: number, z: number = 1) {
-    const out = new QCommand(this.$end.$x, this.$end.$y, this.$end.$z);
-    out.$ctrl1 = vector([x, y, z]);
-    return out;
-  }
-  toString(): string {
-    return `Q${this.$ctrl1.$x},${this.$ctrl1.$y},${this.$end.$x},${this.$end.$y}`;
-  }
-}
-
-/** An object corresponding to an SVG C-command. */
-class CCommand extends PathCommand {
-  $type: pc.C;
-  $ctrl1: Vector;
-  $ctrl2: Vector;
-  constructor(x: number, y: number, z: number) {
-    super(pc.C, vector([x, y, z]));
-    this.$type = pc.C;
-    this.$ctrl1 = vector([0, 0, 1]);
-    this.$ctrl2 = vector([0, 0, 1]);
-  }
-  copy() {
-    const out = new CCommand(this.$end.$x, this.$end.$y, this.$end.$z);
-    out.$ctrl1 = this.$ctrl1.copy();
-    out.$ctrl2 = this.$ctrl2.copy();
-    return out;
-  }
-  ctrl1(x: number, y: number, z: number = 1) {
-    const out = this.copy();
-    out.$ctrl1 = vector([x, y, z]);
-    return out;
-  }
-  ctrl2(x: number, y: number, z: number = 1) {
-    const out = this.copy();
-    out.$ctrl2 = vector([x, y, z]);
-    return out;
-  }
-  toString(): string {
-    return `C${this.$ctrl1.$x},${this.$ctrl1.$y},${this.$ctrl2.$x},${this.$ctrl2.$y},${this.$end.$x},${this.$end.$y}`;
-  }
-}
-
-/** An object corresponding to an SVG A-command. */
-class ACommand extends PathCommand {
-  $type: pc.A;
-  $rx: number = 1;
-  $ry: number = 1;
-  $rotation: number = 0;
-  $largeArc: 0 | 1 = 0;
-  $sweep: 0 | 1 = 0;
-  constructor(x: number, y: number, z: number) {
-    super(pc.A, vector([x, y, z]));
-    this.$type = pc.A;
-  }
-  /** Sets this A-command's large-arc flag. */
-  largeArc(value: 0 | 1) {
-    this.$largeArc = value;
-    return this;
-  }
-  /** Sets this A-command's sweep flag. */
-  sweep(value: 0 | 1) {
-    this.$sweep = value;
-    return this;
-  }
-  /** Sets this A-command's rx value. */
-  rx(value: number) {
-    this.$rx = value;
-    return this;
-  }
-  /** Sets this A-command's ry value. */
-  ry(value: number) {
-    this.$ry = value;
-    return this;
-  }
-  /** Sets this A-command's rotation value. */
-  rotate(value: number) {
-    this.$rotation = value;
-    return this;
-  }
-  toString(): string {
-    const out = [
-      this.$rx,
-      this.$ry,
-      this.$rotation,
-      this.$largeArc,
-      this.$sweep,
-      this.$end.$x,
-      this.$end.$y,
-    ].join(",");
-    return "A" + out;
-  }
-}
-
-/** An enum used to indicate a GraphicsObj's type. */
-enum graphics {
-  line,
-  path,
-  circle,
-  group,
-  text,
-  arrowhead,
-  // segment,
-  rectangle,
-}
-
-/** An object corresponding to a 2D SVG object. */
-export abstract class GraphicsObj {
-  $id: string | number = uid(10);
   id(value: string | number) {
-    this.$id = value;
-    return this;
-  }
-  abstract kind(): graphics;
-  abstract childOf(parentObj: SVGObj | null): this;
-  abstract fit(
-    domain: [number, number],
-    range: [number, number],
-    dimensions: [number, number]
-  ): this;
-  $parentSVG: SVGObj | null = null;
-}
-
-/** An object holding SVG data. */
-export class SVGObj {
-  $children: GraphicsObj[];
-  $markers: Arrowhead[] = [];
-
-  constructor(children: GraphicsObj[]) {
-    this.$children = children;
-  }
-
-  $dimensions: [number, number] = [500, 500];
-
-  $margins: [number, number, number, number] = [10, 10, 10, 10];
-
-  get $mx() {
-    return this.$margins[1] + this.$margins[3];
-  }
-  get $my() {
-    return this.$margins[0] + this.$margins[2];
-  }
-  get $vw() {
-    return this.$width - this.$mx;
-  }
-  get $vh() {
-    return this.$height - this.$my;
-  }
-
-  /** The width of this SVG. */
-  get $width() {
-    return this.$dimensions[0];
-  }
-
-  /** The height of this SVG. */
-  get $height() {
-    return this.$dimensions[1];
-  }
-
-  /** Sets the height of this SVG. */
-  height(value: number) {
-    this.$dimensions[1] = value;
-    return this;
-  }
-
-  /** Sets the width of this SVG. */
-  width(value: number) {
-    this.$dimensions[0] = value;
-    return this;
-  }
-
-  dimensions(width: number, height: number) {
-    this.$dimensions = [width, height];
-    return this;
-  }
-
-  get $marginedDimensions() {
-    return tuple(this.$vw, this.$vh);
-  }
-
-  $domain: [number, number] = [-5, 5];
-
-  domain(domain: [number, number]) {
-    this.$domain = domain;
-    return this;
-  }
-
-  $range: [number, number] = [-5, 5];
-
-  $className: string = "";
-
-  className(value: string) {
-    this.$className = value;
-    return this;
-  }
-
-  $id: string = uid(10);
-
-  range(range: [number, number]) {
-    this.$range = range;
-    return this;
-  }
-
-  done() {
-    this.$children.forEach((child) => {
-      child.childOf(this);
-      child.fit(this.$domain, this.$range, this.$marginedDimensions);
-    });
+    this._id = value;
     return this;
   }
 }
 
-export function svg(children: (GraphicsObj | GraphicsObj[] | boolean)[]) {
-  return new SVGObj(children.flat().filter((e) => e instanceof GraphicsObj));
-}
+export type SVGContext = {
+  domain: [number, number];
+  range: [number, number];
+  width: number;
+  height: number;
+};
 
-abstract class GraphicsAtom extends GraphicsObj {
-  abstract kind(): graphics;
-}
-
-export class Path extends GraphicsAtom {
-  $fillOpacity: number | `${number}%` = 1;
-
-  fillOpacity(value: number | `${number}%`) {
-    this.$fillOpacity = value;
-    return this;
+export class SVG {
+  _children: Renderable[] = [];
+  _markers: ArrowHead[] = [];
+  _domain: [number, number];
+  _range: [number, number];
+  _width: number;
+  _height: number;
+  _fx: (x: number) => number;
+  _fy: (y: number) => number;
+  constructor(context: SVGContext) {
+    this._domain = context.domain;
+    this._range = context.range;
+    this._width = context.width;
+    this._height = context.height;
+    this._fx = interpolator(this._domain, [0, this._width]);
+    this._fy = interpolator(this._range, [this._height, 0]);
   }
-
-  at(x: number, y: number, z: number = 1) {
-    this.$origin = vector([x, y, z]);
-    return this;
-  }
-
-  $stroke: string = "black";
-
-  stroke(value: string) {
-    this.$stroke = value;
-    return this;
-  }
-
-  $fill: string = "none";
-
-  fill(value: string) {
-    this.$fill = value;
-    return this;
-  }
-
-  $strokeWidth: string | number = 1;
-
-  strokeWidth(value: string | number) {
-    this.$strokeWidth = value;
-    return this;
-  }
-
-  kind(): graphics {
-    return graphics.path;
-  }
-
-  childOf(parent: SVGObj | null) {
-    this.$parentSVG = parent;
-    return this;
-  }
-
-  /** The SVG commands comprising this path. */
-  $commands: PathCommand[];
-
-  /** This SVG path's current cursor position. */
-  $cursor: Vector;
-
-  /** The position where this path starts. */
-  $origin: Vector;
-
-  /** Returns how many commands this path comprises. */
-  get $length() {
-    return this.$commands.length;
-  }
-
-  /** Returns the first command of this path. */
-  get $firstCommand() {
-    return this.$commands[0];
-  }
-
-  get $lastCommand() {
-    const out = this.$commands[this.$length - 1];
-    if (out === undefined) {
-      return PathCommand.M(this.$origin.$x, this.$origin.$y, this.$origin.$z);
-    } else {
-      return out;
-    }
-  }
-
-  /**
-   * Applies the given vector operation
-   * to each position vector of this path's
-   * commands.
-   */
-  tfm(op: (v: Vector) => Vector) {
-    this.$commands = this.$commands.map((p) => {
-      const e = op(p.$end);
-      switch (p.$type) {
-        case pc.M:
-          return PathCommand.M(e.$x, e.$y, e.$z);
-        case pc.H:
-        case pc.L:
-        case pc.V:
-          return PathCommand.L(e.$x, e.$y, e.$z);
-        case pc.Q: {
-          const c = op((p as QCommand).$ctrl1);
-          return PathCommand.Q(e.$x, e.$y, e.$z).ctrlPoint(c.$x, c.$y, c.$z);
-        }
-        case pc.C: {
-          const c1 = op((p as CCommand).$ctrl1);
-          const c2 = op((p as CCommand).$ctrl2);
-          return PathCommand.C(e.$x, e.$y, e.$z)
-            .ctrl1(c1.$x, c1.$y, c1.$z)
-            .ctrl2(c2.$x, c2.$y, c2.$z);
-        }
-        case pc.A: {
-          const s = p as ACommand;
-          return PathCommand.A(e.$x, e.$y, e.$z)
-            .rx(s.$rx)
-            .ry(s.$ry)
-            .rotate(s.$rotation)
-            .largeArc(s.$largeArc)
-            .sweep(s.$sweep);
-        }
-        default:
-          return p;
+  children(objects: (Renderable | boolean | Renderable[])[]) {
+    const objs = objects.flat().filter((x) => x instanceof Renderable);
+    objs.forEach((obj) => {
+      this._children.push(obj.render(this._fx, this._fy));
+      if ((obj instanceof Path) || (obj instanceof LineObj)) {
+        obj._arrowEnd && this._markers.push(obj._arrowEnd);
+        obj._arrowStart && this._markers.push(obj._arrowStart);
       }
     });
     return this;
   }
+}
 
-  /** Sets this path's origin. */
-  origin(x: number, y: number, z: number = 1) {
-    this.$origin = vector([x, y, z]);
-    return this;
-  }
+export const svg = (context: SVGContext) => new SVG(context);
 
-  fit(
-    domain: [number, number],
-    range: [number, number],
-    dimensions: [number, number]
-  ) {
-    const X = interpolator(domain, [0, dimensions[0]]);
-    const Y = interpolator(range, [dimensions[1], 0]);
-    this.$commands = this.$commands.map((c) => {
-      const end = c.$end;
-      const [x, y, z] = [X(end.$x), Y(end.$y), end.$z];
-      switch (c.$type) {
-        case pc.M:
-          return PathCommand.M(x, y, z);
-        case pc.H:
-        case pc.L:
-        case pc.V:
-          return PathCommand.L(x, y, z);
-        case pc.Q: {
-          const ctrl = (c as QCommand).$ctrl1;
-          return PathCommand.Q(x, y, z).ctrlPoint(
-            X(ctrl.$x),
-            Y(ctrl.$y),
-            ctrl.$z
+type PCommand =
+  | MCommand
+  | LCommand
+  | CCommand
+  | QCommand
+  | ARCTOCommand
+  | ARCCommand
+  | ACommand
+  | ZCommand;
+
+type MCommand = ["M", number, number];
+
+type ACommand = [
+  "A",
+  rx: number,
+  ry: number,
+  rotation: number,
+  largeArcFlag: 0 | 1,
+  sweepFlag: 0 | 1,
+  endPointX: number,
+  endPointY: number
+];
+
+const A = (
+  rx: number,
+  ry: number,
+  rotation: number,
+  largeArcFlag: 0 | 1,
+  sweepFlag: 0 | 1,
+  endPointX: number,
+  endPointY: number
+): ACommand => [
+  "A",
+  rx,
+  ry,
+  rotation,
+  largeArcFlag,
+  sweepFlag,
+  endPointX,
+  endPointY,
+];
+
+const M = (x: number, y: number): MCommand => ["M", x, y];
+
+type LCommand = ["L", number, number];
+
+const L = (x: number, y: number): LCommand => ["L", x, y];
+
+type CCommand = ["C", number, number, number, number, number, number];
+
+const C = (
+  c1x: number,
+  c1y: number,
+  c2x: number,
+  c2y: number,
+  ex: number,
+  ey: number
+): CCommand => ["C", c1x, c1y, c2x, c2y, ex, ey];
+
+type QCommand = ["Q", number, number, number, number];
+
+const Q = (cx: number, cy: number, ex: number, ey: number): QCommand => [
+  "Q",
+  cx,
+  cy,
+  ex,
+  ey,
+];
+
+type ARCTOCommand = ["ARCTO", number, number, number, number, number];
+
+const ARCTO = (
+  x1: number,
+  y1: number,
+  x2: number,
+  y2: number,
+  r: number
+): ARCTOCommand => ["ARCTO", x1, y1, x2, y2, r];
+
+type ARCCommand = ["ARC", number, number, number, number, number, 0 | 1];
+
+const ARC = (
+  x: number,
+  y: number,
+  r: number,
+  a0: number,
+  a1: number,
+  ccw: 0 | 1
+): ARCCommand => ["ARC", x, y, r, a0, a1, ccw];
+
+type ZCommand = ["Z"];
+
+const Z = (): ZCommand => ["Z"];
+
+const pi = Math.PI,
+  tau = 2 * pi,
+  epsilon = 1e-6,
+  tauEpsilon = tau - epsilon;
+
+function processPathCommands(
+  commandList: PCommand[],
+  fx: (x: number) => number,
+  fy: (y: number) => number
+) {
+  const output: string[] = [];
+  let x0: number | null = null;
+  let y0: number | null = x0;
+  let x1: number | null = y0;
+  let y1: number | null = x1;
+  commandList.forEach((command) => {
+    const type = command[0];
+    switch (type) {
+      case "M": {
+        const x = fx(command[1]);
+        const y = fy(command[2]);
+        output.push(`M${(x0 = x1 = +x)},${(y0 = y1 = +y)}`);
+        break;
+      }
+      case "Z": {
+        output.push("Z");
+        break;
+      }
+      case "L": {
+        const x = fx(command[1]);
+        const y = fx(command[2]);
+        output.push(`L${(x1 = +x)},${(y1 = +y)}`);
+        break;
+      }
+      case "Q": {
+        const cx = fx(command[1]);
+        const cy = fy(command[2]);
+        const ex = fx(command[3]);
+        const ey = fy(command[4]);
+        output.push(`Q${+cx},${+cy},${(x1 = +ex)},${(y1 = +ey)}`);
+        break;
+      }
+      case "C": {
+        const c1x = fx(command[1]);
+        const c1y = fy(command[2]);
+        const c2x = fx(command[3]);
+        const c2y = fy(command[4]);
+        const ex = fx(command[5]);
+        const ey = fy(command[6]);
+        output.push(
+          `C${+c1x},${+c1y},${+c2x},${+c2y},${(x1 = +ex)},${(y1 = +ey)}`
+        );
+        break;
+      }
+      case "ARCTO": {
+        // x1 = +x1, y1 = +y1, x2 = +x2, y2 = +y2, r = +r;
+        // Is the radius negative? Error.
+        const ax1 = fx(command[1]);
+        const ay1 = fy(command[2]);
+        const ax2 = fx(command[3]);
+        const ay2 = fy(command[4]);
+        const r = command[5];
+        if (r < 0) throw new Error(`negative radius: ${r}`);
+        const x0 = x1,
+          y0 = y1,
+          x21 = ax2 - ax1,
+          y21 = ay2 - ay1,
+          x01 = (x0 ?? 0) - ax1,
+          y01 = (y0 ?? 0) - ay1,
+          l01_2 = x01 * x01 + y01 * y01;
+
+        // Is this path empty? Move to (x1,y1).
+        if (x1 === null) {
+          output.push(`M${(x1 = x1)},${(y1 = y1)}`);
+        }
+
+        // Or, is (x1,y1) coincident with (x0,y0)? Do nothing.
+        else if (!(l01_2 > epsilon)) {
+          break;
+        }
+
+        // Or, are (x0,y0), (x1,y1) and (x2,y2) collinear?
+        // Equivalently, is (x1,y1) coincident with (x2,y2)?
+        // Or, is the radius zero? Line to (x1,y1).
+        else if (!(Math.abs(y01 * x21 - y21 * x01) > epsilon) || !r) {
+          output.push(`L${(x1 = x1)},${(y1 = y1)}`);
+        }
+
+        // Otherwise, draw an arc!
+        else {
+          const x20 = ax2 - (x0 ?? 0),
+            y20 = ay2 - (y0 ?? 0),
+            l21_2 = x21 * x21 + y21 * y21,
+            l20_2 = x20 * x20 + y20 * y20,
+            l21 = Math.sqrt(l21_2),
+            l01 = Math.sqrt(l01_2),
+            l =
+              r *
+              Math.tan(
+                (pi - Math.acos((l21_2 + l01_2 - l20_2) / (2 * l21 * l01))) / 2
+              ),
+            t01 = l / l01,
+            t21 = l / l21;
+
+          // If the start tangent is not coincident with (x0,y0), line to.
+          if (Math.abs(t01 - 1) > epsilon) {
+            output.push(`L${x1 + t01 * x01},${(y1 as number) + t01 * y01}`);
+          }
+
+          output.push(
+            `A${r},${r},0,0,${+(y01 * x20 > x01 * y20)},${(x1 =
+              x1 + t21 * x21)},${(y1 = ay1 + t21 * y21)}`
           );
         }
-        case pc.C: {
-          const ctrl1 = (c as CCommand).$ctrl1;
-          const ctrl2 = (c as CCommand).$ctrl2;
-          return PathCommand.C(x, y, z)
-            .ctrl1(X(ctrl1.$x), Y(ctrl1.$y), ctrl1.$z)
-            .ctrl2(X(ctrl2.$x), Y(ctrl2.$y), ctrl2.$z);
-        }
-        case pc.A: {
-          const j = c as ACommand;
-          return PathCommand.A(x, y, z)
-            .rx(j.$rx)
-            .ry(j.$ry)
-            .rotate(j.$rotation)
-            .largeArc(j.$largeArc)
-            .sweep(j.$sweep);
-        }
-        default:
-          return c;
+        break;
       }
-    });
-    return this;
-  }
+      case "ARC": {
+        const x = fx(command[1]);
+        const y = fy(command[2]);
+        const r = command[3];
+        const a0 = command[4];
+        const a1 = command[5];
+        // x = +x, y = +y, r = +r, ccw = !!ccw;
+        const ccw = command[6];
 
-  rotateZ(angle: number) {
-    return this.tfm((v) =>
-      v.vxm(
-        matrix([
-          [cos(angle), sin(angle), 0],
-          [-sin(angle), cos(angle), 0],
-          [0, 0, 1],
-        ])
-      )
-    );
-  }
+        // Is the radius negative? Error.
+        if (r < 0) throw new Error(`negative radius: ${r}`);
 
-  rotateY(angle: number) {
-    return this.tfm((v) =>
-      v.vxm(
-        matrix([
-          [cos(angle), 0, -sin(angle)],
-          [0, 1, 0],
-          [sin(angle), 0, cos(angle)],
-        ])
-      )
-    );
-  }
+        const dx = r * Math.cos(a0),
+          dy = r * Math.sin(a0),
+          x0 = x + dx,
+          y0 = y + dy,
+          cw = 1 ^ ccw;
+        let da = ccw ? a0 - a1 : a1 - a0;
 
-  rotateX(angle: number) {
-    return this.tfm((v) =>
-      v.vxm(
-        matrix([
-          [1, 0, 0],
-          [0, cos(angle), -sin(angle)],
-          [0, sin(angle), cos(angle)],
-        ])
-      )
-    );
-  }
+        // Is this path empty? Move to (x0,y0).
+        if (x1 === null) {
+          output.push(`M${x0},${y0}`);
+        }
 
-  scale(x: number, y: number) {
-    return this.tfm((v) =>
-      v.vxm(
-        matrix([
-          [x, 0, 0],
-          [0, y, 0],
-          [0, 0, 1],
-        ])
-      )
-    );
-  }
+        // Or, is (x0,y0) not coincident with the previous point? Line to (x0,y0).
+        else if (
+          Math.abs(x1 - x0) > epsilon ||
+          Math.abs((y1 ?? 0) - y0) > epsilon
+        ) {
+          output.push(`L${x0},${y0}`);
+        }
 
-  translateZ(z: number) {
-    return this.tfm((v) =>
-      v.vxm(
-        matrix([
-          [1, 0, 1],
-          [0, 1, 1],
-          [0, 0, z],
-        ])
-      )
-    );
-  }
+        // Is this arc empty? We’re done.
+        if (!r) return;
 
-  translateY(y: number) {
-    return this.tfm((v) =>
-      v.vxm(
-        matrix([
-          [1, 0, 1],
-          [0, 1, y],
-          [0, 0, 1],
-        ])
-      )
-    );
-  }
+        // Does the angle go the wrong way? Flip the direction.
+        if (da < 0) da = (da % tau) + tau;
 
-  translateX(x: number) {
-    return this.tfm((v) =>
-      v.vxm(
-        matrix([
-          [1, 0, x],
-          [0, 1, 1],
-          [0, 0, 1],
-        ])
-      )
-    );
-  }
+        // Is this a complete circle? Draw two arcs to complete the circle.
+        if (da > tauEpsilon) {
+          output.push(
+            `A${r},${r},0,1,${cw},${x - dx},${
+              y - dy
+            }A${r},${r},0,1,${cw},${(x1 = x0)},${(y1 = y0)}`
+          );
+        }
 
-  /** Shears along the z-axis. */
-  shearZ(dx: number, dy: number) {
-    return this.tfm((v) =>
-      v.vxm(
-        matrix([
-          [1, 0, 0],
-          [0, 1, 0],
-          [dx, dy, 1],
-        ])
-      )
-    );
-  }
-
-  /** Shears along the y-axis. */
-  shearY(dx: number, dz: number) {
-    return this.tfm((v) =>
-      v.vxm(
-        matrix([
-          [1, 0, 0],
-          [dx, 1, dz],
-          [0, 0, 1],
-        ])
-      )
-    );
-  }
-
-  /** Shears along the x-axis. */
-  shearX(dy: number, dz: number) {
-    return this.tfm((v) =>
-      v.vxm(
-        matrix([
-          [1, dy, dz],
-          [0, 1, 0],
-          [0, 0, 1],
-        ])
-      )
-    );
-  }
-
-  translate(x: number, y: number) {
-    return this.tfm((v) =>
-      v.vxm(
-        matrix([
-          [1, 0, x],
-          [0, 1, y],
-          [0, 0, 1],
-        ])
-      )
-    );
-  }
-
-  constructor(x: number, y: number, z: number = 1) {
-    super();
-    this.$origin = vector([0, 0, 0]);
-    this.$cursor = vector([x, y, z]);
-    this.$commands = [PathCommand.M(x, y, z)];
-  }
-
-  /** Returns this path's command list as a vector. */
-  toString() {
-    const origin = PathCommand.M(
-      this.$origin.$x,
-      this.$origin.$y,
-      this.$origin.$z
-    ).toString();
-    const out = this.$commands.map((c) => c.toString());
-    return origin + out.join("");
-  }
-
-  /**
-   * Adds the given command to this path's
-   * command list and moves the path's
-   * cursor to the given command's endpoint.
-   */
-  private push(command: PathCommand) {
-    this.$commands.push(command);
-    this.$cursor = command.$end;
-    return this;
-  }
-
-  /**
-   * Adds an SVG arc command to this path's command list.
-   * @param end The arc’s end point.
-   * @param dimensions A pair `[w,h]` where `w` is the width of the arc,
-   * and `h` is the height of the arc.
-   * @param rotation The arc’s rotation along its x-axis.
-   * @param largeArc The arc's large arc flag.
-   * @param sweep The arc's sweep flag.
-   */
-  A(
-    end: [number, number],
-    dimensions: [number, number] = [1, 1],
-    rotation: number = 0,
-    largeArc: 0 | 1 = 0,
-    sweep: 0 | 1 = 1
-  ) {
-    const p = PathCommand.A(end[0], end[1], 1)
-      .rx(dimensions[0])
-      .ry(dimensions[1])
-      .rotate(rotation)
-      .largeArc(largeArc)
-      .sweep(sweep);
-    return this.push(p);
-  }
-
-  arcTo(
-    end: [number, number],
-    dimensions: [number, number] = [1, 1],
-    rotation: number = 0,
-    largeArc: 0 | 1 = 0,
-    sweep: 0 | 1 = 1
-  ) {
-    return this.A(end, dimensions, rotation, largeArc, sweep);
-  }
-
-  /**
-   *
-   * @param center The center of the circular arc segment.
-   * @param radius The radius of the circular arc segment.
-   * @param startAngle The starting angle.
-   * @param endAngle The ending angle.
-   * @param counterclockwise 0 or 1 (true = 'clockwise', false = 'counterclockwise').
-   * @returns
-   */
-  arc(
-    center: [number, number],
-    radius: number,
-    startAngle: number,
-    endAngle: number,
-    counterclockwise: 0 | 1 = 1
-  ) {
-    const [x, y] = center;
-    const r = radius;
-    const a0 = startAngle;
-    const a1 = endAngle;
-    const ccw = !!counterclockwise;
-    const tau = 2 * Math.PI;
-    const epsilon = 1e-6;
-    const tauEpsilon = tau - epsilon;
-    if (radius < 0) {
-      radius = Math.abs(radius);
+        // Is this arc non-empty? Draw an arc!
+        else if (da > epsilon) {
+          output.push(
+            `A${r},${r},0,${+(da >= pi)},${cw},${(x1 =
+              x + r * Math.cos(a1))},${(y1 = y + r * Math.sin(a1))}`
+          );
+        }
+        break;
+      }
+      case "A": {
+        const rx = command[1];
+        const ry = command[2];
+        const rotation = command[3];
+        const largeArcFlag = command[4];
+        const sweepFlag = command[5];
+        const endX = fx(command[6]);
+        const endY = fy(command[7]);
+        output.push(
+          `A${rx},${ry},${rotation},${largeArcFlag},${sweepFlag},${endX},${endY}`
+        );
+        break;
+      }
     }
-    const dx = r * Math.cos(a0);
-    const dy = r * Math.sin(a0);
-    const x0 = x + dx;
-    const y0 = y + dy;
-    const cw = 1 ^ (ccw as any as number);
-    let da = ccw ? a0 - a1 : a1 - a0;
-    if (
-      Math.abs(this.$cursor.$x - x0) > epsilon ||
-      Math.abs(this.$cursor.$y - y0) > epsilon
-    ) {
-      this.lineTo(x0, y0);
-    }
-    if (!r) {
-      return this;
-    }
-    if (da < 0) {
-      da = (da % tau) + tau;
-    }
-    if (da > tauEpsilon) {
-      this.A([x - dx, y - dy], [r, r], 0, 1, cw as 0 | 1);
-      this.A([x0, y0], [r, r], 0, 1, cw as 0 | 1);
-    } else if (da > epsilon) {
-      this.A(
-        [x + r * Math.cos(a1), y + r * Math.sin(a1)],
-        [r, r],
-        0,
-        +(da >= Math.PI) as 0 | 1,
-        cw as 0 | 1
-      );
-    }
+  });
+  return output;
+}
+
+export class ArrowHead extends Renderable {
+  render(): this {
     return this;
   }
-
-  /**
-   * Appends a V-command to this path's command list, where
-   * y is the coordinate to move vertically to.
-   */
-  V(y: number) {
-    const l = PathCommand.L(this.$cursor.$x, y);
-    return this.push(l);
-  }
-
-  /**
-   * Appends an H-command to this path's command list, where
-   * x is the coordinate to move horizontally to.
-   */
-  H(x: number) {
-    const h = PathCommand.H(x, this.$cursor.$y);
-    return this.push(h);
-  }
-
-  /**
-   * Appends an M-command to this path's command list.
-   */
-  M(x: number, y: number, z: number = 1) {
-    return this.push(PathCommand.M(x, y, z));
-  }
-
-  /**
-   * Appends an M-command to this path's command list.
-   */
-  L(x: number, y: number, z: number = 1) {
-    return this.push(PathCommand.L(x, y, z));
-  }
-
-  lineTo(x: number, y: number, z: number = 1) {
-    return this.L(x, y, z);
-  }
-
-  Q(
-    to: [number, number] | [number, number, number],
-    ctrl: [number, number] | [number, number, number]
-  ) {
-    const x = to[0];
-    const y = to[1];
-    const z = to[2] !== undefined ? to[2] : 1;
-
-    const cx = ctrl[0];
-    const cy = ctrl[1];
-    const cz = ctrl[2] !== undefined ? ctrl[2] : 1;
-
-    return this.push(PathCommand.Q(x, y, z).ctrlPoint(cx, cy, cz));
-  }
-
-  quadraticCurveTo(
-    to: [number, number] | [number, number, number],
-    ctrl: [number, number] | [number, number, number]
-  ) {
-    return this.Q(to, ctrl);
-  }
-
-  bezierCurveTo(
-    to: [number, number] | [number, number, number],
-    ctrl1: [number, number] | [number, number, number],
-    ctrl2: [number, number] | [number, number, number]
-  ) {
-    return this.C(to, ctrl1, ctrl2);
-  }
-
-  C(
-    to: [number, number] | [number, number, number],
-    ctrl1: [number, number] | [number, number, number],
-    ctrl2: [number, number] | [number, number, number]
-  ) {
-    const x = to[0];
-    const y = to[1];
-    const z = to[2] !== undefined ? to[2] : 1;
-
-    const c1x = ctrl1[0];
-    const c1y = ctrl1[1];
-    const c1z = ctrl1[2] !== undefined ? ctrl1[2] : 1;
-
-    const c2x = ctrl2[0];
-    const c2y = ctrl2[1];
-    const c2z = ctrl2[2] !== undefined ? ctrl2[2] : 1;
-
-    return this.push(
-      PathCommand.C(x, y, z).ctrl1(c1x, c1y, c1z).ctrl2(c2x, c2y, c2z)
-    );
-  }
-
-  /** Closes this path's command list. */
-  Z() {
-    return this.push(PathCommand.Z());
-  }
-}
-
-/**
- * Returns a new path command. The arguments `x`,
- * `y`, and `z` may be passed to set the path's
- * starting point. By default, the path starts
- * at position (0,0,1).
- */
-export function path(x: number = 0, y: number = 0, z: number = 1) {
-  return new Path(x, y, z);
-}
-
-export function line3D(
-  start: [number, number, number],
-  end: [number, number, number]
-) {
-  return path().M(start[0], start[1], start[2]).L(end[0], end[1], end[2]);
-}
-
-/** Returns true and asserts if the given object is an SVG Path object. */
-export function isPath(obj: GraphicsObj): obj is Path {
-  return obj.kind() === graphics.path;
-}
-
-export class Quad extends Path {
-  $width: number;
-  $height: number;
-  constructor(width: number, height: number) {
-    super(0, 0);
-    this.$width = width;
-    this.$height = height;
-  }
-  end() {
-    const o = this.$origin;
-    const x = o.$x;
-    const y = o.$y;
-    const w = this.$width;
-    const h = this.$height;
-    this.$commands.push(PathCommand.M(x, y));
-    this.$commands.push(PathCommand.L(x + w, y));
-    this.$commands.push(PathCommand.L(x + w, y - h));
-    this.$commands.push(PathCommand.L(x, y - h));
-    this.$commands.push(PathCommand.L(x, y));
-    this.$commands.push(PathCommand.Z());
-    return this;
-  }
-}
-
-export function quad(width: number, height: number) {
-  return new Quad(width, height);
-}
-
-export class Arrowhead extends GraphicsAtom {
-  kind(): graphics {
-    return graphics.arrowhead;
-  }
-  childOf(parentObj: SVGObj | null): this {
-    this.$parentSVG = parentObj;
-    return this;
-  }
-
-  fit(): this {
-    return this;
-  }
-
-  $fillOpacity: string | number = 1;
-  fillOpacity(value: string | number) {
-    this.$fillOpacity = value;
-    return this;
-  }
-
-  $type: "start" | "end" = "end";
-
+  _type: "start" | "end" = "end";
   type(value: "start" | "end") {
-    this.$type = value;
+    this._type = value;
     return this;
   }
-
-  $refX: number = 9;
-
+  _refX: number = 0;
   refX(value: number) {
-    this.$refX = value;
+    this._refX = value;
     return this;
   }
-
-  $refY: number = 0;
-
+  _refY: number = 0;
   refY(value: number) {
-    this.$refY = value;
+    this._refY = value;
     return this;
   }
-
-  get $d() {
-    if (this.$type === "end") {
+  get _d() {
+    if (this._type === "end") {
       return `M0,-5L10,0L0,5`;
     } else {
       return `M0,0L10,-5L10,5Z`;
     }
   }
-
-  $orient: "auto" | "auto-start-reverse" = "auto";
+  _orient: "auto" | "auto-start-reverse" = "auto";
   orient(value: "auto" | "auto-start-reverse") {
-    this.$orient = value;
+    this._orient = value;
     return this;
   }
-  $markerWidth: number = 10;
+  _markerWidth: number = 10;
   markerWidth(value: number) {
-    this.$markerWidth = value;
+    this._markerWidth = value;
     return this;
   }
-  $markerHeight: number = 10;
+  _markerHeight: number = 10;
   markerHeight(value: number) {
-    this.$markerHeight = value;
+    this._markerHeight = value;
     return this;
   }
-  $stroke: string = "black";
+  _stroke: string = "black";
   stroke(value: string) {
-    this.$stroke = value;
+    this._stroke = value;
     return this;
   }
-  $fill: string = "black";
+  _fill: string = "black";
   fill(value: string) {
-    this.$fill = value;
+    this._fill = value;
+    return this;
+  }
+  _strokeOpacity: string | number = 1;
+  strokeOpacity(value: string | number) {
+    this._fillOpacity = value;
+    return this;
+  }
+  _fillOpacity: string | number = 1;
+  fillOpacity(value: string | number) {
+    this._fillOpacity = value;
     return this;
   }
   constructor(id: string | number) {
-    super();
-    this.$id = id;
+    super(id);
   }
 }
 
 /** Returns a new arrowhead. */
 function arrowhead(id: string | number) {
-  return new Arrowhead(id);
+  return new ArrowHead(id);
 }
 
-/** Returns true, and asserts, if the given object is an arrowhead. */
-export function isArrowhead(obj: GraphicsObj): obj is Arrowhead {
-  return obj.kind() === graphics.arrowhead;
+export function isArrowhead(u: any) {
+  return u instanceof ArrowHead;
 }
 
-export class LineObj extends GraphicsAtom {
-  $strokeDashArray: string | number = 0;
-  strokeDashArray(value: string | number) {
-    this.$strokeDashArray = value;
-    return this;
-  }
-  $strokeOpacity: number | string = 1;
-  strokeOpacity(value: number | string) {
-    this.$strokeOpacity = value;
-    return this;
-  }
-  $arrowEnd: null | Arrowhead = null;
+export class Path extends Renderable {
+  _commands: PCommand[];
 
-  $arrowStart: null | Arrowhead = null;
+  _commandList: string[] = [];
 
-  arrowStart(arrow?: Arrowhead) {
-    if (arrow) {
-      this.$arrowStart = arrow;
-    } else {
-      this.$arrowStart = arrowhead(this.$id)
-        .type("start")
-        .fill(this.$stroke)
-        .fillOpacity(this.$strokeOpacity)
-        .stroke("none");
-    }
-    return this;
-  }
+  _arrowEnd: null | ArrowHead = null;
 
-  arrowEnd(arrow?: Arrowhead) {
-    if (arrow) {
-      this.$arrowEnd = arrow;
-    } else {
-      this.$arrowEnd = arrowhead(this.$id)
-        .fillOpacity(this.$strokeOpacity)
-        .fill(this.$stroke)
-        .stroke("none");
-    }
-    return this;
-  }
+  _arrowStart: null | ArrowHead = null;
 
-  childOf(parentObj: SVGObj | null): this {
-    this.$parentSVG = parentObj;
-    if (this.$parentSVG) {
-      if (this.$arrowEnd) {
-        this.$parentSVG.$markers.push(this.$arrowEnd);
-      }
-      if (this.$arrowStart) {
-        this.$parentSVG.$markers.push(this.$arrowStart);
-      }
-    }
-    return this;
-  }
+  _stroke: string = "black";
 
-  fit(
-    domain: [number, number],
-    range: [number, number],
-    dimensions: [number, number]
-  ): this {
-    const X = interpolator(domain, [0, dimensions[0]]);
-    const Y = interpolator(range, [dimensions[1], 0]);
-    this.$start = vector([X(this.$start.$x), Y(this.$start.$y)]);
-    this.$end = vector([X(this.$end.$x), Y(this.$end.$y)]);
-    return this;
-  }
-  kind(): graphics {
-    return graphics.line;
-  }
-  $start: Vector;
-  $end: Vector;
-  constructor(start: [number, number], end: [number, number]) {
-    super();
-    this.$start = vector(start);
-    this.$end = vector(end);
-  }
-  $stroke: string = "black";
   stroke(value: string) {
-    this.$stroke = value;
+    this._stroke = value;
     return this;
   }
-  $strokeWidth: string | number = 1;
+
+  _fill: string = "black";
+
+  fill(value: string) {
+    this._fill = value;
+    return this;
+  }
+
+  _strokeOpacity: string | number = 1;
+
+  strokeOpacity(value: string | number) {
+    this._fillOpacity = value;
+    return this;
+  }
+
+  _fillOpacity: string | number = 1;
+
+  fillOpacity(value: string | number) {
+    this._fillOpacity = value;
+    return this;
+  }
+
+  _id: string | number;
+
+  _strokeDashArray: string | number = 0;
+
+  strokeDashArray(value: string | number) {
+    this._strokeDashArray = value;
+    return this;
+  }
+
+  _strokeWidth: string | number = 1;
+
   strokeWidth(value: string | number) {
-    this.$strokeWidth = value;
+    this._strokeWidth = value;
     return this;
+  }
+
+  arrowStart(arrow?: ArrowHead) {
+    if (arrow) {
+      this._arrowStart = arrow;
+    } else {
+      this._arrowStart = arrowhead(this._id)
+        .type("start")
+        .fill(this._stroke)
+        .fillOpacity(this._strokeOpacity)
+        .stroke("none");
+    }
+    return this;
+  }
+
+  arrowEnd(arrow?: ArrowHead) {
+    if (arrow) {
+      this._arrowEnd = arrow;
+    } else {
+      this._arrowEnd = arrowhead(this._id)
+        .fillOpacity(this._strokeOpacity)
+        .fill(this._stroke)
+        .stroke("none");
+    }
+    return this;
+  }
+
+  constructor(id: string | number) {
+    super(id);
+    this._id = id;
+    this._commands = [];
+  }
+
+  render(fx: (x: number) => number, fy: (y: number) => number) {
+    this._commandList = processPathCommands(this._commands, fx, fy);
+    return this;
+  }
+  push(command: PCommand) {
+    this._commands.push(command);
+  }
+  moveTo(x: number, y: number) {
+    this.push(M(x, y));
+    return this;
+  }
+  closePath() {
+    this.push(Z());
+    return this;
+  }
+  lineTo(x: number, y: number) {
+    this.push(L(x, y));
+    return this;
+  }
+  quadraticCurveTo(x1: number, y1: number, x: number, y: number) {
+    this.push(Q(x1, y1, x, y));
+    return this;
+  }
+  bezierCurveTo(
+    x1: number,
+    y1: number,
+    x2: number,
+    y2: number,
+    x: number,
+    y: number
+  ) {
+    this.push(C(x1, y1, x2, y2, x, y));
+    return this;
+  }
+  arcTo(x1: number, y1: number, x2: number, y2: number, r: number) {
+    this.push(ARCTO(x1, y1, x2, y2, r));
+    return this;
+  }
+  arc(
+    x: number,
+    y: number,
+    r: number,
+    a0: number,
+    a1: number,
+    counterClockwise: boolean
+  ) {
+    const ccw = counterClockwise ? 1 : 0;
+    this.push(ARC(x, y, r, a0, a1, ccw));
+    return this;
+  }
+  toString() {
+    return this._commandList.join(",");
   }
 }
 
-export function line(start: [number, number], end: [number, number]) {
-  return new LineObj(start, end);
+/** Returns a new path. */
+export function path(id: string | number) {
+  return new Path(id);
 }
 
-export function isLine(obj: GraphicsObj): obj is LineObj {
-  return obj.kind() === graphics.line;
+export function isPath(u: any) {
+  return u instanceof Path;
 }
 
+export function quad(at: [number, number], width: number, height: number) {
+  const x = at[0];
+  const y = at[1];
+  const w = width;
+  const h = height;
+  return path(uid(5))
+    .moveTo(x, y)
+    .lineTo(x + w, y)
+    .lineTo(x + w, y - h)
+    .lineTo(x, y - h)
+    .lineTo(x, y)
+    .closePath();
+}
+
+/**
+ * Given the array of points or vectors, draws a line
+ * through the points/vectors.
+ */
 export function curveLinear(points: (Vector | [number, number])[]) {
   const pts: [number, number][] = [];
   points.forEach((p) => {
@@ -2743,20 +2228,26 @@ export function curveLinear(points: (Vector | [number, number])[]) {
       pts.push([p.$x, p.$y]);
     }
   });
-  const p = path();
-  p.M(pts[0][0], pts[0][1]);
+  const p = path(uid(5));
+  p.moveTo(pts[0][0], pts[0][1]);
   for (let i = 1; i < pts.length; i++) {
     const [x, y] = pts[i];
-    p.L(x, y);
+    p.lineTo(x, y);
   }
   return p;
 }
 
+/**
+ * Given the array of points or vectors `points`,
+ * draws a Catmull-Rom curve through the points.
+ * An optional `alpha` value (defaulting to 0.5)
+ * may be passed to set the curve's tension.
+ */
 export function curveCatmullRom(
   points: ([number, number] | Vector)[],
   alpha: number = 0.5
 ) {
-  const p = path();
+  const p = path(uid(5));
   const data = points.map((p) => {
     if (Array.isArray(p)) return vector(p);
     else return p;
@@ -2821,18 +2312,27 @@ export function curveCatmullRom(
     return result;
   };
   const pts = calcPoints();
-  p.M(pts[0].lastStartPoint.$x, pts[0].lastStartPoint.$y);
+  p.moveTo(pts[0].lastStartPoint.$x, pts[0].lastStartPoint.$y);
   for (let i = 0; i < pts.length; i++) {
     const point = pts[i];
     p.bezierCurveTo(
-      [point.p2.$x, point.p2.$y],
-      [point.bp1.$x, point.bp1.$y],
-      [point.bp2.$x, point.bp2.$y]
+      point.bp1.$x,
+      point.bp1.$y,
+      point.bp2.$x,
+      point.bp2.$y,
+      point.p2.$x,
+      point.p2.$y
     );
   }
   return p;
 }
 
+/**
+ * Given the array of `pathPoints`, draws
+ * a cardinal spline through the points. The
+ * optional values of `tension`, `numOfSeg`,
+ * and `close` may be passed.
+ */
 export function curveCardinal(
   pathPoints: ([number, number] | Vector)[],
   tension: number = 0.5,
@@ -2904,8 +2404,8 @@ export function curveCardinal(
   res[rPos++] = points[l];
   res[rPos] = points[l + 1];
 
-  const p = path(points[0], points[1]);
-  // p.M(points[0], points[1]);
+  const p = path(uid(5));
+  p.moveTo(points[0], points[1]);
   for (i = 0, l = res.length; i < l; i += 2) {
     p.lineTo(res[i], res[i + 1]);
   }
@@ -2945,16 +2445,16 @@ export function curveCubicBezier(points: [number, number][], tension: number) {
   };
 
   const drawCurvedPath = (cps: number[], pts: number[]) => {
-    const p = path();
-    p.M(pts[0], pts[1]);
+    const p = path(uid(5));
+    p.moveTo(pts[0], pts[1]);
     const len = pts.length / 2;
     if (len < 2) return p;
     if (len == 2) {
-      p.M(pts[0], pts[1]);
+      p.moveTo(pts[0], pts[1]);
       p.lineTo(pts[2], pts[3]);
       return p;
     } else {
-      p.quadraticCurveTo([pts[2], pts[3]], [cps[0], cps[1]]);
+      p.quadraticCurveTo(cps[0], cps[1], pts[2], pts[3]);
       let i = 2;
       for (; i < len - 1; i++) {
         const ctrl1 = tuple(
@@ -2963,11 +2463,13 @@ export function curveCubicBezier(points: [number, number][], tension: number) {
         );
         const ctrl2 = tuple(cps[2 * (i - 1) * 2], cps[2 * (i - 1) * 2 + 1]);
         const end = tuple(pts[i * 2], pts[i * 2 + 1]);
-        p.bezierCurveTo(end, ctrl1, ctrl2);
+        p.bezierCurveTo(ctrl1[0], ctrl1[1], ctrl2[0], ctrl2[1], end[0], end[1]);
       }
       p.quadraticCurveTo(
-        tuple(pts[i * 2], pts[i * 2 + 1]),
-        tuple(cps[(2 * (i - 1) - 1) * 2], cps[(2 * (i - 1) - 1) * 2 + 1])
+        cps[(2 * (i - 1) - 1) * 2],
+        cps[(2 * (i - 1) - 1) * 2 + 1],
+        pts[i * 2],
+        pts[i * 2 + 1]
       );
       return p;
     }
@@ -2992,6 +2494,10 @@ export function curveCubicBezier(points: [number, number][], tension: number) {
   return draw();
 }
 
+/**
+ * Given the set of points, draws a smooth path through each of the points,
+ * closed.
+ */
 export function curveBlob(points: [number, number][], smoothing: number = 0.2) {
   const getCurvePathData = (points: Vector[], closed = true) => {
     if (closed) {
@@ -3022,80 +2528,91 @@ export function curveBlob(points: [number, number][], smoothing: number = 0.2) {
       return vector([x, y]);
     };
 
-    const p = path(points[0].$x, points[0].$y);
+    const p = path(uid(5));
+    p.moveTo(points[0].$x, points[0].$y);
     for (let i = 1; i < points.length; i++) {
       const point = points[i];
       const cp1 = controlPoint(points[i - 1], points[i - 2], point, false);
       const cp2 = controlPoint(point, points[i - 1], points[i + 1], true);
-      p.C([point.$x, point.$y], [cp1.$x, cp1.$y], [cp2.$x, cp2.$y]);
+      p.bezierCurveTo(cp1.$x, cp1.$y, cp2.$x, cp2.$y, point.$x, point.$y);
     }
     if (closed) {
-      const comLast = p.$commands[p.$commands.length - 1] as CCommand;
-      const cp1 = comLast.$ctrl1;
-      const valuesFirstC = p.$commands[1] as CCommand;
-      p.$commands[1] = PathCommand.C(valuesFirstC.$end.$x, valuesFirstC.$end.$y)
-        .ctrl1(cp1.$x, cp1.$y)
-        .ctrl2(valuesFirstC.$ctrl2.$x, valuesFirstC.$ctrl2.$y);
-      p.$commands = p.$commands.slice(0, p.$commands.length - 1);
+      const comLast = p._commands[p._commands.length - 1] as CCommand;
+      const cp1 = tuple(comLast[1], comLast[2]);
+      const valuesFirstC = p._commands[1] as CCommand;
+      const end_valuesFirstC = tuple(valuesFirstC[5], valuesFirstC[6]);
+      const ctrl2_valuesFirstC = tuple(valuesFirstC[3], valuesFirstC[4]);
+      p._commands[1] = C(
+        cp1[0],
+        cp1[1],
+        ctrl2_valuesFirstC[0],
+        ctrl2_valuesFirstC[1],
+        end_valuesFirstC[0],
+        end_valuesFirstC[1]
+      );
+      p._commands = p._commands.slice(0, p._commands.length - 1);
     }
     return p;
   };
   return getCurvePathData(points.map(([x, y]) => vector([x, y])));
 }
 
-export class Circle extends GraphicsAtom {
-  $fillOpacity: number | `${number}%` = 1;
+export class Circle extends Renderable {
+  render(fx: (x: number) => number, fy: (y: number) => number): this {
+    this._position = vector([fx(this._position.$x), fy(this._position.$y)]);
+    return this;
+  }
+  _fillOpacity: number | `${number}%` = 1;
 
   fillOpacity(value: number | `${number}%`) {
-    this.$fillOpacity = value;
+    this._fillOpacity = value;
     return this;
   }
 
-  kind(): graphics {
-    return graphics.circle;
-  }
-  childOf(parentObj: SVGObj | null): this {
-    this.$parentSVG = parentObj;
-    return this;
-  }
-  fit(
-    domain: [number, number],
-    range: [number, number],
-    dimensions: [number, number]
-  ): this {
-    const X = interpolator(domain, [0, dimensions[0]]);
-    const Y = interpolator(range, [dimensions[1], 0]);
-    this.$position = vector([X(this.$position.$x), Y(this.$position.$y)]);
-    return this;
-  }
-  $radius: number;
+  _radius: number;
   constructor(radius: number, position: [number, number]) {
-    super();
-    this.$radius = radius;
-    this.$position = vector(position);
+    super(uid(5));
+    this._radius = radius;
+    this._position = vector(position);
   }
-  $fill: string = "black";
+
+  _fill: string = "black";
+
   fill(value: string) {
-    this.$fill = value;
+    this._fill = value;
+    this._stroke = this._fill;
     return this;
   }
-  $stroke: string = "black";
+
+  _stroke: string = this._fill;
+
   stroke(value: string) {
-    this.$stroke = value;
+    this._stroke = value;
     return this;
   }
-  $strokeWidth: string | number = 1;
+
+  _strokeWidth: string | number = 1;
+
   strokeWidth(value: string | number) {
-    this.$strokeWidth = value;
+    this._strokeWidth = value;
     return this;
   }
+
   radius(value: number) {
-    this.$radius = value;
+    this._radius = value;
     return this;
   }
-  $position: Vector = vector([0, 0]);
+
+  _position: Vector = vector([0, 0]);
+  get _cx() {
+    return this._position.$x;
+  }
+  get _cy() {
+    return this._position.$y;
+  }
+
   position(x: number, y: number) {
-    this.$position = vector([x, y]);
+    this._position = vector([x, y]);
     return this;
   }
 }
@@ -3104,11 +2621,11 @@ export function circle(radius: number, position: [number, number]) {
   return new Circle(radius, position);
 }
 
-export function isCircle(obj: GraphicsObj): obj is Circle {
-  return obj.kind() === graphics.circle;
+export function isCircle(u: any) {
+  return u instanceof Circle;
 }
 
-export class TextObj extends GraphicsAtom {
+export class TextObj extends Renderable {
   $latex: null | "block" | "inline" = null;
   $width: number = 50;
   width(value: number) {
@@ -3124,23 +2641,12 @@ export class TextObj extends GraphicsAtom {
     this.$latex = value;
     return this;
   }
-  kind(): graphics {
-    return graphics.text;
-  }
-  childOf(parentObj: SVGObj | null): this {
-    this.$parentSVG = parentObj;
+
+  render(fx: (x: number) => number, fy: (y: number) => number): this {
+    this.$position = vector([fx(this.$position.$x), fy(this.$position.$y)]);
     return this;
   }
-  fit(
-    domain: [number, number],
-    range: [number, number],
-    dimensions: [number, number]
-  ): this {
-    const X = interpolator(domain, [0, dimensions[0]]);
-    const Y = interpolator(range, [dimensions[1], 0]);
-    this.$position = vector([X(this.$position.$x), Y(this.$position.$y)]);
-    return this;
-  }
+
   $content: string | number;
   $position: Vector = vector([0, 0]);
   position(x: number, y: number) {
@@ -3183,7 +2689,7 @@ export class TextObj extends GraphicsAtom {
     return this;
   }
   constructor(content: string | number) {
-    super();
+    super(uid(5));
     this.$content = content;
   }
 }
@@ -3192,13 +2698,20 @@ export function text(content: string | number) {
   return new TextObj(content);
 }
 
-export function isText(obj: GraphicsObj): obj is TextObj {
-  return obj.kind() === graphics.text;
+export function isText(u: any) {
+  return u instanceof TextObj;
 }
 
-abstract class GraphicsCompound2D extends GraphicsObj {
-  abstract kind(): graphics;
-  $children: GraphicsObj[] = [];
+export class Group extends Renderable {
+  render(fx: (x: number) => number, fy: (y: number) => number): this {
+    this.$children.forEach((child) => {
+      child.render(fx, fy);
+    });
+    return this;
+  }
+
+  $children: Renderable[] = [];
+
   $domain: [number, number] = [-5, 5];
 
   get $xMin() {
@@ -3228,46 +2741,122 @@ abstract class GraphicsCompound2D extends GraphicsObj {
     this.$range = range;
     return this;
   }
-}
 
-export class GroupObj extends GraphicsCompound2D {
-  kind(): graphics {
-    return graphics.group;
-  }
-
-  childOf(parent: SVGObj | null): this {
-    this.$parentSVG = parent;
-    this.$children.forEach((child) => {
-      child.childOf(parent);
-    });
-    return this;
-  }
-
-  fit(
-    domain: [number, number],
-    range: [number, number],
-    dimensions: [number, number]
-  ) {
-    this.$children.forEach((child) => {
-      child.fit(domain, range, dimensions);
-    });
-    return this;
-  }
-
-  constructor(children: GraphicsObj[]) {
-    super();
+  constructor(children: Renderable[]) {
+    super(uid(5));
     this.$children = children;
   }
 }
 
-/** Returns a new SVG group object. */
-export function group(children: GraphicsObj[]) {
-  return new GroupObj(children);
+export function isGroup(u: any) {
+  return u instanceof Group;
 }
 
-/** Returns true and asserts if the given object is an SVG group object. */
-export function isGroup(obj: GraphicsObj): obj is GroupObj {
-  return obj.kind() === graphics.group;
+/** Returns a new SVG group object. */
+export function group(children: Renderable[]) {
+  return new Group(children);
+}
+
+export class LineObj extends Renderable {
+  $strokeDashArray: string | number = 0;
+  strokeDashArray(value: string | number) {
+    this.$strokeDashArray = value;
+    return this;
+  }
+  $strokeOpacity: number | string = 1;
+  strokeOpacity(value: number | string) {
+    this.$strokeOpacity = value;
+    return this;
+  }
+  _arrowEnd: null | ArrowHead = null;
+
+  _arrowStart: null | ArrowHead = null;
+
+  arrowStart(arrow?: ArrowHead) {
+    if (arrow) {
+      this._arrowStart = arrow;
+    } else {
+      this._arrowStart = arrowhead(this._id)
+        .type("start")
+        .fill(this.$stroke)
+        .fillOpacity(this.$strokeOpacity)
+        .stroke("none");
+    }
+    return this;
+  }
+
+  arrowEnd(arrow?: ArrowHead) {
+    if (arrow) {
+      this._arrowEnd = arrow;
+    } else {
+      this._arrowEnd = arrowhead(this._id)
+        .fillOpacity(this.$strokeOpacity)
+        .fill(this.$stroke)
+        .stroke("none");
+    }
+    return this;
+  }
+
+  render(fx: (x: number) => number, fy: (y: number) => number): this {
+    this.$start = vector([fx(this.$start.$x), fy(this.$start.$y)]);
+    this.$end = vector([fx(this.$end.$x), fy(this.$end.$y)]);
+    return this;
+  }
+
+  $start: Vector;
+  $end: Vector;
+  constructor(start: [number, number], end: [number, number]) {
+    super(uid(5));
+    this.$start = vector(start);
+    this.$end = vector(end);
+  }
+  $stroke: string = "black";
+  stroke(value: string) {
+    this.$stroke = value;
+    return this;
+  }
+  $strokeWidth: string | number = 1;
+  strokeWidth(value: string | number) {
+    this.$strokeWidth = value;
+    return this;
+  }
+}
+
+export function line(start: [number, number], end: [number, number]) {
+  return new LineObj(start, end);
+}
+
+export function isLine(u: any) {
+  return u instanceof LineObj;
+}
+
+export function angleMarker(
+  p3: [number, number] | Vector,
+  p2: [number, number] | Vector,
+  p1: [number, number] | Vector,
+  radius: number = 20,
+  angleReverse: boolean = true,
+) {
+  const pt3 = Array.isArray(p3) ? vector(p3) : p3;
+  const pt2 = Array.isArray(p2) ? vector(p2) : p2;
+  const pt1 = Array.isArray(p1) ? vector(p1) : p1;
+
+  const dx1 = pt1.$x - pt2.$x;
+  const dy1 = pt1.$y - pt2.$y;
+  const dx2 = pt3.$x - pt2.$x;
+  const dy2 = pt3.$y - pt2.$y;
+  let a1 = Math.atan2(dy1, dx1);
+  let a2 = Math.atan2(dy2, dx2);
+  const p = path(uid(5));
+  p.moveTo(pt2.$x, pt2.$y);
+  if (angleReverse) {
+    a1 = Math.PI * 2 - a1;
+    a2 = Math.PI * 2 - a2;
+  } 
+  p.arc(pt2.$x, pt2.$y, radius, a1, a2, false);
+  p.closePath();
+  p.fill('none');
+  return p;
 }
 
 export type Tick = { tick: LineObj; label: TextObj };
@@ -3297,7 +2886,7 @@ function ticklines2D(
   return output;
 }
 
-abstract class Axis extends GroupObj {
+abstract class Axis extends Group {
   $stroke: string = "black";
   stroke(value: string) {
     this.$stroke = value;
@@ -3385,7 +2974,7 @@ export function haxis(interval: [number, number], step: number) {
   return new HorizontalAxis(interval, step);
 }
 
-class Grid extends GroupObj {
+class Grid extends Group {
   done() {
     const xmin = this.$xDomain[0];
     const xmax = this.$xDomain[1];
@@ -3445,7 +3034,7 @@ export function grid(xDomain: [number, number], yRange: [number, number]) {
   return new Grid(xDomain, yRange);
 }
 
-class CartesianPlot extends GroupObj {
+class CartesianPlot extends Group {
   $fn: string;
   $xPlotDomain: [number, number];
   $yPlotRange: [number, number];
@@ -3471,7 +3060,7 @@ class CartesianPlot extends GroupObj {
   $engine = engine();
 
   done() {
-    const out: PathCommand[] = [];
+    const out: (LCommand | MCommand)[] = [];
     const xmin = this.$xPlotDomain[0];
     const xmax = this.$xPlotDomain[1];
     const ymin = this.$yPlotRange[0];
@@ -3500,21 +3089,22 @@ class CartesianPlot extends GroupObj {
       const datum = dataset[i];
       if (!Number.isNaN(datum[1])) {
         if (!moved) {
-          out.push(PathCommand.M(datum[0], datum[1], 1));
+          out.push(M(datum[0], datum[1]));
           moved = true;
         } else {
-          out.push(PathCommand.L(datum[0], datum[1], 1));
+          out.push(L(datum[0], datum[1]));
         }
       } else {
         const next = dataset[i + 1];
         if (next !== undefined && !Number.isNaN(next[1])) {
-          out.push(PathCommand.M(next[0], next[1], 1));
+          out.push(M(next[0], next[1]));
         }
       }
     }
-    const p = path(out[0].$end.$x, out[0].$end.$y, out[0].$end.$z);
+    const p = path(uid(5));
+    p.moveTo(out[0][1], out[0][2]);
     for (let i = 1; i < out.length; i++) {
-      p.$commands.push(out[i]);
+      p._commands.push(out[i]);
     }
     p.stroke(this.$stroke);
     p.strokeWidth(this.$strokeWidth);
@@ -3548,7 +3138,49 @@ export function cplot(
   return new CartesianPlot(fn, domain, range);
 }
 
-export class PolarPlot2D extends GroupObj {
+class Disc extends Path {
+  $radius: number;
+  $position: [number, number];
+  constructor(radius: number, position: [number, number]) {
+    super(uid(5));
+    this.$position = position;
+    this.$radius = radius;
+    this._commands.push(
+      M(this.$position[0], this.$position[1] + radius),
+      A(1, 1, 0, 0, 1, this.$position[0], this.$position[1] - radius),
+      A(1, 1, 0, 0, 1, this.$position[0], this.$position[1] + radius)
+    );
+  }
+
+  get _cx() {
+    return this.$position[0];
+  }
+  get _cy() {
+    return this.$position[1];
+  }
+
+  radius(R: number) {
+    this.$radius = R;
+    return this;
+  }
+
+  position(x: number, y: number) {
+    const radius = this.$radius;
+    const r = radius / 2;
+    this._commands = [
+      M(x + r, y + r),
+      A(1, 1, 0, 0, 1, x - r, y - r),
+      A(1, 1, 0, 0, 1, x + r, y + r),
+    ];
+    return this;
+  }
+}
+
+export function disc(radius: number, position: [number, number]) {
+  return new Disc(radius, position);
+}
+
+export class PolarPlot2D extends Group {
   $f: string;
   $domain: [number, number];
   $range: [number, number];
@@ -3580,7 +3212,7 @@ export class PolarPlot2D extends GroupObj {
   $compiledFunction: Fn | null = null;
 
   done() {
-    const out: PathCommand[] = [];
+    const out: (MCommand | LCommand)[] = [];
     const e = engine();
     const fn = e.compile(this.$f);
     if (!(fn instanceof Fn)) {
@@ -3603,25 +3235,26 @@ export class PolarPlot2D extends GroupObj {
       const [x, y] = dataset[i];
       if (!Number.isNaN(y)) {
         if (!moved) {
-          out.push(PathCommand.M(x, y, 1));
+          out.push(M(x, y));
           moved = true;
         } else {
-          out.push(PathCommand.L(x, y, 1));
+          out.push(L(x, y));
         }
       } else {
         const next = dataset[i + 1];
         if (next !== undefined) {
-          out.push(PathCommand.M(x, y, 1));
+          out.push(M(x, y));
         }
       }
     }
 
-    const p = path(out[0].$end.$x, out[0].$end.$y, out[0].$end.$z)
+    const p = path(uid(5));
+    p.moveTo(out[0][1], out[0][2])
       .stroke(this.$stroke)
       .strokeWidth(this.$strokeWidth);
 
     for (let i = 1; i < out.length; i++) {
-      p.$commands.push(out[i]);
+      p._commands.push(out[i]);
     }
 
     this.$children.push(p);
@@ -3650,40 +3283,7 @@ export function plotPolar(fn: string) {
   return new PolarPlot2D(fn);
 }
 
-class Disc extends Path {
-  $radius: number;
-  constructor(radius: number) {
-    super(0, 0, 1);
-    this.$radius = radius;
-    this.$commands.push(
-      PathCommand.M(this.$origin.$x, this.$origin.$y + radius, this.$origin.$z),
-      PathCommand.A(this.$origin.$x, this.$origin.$y - radius, this.$origin.$z),
-      PathCommand.A(this.$origin.$x, this.$origin.$y + radius, this.$origin.$z)
-    );
-  }
-
-  radius(R: number) {
-    this.$radius = R;
-    return this;
-  }
-
-  at(x: number, y: number, z: number = 1) {
-    const radius = this.$radius;
-    const r = radius / 2;
-    this.$commands = [
-      PathCommand.M(x + r, y + r, z),
-      PathCommand.A(x - r, y - r, z),
-      PathCommand.A(x + r, y + r, z),
-    ];
-    return this;
-  }
-}
-
-export function disc(radius: number) {
-  return new Disc(radius);
-}
-
-export class PolarAxes extends GroupObj {
+export class PolarAxes extends Group {
   $domain: [number, number];
   constructor(domain: [number, number]) {
     super([]);
@@ -3699,7 +3299,7 @@ export class PolarAxes extends GroupObj {
   done() {
     const lineLabels: TextObj[] = [];
     for (let i = 1; i < this.$domain[1] * this.$tickCount; i++) {
-      const c = disc(i)
+      const c = disc(i, [0, 0])
         .fill("none")
         .stroke(this.$axisColor)
         .fillOpacity(this.$axisOpacity);
@@ -3989,29 +3589,26 @@ class TNode {
   $dx: number = 0;
   $dy: number = 0;
   $id: string | number = uid(10);
-  $commands: PathCommand[] = [];
+  $commands: (MCommand | LCommand)[] = [];
   get $x() {
-    return this.$commands[0].$end.$x;
+    return this.$commands[0][1];
   }
   get $y() {
-    return this.$commands[0].$end.$y;
-  }
-  get $z() {
-    return this.$commands[0].$end.$z;
+    return this.$commands[0][2];
   }
   set $x(x: number) {
-    this.$commands = [PathCommand.M(x, this.$y, this.$z)];
+    this.$commands = [M(x, this.$y)];
   }
   set $y(y: number) {
-    this.$commands = [PathCommand.M(this.$x, y, this.$z)];
+    this.$commands = [M(this.$x, y)];
   }
   set $z(z: number) {
-    this.$commands = [PathCommand.M(this.$x, this.$y, z)];
+    this.$commands = [M(this.$x, this.$y)];
   }
   constructor(name: string | number, parent?: Fork) {
     this.$name = name;
     this.$parent = parent !== undefined ? parent : null;
-    this.$commands = [PathCommand.M(0, 0, 1)];
+    this.$commands = [M(0, 0)];
   }
   sketch(depth: number = 0) {
     this.$x = -1;
@@ -4212,7 +3809,7 @@ class Fork extends TNode {
   }
 }
 
-function isLeaf(x: any): x is Leaf {
+function isLeaf(x: unknown): x is Leaf {
   return x instanceof Leaf;
 }
 
@@ -4233,7 +3830,7 @@ type Traversal = "preorder" | "inorder" | "postorder" | "bfs";
 
 type LinkFunction = (line: LineObj, source: TNode, target: TNode) => LineObj;
 
-class TreeObj extends GroupObj {
+class TreeObj extends Group {
   $tree: Fork;
   private lay() {
     // deno-fmt-ignore
@@ -4256,8 +3853,8 @@ class TreeObj extends GroupObj {
     return this;
   }
   $nodeFill: string = "white";
-  $nodeFn: ((node: TreeChild) => GraphicsAtom) | null = null;
-  nodeFn(callback: (node: TreeChild) => GraphicsAtom) {
+  $nodeFn: ((node: TreeChild) => Renderable) | null = null;
+  nodeFn(callback: (node: TreeChild) => Renderable) {
     this.$nodeFn = callback;
     return this;
   }
@@ -4286,7 +3883,7 @@ class TreeObj extends GroupObj {
         this.$children.push(l);
       }
     });
-    const nodes: GraphicsAtom[] = [];
+    const nodes: Renderable[] = [];
     const labels: TextObj[] = [];
     this.$tree.bfs((node) => {
       if (this.$nodeFn) {
@@ -5037,7 +4634,7 @@ function pt(id: string | number, position: Vector) {
   return new Particle(id, position);
 }
 
-class ForceGraph extends GroupObj {
+class ForceGraph extends Group {
   private $particles: Map<string | number, Particle>;
   private $graph: Graph;
   $iterations: number = 100;
@@ -5066,7 +4663,7 @@ class ForceGraph extends GroupObj {
     this.$decay = n;
     return this;
   }
-  $children: GraphicsAtom[] = [];
+  $children: Renderable[] = [];
   constructor(graph: Graph) {
     super([]);
     this.$graph = graph;
@@ -7241,7 +6838,7 @@ class Sum extends MathObj {
       .map((arg) => {
         let argstring = arg.strung();
         if (
-          arg.precedence() < this.precedence() &&
+          arg.precedence() > this.precedence() &&
           arg.precedence() !== bp.atom
         ) {
           argstring = `(${argstring})`;
@@ -7373,7 +6970,7 @@ class Product extends MathObj {
       .map((arg) => {
         let argstring = arg.strung();
         if (
-          arg.precedence() < this.precedence() &&
+          arg.precedence() > this.precedence() &&
           arg.precedence() !== bp.atom
         ) {
           argstring = `(${argstring})`;
@@ -7494,18 +7091,9 @@ class Power extends MathObj {
   }
   strung(): string {
     const left = this.base.strung();
-    let right = this.exponent.strung();
-    if (!isAtom(this.exponent)) {
-      right = `(${right})`;
-    }
-    if (isReal(this.exponent) && this.exponent.value() < 0) {
-      right = `(${right})`;
-    }
-    if (isReal(this.exponent) && this.exponent.value() < 0) {
-      return `1/${this.base.strung()}^${this.exponent.abs()}`;
-    }
+    const right = this.exponent.strung();
     const out = `${left}^${right}`;
-    return `(${out})`;
+    return `${out}`;
   }
   operandAt(i: number): MathObj {
     const out = this.args[i];
