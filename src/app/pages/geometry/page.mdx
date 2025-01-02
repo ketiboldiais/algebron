@@ -8,7 +8,8 @@ import { Line1, AngleLab } from "@/components/Fig";
 - [Point](#point)
 - [Line](#line)
 - [Line Segments](#line-segments)
-- [Trigonometry](#trigonometry)
+- [Angles](#angles)
+- [Trigonometric Ratios](#trigonometric-ratios)
 
 </TOC>
 
@@ -37,12 +38,45 @@ import { LineSegment1 } from "@/components/Fig";
 
 <LineSegment1/>
 
-## Trigonometry
+## Angles
 An _angle_ is a figure formed by two rays with a common endpoint called the _vertex_.
 
 <AngleLab/>
 
 The symbol ${\theta}$ is often used to denote an angle. We can also label points on the angle's arms and vertex, and use those labels to name the angle. For example, we may refer to the angle above with the notation ${\angle ABC}$ (the middle letter is always reserved for the vertex).  
+
+## Trigonometric Ratios
+The fundamental trigonometric ratios are _sine_, _cosine_, and _tangent_. These are ratios of the sides of a triangle, defined as follows (using the diagram below as reference):
+
+<blockquote>
+
+__*definition.*__ Suppose ${A,}$ ${B,}$ and ${C}$ form the sides of a triangle.
+
+import {TriangleLab} from "@/components/Fig";
+
+<TriangleLab/>
+
+We define the trigonometric ratios of such a triangle as follows:
+
+$$
+  \cos \theta = \dfrac{\text{length of side adjacent to } \theta}{\text{length of hypotenuse}} = \dfrac{B}{C} \\[2em]
+
+  \sin \theta = \dfrac{\text{length of side opposite to } \theta}{\text{length of hypotenuse}} = \dfrac{A}{C}  \\[2em]
+
+  \tan \theta = \dfrac{\text{length of side opposite to } \theta}{\text{length of side adjacent to } \theta} = \dfrac{A}{B}  \\[2em]
+
+  \sec \theta = \dfrac{\text{length of hypotenuse}}{\text{length of side adjacent to } \theta} = \dfrac{C}{B}  \\[2em]
+
+  \csc \theta = \dfrac{\text{length of hypotenuse}}{\text{length of side opposite to } \theta} = \dfrac{C}{A}  \\[2em]
+
+  \cot \theta = \dfrac{\text{length of side adjacent to } \theta}{\text{length of side opposite to } \theta} = \dfrac{B}{A}
+$$
+
+</blockquote>
+
+
+
+
 
 export default function MDXPage({ children }) {
   return <MdxLayout>{children}</MdxLayout>;

@@ -50,6 +50,7 @@ import {
   Renderable,
   SVGContext,
   angleMarker,
+  triangle,
 } from "@/algebron/main";
 
 import {
@@ -106,10 +107,19 @@ type FigProps = {
   width?: number;
   paddingBottom?: number;
   title?: ReactNode;
+  translate?: [number, number];
 };
 
-const Fig = ({ data, width = 100, paddingBottom = width, title }: FigProps) => {
+const Fig = ({
+  data,
+  width = 100,
+  paddingBottom = width,
+  title,
+  translate,
+}: FigProps) => {
   const par = "xMidYMid meet";
+  const tx = translate ? translate[0] : 0;
+  const ty = translate ? translate[1] : 0;
   const viewbox = `0 0 ${data._width} ${data._height}`;
   const boxcss = {
     display: "block",
@@ -133,7 +143,7 @@ const Fig = ({ data, width = 100, paddingBottom = width, title }: FigProps) => {
       <div style={boxcss}>
         <svg viewBox={viewbox} preserveAspectRatio={par} style={svgcss}>
           <DEF elements={data._markers} />
-          <g transform={`translate(10,10)`}>
+          <g transform={`translate(${tx},${ty})`}>
             <Fig2D elements={data._children} />
           </g>
         </svg>
@@ -912,21 +922,18 @@ export const ConvexHullDemo = () => {
     .strokeWidth(1)
     .fill(cssvar("green"))
     .fillOpacity("20%");
-  const cs = points.map((v) => {
-    return circle(5, [v.$x, v.$y]).fill(cssvar("green")).fillOpacity("50%");
-  });
+  const cs = points.map((v) =>
+    circle(5, [v.$x, v.$y])
+      .fill(cssvar("green"))
+      .stroke("olivedrab")
+      .fillOpacity(0.7)
+  );
   const d = svg({
     width: 400,
     height: 400,
     domain: D,
     range: R,
-  }).children([
-    grid(D, R).stroke(cssvar("dimgrey")).done(),
-    // xAxis,
-    // yAxis,
-    p,
-    ...cs,
-  ]);
+  }).children([grid(D, R).stroke(cssvar("dimgrey")).done(), p, cs]);
   return <Fig data={d} width={45} />;
 };
 
@@ -1145,7 +1152,9 @@ export const SplineLab = () => {
     tuple(3, 1),
     tuple(4, 3),
   ];
-  const circles = pts.map(([x, y]) => circle(5, [x, y]).fill("white"));
+  const circles = pts.map(([x, y]) =>
+    circle(5, [x, y]).fill("white").stroke("black")
+  );
   const lc = curveLinear(pts);
   const cbc = curveCubicBezier(pts, 0.4);
   const cc = curveCardinal(pts, tensionValue);
@@ -1653,20 +1662,63 @@ export const AngleLab = () => {
     // grid(D, R).stroke(cssvar("dimgrey")).done(),
     // axis({ on: "x", domain: D, range: R }),
     // axis({ on: "y", domain: D, range: R }),
-    angleMarker([5, 0], [0, 0], [2.5, 4], 30).stroke(cssvar('red')).fill(cssvar('red')).fillOpacity(0.3),
+    angleMarker([5, 0], [0, 0], [2.5, 4], 30)
+      .stroke(cssvar("red"))
+      .fill(cssvar("red"))
+      .fillOpacity(0.3),
     line([0, 0], [5, 0]).stroke(cssvar("red")).arrowEnd(),
     line([0, 0], [2, 4]).stroke(cssvar("red")).arrowEnd(),
     circle(4, [0, 0]).fill(cssvar("red")),
-    circle(4, [1,2]).fill(cssvar("red")),
-    circle(4, [3,0]).fill(cssvar("red")),
-    text("A").fontStyle("italic").position(1.3,2).fill(cssvar("foreground")),
-    text("B").fontStyle("italic").position(-0.3,0).fill(cssvar("foreground")),
-    text("C").fontStyle("italic").position(3,-0.5).fill(cssvar("foreground")),
+    circle(4, [1, 2]).fill(cssvar("red")),
+    circle(4, [3, 0]).fill(cssvar("red")),
+    text("A").fontStyle("italic").position(1.3, 2).fill(cssvar("foreground")),
+    text("B").fontStyle("italic").position(-0.3, 0).fill(cssvar("foreground")),
+    text("C").fontStyle("italic").position(3, -0.5).fill(cssvar("foreground")),
   ]);
 
   return (
     <div>
-      <Fig data={d} width={60} paddingBottom={40}/>
+      <Fig data={d} width={60} paddingBottom={40} />
+    </div>
+  );
+};
+
+export const TriangleLab = () => {
+  const D = tuple(-5, 5);
+  const R = tuple(-5, 5);
+  const d = svg({
+    domain: D,
+    range: R,
+    width: 500,
+    height: 500,
+  }).children([
+    // grid(D, R).stroke(cssvar("dimgrey")).done(),
+    // axis({ on: "x", domain: D, range: R }),
+    // axis({ on: "y", domain: D, range: R }),
+    angleMarker([1, 0], [0, 0], [0, 1], 20)
+      .stroke(cssvar("red"))
+      .fill(cssvar("red"))
+      .fillOpacity(0.3),
+    angleMarker([0, 0], [0, 4], [3, 0], 20)
+      .stroke(cssvar("red"))
+      .fill(cssvar("red"))
+      .fillOpacity(0.3),
+    angleMarker([0, 4], [3, 0], [0, 0], 20)
+      .stroke(cssvar("red"))
+      .fill(cssvar("red"))
+      .fillOpacity(0.3),
+    triangle([0, 0], [3, 0], [0, 4]).fill("none"),
+    text("A").fontStyle("italic").position(-0.3, 1.5),
+    text("B").fontStyle("italic").position(1.5, -0.3),
+    text("C").fontStyle("italic").position(1.7, 2),
+    text("α").position(0.2, 3.3),
+    text("β").position(0.4, 0.4),
+    text("θ").position(2.4, 0.3),
+  ]);
+
+  return (
+    <div>
+      <Fig data={d} width={75} paddingBottom={50} translate={[-40, 0]} />
     </div>
   );
 };

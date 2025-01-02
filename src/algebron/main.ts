@@ -1683,7 +1683,7 @@ export class SVG {
     const objs = objects.flat().filter((x) => x instanceof Renderable);
     objs.forEach((obj) => {
       this._children.push(obj.render(this._fx, this._fy));
-      if ((obj instanceof Path) || (obj instanceof LineObj)) {
+      if (obj instanceof Path || obj instanceof LineObj) {
         obj._arrowEnd && this._markers.push(obj._arrowEnd);
         obj._arrowStart && this._markers.push(obj._arrowStart);
       }
@@ -1818,7 +1818,7 @@ function processPathCommands(
       }
       case "L": {
         const x = fx(command[1]);
-        const y = fx(command[2]);
+        const y = fy(command[2]);
         output.push(`L${(x1 = +x)},${(y1 = +y)}`);
         break;
       }
@@ -2069,7 +2069,7 @@ export class Path extends Renderable {
     return this;
   }
 
-  _fill: string = "black";
+  _fill: string = "none";
 
   fill(value: string) {
     this._fill = value;
@@ -2757,6 +2757,26 @@ export function group(children: Renderable[]) {
   return new Group(children);
 }
 
+// function to draw a triangle with angle marks
+// pass it the 3 points at the corners of the triangle.
+// will handle any triangle
+// function drawTriangle(x1,y1,x2,y2,x3,y3)
+export function triangle(
+  pt1: [number, number],
+  pt2: [number, number],
+  pt3: [number, number]
+) {
+  const [x1, y1] = pt1;
+  const [x2, y2] = pt2;
+  const [x3, y3] = pt3;
+  const ctx = path(uid(5));
+  ctx.moveTo(x1, y1);
+  ctx.lineTo(x2, y2);
+  ctx.lineTo(x3, y3);
+  ctx.closePath();
+  return ctx;
+}
+
 export class LineObj extends Renderable {
   $strokeDashArray: string | number = 0;
   strokeDashArray(value: string | number) {
@@ -2835,7 +2855,7 @@ export function angleMarker(
   p2: [number, number] | Vector,
   p1: [number, number] | Vector,
   radius: number = 20,
-  angleReverse: boolean = true,
+  angleReverse: boolean = true
 ) {
   const pt3 = Array.isArray(p3) ? vector(p3) : p3;
   const pt2 = Array.isArray(p2) ? vector(p2) : p2;
@@ -2852,10 +2872,10 @@ export function angleMarker(
   if (angleReverse) {
     a1 = Math.PI * 2 - a1;
     a2 = Math.PI * 2 - a2;
-  } 
+  }
   p.arc(pt2.$x, pt2.$y, radius, a1, a2, false);
   p.closePath();
-  p.fill('none');
+  p.fill("none");
   return p;
 }
 
