@@ -51,6 +51,8 @@ import {
   SVGContext,
   angleMarker,
   triangle,
+  polarToCartesian,
+  toRadians,
 } from "@/algebron/main";
 
 import {
@@ -194,6 +196,9 @@ const PATH = ({ data }: Path2DProps) => {
       fillOpacity={data._fillOpacity}
       stroke={data._stroke}
       strokeWidth={data._strokeWidth}
+      strokeDasharray={data._strokeDashArray}
+      markerEnd={data._arrowEnd ? `url(#${data._id}-end)` : ""}
+      markerStart={data._arrowStart ? `url(#${data._id}-start)` : ""}
     />
   );
 };
@@ -234,6 +239,7 @@ const CIRCLE = ({ data }: CircleProps) => {
       fillOpacity={data._fillOpacity}
       strokeWidth={data._strokeWidth}
       stroke={data._stroke}
+      strokeDasharray={data._strokeDashArray}
     />
   );
 };
@@ -260,6 +266,7 @@ const TEXT = ({ data }: TextProps) => {
     <text
       textAnchor={data.$textAnchor}
       fontStyle={data.$fontStyle}
+      fontSize={data.$fontSize ? data.$fontSize : "inherit"}
       x={data.$position.$x}
       y={data.$position.$y}
       dx={data.$dx}
@@ -293,7 +300,7 @@ const LINE = ({ data }: L2DProps) => {
       strokeWidth={data.$strokeWidth}
       strokeDasharray={data.$strokeDashArray}
       markerEnd={data._arrowEnd ? `url(#${data._id}-end)` : ""}
-      markerStart={data._arrowEnd ? `url(#${data._id}-start)` : ""}
+      markerStart={data._arrowStart ? `url(#${data._id}-start)` : ""}
       strokeOpacity={data.$strokeOpacity}
     />
   );
@@ -591,7 +598,8 @@ export function PLOT3D({ data }: Plot3DProps) {
           onCreated={({ camera }) => camera.lookAt(0, 0, 0)}
         >
           <CameraController />
-          <pointLight position={[0, 250, 0]} color={0xffffff} />
+          {/* <pointLight intensity={20} position={[2,30,4]} color={0xffffff} /> */}
+          {/* <ambientLight color={0xffffff} intensity={1}/> */}
           <primitive object={new AxesHelper(10)} />
           <primitive
             object={new GridHelper(10, 10, d.$gridColor, d.$gridColor)}
@@ -827,12 +835,11 @@ export const TreeTest = () => {
         ]),
       ])
     )
-      .nodeFn((node) =>
-        circle(5, [node.$x, node.$y]).stroke("firebrick").fill("salmon")
-      )
+      .nodeFn((node) => circle(5, [node.$x, node.$y]).stroke(cssvar("red")))
+      .edgeColor(cssvar("red"))
       .labelFn((node) =>
         text(node.$name)
-          .fill("#B2BEB5")
+          .fill(cssvar("foreground"))
           .position(node.$x, node.$y)
           .dx(-10)
           .dy(0)
@@ -893,8 +900,8 @@ export const GraphDemo = () => {
     )
       .domain(D)
       .range(R)
-      .nodeColor("lightblue")
-      .edgeColor("teal")
+      .nodeColor(cssvar("blue"))
+      .edgeColor(cssvar("blue"))
       .nodeRadius(3)
       .done(),
   ]);
@@ -925,7 +932,7 @@ export const ConvexHullDemo = () => {
   const cs = points.map((v) =>
     circle(5, [v.$x, v.$y])
       .fill(cssvar("green"))
-      .stroke("olivedrab")
+      .stroke(cssvar("green"))
       .fillOpacity(0.7)
   );
   const d = svg({
@@ -1078,13 +1085,13 @@ export const QuadraticFunctionLab = () => {
   }).children([
     xAxis,
     yAxis,
-    cplot(`fn ${fn}`, D, R).stroke("teal").done(),
-    line([vtx.x, R[0]], [vtx.x, R[1]]).stroke("salmon").strokeDashArray(8),
-    circle(5, [vtx.x, vtx.y]).fill("lightblue"),
+    cplot(`fn ${fn}`, D, R).stroke(cssvar("blue")).done(),
+    line([vtx.x, R[0]], [vtx.x, R[1]]).stroke(cssvar("red")).strokeDashArray(8),
+    circle(5, [vtx.x, vtx.y]).fill(cssvar("blue")),
     text(`(${vtx.x.toPrecision(3)}, ${vtx.y.toPrecision(3)})`)
       .position(vtx.x, vtx.y)
       .dx(50)
-      .fill("teal"),
+      .fill(cssvar("foreground")),
   ]);
 
   return (
@@ -1261,19 +1268,22 @@ export const Pow2FuncLab = () => {
   const d1 = svg(ctx).children([
     vaxis(R, 1).stroke("grey").done(),
     haxis(D, 1).stroke("grey").done(),
-    cplot(`fn f(x) = x^2`, D, R).stroke("red").strokeWidth(2).done(),
+    cplot(`fn f(x) = x^2`, D, R).stroke(cssvar("red")).strokeWidth(2).done(),
   ]);
 
   const d2 = svg(ctx).children([
     vaxis(R, 1).stroke("grey").done(),
     haxis(D, 1).stroke("grey").done(),
-    cplot(`fn f(x) = x^4`, D, R).stroke("teal").strokeWidth(2).done(),
+    cplot(`fn f(x) = x^4`, D, R).stroke(cssvar("blue")).strokeWidth(2).done(),
   ]);
 
   const d3 = svg(ctx).children([
     vaxis(R, 1).stroke("grey").done(),
     haxis(D, 1).stroke("grey").done(),
-    cplot(`fn f(x) = x^16`, D, R).stroke("violet").strokeWidth(2).done(),
+    cplot(`fn f(x) = x^16`, D, R)
+      .stroke(cssvar("purple"))
+      .strokeWidth(2)
+      .done(),
   ]);
 
   return (
@@ -1289,8 +1299,8 @@ export const Rat1 = () => {
   const domain = tuple(-10, 10);
   const range = tuple(-10, 10);
   const c = cplot("fn f(x) = 1/x", domain, range)
-    .stroke("yellowgreen")
-    .strokeWidth(1.5)
+    .stroke(cssvar("green"))
+    .strokeWidth(1)
     .done();
   const xInterp = interpolator([0, 100], domain);
   const [xValue, setXValue] = useState(-10);
@@ -1309,22 +1319,22 @@ export const Rat1 = () => {
     }
   }, [xValue, c.$compiledFunction, c.$engine]);
   const d = svg({
-    width: 400,
-    height: 400,
+    width: 500,
+    height: 500,
     domain,
     range,
   }).children([
+    axis({ on: "x", domain, range }).done(),
+    axis({ on: "y", domain, range }).done(),
     cplot("fn f(x) = 1/x", domain, range)
-      .stroke("yellowgreen")
-      .strokeWidth(1.5)
+      .stroke(cssvar("green"))
+      .strokeWidth(1)
       .done(),
-    circle(5, [xValue, yValue]).stroke("olivedrab").fill("yellowgreen"),
+    circle(3, [xValue, yValue]).fill(cssvar("green")),
     text(`(${xValue.toPrecision(2)}, ${yValue.toPrecision(2)})`)
       .position(xValue, yValue)
       .dy(-10)
-      .fill("slategrey"),
-    axis({ on: "x", domain, range }).done(),
-    axis({ on: "y", domain, range }).done(),
+      .fill(cssvar("foreground")),
   ]);
 
   return (
@@ -1352,13 +1362,13 @@ export const Rat2 = () => {
     domain,
     range,
   }).children([
-    cplot("fn f(x) = 1/x^2", domain, range)
-      .samples(600)
-      .stroke("violet")
-      .strokeWidth(1.5)
-      .done(),
     axis({ on: "x", domain, range }),
     axis({ on: "y", domain, range }),
+    cplot("fn f(x) = 1/x^2", domain, range)
+      .samples(600)
+      .stroke(cssvar("purple"))
+      .strokeWidth(1.5)
+      .done(),
   ]);
   return <Fig data={d} width={60} />;
 };
@@ -1373,7 +1383,7 @@ export const Exp1 = () => {
     height: 500,
   }).children([
     cplot("fn f(x) = 2^x", domain, range)
-      .stroke("salmon")
+      .stroke(cssvar("red"))
       .strokeWidth(2)
       .done(),
     axis({ on: "x", domain, range }),
@@ -1393,7 +1403,7 @@ export const Exp2 = () => {
     height: 500,
   }).children([
     cplot("fn f(x) = e^x", domain, range)
-      .stroke("dodgerblue")
+      .stroke(cssvar("blue"))
       .strokeWidth(2)
       .done(),
     axis({ on: "x", domain, range }),
@@ -1412,34 +1422,38 @@ export const LogFig1 = () => {
     width: 500,
     height: 500,
   }).children([
+    axis({ on: "x", domain, range }),
+    axis({ on: "y", domain, range }),
     cplot("fn f(x) = log(x)", domain, range)
       .samples(900)
-      .stroke("yellowgreen")
+      .stroke(cssvar("green"))
       .strokeWidth(2)
       .done(),
     cplot("fn f(x) = lg(x)", domain, range)
       .samples(900)
-      .stroke("salmon")
+      .stroke(cssvar("red"))
       .strokeWidth(2)
       .done(),
     cplot("fn f(x) = ln(x)", domain, range)
       .samples(900)
-      .stroke("dodgerblue")
+      .stroke(cssvar("blue"))
       .strokeWidth(2)
       .done(),
-    axis({ on: "x", domain, range }),
-    axis({ on: "y", domain, range }),
     text("\\ln x")
       .latex("block")
       .fontSize(20)
       .position(7, 3)
-      .fill("dodgerblue"),
-    text("\\lg x").latex("block").fontSize(20).position(5, 3.5).fill("salmon"),
+      .fill(cssvar("blue")),
+    text("\\lg x")
+      .latex("block")
+      .fontSize(20)
+      .position(5, 3.5)
+      .fill(cssvar("red")),
     text("\\log x")
       .latex("block")
       .fontSize(20)
       .position(5, 1.7)
-      .fill("yellowgreen"),
+      .fill(cssvar("green")),
   ]);
 
   return <Fig data={d} width={60} />;
@@ -1695,30 +1709,75 @@ export const TriangleLab = () => {
     // grid(D, R).stroke(cssvar("dimgrey")).done(),
     // axis({ on: "x", domain: D, range: R }),
     // axis({ on: "y", domain: D, range: R }),
-    angleMarker([1, 0], [0, 0], [0, 1], 20)
-      .stroke(cssvar("red"))
-      .fill(cssvar("red"))
-      .fillOpacity(0.3),
-    angleMarker([0, 0], [0, 4], [3, 0], 20)
-      .stroke(cssvar("red"))
-      .fill(cssvar("red"))
-      .fillOpacity(0.3),
-    angleMarker([0, 4], [3, 0], [0, 0], 20)
-      .stroke(cssvar("red"))
-      .fill(cssvar("red"))
-      .fillOpacity(0.3),
-    triangle([0, 0], [3, 0], [0, 4]).fill("none"),
-    text("A").fontStyle("italic").position(-0.3, 1.5),
-    text("B").fontStyle("italic").position(1.5, -0.3),
-    text("C").fontStyle("italic").position(1.7, 2),
-    text("α").position(0.2, 3.3),
-    text("β").position(0.4, 0.4),
-    text("θ").position(2.4, 0.3),
+    [
+      angleMarker([1, 0], [0, 0], [0, 1], 20),
+      angleMarker([0, 0], [0, 4], [3, 0], 20),
+      angleMarker([0, 4], [3, 0], [0, 0], 20),
+    ].map((a) => a.stroke(cssvar("red")).fill(cssvar("red")).fillOpacity(0.3)),
+
+    triangle([0, 0], [3, 0], [0, 4]).stroke(cssvar("foreground")).fill("none"),
+    [
+      text("A").position(-0.3, 1.5),
+      text("B").position(1.5, -0.3),
+      text("C").position(1.7, 2),
+      text("α").position(0.2, 3.3),
+      text("β").position(0.4, 0.4),
+      text("θ").position(2.4, 0.3),
+    ].map((t) => t.fontStyle("italic").fill(cssvar("foreground"))),
   ]);
 
   return (
     <div>
       <Fig data={d} width={75} paddingBottom={50} translate={[-40, 0]} />
+    </div>
+  );
+};
+
+export const CongruentTriangles = () => {
+  const D = tuple(-5, 5);
+  const R = tuple(-5, 5);
+  const d = svg({
+    domain: D,
+    range: R,
+    width: 500,
+    height: 500,
+  }).children([
+    grid(D, R).stroke(cssvar("dimgrey")).done(),
+    axis({ on: "x", domain: D, range: R }),
+    axis({ on: "y", domain: D, range: R }),
+    [
+      angleMarker([1, 0], [0, 0], [0, 1], 20),
+      angleMarker([0, 0], [0, 4], [3, 0], 20),
+      angleMarker([0, 4], [3, 0], [0, 0], 20),
+      angleMarker([2, -4], [-1, -4], [-1, 0], 20),
+      angleMarker([-1, -4], [-1, 0], [2, -4], 20),
+      angleMarker([-1, 0], [2, -4], [-1, -4], 20),
+    ].map((a) => a.stroke(cssvar("red")).fill(cssvar("red")).fillOpacity(0.3)),
+    triangle([0, 0], [3, 0], [0, 4]).stroke(cssvar("foreground")).fill("none"),
+    triangle([-1, 0], [-1, -4], [2, -4])
+      .stroke(cssvar("foreground"))
+      .fill("none"),
+    [
+      [0, 4],
+      [3, 0],
+      [0, 0],
+      [-1, 0],
+      [-1, -4],
+      [2, -4],
+    ].map((c) => circle(5, c as [number, number]).fill(cssvar("red"))),
+    [
+      text("A").position(0, 4.3),
+      text("B").position(-0.3, 0),
+      text("C").position(3, -0.5),
+      text("D").position(-1, 0.25),
+      text("E").position(-1.3, -4),
+      text("F").position(2.3, -4),
+    ].map((t) => t.fontStyle("italic").fill(cssvar("foreground"))),
+  ]);
+
+  return (
+    <div>
+      <Fig data={d} width={75} paddingBottom={80} translate={[0, 0]} />
     </div>
   );
 };
@@ -1739,6 +1798,96 @@ export const PolarPlotTest = () => {
       .done(),
   ]);
   return <Fig data={d} width={70} />;
+};
+
+export const TrigFnAngles = () => {
+  const D = tuple(-5, 5);
+  const R = tuple(-5, 5);
+  const l1 = polarToCartesian(0, 0, 2, 120);
+  const d = svg({
+    domain: D,
+    range: R,
+    width: 500,
+    height: 500,
+  }).children([
+    // grid(D, R).stroke(cssvar("dimgrey")).done(),
+    // axis({ on: "x", domain: D, range: R }),
+    // axis({ on: "y", domain: D, range: R }),
+    circle(100, [0, 0]).fill("none").stroke(cssvar("dimgrey")),
+    path("tfna")
+      .arc(0, 0, 50, 0, -toRadians(120), true)
+      .stroke(cssvar("foreground"))
+      .strokeDashArray(3)
+      .arrowEnd(),
+
+    [line([4, 0], [-4, 0]), line([0, 4], [0, -4])].map((l) =>
+      l.stroke(cssvar("dimgrey"))
+    ),
+
+    line([0, 0], [2, 0]).stroke(cssvar("foreground")),
+    line([0, 0], [l1.$x, l1.$y]).stroke(cssvar("foreground")),
+    [
+      text("θ").position(0.2, 0.2).fontSize("18px"),
+      text("𝑃(𝑥, 𝑦)").position(l1.$x, l1.$y).fontSize("18px").dy(-15).dx(-20),
+      text("𝑥").position(4.2, 0).dy(5),
+      text("𝑦").position(0, 4.2).dy(-1),
+    ].map((t) => t.fill(cssvar("foreground"))),
+    circle(3, [l1.$x, l1.$y]).fill(cssvar("foreground")),
+    circle(3, [2, 0]).fill(cssvar("foreground")),
+    circle(3, [0, 0]).fill(cssvar("foreground")),
+  ]);
+  return <Fig data={d} width={100} />;
+};
+
+export const UnitCircleTrig = () => {
+  const domain = tuple(-5, 5);
+  const range = tuple(-5, 5);
+  const a1 = polarToCartesian(0, 0, 2, 45);
+  const d = svg({
+    domain,
+    range,
+    width: 500,
+    height: 500,
+  }).children([
+    // grid(domain, range).stroke(cssvar("dimgrey")).done(),
+    // axis({ on: "x", domain, range }),
+    // axis({ on: "y", domain, range }),
+    triangle([0, 0], [a1.$x, a1.$y], [a1.$x, 0])
+      .fill(cssvar("dimgrey"))
+      .fillOpacity(0.5)
+      .stroke("none"),
+    line([-3, 0], [3, 0]).stroke(cssvar("dimgrey")).arrowed(),
+    line([0, -3], [0, 3]).stroke(cssvar("dimgrey")).arrowed(),
+    line([0, 0], [2, 0]).stroke(cssvar("pencil")),
+    line([0, 0], [a1.$x, a1.$y]).strokeDashArray(2).stroke(cssvar("pencil")),
+    line([a1.$x, a1.$y], [a1.$x, 0])
+      .stroke(cssvar("pencil"))
+      .strokeDashArray(2),
+    line([a1.$x + 0.8, a1.$y], [a1.$x + 0.8, 0]).stroke(cssvar("pencil")),
+    line([0, -0.3], [a1.$x, -0.3]).stroke(cssvar("pencil")),
+    [
+      text("𝑎").position(0.5, 0.8),
+      text("𝑏").position(1.6, 0.6),
+      text("𝑐").position(0.8, -0.2),
+      text("𝑦").position(a1.$x + 1.2, a1.$y / 2),
+      text("𝑥").position(a1.$x / 2, -0.5),
+      text("θ").position(0.35, 0.05),
+      text("𝑃(𝑥, 𝑦)").position(a1.$x, a1.$y).dy(-10).dx(15),
+      text("𝑥² + 𝑦² = 1").position(-2, 2),
+    ].map((t) => t.fill(cssvar("foreground"))),
+    path("uct")
+      .arc(0, 0, 40, 0, -Math.PI / 4, true)
+      .stroke(cssvar("pencil"))
+      .arrowEnd(),
+    circle(100, [0, 0])
+      .fill("none")
+      .stroke(cssvar("dimgrey"))
+      .strokeDashArray(5),
+    circle(3, [0, 0]).fill(cssvar("foreground")),
+    circle(3, [2, 0]).fill(cssvar("foreground")),
+    circle(3, [a1.$x, a1.$y]).fill(cssvar("foreground")),
+  ]);
+  return <Fig data={d} width={80} paddingBottom={50} translate={[0, -100]} />;
 };
 
 export default Fig;

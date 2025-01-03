@@ -9,7 +9,9 @@ import { Line1, AngleLab } from "@/components/Fig";
 - [Line](#line)
 - [Line Segments](#line-segments)
 - [Angles](#angles)
-- [Trigonometric Ratios](#trigonometric-ratios)
+- [Trigonometry](#trigonometry)
+  - [Trigonometric Ratios](#trigonometric-ratios)
+  - [Trigonometric Identities](#trigonometric-identities)
 
 </TOC>
 
@@ -45,7 +47,16 @@ An _angle_ is a figure formed by two rays with a common endpoint called the _ver
 
 The symbol ${\theta}$ is often used to denote an angle. We can also label points on the angle's arms and vertex, and use those labels to name the angle. For example, we may refer to the angle above with the notation ${\angle ABC}$ (the middle letter is always reserved for the vertex).  
 
-## Trigonometric Ratios
+## Trigonometry
+A _triangle_ is a polygon with three edges (sides) and three vertices (corners). Thus, it is a set of three noncollinear points in a plane, with each pair of points connected by a line segment. These line segments form the triangle's _sides_. If the three noncollinear points are ${A,}$ ${B,}$ and ${C,}$ we denote their corresponding triangle with the notation ${\triangle ABC.}$
+
+import {CongruentTriangles} from "@/components/Fig";
+
+<CongruentTriangles/>
+
+Two triangles are _congruent_ if one coincides (fits perfectly over) with the other. For example, above, triangles ${\triangle ABC}$ and ${\triangle DEF}$ are congruent. We denote this with the notation ${\triangle ABC \cong \triangle DEF.}$
+
+### Trigonometric Ratios
 The fundamental trigonometric ratios are _sine_, _cosine_, and _tangent_. These are ratios of the sides of a triangle, defined as follows (using the diagram below as reference):
 
 <blockquote>
@@ -73,6 +84,25 @@ $$
 $$
 
 </blockquote>
+
+From the definitions, we see there are three pairs of reciprocal functions: 
+
+$$
+  \sec \theta = \dfrac{1}{\cos \theta}, \\[2em]
+  \csc \theta = \dfrac{1}{\sin \theta}, \\[2em]
+  \cot \theta = \dfrac{1}{\tan \theta}.
+$$
+
+### Trigonometric Identities
+The following are some common trigonometric identities. These identities are used extensively in simplifying trigonometric expressions.
+
+$$
+  \sin^2 \theta + \cos^2 \theta = 1. \\[2em]
+  \dfrac{\sin \theta}{\cos \theta} = \tan \theta. \\[2em]
+  \sec \theta = \dfrac{1}{\cos \theta.} \\[2em]
+  \csc \theta = \dfrac{1}{\sin \theta.} \\[2em]
+  \cot \theta = \dfrac{1}{\tan \theta.}
+$$
 
 
 

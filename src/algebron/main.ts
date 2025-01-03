@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 // Copyright (C) 2025 Ketib Oldiais - All Rights Reserved.
 // You may use, distribute, and modify this code under the
-// terms of the MIT license.
+// terms of the MIT license (see the bottom of this file).
 
 // Disabling TypeScript's no-explicity-any rule because we
 // have to do some heavy recursion in the CAS modules;
@@ -852,6 +852,12 @@ export function randFloat(min: number, max: number) {
   return Math.random() * (max - min) + min;
 }
 
+export function cartesianToPolar(x: number, y: number) {
+  const r = Math.sqrt(x * x + y * y);
+  const theta = Math.atan2(y, x);
+  return { r, theta };
+}
+
 /**
  * An object implementing an n-length Vector.
  */
@@ -1340,6 +1346,17 @@ export function dir2D(
   );
   if (y - yy > 0) angV = -angV;
   return (angV + Math.PI * 2) % (Math.PI * 2);
+}
+
+export function midpoint2D(
+  p1: [number, number] | Vector,
+  p2: [number, number] | Vector
+) {
+  const pt1 = Array.isArray(p1) ? vector(p1) : p1;
+  const pt2 = Array.isArray(p2) ? vector(p2) : p2;
+  const x = (pt1.$x + pt2.$x) / 2;
+  const y = (pt1.$y + pt2.$y) / 2;
+  return vector([x, y]);
 }
 
 /**
@@ -1987,7 +2004,7 @@ export class ArrowHead extends Renderable {
     this._type = value;
     return this;
   }
-  _refX: number = 0;
+  _refX: number = 10;
   refX(value: number) {
     this._refX = value;
     return this;
@@ -2045,7 +2062,7 @@ export class ArrowHead extends Renderable {
 }
 
 /** Returns a new arrowhead. */
-function arrowhead(id: string | number) {
+export function arrowhead(id: string | number) {
   return new ArrowHead(id);
 }
 
@@ -2615,6 +2632,12 @@ export class Circle extends Renderable {
     this._position = vector([x, y]);
     return this;
   }
+
+  _strokeDashArray: number = 0;
+  strokeDashArray(value: number) {
+    this._strokeDashArray = value;
+    return this;
+  }
 }
 
 export function circle(radius: number, position: [number, number]) {
@@ -2792,9 +2815,13 @@ export class LineObj extends Renderable {
 
   _arrowStart: null | ArrowHead = null;
 
+  arrowed() {
+    return this.arrowEnd().arrowStart();
+  }
+
   arrowStart(arrow?: ArrowHead) {
     if (arrow) {
-      this._arrowStart = arrow;
+      this._arrowStart = arrow.type("start");
     } else {
       this._arrowStart = arrowhead(this._id)
         .type("start")
@@ -2807,7 +2834,7 @@ export class LineObj extends Renderable {
 
   arrowEnd(arrow?: ArrowHead) {
     if (arrow) {
-      this._arrowEnd = arrow;
+      this._arrowEnd = arrow.type("end");
     } else {
       this._arrowEnd = arrowhead(this._id)
         .fillOpacity(this.$strokeOpacity)
@@ -3332,7 +3359,6 @@ export class PolarAxes extends Group {
       this.$children.push(c);
     }
     const lineCoords = range(0, 360, 45);
-    console.log(lineCoords);
     const axes: LineObj[] = [];
     const k = this.$domain[1] + lineCoords.length - (this.$tickCount - 1);
     lineCoords.forEach((n) => {
@@ -3467,7 +3493,7 @@ export class Plot3D {
     this.$functions = fn;
   }
 
-  $segments: number = 200;
+  $segments: number = 40;
 
   segments(value: number) {
     this.$segments = value;
@@ -4799,7 +4825,7 @@ class ForceGraph extends Group {
   }
 
   get $nodeFontColor() {
-    return this.$styles.$nodes.fontColor ?? "#B2BEB5";
+    return this.$styles.$nodes.fontColor ?? "inherit";
   }
 
   nodeFontColor(color: string) {
@@ -12307,3 +12333,21 @@ export function engine() {
     tokens,
   };
 }
+
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.

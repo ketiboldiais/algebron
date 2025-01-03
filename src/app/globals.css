@@ -3,17 +3,30 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
+  --background: #ededed;
   --foreground: #171717;
   --blockquote-bg: rgb(227, 227, 227);
-  --red: tomato;
-  --blue: dodgerblue;
-  --green: yellowgreen;
-  --lightgrey: #B2BEB5;
-  --dimgrey: rgb(184, 199, 188);
-  --purple: rgb(232, 100, 232);
-  --code-bg: rgb(46,42,40);
-  --aside-color: #209797;
+  /* --red: tomato; */
+  --red: rgb(70, 70, 70);
+  /* --blue: dodgerblue; */
+  --blue: rgb(66, 66, 66);
+  /* --green: yellowgreen; */
+  --green: rgb(53, 53, 53);
+  --grey: rgb(117, 117, 117);
+  --pencil: rgb(138, 138, 138);
+  /* --lightgrey: #B2BEB5; */
+  --lightgrey: #c3c3c3;
+  /* --dimgrey: rgb(184, 199, 188); */
+  --dimgrey: rgb(189, 189, 189);
+  /* --purple: rgb(232, 100, 232); */
+  --purple: rgb(66, 66, 66);
+  --code-bg: rgb(219, 219, 219);
+  --aside-color: #7a7a7a;
+  --peach: rgb(65, 65, 65);
+  --mocha: rgb(118, 118, 118);
+  --brightBlue: rgb(44, 44, 44);
+  --latte: rgb(73, 73, 73);
+  --brighPink: rgb(32, 32, 32);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -21,14 +34,20 @@
     --background: #2a2a2a;
     --foreground: #ededed;
     --blockquote-bg: rgb(60, 60, 60); 
+    --grey: rgb(129, 129, 129);
     --red: tomato;
     --blue: cyan;
     --green: rgb(155, 255, 133);
     --purple: violet;
-    --dimgrey: rgb(62, 62, 62);
+    --dimgrey: rgb(110, 110, 110);
     --lightgrey: #6a726c;
     --code-bg: rgb(55, 55, 55);
     --aside-color: #62f6f6;
+  --peach: rgb(237, 161, 126);
+  --mocha: rgb(195,147,128);
+  --brightBlue: rgb(109, 197, 200);
+  --latte: rgb(207, 175, 159);
+  --brighPink: rgb(249, 107, 107);
   }
 }
 
@@ -106,38 +125,33 @@ pre {
   border-radius: 0.2em;
   overflow-x: scroll;
   background-color:var(--code-bg);
-  color: rgb(181,200,180);
-}
-
-.hljs-tag {
-  color: rgb(173,141,118);
-  font-weight: bold;
+  color: var(--foreground);
 }
 
 .hljs-comment {
-  color: rgb(136, 136, 136);
+  color: var(--grey);
 }
 .hljs-keyword {
-  color: rgb(249, 107, 107);
+  color: var(--brighPink);
   font-weight: bold;
 }
 .hljs-attr,
 .hljs-property {
-  color: rgb(207, 175, 159);
+  color: var(--latte);
 }
 
 .hljs-built_in {
-  color: rgb(109, 197, 200);
+  color:var(--brightBlue);
 }
 
 .hljs-number,
 .hljs-string {
-  color: rgb(195,147,128);
+  color:var(--mocha);
   /* color: rgb(231, 188, 95); */
 }
 
 .function_ {
-  color: rgb(237, 161, 126);
+  color: var(--peach);
   font-weight: bold;
 }
 
@@ -210,10 +224,7 @@ h5 + h6 {
   margin-top: 0;
 }
 
-a {
-  text-decoration: underline;
-  color: rgb(0, 102, 255);
-}
+
 
 blockquote {
   padding: 8px 10px;
@@ -258,7 +269,7 @@ article {
   width: clamp(300px, 70%, 600px);
   margin: 0 auto;
   margin-bottom: 10vh;
-  overflow-x: hidden;
+  /* overflow-x: hidden; */
 }
 
 footer {
@@ -281,11 +292,11 @@ strong em {
 }
 
 aside {
-  color: var(--aside-color);
-  font-size: 85%;
+  color: var(--grey);
+  font-size: 90%;
   position: relative;
-  border-top: solid thin var(--aside-color);
-  border-bottom: solid thin var(--aside-color);
+  border-top: thin solid var(--grey);
+  border-bottom: thin solid var(--grey);
 }
 
 aside p {
@@ -296,12 +307,26 @@ li p {
 }
 
 a {
-  /* color: rgb(0, 132, 255); */
   color: inherit;
+  border-bottom: 1px dotted var(--grey);
+  display: inline-block;
+  padding-bottom:0px;
+  background-image: linear-gradient(var(--grey) 0 0);
+  background-position: 0 100%; /*OR bottom left*/
+  background-size: 0% 1px;
+  background-repeat: no-repeat;
+  transition:
+    background-size 0.3s,
+    background-position 0s 0.3s; /*change after the size immediately*/
+}
+a:hover {
+  background-position: 100% 100%; /*OR bottom right*/
+  background-size: 100% 1px;
 }
 
 .toc a {
   text-decoration: none;
+  border-bottom: none;
   color: inherit;
 }
 
@@ -392,7 +417,7 @@ input[type="range"]::-webkit-slider-thumb {
   /* creating a custom design */
   height: 8px;
   width: 8px;
-  background-color: rgb(255, 68, 0);
+  background-color: var(--red);
   border-radius: 50%;
   border: none;
 }
@@ -401,7 +426,7 @@ input[type="range"]::-webkit-slider-thumb {
 input[type="range"]::-moz-range-thumb {
   height: 10px;
   width: 10px;
-  background-color: rgb(255, 68, 0);
+  background-color: var(--red);
   border-radius: 50%;
   border: none;
 }

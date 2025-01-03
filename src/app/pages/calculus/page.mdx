@@ -44,6 +44,7 @@ import MdxLayout from "@/components/mdx-layout";
     - [Logarithms](#logarithms)
     - [Manipulating Logarithms](#manipulating-logarithms)
     - [Logarithmic Behavior](#logarithmic-behavior)
+  - [Trigonometric Functions](#trigonometric-functions)
 
 </TOC>
 
@@ -805,6 +806,51 @@ Notice that ${f(x)}$ grows or increases _very_ slowly. It is always increasing a
 4. The ${x}$-intercept is ${1.}$
 5. The assymptote is ${x = 0}$ (i.e., ${y}$-axis).
 6. End behavior: ${f}$ becomes unbounded negative as ${x}$ approaches ${0}$ from the right and becomes unbounded positive as ${x}$ becomes unbounded positive. 
+
+### Trigonometric Functions
+<aside>
+
+This section assumes some knowledge of classical trigonometry. _See_ [Geometry: Trigonometry](/pages/geometry#trigonometry). We will also use trigonometric identities liberally. _See_ [Geometry: Trigonometric Identities](/pages/geometry#trigonometric-identities).
+
+</aside>
+
+<blockquote>
+
+__*definition*__. Let ${\theta}$ be an angle in standard position and let ${P(x,y)}$ be the point where the terminal side of ${\theta}$ intersects the unit circle. The trigonometric functions of ${\theta}$ are defined as follows:
+
+<Cols of={2}>
+
+$$
+  \cos \theta = x \\[2em]
+  \sin \theta = y \\[2em]
+  \tan \theta = \dfrac{y}{x} ~~ (x \neq 0) \\[2em]
+  \sec \theta = \dfrac{1}{x} ~~ (x \neq 0) \\[2em]
+  \csc \theta = \dfrac{1}{y} ~~ (y \neq 0) \\[2em]
+  \cot \theta = \dfrac{x}{y} ~~ (y \neq 0).
+$$
+<div>
+
+import {TrigFnAngles} from "@/components/Fig";
+
+<TrigFnAngles/>
+
+</div>
+
+</Cols>
+
+</blockquote>
+
+To see the relationship between the trigonometric ratios and the ${xy}$-plane, consider the diagram below. Recall that the _unit circle_ is the graph of the equation ${x^2 + y^2 = 1.}$
+
+import {UnitCircleTrig} from "@/components/Fig";
+
+<UnitCircleTrig/>
+
+Above, we see an imposed triangle with sides ${a,}$ ${b,}$ and ${c.}$ The ${x}$-coordinate is given by the length of ${c,}$ and the ${y}$-coordinate is given by the length of ${b.}$ We know that these lengths are given by the trigonometric ratios, sine and cosine, with respect to ${\theta.}$ Thus, we have:
+
+$$
+  x = \cos \theta, \\[1em] y = \sin \theta.
+$$
 
 export default function MDXPage({ children }) {
   return <MdxLayout>{children}</MdxLayout>;
