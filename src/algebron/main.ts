@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 // Copyright (C) 2025 Ketib Oldiais - All Rights Reserved.
 // You may use, distribute, and modify this code under the
@@ -13,8 +14,9 @@
 
 // § Utility Functions
 
-// Start off by writing a pretty-print string for ASTs.
-// We'll be using this for quickly debugging/verifying
+// Start off by writing a function for generating
+// pretty-print strings of ASTs.
+// We'll be using this for quickly verifying
 // the parsers are behaving correctly.
 
 /** Returns a pretty-print tree of the given Object `Obj`. */
@@ -245,6 +247,7 @@ class Binode<T> {
   }
 }
 
+/** Returns a new binode. */
 function binode<T>(data: T | null = null) {
   return new Binode(data);
 }
@@ -269,9 +272,31 @@ export function arraySplit<T>(array: T[]) {
  * of type T.
  */
 class LinkedList<T> {
+  /**
+   * @internal Pointer to the first
+   * element of the linked list.
+   */
   private head: Binode<T>;
+  /**
+   * @internal Pointer to the last
+   * element of the linked list.
+   */
   private tail: Binode<T>;
+  /**
+   * @internal counter for keeping
+   * track of how many elements are
+   * in this linked list.
+   */
   private count: number;
+  /**
+   * Returns a copy of this list
+   * without the first element.
+   * @example
+   * ~~~ts
+   * const x = linkedList([1,2,3,4]) // x = (1,2,3,4)
+   * const y = x.cdr() // y = (2,3,4)
+   * ~~~
+   */
   cdr() {
     const list = this.clone();
     if (list.isEmpty) return list;
@@ -292,6 +317,9 @@ class LinkedList<T> {
     const head = this.head._data!;
     return new LinkedList<T>().push(head);
   }
+  /**
+   * Removes all elements in this list.
+   */
   clear() {
     this.head = binode();
   }
@@ -313,17 +341,29 @@ class LinkedList<T> {
       node = node._right;
     }
   }
+  /**
+   * Returns this linked list as an array.
+   */
   toArray(): T[] {
     return [...this];
   }
+  /**
+   * Returns true if the index passed
+   * is within the bounds of this list.
+   */
   safeIdx(i: number) {
     return 0 <= i && i < this.count;
   }
-  set(element: T, at: number) {
-    const node = this.at(at);
+  /**
+   * Sets the given element at the
+   * given index within this list.
+   */
+  set(element: T, index: number) {
+    const node = this.at(index);
     node._data = element;
     return this;
   }
+
   private at(index: number) {
     if (!this.safeIdx(index)) {
       return binode<T>();
@@ -357,6 +397,9 @@ class LinkedList<T> {
     }
   }
 
+  /**
+   * Returns a copy of this linked list.
+   */
   clone() {
     const list = new LinkedList<T>();
     this.forEach((d) => list.push(d));
@@ -745,7 +788,7 @@ export function polarToCartesian(
   ]);
 }
 
-/** Returns an array of numbers running from start to stop exclusive. */
+/** Returns an array of numbers running from start to stop inclusive. */
 export function range(start: number, stop: number, step = 1): number[] {
   const out = [];
   for (let i = start; i <= stop; i += step) {
@@ -888,6 +931,15 @@ export class Vector<T extends number[] = number[]> {
       : vector(operand);
     const [A, B] = equalen(this, arg);
     return vector(A.$elements.map((c, i) => callback(c, B.$elements[i])));
+  }
+
+  map(callback: (n: number, i: number) => number) {
+    const out = [];
+    for (let i = 0; i < this.length; i++) {
+      const n = this.$elements[i];
+      out.push(callback(n, i));
+    }
+    return new Vector(out);
   }
 
   /**
@@ -1661,10 +1713,14 @@ function isExponential(u: any): u is Exponential {
  * other element that can be rendered.
  */
 export abstract class Renderable {
-  abstract render(fx: (x: number) => number, fy: (y: number) => number): this;
+  abstract render(
+    fx: (x: number) => number,
+    fy: (y: number) => number,
+    fz: (y: number) => number
+  ): this;
   _id: string | number;
-  constructor(id: string | number) {
-    this._id = id;
+  constructor() {
+    this._id = uid(5);
   }
   id(value: string | number) {
     this._id = value;
@@ -1674,6 +1730,7 @@ export abstract class Renderable {
 
 export type SVGContext = {
   domain: [number, number];
+  zDomain?: [number, number];
   range: [number, number];
   width: number;
   height: number;
@@ -1683,23 +1740,27 @@ export class SVG {
   _children: Renderable[] = [];
   _markers: ArrowHead[] = [];
   _domain: [number, number];
+  _zDomain: [number, number];
   _range: [number, number];
   _width: number;
   _height: number;
   _fx: (x: number) => number;
   _fy: (y: number) => number;
+  _fz: (y: number) => number;
   constructor(context: SVGContext) {
     this._domain = context.domain;
+    this._zDomain = context.zDomain ? context.zDomain : context.domain;
     this._range = context.range;
     this._width = context.width;
     this._height = context.height;
     this._fx = interpolator(this._domain, [0, this._width]);
     this._fy = interpolator(this._range, [this._height, 0]);
+    this._fz = interpolator(this._zDomain, [0, this._width]);
   }
   children(objects: (Renderable | boolean | Renderable[])[]) {
     const objs = objects.flat().filter((x) => x instanceof Renderable);
     objs.forEach((obj) => {
-      this._children.push(obj.render(this._fx, this._fy));
+      this._children.push(obj.render(this._fx, this._fy, this._fz));
       if (obj instanceof Path || obj instanceof LineObj) {
         obj._arrowEnd && this._markers.push(obj._arrowEnd);
         obj._arrowStart && this._markers.push(obj._arrowStart);
@@ -1711,6 +1772,9 @@ export class SVG {
 
 export const svg = (context: SVGContext) => new SVG(context);
 
+/**
+ * A tuple corresponding to an SVG Path command.
+ */
 type PCommand =
   | MCommand
   | LCommand
@@ -1721,10 +1785,21 @@ type PCommand =
   | ACommand
   | ZCommand;
 
-type MCommand = ["M", number, number];
+/**
+ * A tuple corresponding to an SVG path
+ * `moveto` command.
+ */
+type MCommand = [command: "M", endPointX: number, endPointY: number];
 
+/** Returns a new SVG `moveto` command. */
+const M = (x: number, y: number): MCommand => ["M", x, y];
+
+/**
+ * A tuple corresponding to an SVG path
+ * `arc` command.
+ */
 type ACommand = [
-  "A",
+  command: "A",
   rx: number,
   ry: number,
   rotation: number,
@@ -1734,6 +1809,7 @@ type ACommand = [
   endPointY: number
 ];
 
+/** Returns a new SVG `arc` command. */
 const A = (
   rx: number,
   ry: number,
@@ -1752,8 +1828,6 @@ const A = (
   endPointX,
   endPointY,
 ];
-
-const M = (x: number, y: number): MCommand => ["M", x, y];
 
 type LCommand = ["L", number, number];
 
@@ -1816,17 +1890,17 @@ function processPathCommands(
   fy: (y: number) => number
 ) {
   const output: string[] = [];
-  let x0: number | null = null;
-  let y0: number | null = x0;
-  let x1: number | null = y0;
-  let y1: number | null = x1;
+  let _x0: number | null = null;
+  let _y0: number | null = _x0;
+  let _x1: number | null = _y0;
+  let _y1: number | null = _x1;
   commandList.forEach((command) => {
     const type = command[0];
     switch (type) {
       case "M": {
         const x = fx(command[1]);
         const y = fy(command[2]);
-        output.push(`M${(x0 = x1 = +x)},${(y0 = y1 = +y)}`);
+        output.push(`M${(_x0 = _x1 = +x)},${(_y0 = _y1 = +y)}`);
         break;
       }
       case "Z": {
@@ -1836,7 +1910,7 @@ function processPathCommands(
       case "L": {
         const x = fx(command[1]);
         const y = fy(command[2]);
-        output.push(`L${(x1 = +x)},${(y1 = +y)}`);
+        output.push(`L${(_x1 = +x)},${(_y1 = +y)}`);
         break;
       }
       case "Q": {
@@ -1844,7 +1918,7 @@ function processPathCommands(
         const cy = fy(command[2]);
         const ex = fx(command[3]);
         const ey = fy(command[4]);
-        output.push(`Q${+cx},${+cy},${(x1 = +ex)},${(y1 = +ey)}`);
+        output.push(`Q${+cx},${+cy},${(_x1 = +ex)},${(_y1 = +ey)}`);
         break;
       }
       case "C": {
@@ -1855,21 +1929,21 @@ function processPathCommands(
         const ex = fx(command[5]);
         const ey = fy(command[6]);
         output.push(
-          `C${+c1x},${+c1y},${+c2x},${+c2y},${(x1 = +ex)},${(y1 = +ey)}`
+          `C${+c1x},${+c1y},${+c2x},${+c2y},${(_x1 = +ex)},${(_y1 = +ey)}`
         );
         break;
       }
       case "ARCTO": {
-        // x1 = +x1, y1 = +y1, x2 = +x2, y2 = +y2, r = +r;
-        // Is the radius negative? Error.
         const ax1 = fx(command[1]);
         const ay1 = fy(command[2]);
         const ax2 = fx(command[3]);
         const ay2 = fy(command[4]);
-        const r = command[5];
-        if (r < 0) throw new Error(`negative radius: ${r}`);
-        const x0 = x1,
-          y0 = y1,
+        let r = command[5];
+        if (r < 0) {
+          r = Math.abs(r);
+        }
+        const x0 = _x1,
+          y0 = _y1,
           x21 = ax2 - ax1,
           y21 = ay2 - ay1,
           x01 = (x0 ?? 0) - ax1,
@@ -1877,20 +1951,20 @@ function processPathCommands(
           l01_2 = x01 * x01 + y01 * y01;
 
         // Is this path empty? Move to (x1,y1).
-        if (x1 === null) {
-          output.push(`M${(x1 = x1)},${(y1 = y1)}`);
+        if (_x1 === null) {
+          output.push(`M${(_x1 = ax1)},${(_y1 = ay1)}`);
         }
 
         // Or, is (x1,y1) coincident with (x0,y0)? Do nothing.
         else if (!(l01_2 > epsilon)) {
-          break;
+          // break;
         }
 
         // Or, are (x0,y0), (x1,y1) and (x2,y2) collinear?
         // Equivalently, is (x1,y1) coincident with (x2,y2)?
         // Or, is the radius zero? Line to (x1,y1).
         else if (!(Math.abs(y01 * x21 - y21 * x01) > epsilon) || !r) {
-          output.push(`L${(x1 = x1)},${(y1 = y1)}`);
+          output.push(`L${(_x1 = ax1)},${(_y1 = ay1)}`);
         }
 
         // Otherwise, draw an arc!
@@ -1911,12 +1985,12 @@ function processPathCommands(
 
           // If the start tangent is not coincident with (x0,y0), line to.
           if (Math.abs(t01 - 1) > epsilon) {
-            output.push(`L${x1 + t01 * x01},${(y1 as number) + t01 * y01}`);
+            output.push(`L${ax1 + t01 * x01},${(ay1 as number) + t01 * y01}`);
           }
 
           output.push(
-            `A${r},${r},0,0,${+(y01 * x20 > x01 * y20)},${(x1 =
-              x1 + t21 * x21)},${(y1 = ay1 + t21 * y21)}`
+            `A${r},${r},0,0,${+(y01 * x20 > x01 * y20)},${(_x1 =
+              ax1 + t21 * x21)},${(_y1 = ay1 + t21 * y21)}`
           );
         }
         break;
@@ -1941,20 +2015,21 @@ function processPathCommands(
         let da = ccw ? a0 - a1 : a1 - a0;
 
         // Is this path empty? Move to (x0,y0).
-        if (x1 === null) {
+        if (_x1 === null) {
           output.push(`M${x0},${y0}`);
         }
 
-        // Or, is (x0,y0) not coincident with the previous point? Line to (x0,y0).
+        // Or, is (x0,y0) not coincident with the previous point?
         else if (
-          Math.abs(x1 - x0) > epsilon ||
-          Math.abs((y1 ?? 0) - y0) > epsilon
+          Math.abs(_x1 - x0) > epsilon ||
+          Math.abs((_y1 ?? 0) - y0) > epsilon
         ) {
           output.push(`L${x0},${y0}`);
+          // output.push(`M${x0},${y0}`);
         }
 
         // Is this arc empty? We’re done.
-        if (!r) return;
+        if (!r) break;
 
         // Does the angle go the wrong way? Flip the direction.
         if (da < 0) da = (da % tau) + tau;
@@ -1964,15 +2039,15 @@ function processPathCommands(
           output.push(
             `A${r},${r},0,1,${cw},${x - dx},${
               y - dy
-            }A${r},${r},0,1,${cw},${(x1 = x0)},${(y1 = y0)}`
+            }A${r},${r},0,1,${cw},${(_x1 = x0)},${(_y1 = y0)}`
           );
         }
 
         // Is this arc non-empty? Draw an arc!
         else if (da > epsilon) {
           output.push(
-            `A${r},${r},0,${+(da >= pi)},${cw},${(x1 =
-              x + r * Math.cos(a1))},${(y1 = y + r * Math.sin(a1))}`
+            `A${r},${r},0,${+(da >= pi)},${cw},${(_x1 =
+              x + r * Math.cos(a1))},${(_y1 = y + r * Math.sin(a1))}`
           );
         }
         break;
@@ -2057,7 +2132,8 @@ export class ArrowHead extends Renderable {
     return this;
   }
   constructor(id: string | number) {
-    super(id);
+    super();
+    this._id = id;
   }
 }
 
@@ -2068,6 +2144,493 @@ export function arrowhead(id: string | number) {
 
 export function isArrowhead(u: any) {
   return u instanceof ArrowHead;
+}
+
+enum P3D {
+  M,
+  L,
+  Q,
+  C,
+  Z,
+}
+abstract class Path3DCommand {
+  _type: P3D;
+  _end: Vector;
+  constructor(type: P3D, end: Vector) {
+    this._type = type;
+    this._end = end;
+  }
+  abstract toString(): string;
+}
+
+class M3DCommand extends Path3DCommand {
+  _type: P3D.M = P3D.M;
+  constructor(x: number, y: number, z: number) {
+    super(P3D.M, vector([x, y, z]));
+  }
+  toString(): string {
+    return `M${this._end.$x},${this._end.$y}`;
+  }
+}
+const M3D = (x: number, y: number, z: number) => new M3DCommand(x, y, z);
+
+class L3DCommand extends Path3DCommand {
+  _type: P3D.L = P3D.L;
+  constructor(x: number, y: number, z: number) {
+    super(P3D.L, vector([x, y, z]));
+  }
+  toString(): string {
+    return `L${this._end.$x},${this._end.$y}`;
+  }
+}
+const L3D = (x: number, y: number, z: number) => new L3DCommand(x, y, z);
+
+class Z3DCommand extends Path3DCommand {
+  _type: P3D.Z = P3D.Z;
+  constructor() {
+    super(P3D.Z, vector([0, 0, 1]));
+  }
+  toString(): string {
+    return `Z`;
+  }
+}
+const Z3D = () => new Z3DCommand();
+
+class Q3DCommand extends Path3DCommand {
+  _type: P3D.Q = P3D.Q;
+  _ctrl: Vector;
+  constructor(ctrl: [number, number, number], end: [number, number, number]) {
+    super(P3D.Q, vector(end));
+    this._ctrl = vector(ctrl);
+  }
+  toString(): string {
+    return `Q${this._ctrl.$x},${this._ctrl.$y},${this._end.$x},${this._end.$y}`;
+  }
+}
+const Q3D = (ctrl: [number, number, number], end: [number, number, number]) =>
+  new Q3DCommand(ctrl, end);
+
+class C3DCommand extends Path3DCommand {
+  _type: P3D.C = P3D.C;
+  _ctrl1: Vector;
+  _ctrl2: Vector;
+  constructor(
+    ctrl1: [number, number, number],
+    ctrl2: [number, number, number],
+    end: [number, number, number]
+  ) {
+    super(P3D.C, vector(end));
+    this._ctrl1 = vector(ctrl1);
+    this._ctrl2 = vector(ctrl2);
+  }
+  toString(): string {
+    return `C${this._ctrl1.$x},${this._ctrl1.$y},${this._ctrl2.$x},${this._ctrl2.$y},${this._end.$x},${this._end.$y}`;
+  }
+}
+const C3D = (
+  ctrl1: [number, number, number],
+  ctrl2: [number, number, number],
+  end: [number, number, number]
+) => new C3DCommand(ctrl1, ctrl2, end);
+
+export class Path3D extends Renderable {
+  _arrowEnd: null | ArrowHead = null;
+
+  _arrowStart: null | ArrowHead = null;
+
+  _stroke: string = "black";
+
+  stroke(value: string) {
+    this._stroke = value;
+    return this;
+  }
+
+  _fill: string = "none";
+
+  fill(value: string) {
+    this._fill = value;
+    return this;
+  }
+
+  _strokeOpacity: string | number = 1;
+
+  strokeOpacity(value: string | number) {
+    this._fillOpacity = value;
+    return this;
+  }
+
+  _fillOpacity: string | number = 1;
+
+  fillOpacity(value: string | number) {
+    this._fillOpacity = value;
+    return this;
+  }
+
+  _id: string | number = uid(5);
+
+  _strokeDashArray: string | number = 0;
+
+  strokeDashArray(value: string | number) {
+    this._strokeDashArray = value;
+    return this;
+  }
+
+  _strokeWidth: string | number = 1;
+
+  strokeWidth(value: string | number) {
+    this._strokeWidth = value;
+    return this;
+  }
+
+  arrowStart(arrow?: ArrowHead) {
+    if (arrow) {
+      this._arrowStart = arrow;
+    } else {
+      this._arrowStart = arrowhead(this._id)
+        .type("start")
+        .fill(this._stroke)
+        .fillOpacity(this._strokeOpacity)
+        .stroke("none");
+    }
+    return this;
+  }
+
+  arrowEnd(arrow?: ArrowHead) {
+    if (arrow) {
+      this._arrowEnd = arrow;
+    } else {
+      this._arrowEnd = arrowhead(this._id)
+        .fillOpacity(this._strokeOpacity)
+        .fill(this._stroke)
+        .stroke("none");
+    }
+    return this;
+  }
+
+  tfm(op: (v: Vector) => Vector) {
+    this._origin = op(this._origin);
+    this._commands = this._commands.map((p) => {
+      const E = op(p._end);
+      switch (p._type) {
+        case P3D.M:
+          return M3D(E.$x, E.$y, E.$z);
+        case P3D.L:
+          return L3D(E.$x, E.$y, E.$z);
+        case P3D.Q: {
+          const q = p as Q3DCommand;
+          const ctrl = op(q._ctrl);
+          return Q3D([ctrl.$x, ctrl.$y, ctrl.$z], [E.$x, E.$y, E.$z]);
+        }
+        case P3D.C: {
+          const c = p as C3DCommand;
+          const ctrl1 = op(c._ctrl1);
+          const ctrl2 = op(c._ctrl2);
+          return C3D(
+            [ctrl1.$x, ctrl1.$y, ctrl1.$z],
+            [ctrl2.$x, ctrl2.$y, ctrl2.$z],
+            [E.$x, E.$y, E.$z]
+          );
+        }
+        default:
+          return p;
+      }
+    });
+    return this;
+  }
+
+  rotateZ(angle: number) {
+    return this.tfm((v) =>
+      v.vxm(
+        matrix([
+          [cos(angle), -sin(angle), 0],
+          [sin(angle), cos(angle), 0],
+          [0, 0, 1],
+        ])
+      )
+    );
+  }
+
+  rotateY(angle: number) {
+    return this.tfm((v) =>
+      v.vxm(
+        matrix([
+          [cos(angle), 0, sin(angle)],
+          [0, 1, 0],
+          [-sin(angle), 0, cos(angle)],
+        ])
+      )
+    );
+  }
+
+  rotateX(angle: number) {
+    return this.tfm((v) =>
+      v.vxm(
+        matrix([
+          [1, 0, 0],
+          [0, cos(angle), -sin(angle)],
+          [0, sin(angle), cos(angle)],
+        ])
+      )
+    );
+  }
+
+  scale(x: number, y: number) {
+    return this.tfm((v) =>
+      v.vxm(
+        matrix([
+          [x, 0, 0],
+          [0, y, 0],
+          [0, 0, 1],
+        ])
+      )
+    );
+  }
+
+  translateZ(z: number) {
+    return this.tfm((v) =>
+      v.vxm(
+        matrix([
+          [1, 0, 1],
+          [0, 1, 1],
+          [0, 0, z],
+        ])
+      )
+    );
+  }
+
+  translateY(y: number) {
+    return this.tfm((v) =>
+      v.vxm(
+        matrix([
+          [1, 0, 1],
+          [0, 1, y],
+          [0, 0, 1],
+        ])
+      )
+    );
+  }
+
+  translateX(x: number) {
+    return this.tfm((v) =>
+      v.vxm(
+        matrix([
+          [1, 0, x],
+          [0, 1, 1],
+          [0, 0, 1],
+        ])
+      )
+    );
+  }
+
+  /** Shears along the z-axis. */
+  shearZ(dx: number, dy: number) {
+    return this.tfm((v) =>
+      v.vxm(
+        matrix([
+          [1, 0, 0],
+          [0, 1, 0],
+          [dx, dy, 1],
+        ])
+      )
+    );
+  }
+
+  /** Shears along the y-axis. */
+  shearY(dx: number, dz: number) {
+    return this.tfm((v) =>
+      v.vxm(
+        matrix([
+          [1, 0, 0],
+          [dx, 1, dz],
+          [0, 0, 1],
+        ])
+      )
+    );
+  }
+
+  /** Shears along the x-axis. */
+  shearX(dy: number, dz: number) {
+    return this.tfm((v) =>
+      v.vxm(
+        matrix([
+          [1, dy, dz],
+          [0, 1, 0],
+          [0, 0, 1],
+        ])
+      )
+    );
+  }
+
+  translate(x: number, y: number) {
+    return this.tfm((v) =>
+      v.vxm(
+        matrix([
+          [1, 0, x],
+          [0, 1, y],
+          [0, 0, 1],
+        ])
+      )
+    );
+  }
+
+  render(
+    fx: (x: number) => number,
+    fy: (y: number) => number,
+    fz: (z: number) => number
+  ): this {
+    this._origin = vector([
+      fx(this._origin.$x),
+      fy(this._origin.$y),
+      fz(this._origin.$z),
+    ]);
+    this._commands = this._commands.map((command) => {
+      switch (command._type) {
+        case P3D.M:
+          return M3D(
+            fx(command._end.$x),
+            fy(command._end.$y),
+            fz(command._end.$z)
+          );
+        case P3D.L:
+          return L3D(
+            fx(command._end.$x),
+            fy(command._end.$y),
+            fz(command._end.$z)
+          );
+        case P3D.C: {
+          const c = command as C3DCommand;
+          return C3D(
+            [fx(c._ctrl1.$x), fy(c._ctrl1.$y), fz(c._ctrl1.$z)],
+            [fx(c._ctrl2.$x), fy(c._ctrl2.$y), fz(c._ctrl2.$z)],
+            [fx(c._end.$x), fy(c._end.$y), fz(c._end.$z)]
+          );
+        }
+        case P3D.Q: {
+          const q = command as Q3DCommand;
+          return Q3D(
+            [fx(q._ctrl.$x), fy(q._ctrl.$y), fz(q._ctrl.$z)],
+            [fx(q._end.$x), fy(q._end.$y), fz(q._end.$z)]
+          );
+        }
+        case P3D.Z: {
+          return command;
+        }
+      }
+    });
+    return this;
+  }
+  get _x1() {
+    return this._cursor.$x;
+  }
+  get _y1() {
+    return this._cursor.$y;
+  }
+  get _z1() {
+    return this._cursor.$z;
+  }
+  _commands: Path3DCommand[] = [];
+  _origin: Vector;
+  _cursor: Vector;
+  constructor(x: number, y: number, z: number) {
+    super();
+    this._origin = vector([x, y, z]);
+    this._cursor = vector([x, y, z]);
+  }
+  push(command: Path3DCommand) {
+    if (!(command instanceof Z3DCommand)) {
+      this._cursor = command._end.copy();
+    }
+    this._commands.push(command);
+    return this;
+  }
+  moveTo(x: number, y: number, z: number) {
+    this.push(M3D(x, y, z));
+    return this;
+  }
+  lineTo(x: number, y: number, z: number) {
+    this.push(L3D(x, y, z));
+    return this;
+  }
+  quadraticCurveTo(
+    ctrl: [number, number, number],
+    end: [number, number, number]
+  ) {
+    this.push(Q3D(ctrl, end));
+    return this;
+  }
+  bezierCurveTo(
+    ctrl1: [number, number, number],
+    ctrl2: [number, number, number],
+    end: [number, number, number]
+  ) {
+    this.push(C3D(ctrl1, ctrl2, end));
+    return this;
+  }
+  closePath() {
+    this.push(Z3D());
+    return this;
+  }
+  toString() {
+    const origin = this._origin;
+    const ox = origin.$x;
+    const oy = origin.$y;
+    const M = `M${ox},${oy}`;
+    return M + this._commands.map((c) => c.toString()).join("");
+  }
+}
+
+export function path3D(x: number, y: number, z: number) {
+  return new Path3D(x, y, z);
+}
+
+export function isPath3D(u: any): u is Path3D {
+  return typeof u === "object" && u instanceof Path3D;
+}
+
+export class Polygon extends Renderable {
+  _points: [number, number][];
+  constructor(points: [number, number][]) {
+    super();
+    this._points = points;
+  }
+  render(fx: (x: number) => number, fy: (y: number) => number): this {
+    this._points = this._points.map(([x, y]) => tuple(fx(x), fy(y)));
+    return this;
+  }
+  points() {
+    return this._points.map(([x, y]) => `${x},${y}`).join(" ");
+  }
+}
+
+export function polygon(points: [number, number][]) {
+  return new Polygon(points);
+}
+
+export function isPolygon(u: any): u is Polygon {
+  return typeof u === "object" && u instanceof Polygon;
+}
+
+export class Polyline extends Renderable {
+  _points: [number, number][];
+  constructor(points: [number, number][]) {
+    super();
+    this._points = points;
+  }
+  render(fx: (x: number) => number, fy: (y: number) => number): this {
+    this._points = this._points.map(([x, y]) => tuple(fx(x), fy(y)));
+    return this;
+  }
+  points() {
+    return this._points.map(([x, y]) => `${x},${y}`).join(" ");
+  }
+}
+
+export function polyline(points: [number, number][]) {
+  return new Polyline(points);
+}
+
+export function isPolyline(u: any): u is Polyline {
+  return typeof u === "object" && u instanceof Polyline;
 }
 
 export class Path extends Renderable {
@@ -2123,9 +2686,19 @@ export class Path extends Renderable {
     return this;
   }
 
+  arrowed(arrowStart?: ArrowHead, arrowEnd?: ArrowHead) {
+    this.arrowStart(arrowStart);
+    this.arrowEnd(arrowEnd);
+    return this;
+  }
+
   arrowStart(arrow?: ArrowHead) {
     if (arrow) {
-      this._arrowStart = arrow;
+      this._arrowStart = arrow
+        .type("start")
+        .fillOpacity(this._strokeOpacity)
+        .fill(this._stroke)
+        .stroke("none");
     } else {
       this._arrowStart = arrowhead(this._id)
         .type("start")
@@ -2138,7 +2711,11 @@ export class Path extends Renderable {
 
   arrowEnd(arrow?: ArrowHead) {
     if (arrow) {
-      this._arrowEnd = arrow;
+      this._arrowEnd = arrow
+        .type("end")
+        .fillOpacity(this._strokeOpacity)
+        .fill(this._stroke)
+        .stroke("none");
     } else {
       this._arrowEnd = arrowhead(this._id)
         .fillOpacity(this._strokeOpacity)
@@ -2148,9 +2725,9 @@ export class Path extends Renderable {
     return this;
   }
 
-  constructor(id: string | number) {
-    super(id);
-    this._id = id;
+  constructor() {
+    super();
+    this._id = uid(5);
     this._commands = [];
   }
 
@@ -2161,8 +2738,17 @@ export class Path extends Renderable {
   push(command: PCommand) {
     this._commands.push(command);
   }
+  get _endpoint() {
+    const x1 = this._x1 ?? 0;
+    const y1 = this._y1 ?? 0;
+    return vector([x1, y1]);
+  }
+  private _x1: number | null = null;
+  private _y1: number | null = null;
   moveTo(x: number, y: number) {
     this.push(M(x, y));
+    this._x1 = x;
+    this._y1 = y;
     return this;
   }
   closePath() {
@@ -2171,10 +2757,14 @@ export class Path extends Renderable {
   }
   lineTo(x: number, y: number) {
     this.push(L(x, y));
+    this._x1 = x;
+    this._y1 = y;
     return this;
   }
   quadraticCurveTo(x1: number, y1: number, x: number, y: number) {
     this.push(Q(x1, y1, x, y));
+    this._x1 = x;
+    this._y1 = y;
     return this;
   }
   bezierCurveTo(
@@ -2186,10 +2776,58 @@ export class Path extends Renderable {
     y: number
   ) {
     this.push(C(x1, y1, x2, y2, x, y));
+    this._x1 = x;
+    this._y1 = y;
     return this;
   }
   arcTo(x1: number, y1: number, x2: number, y2: number, r: number) {
     this.push(ARCTO(x1, y1, x2, y2, r));
+
+    // begin updating the endpoint of this path.
+    (x1 = +x1), (y1 = +y1), (x2 = +x2), (y2 = +y2), (r = +r);
+    const x0 = this._x1;
+    const y0 = this._y1;
+    const x21 = x2 - x1;
+    const y21 = y2 - y1;
+    const x01 = (x0 ?? 0) - x1;
+    const y01 = (y0 ?? 0) - y1;
+    const l01_2 = x01 * x01 + y01 * y01;
+
+    // Is this path empty? Update endpoint to (x1,y1).
+    if (this._x1 === null) {
+      this._x1 = x1;
+      this._y1 = y1;
+    }
+
+    // Is (x1,y1) coincident with (x0,y0)? Do nothing.
+    else if (!(l01_2 > epsilon)) {
+    }
+
+    // Are (x0,y0), (x1,y1) and (x2,y2) collinear?
+    // Equivalently, is (x1,y1) coincident with (x2,y2)?
+    // Or, is the radius zero? Update endpoint to (x1,y1).
+    else if (!(Math.abs(y01 * x21 - y21 * x01) > epsilon) || !r) {
+      this._x1 = x1;
+      this._y1 = y1;
+    }
+
+    // Otherwise, update the path's endpoint to arc's endpoint.
+    else {
+      const x20 = x2 - (x0 ?? 0);
+      const y20 = y2 - (y0 ?? 0);
+      const l21_2 = x21 * x21 + y21 * y21;
+      const l20_2 = x20 * x20 + y20 * y20;
+      const l21 = Math.sqrt(l21_2);
+      const l01 = Math.sqrt(l01_2);
+      const l =
+        r *
+        Math.tan(
+          (pi - Math.acos((l21_2 + l01_2 - l20_2) / (2 * l21 * l01))) / 2
+        );
+      const t21 = l / l21;
+      this._x1 = x1 + t21 * x21;
+      this._y1 = y1 + t21 * y21;
+    }
     return this;
   }
   arc(
@@ -2202,6 +2840,32 @@ export class Path extends Renderable {
   ) {
     const ccw = counterClockwise ? 1 : 0;
     this.push(ARC(x, y, r, a0, a1, ccw));
+    // update the endpoint of this path
+    (x = +x), (y = +y), (r = +r);
+
+    const dx = r * Math.cos(a0);
+    const dy = r * Math.sin(a0);
+    const x0 = x + dx;
+    const y0 = y + dy;
+    let da = ccw ? a0 - a1 : a1 - a0;
+
+    // Is this arc empty? We’re done.
+    if (!r) return this;
+
+    // Does the angle go the wrong way? Flip the direction.
+    if (da < 0) da = (da % tau) + tau;
+
+    // Is this a complete circle? Draw two arcs to complete the circle.
+    if (da > tauEpsilon) {
+      this._x1 = x0;
+      this._y1 = y0;
+    }
+
+    // Is this arc non-empty? Draw an arc!
+    else if (da > epsilon) {
+      this._x1 = x + r * Math.cos(a1);
+      this._y1 = y + r * Math.sin(a1);
+    }
     return this;
   }
   toString() {
@@ -2210,12 +2874,21 @@ export class Path extends Renderable {
 }
 
 /** Returns a new path. */
-export function path(id: string | number) {
-  return new Path(id);
+export function path() {
+  return new Path();
 }
 
 export function isPath(u: any) {
   return u instanceof Path;
+}
+
+export function line3D(
+  start: [number, number, number],
+  end: [number, number, number]
+) {
+  return path3D(...start)
+    .lineTo(...end)
+    .closePath();
 }
 
 export function quad(at: [number, number], width: number, height: number) {
@@ -2223,7 +2896,7 @@ export function quad(at: [number, number], width: number, height: number) {
   const y = at[1];
   const w = width;
   const h = height;
-  return path(uid(5))
+  return path()
     .moveTo(x, y)
     .lineTo(x + w, y)
     .lineTo(x + w, y - h)
@@ -2245,7 +2918,7 @@ export function curveLinear(points: (Vector | [number, number])[]) {
       pts.push([p.$x, p.$y]);
     }
   });
-  const p = path(uid(5));
+  const p = path();
   p.moveTo(pts[0][0], pts[0][1]);
   for (let i = 1; i < pts.length; i++) {
     const [x, y] = pts[i];
@@ -2264,7 +2937,7 @@ export function curveCatmullRom(
   points: ([number, number] | Vector)[],
   alpha: number = 0.5
 ) {
-  const p = path(uid(5));
+  const p = path();
   const data = points.map((p) => {
     if (Array.isArray(p)) return vector(p);
     else return p;
@@ -2421,7 +3094,7 @@ export function curveCardinal(
   res[rPos++] = points[l];
   res[rPos] = points[l + 1];
 
-  const p = path(uid(5));
+  const p = path();
   p.moveTo(points[0], points[1]);
   for (i = 0, l = res.length; i < l; i += 2) {
     p.lineTo(res[i], res[i + 1]);
@@ -2462,7 +3135,7 @@ export function curveCubicBezier(points: [number, number][], tension: number) {
   };
 
   const drawCurvedPath = (cps: number[], pts: number[]) => {
-    const p = path(uid(5));
+    const p = path();
     p.moveTo(pts[0], pts[1]);
     const len = pts.length / 2;
     if (len < 2) return p;
@@ -2545,7 +3218,7 @@ export function curveBlob(points: [number, number][], smoothing: number = 0.2) {
       return vector([x, y]);
     };
 
-    const p = path(uid(5));
+    const p = path();
     p.moveTo(points[0].$x, points[0].$y);
     for (let i = 1; i < points.length; i++) {
       const point = points[i];
@@ -2588,7 +3261,7 @@ export class Circle extends Renderable {
 
   _radius: number;
   constructor(radius: number, position: [number, number]) {
-    super(uid(5));
+    super();
     this._radius = radius;
     this._position = vector(position);
   }
@@ -2712,7 +3385,7 @@ export class TextObj extends Renderable {
     return this;
   }
   constructor(content: string | number) {
-    super(uid(5));
+    super();
     this.$content = content;
   }
 }
@@ -2726,9 +3399,13 @@ export function isText(u: any) {
 }
 
 export class Group extends Renderable {
-  render(fx: (x: number) => number, fy: (y: number) => number): this {
+  render(
+    fx: (x: number) => number,
+    fy: (y: number) => number,
+    fz: (x: number) => number
+  ): this {
     this.$children.forEach((child) => {
-      child.render(fx, fy);
+      child.render(fx, fy, fz);
     });
     return this;
   }
@@ -2766,7 +3443,7 @@ export class Group extends Renderable {
   }
 
   constructor(children: Renderable[]) {
-    super(uid(5));
+    super();
     this.$children = children;
   }
 }
@@ -2792,7 +3469,7 @@ export function triangle(
   const [x1, y1] = pt1;
   const [x2, y2] = pt2;
   const [x3, y3] = pt3;
-  const ctx = path(uid(5));
+  const ctx = path();
   ctx.moveTo(x1, y1);
   ctx.lineTo(x2, y2);
   ctx.lineTo(x3, y3);
@@ -2853,7 +3530,7 @@ export class LineObj extends Renderable {
   $start: Vector;
   $end: Vector;
   constructor(start: [number, number], end: [number, number]) {
-    super(uid(5));
+    super();
     this.$start = vector(start);
     this.$end = vector(end);
   }
@@ -2877,6 +3554,13 @@ export function isLine(u: any) {
   return u instanceof LineObj;
 }
 
+export function ytick(y: number, length: number = 0.05) {
+  return line([-length, y], [length, y]);
+}
+export function xtick(x: number, length: number = 0.05) {
+  return line([x, -length], [x, length]);
+}
+
 export function angleMarker(
   p3: [number, number] | Vector,
   p2: [number, number] | Vector,
@@ -2894,7 +3578,7 @@ export function angleMarker(
   const dy2 = pt3.$y - pt2.$y;
   let a1 = Math.atan2(dy1, dx1);
   let a2 = Math.atan2(dy2, dx2);
-  const p = path(uid(5));
+  const p = path();
   p.moveTo(pt2.$x, pt2.$y);
   if (angleReverse) {
     a1 = Math.PI * 2 - a1;
@@ -2902,6 +3586,35 @@ export function angleMarker(
   }
   p.arc(pt2.$x, pt2.$y, radius, a1, a2, false);
   p.closePath();
+  p.fill("none");
+  return p;
+}
+
+export function arcFromPoints(
+  p3: [number, number] | Vector,
+  p2: [number, number] | Vector,
+  p1: [number, number] | Vector,
+  radius: number = 20,
+  angleReverse: boolean = true
+) {
+  const pt3 = Array.isArray(p3) ? vector(p3) : p3;
+  const pt2 = Array.isArray(p2) ? vector(p2) : p2;
+  const pt1 = Array.isArray(p1) ? vector(p1) : p1;
+
+  const dx1 = pt1.$x - pt2.$x;
+  const dy1 = pt1.$y - pt2.$y;
+  const dx2 = pt3.$x - pt2.$x;
+  const dy2 = pt3.$y - pt2.$y;
+  let a1 = Math.atan2(dy1, dx1);
+  let a2 = Math.atan2(dy2, dx2);
+  const p = path();
+  // p.moveTo(pt2.$x, pt2.$y);
+  if (angleReverse) {
+    a1 = Math.PI * 2 - a1;
+    a2 = Math.PI * 2 - a2;
+  }
+  p.arc(pt2.$x, pt2.$y, radius, a1, a2, false);
+  // p.closePath();
   p.fill("none");
   return p;
 }
@@ -3115,7 +3828,7 @@ class CartesianPlot extends Group {
     // const e = engine();
     const fn = this.$engine.compile(this.$fn);
     if (!(fn instanceof Fn)) {
-      console.log(strof(fn));
+      console.error(strof(fn));
       return this;
     }
     this.$compiledFunction = fn;
@@ -3129,6 +3842,7 @@ class CartesianPlot extends Group {
       if (Number.isNaN(y) || y < ymin || ymax < y) point[1] = NaN;
       if (x < xmin || xmax < x) continue;
       else dataset.push(point);
+      dataset.push(point);
     }
     // TODO implement integration
     let moved = false;
@@ -3148,7 +3862,7 @@ class CartesianPlot extends Group {
         }
       }
     }
-    const p = path(uid(5));
+    const p = path();
     p.moveTo(out[0][1], out[0][2]);
     for (let i = 1; i < out.length; i++) {
       p._commands.push(out[i]);
@@ -3174,6 +3888,155 @@ class CartesianPlot extends Group {
   }
 }
 
+type Fn3DSpec = {
+  fn: string;
+  a: number;
+  b: number;
+  c: number;
+  n: number;
+  s: number;
+  samples?: number;
+};
+
+export function fplot3D({ fn, a, b, c, n, s, samples }: Fn3DSpec) {
+  const l = 0.94;
+  const a_l = 7.89;
+  samples = samples ? 1 / samples : 0.0001;
+  const e = engine();
+  const f = e.compile(fn);
+  if (!(f instanceof Fn)) {
+    throw algebraError(`Could not compile: ${fn}`);
+  }
+  const x_x = cos(c) * cos(a) - sin(c) * sin(a) * sin(b);
+  const x_y = cos(c) * sin(a) * sin(b) + sin(c) * cos(a);
+  const y_x = -cos(c) * sin(a) - sin(c) * cos(a) * sin(b);
+  const y_y = cos(c) * cos(a) * sin(b) - sin(c) * sin(a);
+  const z_x = -sin(c) * cos(b);
+  const z_y = cos(c) * cos(b);
+  const pi5_6 = (5 * Math.PI) / 6;
+  const lplus1_over2 = (l + 1) / 2;
+
+  const x_arr = (t: number, x_s: number, y_s: number) => {
+    if (0 < t && t < l) {
+      return x_s * t;
+    }
+    if (l < t && t < lplus1_over2) {
+      return l * x_s + cos(pi5_6) * x_s * (t - l) - sin(pi5_6) * y_s * (t - l);
+    }
+    if (lplus1_over2 < t && t < 1) {
+      return (
+        l * x_s +
+        sin(pi5_6) * y_s * (t - lplus1_over2) +
+        cos(pi5_6) * x_s * (t - lplus1_over2)
+      );
+    }
+    return t;
+  };
+
+  const y_arr = (t: number, x_s: number, y_s: number) => {
+    if (0 < t && t < l) {
+      return y_s * t;
+    }
+    if (l < t && t < lplus1_over2) {
+      return l * y_s + cos(pi5_6) * y_s * (t - l) + sin(pi5_6) * x_s * (t - l);
+    }
+    if (lplus1_over2 < t && t < 1) {
+      return (
+        l * y_s -
+        sin(pi5_6) * x_s * (t - lplus1_over2) +
+        cos(pi5_6) * y_s * (t - lplus1_over2)
+      );
+    }
+    return t;
+  };
+  const p = path();
+  for (let t = 0; t <= 1; t += 0.01) {
+    const x = x_arr(t, a_l * x_x, a_l * x_y);
+    const y = y_arr(t, a_l * x_x, a_l * x_y);
+
+    if (t === 0) {
+      p.moveTo(x, y);
+    } else {
+      p.lineTo(x, y);
+    }
+  }
+
+  for (let t = 0; t <= 1; t += 0.01) {
+    const x = x_arr(t, a_l * y_x, a_l * y_y);
+    const y = y_arr(t, a_l * y_x, a_l * y_y);
+    if (t === 0) {
+      p.moveTo(x, y);
+    } else {
+      p.lineTo(x, y);
+    }
+  }
+  for (let t = 0; t <= 1; t += 0.01) {
+    const x = x_arr(t, a_l * z_x, a_l * z_y);
+    const y = y_arr(t, a_l * z_x, a_l * z_y);
+    if (x === null) continue;
+    if (y === null) continue;
+    if (t === 0) {
+      p.moveTo(x, y);
+    } else {
+      p.lineTo(x, y);
+    }
+  }
+  const g = (x: number) => {
+    return 2 * s * (floor(x * (n + 1)) / n - 0.5);
+  };
+  const h = (x: number) => {
+    return 2 * s * (mod(x * (n + 1), 1) - 0.5);
+  };
+
+  const dataset1: [number, number][] = [];
+  for (let t = 0; t <= 1; t += samples) {
+    const fxy = f.call(e.compiler, [g(t), h(t)]);
+    if (typeof fxy !== "number") {
+      continue;
+    }
+    const x = x_x * g(t) + y_x * h(t) + z_x * fxy;
+    const y = x_y * g(t) + y_y * h(t) + z_y * fxy;
+    dataset1.push(tuple(x, y));
+  }
+  const cp = path();
+  for (let i = 0; i < dataset1.length; i++) {
+    const p1 = dataset1[i];
+    const p2 = dataset1[i + 1];
+    if (i === 0) {
+      cp.moveTo(p1[0], p1[1]);
+    }
+    if (p2 && dist2D(p1, p2) >= 1) {
+      cp.moveTo(p2[0], p2[1]);
+      continue;
+    }
+    cp.lineTo(p1[0], p1[1]);
+  }
+
+  const dataset2:[number,number][] = []
+  for (let t = 0; t <= 1; t += samples) {
+    const fxy = f.call(e.compiler, [h(t), g(t)]);
+    if (typeof fxy !== "number") {
+      continue;
+    }
+    const x = x_x * h(t) + y_x * g(t) + z_x * fxy;
+    const y = x_y * h(t) + y_y * g(t) + z_y * fxy;
+    dataset2.push(tuple(x, y));
+  }
+  for (let i = 0; i < dataset2.length; i++) {
+    const p1 = dataset2[i];
+    const p2 = dataset2[i + 1];
+    if (i === 0) {
+      cp.moveTo(p1[0], p1[1]);
+    }
+    if (p2 && dist2D(p1, p2) >= 1) {
+      cp.moveTo(p2[0], p2[1]);
+      continue;
+    }
+    cp.lineTo(p1[0], p1[1]);
+  }
+  return [p, cp];
+}
+
 /**
  * Returns a new Cartesian plot.
  */
@@ -3189,7 +4052,7 @@ class Disc extends Path {
   $radius: number;
   $position: [number, number];
   constructor(radius: number, position: [number, number]) {
-    super(uid(5));
+    super();
     this.$position = position;
     this.$radius = radius;
     this._commands.push(
@@ -3295,7 +4158,7 @@ export class PolarPlot2D extends Group {
       }
     }
 
-    const p = path(uid(5));
+    const p = path();
     p.moveTo(out[0][1], out[0][2])
       .stroke(this.$stroke)
       .strokeWidth(this.$strokeWidth);

@@ -50,7 +50,6 @@ import {
     - [Cartesian Plot](#cartesian-plot)
     - [Linear Axes](#linear-axes)
     - [Polar Plot](#polar-plot)
-    - [Polar Axes](#polar-axes)
     - [Tree Drawing](#tree-drawing)
     - [Graph Drawing](#graph-drawing)
     - [Splines](#splines)
@@ -58,6 +57,8 @@ import {
   - [3D Graphics](#3d-graphics)
     - [3D Plot](#3d-plot)
       - [Multiple Plots](#multiple-plots)
+  - [3D Paths](#3d-paths)
+  - [3D Function Plot Wireframes](#3d-function-plot-wireframes)
 - [React Components](#react-components)
   - [Fig](#fig)
 
@@ -75,7 +76,7 @@ In the following sections, various REPLs and terminals are provided. For the REP
 Praxis supports basic arithmetic operations. Praxis's core arithmetic operations are displayed in the REPL below.
 
 <REPL
-  height={450}
+  height={465}
   initialLines={[
     { type: "input", value: "5 + 5" },
     { type: "output", value: "10" },
@@ -119,7 +120,7 @@ We used integers for the examples above, but certain operations are free to take
 Integers and floats are considered **primitives** in Algebron. The set of primitives also includes fractions. Fractions are written with the syntax ${a|b}$, where ${a}$ and ${b}$ are integers.
 
 <REPL
-  height={200}
+  height={175}
   initialLines={[
     { type: "input", value: "1|2 + 2|3" },
     { type: "output", value: "7|6" },
@@ -418,111 +419,25 @@ Algebron can generate data for Cartesian plots with the `cplot` function. For ex
 
 <PlotTest />
 
-The code (using React) implementing this diagram:
-
-```ts
-export const PlotTest = () => {
-  const D = tuple(-10, 10);
-  const R = tuple(-10, 10);
-  const xaxis = axis("x", D, R);
-  const yaxis = axis("y", D, R);
-  const d = svg([
-    xaxis,
-    yaxis,
-    cplot("fn f(x) = sin(x)", D, R).stroke("red").done(),
-    cplot("fn g(x) = cos(x)", D, R).stroke("blue").done(),
-    cplot("fn h(x) = cos(x) + sin(x)", D, R).stroke("green").done(),
-    cplot("fn n(x) = 2cos(x)", D, R).stroke("purple").done(),
-  ])
-    .dimensions(600, 600)
-    .domain(D)
-    .range(R)
-    .done();
-  return <Fig data={d} width={70} />;
-};
-```
-
 #### Linear Axes
-
 Linear axes can be rendered with the `vaxis` and `haxis` functions.
 
 <LinearAxesTest />
 
-Below is the code rendering the figure above:
-
-```tsx
-const axis = (
-  on: "x" | "y",
-  domain: [number, number],
-  range: [number, number]
-) =>
-  (on === "x"
-    ? haxis(domain, 1).ticks((t) => {
-        t.label.dy(15);
-        return t;
-      })
-    : vaxis(range, 1).ticks((t) => {
-        t.label.dy(5).dx(15);
-        return t;
-      })
-  )
-    .stroke("grey")
-    .done();
-
-export const LinearAxesTest = () => {
-  const D = tuple(-10, 10);
-  const R = tuple(-10, 10);
-  const d = svg([axis("x", D, R), axis("y", D, R)])
-    .domain(D)
-    .range(R)
-    .done();
-  return <Fig data={d} width={70} />;
-};
-```
 
 #### Polar Plot
 
 <PolarPlotTest/>
 
-#### Polar Axes
-
 #### Tree Drawing
-
 Trees can be generated with Algebron's `tree` function.
 
 <TreeTest />
 
 For example, the diagram above is generated using React.
 
-```ts
-export const TreeTest = () => {
-  const d = svg([
-    tree(
-      subtree("a").nodes([
-        subtree("b").nodes([leaf("c"), leaf("d")]),
-        subtree("e").nodes([
-          leaf("j"),
-          subtree("f").nodes([subtree("g").nodes([leaf("h"), leaf("i")])]),
-        ]),
-      ])
-    )
-      .nodeFn((node) => circle(5, [node.$x, node.$y]).fill("salmon"))
-      .labelFn((node) =>
-        text(node.$name).position(node.$x, node.$y).dx(-10).dy(0)
-      )
-      .layout("reingold-tilford")
-      .done(),
-  ])
-    .dimensions(400, 300)
-    .domain([-10, 10])
-    .range([-3, 3])
-    .done();
-  return <Fig data={d} width={70} paddingBottom={43} />;
-};
-```
 
 #### Graph Drawing
-
 Graphs can be generated in Algebron with the `forceGraph` and `graph` functions. The `graph` function generates a graph data structure (implemented with an adjacency list). The `forceGraph` function uses a physics-based graph drawing algorithm to position each of the nodes and edges.
 
 import { GraphDemo } from "@/components/Fig";
@@ -531,42 +446,8 @@ import { GraphDemo } from "@/components/Fig";
 
 The code generating the graph above (using React):
 
-```ts
-export const GraphDemo = () => {
-  const N = 90;
-  const D = tuple(-N, N);
-  const R = tuple(-N, N);
-  const d = svg([
-    forceGraph(
-      graph({
-        a: ["b", "x", "n"],
-        b: ["c", "d", "g", "n"],
-        c: ["e", "g"],
-        d: ["j", "k", "e"],
-        e: ["k"],
-        j: ["x", "s", "a"],
-        k: ["j", "s"],
-        n: ["g", "x"],
-        x: ["s"],
-      })
-    )
-      .domain(D)
-      .range(R)
-      .nodeColor("salmon")
-      .edgeColor("firebrick")
-      .nodeRadius(3)
-      .done(),
-  ])
-    .dimensions(300, 300)
-    .domain(D)
-    .range(R)
-    .done();
-  return <Fig data={d} width={60} paddingBottom={60} />;
-};
-```
 
 #### Splines
-
 Given a set of points, we often want to draw a line through these points. Algebron's spline functions provide this functionality.
 
 import { SplineLab } from "@/components/Fig";
@@ -589,60 +470,30 @@ Three-dimensional plots can be generated with Algebron's `plot3D` function:
 
 <Plot3DDemo />
 
-The code implementing the diagram above (using React and ThreeJS):
-
-```ts
-export function Plot3DDemo() {
-  const d = plot3D("fn z(x,y) = 4 * e^(-1/4 * y^2) * sin(2x - 1)").paramFn();
-  return <PLOT3D element={d} />;
-}
-```
 
 ##### Multiple Plots
 
 <MultiPlot3DDemo/>
 
+
+### 3D Paths
+The `path3D` function can be used to plot 3-dimensional paths.
+
+import {CubeTest, Path3DTest} from "@/components/Fig";
+
+<CubeTest/>
+
+### 3D Function Plot Wireframes
+The `fplot3D` function can be used to plot wireframes of 3D functions in SVG.
+
+<Path3DTest/>
+
 ## React Components
 As mentioned earlier, Algebron does not provide any frontend components or do any rendering. This site, however, uses React and ThreeJS to render the data generated by Algebron's graphics modules. To provide users guidance on how to use Algebron's graphics modules, this section outlines the React components used by this site.
 
 ### Fig
-Figures on Algebron's site are rendered with the `Fig` component. For example, the following code
+Figures on Algebron's site are rendered with the `Fig` component.
 
-~~~ts
-export const Figy = () => {
-  const D = tuple(-10, 10);
-  const R = tuple(-10, 10);
-  const d = svg([
-    grid(D, R).done(),
-    axis("x", D, R),
-    axis("y", D, R),
-    circle(50, [0, 0])
-      .stroke("olivedrab")
-      .fill("yellowgreen")
-      .fillOpacity(0.4),
-  ])
-    .domain(D)
-    .range(R)
-    .done();
-  return <Fig data={d} width={70}/>;
-};
-~~~
-renders:
-
-<Figy/>
-
-The `Fig` component has the following props:
-
-~~~ts
-type FigProps = {
-  data: SVGObj;
-  width?: number;
-  paddingBottom?: number;
-  title?: ReactNode;
-};
-~~~
-
-The `data` component takes an `SVGObj` (see the documentation [here](#svgobj)).
 
 export default function MDXPage({ children }) {
     return <MdxLayout>{children}</MdxLayout>

@@ -49,7 +49,7 @@ const Output = ({ children }: Children) => {
   return (
     <div
       style={{
-        color: "#ccc",
+        color: "var(--foreground)",
         marginTop: "8px",
         whiteSpace: "pre-wrap",
       }}
@@ -154,16 +154,16 @@ const REPL = ({ initialLines = [], height = 500 }: ReplProps) => {
         )}
       </TerminalContent>
       <ActiveInputLine>
-        <InputCarat color="#88e788">{"$:"}</InputCarat>
+        <InputCarat color="var(--foreground)">{"$:"}</InputCarat>
         <input
           style={{
-            color: "#fff",
+            color: "var(--foreground)",
             fontSize: "inherit",
             fontWeight: "bold",
             border: "none",
             outline: "none",
             flexGrow: "1",
-            caretColor: "#f48fb1",
+            caretColor: "var(--foreground)",
             backgroundColor: "transparent",
             fontFamily: "monospace",
           }}

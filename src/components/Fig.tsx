@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 "use client";
 
 import {
@@ -53,6 +54,18 @@ import {
   triangle,
   polarToCartesian,
   toRadians,
+  path3D,
+  Path3D,
+  isPath3D,
+  arrowhead,
+  arcFromPoints,
+  xtick,
+  ytick,
+  fplot3D,
+  Polyline,
+  isPolyline,
+  Polygon,
+  isPolygon,
 } from "@/algebron/main";
 
 import {
@@ -157,7 +170,7 @@ const Fig = ({
 
 type Fig2DProps = { elements: Renderable[] };
 
-type Path2DProps = { data: Path };
+type PathProps = { data: Path | Path3D };
 
 type DEFProps = { elements: ArrowHead[] };
 const DEF = ({ elements }: DEFProps) => {
@@ -188,7 +201,7 @@ const DEF = ({ elements }: DEFProps) => {
   );
 };
 
-const PATH = ({ data }: Path2DProps) => {
+const PATH = ({ data }: PathProps) => {
   return (
     <path
       d={data.toString()}
@@ -210,7 +223,7 @@ const Fig2D = ({ elements }: Fig2DProps) => {
         if (isGroup(data)) {
           return <GROUP key={data._id} data={data} />;
         }
-        if (isPath(data)) {
+        if (isPath(data) || isPath3D(data)) {
           return <PATH key={data._id} data={data} />;
         }
         if (isLine(data)) {
@@ -222,10 +235,27 @@ const Fig2D = ({ elements }: Fig2DProps) => {
         if (isCircle(data)) {
           return <CIRCLE key={data._id} data={data} />;
         }
+        if (isPolyline(data)) {
+          return <POLYLINE key={data._id} data={data} />;
+        }
+        if (isPolygon(data)) {
+          return <POLYGON key={data._id} data={data} />;
+        }
       })}
     </>
   );
 };
+
+type POLYLINE_PROPS = { data: Polyline };
+
+const POLYLINE = ({ data }: POLYLINE_PROPS) => (
+  <polyline points={data.points()} fill={"none"} stroke={"black"} />
+);
+
+type POLYGON_PROPS = { data: Polygon };
+const POLYGON = ({ data }: POLYGON_PROPS) => (
+  <polygon points={data.points()} fill={"none"} stroke={"black"} />
+);
 
 type CircleProps = { data: Circle };
 
@@ -916,7 +946,7 @@ export const ConvexHullDemo = () => {
   const ys = range(-5, 5, epsilon).map(() => randFloat(-4, 4));
   const points = zip(xs, ys).map(([x, y]) => vector([x, y]));
   const chull = convexHull(points);
-  const p = path("convex-hull-demo");
+  const p = path();
   chull.hull.forEach((v, i) => {
     if (i === 0) {
       p.moveTo(v.$x, v.$y);
@@ -1814,7 +1844,7 @@ export const TrigFnAngles = () => {
     // axis({ on: "x", domain: D, range: R }),
     // axis({ on: "y", domain: D, range: R }),
     circle(100, [0, 0]).fill("none").stroke(cssvar("dimgrey")),
-    path("tfna")
+    path()
       .arc(0, 0, 50, 0, -toRadians(120), true)
       .stroke(cssvar("foreground"))
       .strokeDashArray(3)
@@ -1875,7 +1905,7 @@ export const UnitCircleTrig = () => {
       text("𝑃(𝑥, 𝑦)").position(a1.$x, a1.$y).dy(-10).dx(15),
       text("𝑥² + 𝑦² = 1").position(-2, 2),
     ].map((t) => t.fill(cssvar("foreground"))),
-    path("uct")
+    path()
       .arc(0, 0, 40, 0, -Math.PI / 4, true)
       .stroke(cssvar("pencil"))
       .arrowEnd(),
@@ -1888,6 +1918,428 @@ export const UnitCircleTrig = () => {
     circle(3, [a1.$x, a1.$y]).fill(cssvar("foreground")),
   ]);
   return <Fig data={d} width={80} paddingBottom={50} translate={[0, -100]} />;
+};
+
+function lineFromAngle(
+  origin: [number, number],
+  radius: number,
+  angle: number
+) {
+  const [x, y] = origin;
+  const p = path();
+  p.moveTo(x, y);
+  p.lineTo(x + radius * Math.cos(angle), y + radius * Math.sin(angle));
+  return p;
+}
+
+export const RadianFig = () => {
+  const domain = tuple(-5, 5);
+  const range = tuple(-5, 5);
+  const a = lineFromAngle([0, 0], 2, Math.PI / 4);
+  const b = lineFromAngle([0, 0], 2, -Math.PI / 4);
+  const aEnd = a._endpoint;
+  const bEnd = b._endpoint;
+  const d = svg({
+    domain,
+    range,
+    width: 500,
+    height: 500,
+  }).children([
+    // grid(domain, range).stroke(cssvar("dimgrey")).done(),
+    // axis({ on: "x", domain, range }),
+    // axis({ on: "y", domain, range }),
+    line([0, -3], [0, 3]).stroke(cssvar("dimgrey")),
+    line([-3, 0], [3, 0]).stroke(cssvar("dimgrey")),
+    circle(100, [0, 0]).fill("none").stroke(cssvar("pencil")),
+    text("𝑠").position(2, 0).dx(20).dy(2.5),
+    text("θ").position(0.5, 0).dx(15).dy(5),
+    text("𝑟").position(1, 1).dx(-20).dy(10),
+    text("𝑦").position(0, 3).dy(-10),
+    text("𝑥").position(3, 0).dx(10).dy(4),
+    angleMarker([aEnd.$x, aEnd.$y], [0, 0], [bEnd.$x, bEnd.$y], 30, false)
+      .fill(cssvar("dimgrey"))
+      .strokeDashArray(3),
+    arcFromPoints([aEnd.$x, aEnd.$y], [0, 0], [bEnd.$x, bEnd.$y], 110, false)
+      .id("am")
+      .stroke(cssvar("pencil"))
+      .strokeDashArray(2)
+      .arrowed(arrowhead("am").refX(0), arrowhead("am").refX(11)),
+    a.stroke(cssvar("foreground")).arrowEnd(),
+    b.stroke(cssvar("foreground")).arrowEnd(),
+  ]);
+  return <Fig data={d} width={80} translate={[0, -70]} paddingBottom={55} />;
+};
+
+export const Path3DTest = () => {
+  const domain = tuple(-10, 10);
+  const range = tuple(-10, 10);
+  const [a_value, set_a_value] = useState(-2.4);
+  const [b_value, set_b_value] = useState(0.6);
+  const [c_value, set_c_value] = useState(0);
+  const [n_value, set_n_value] = useState(20);
+  const [s_value, set_s_value] = useState(2);
+
+  const scale = interpolator([0, 10], [-10, 10]);
+  const nscale = interpolator([0, 10], [-10, 40]);
+
+  const handle_a_value_change = (event: ChangeEvent<HTMLInputElement>) => {
+    event.preventDefault();
+    const value = scale(Number.parseFloat(event.target.value));
+    set_a_value(value);
+  };
+
+  const handle_b_value_change = (event: ChangeEvent<HTMLInputElement>) => {
+    event.preventDefault();
+    const value = scale(Number.parseFloat(event.target.value));
+    set_b_value(value);
+  };
+
+  const handle_c_value_change = (event: ChangeEvent<HTMLInputElement>) => {
+    event.preventDefault();
+    const value = scale(Number.parseFloat(event.target.value));
+    set_c_value(value);
+  };
+
+  const handle_n_value_change = (event: ChangeEvent<HTMLInputElement>) => {
+    event.preventDefault();
+    const value = nscale(Number.parseFloat(event.target.value));
+    set_n_value(Math.floor(value));
+  };
+
+  const handle_s_value_change = (event: ChangeEvent<HTMLInputElement>) => {
+    event.preventDefault();
+    const value = scale(Number.parseFloat(event.target.value));
+    set_s_value(value);
+  };
+
+  const d = svg({
+    width: 600,
+    height: 600,
+    domain,
+    range,
+  }).children([
+    fplot3D({
+      fn: "fn z(x,y) = x^2 + y^2",
+      a: a_value,
+      b: b_value,
+      c: c_value,
+      n: n_value,
+      s: s_value,
+    }),
+  ]);
+  return (
+    <div>
+      <div className="flex items-center">
+        <input
+          step={0.1}
+          min={0}
+          max={10}
+          className="mr-5"
+          type="range"
+          onChange={handle_a_value_change}
+        />
+        <Tex content={`a = ${a_value}`} block />
+      </div>
+      <div className="flex items-center">
+        <input
+          step={0.1}
+          min={0}
+          max={10}
+          className="mr-5"
+          type="range"
+          onChange={handle_b_value_change}
+        />
+        <Tex content={`b = ${b_value}`} block />
+      </div>
+      <div className="flex items-center">
+        <input
+          step={0.1}
+          min={0}
+          max={10}
+          className="mr-5"
+          type="range"
+          onChange={handle_c_value_change}
+        />
+        <Tex content={`c = ${c_value}`} block />
+      </div>
+      <div className="flex items-center">
+        <input
+          step={0.1}
+          min={0}
+          max={10}
+          className="mr-5"
+          type="range"
+          onChange={handle_n_value_change}
+        />
+        <Tex content={`n = ${n_value}`} block />
+      </div>
+      <div className="flex items-center">
+        <input
+          step={0.1}
+          min={0}
+          max={10}
+          className="mr-5"
+          type="range"
+          onChange={handle_s_value_change}
+        />
+        <Tex content={`s = ${s_value}`} block />
+      </div>
+      <Fig data={d} />
+    </div>
+  );
+};
+
+export const CubeTest = () => {
+  const domain = tuple(-10, 10);
+  const range = tuple(-10, 10);
+  const camera = vector([1.5, 0, 4]);
+  const [zRotation, setZRotation] = useState(0);
+  const [yRotation, setYRotation] = useState(0);
+  const [xRotation, setXRotation] = useState(0);
+  const degify = interpolator([0, 100], [0, 360]);
+  const handleZRotationChange = (event: ChangeEvent<HTMLInputElement>) => {
+    event.preventDefault();
+    const value = +Number.parseFloat(event.target.value).toPrecision(3);
+    const deg = toRadians(degify(value));
+    setZRotation(deg);
+  };
+  const handleXRotationChange = (event: ChangeEvent<HTMLInputElement>) => {
+    event.preventDefault();
+    const value = +Number.parseFloat(event.target.value).toPrecision(3);
+    const deg = toRadians(degify(value));
+    setXRotation(deg);
+  };
+  const handleYRotationChange = (event: ChangeEvent<HTMLInputElement>) => {
+    event.preventDefault();
+    const value = +Number.parseFloat(event.target.value).toPrecision(3);
+    const deg = toRadians(degify(value));
+    setYRotation(deg);
+  };
+  const vertices = {
+    A: vector([1, 1, 1]),
+    B: vector([-1, 1, 1]),
+    C: vector([1, -1, 1]),
+    D: vector([-1, -1, 1]),
+    E: vector([1, 1, -1]),
+    F: vector([-1, 1, -1]),
+    G: vector([1, -1, -1]),
+    H: vector([-1, -1, -1]),
+  };
+  const edges: [keyof typeof vertices, keyof typeof vertices][] = [
+    ["A", "B"],
+    ["C", "D"],
+    ["E", "F"],
+    ["G", "H"],
+    ["A", "C"],
+    ["B", "D"],
+    ["E", "G"],
+    ["F", "H"],
+    ["A", "E"],
+    ["C", "G"],
+    ["B", "F"],
+    ["D", "H"],
+  ];
+  const p = path3D(0, 0, 1);
+  for (let i = 0; i < edges.length; i++) {
+    const edge = edges[i];
+    const e1 = vertices[edge[0]];
+    const e2 = vertices[edge[1]];
+    const e1uv = e1.sub(camera);
+    const e1uv2 = e1uv.map((n, i) => (i === 2 ? n : n / e1uv.$z));
+    const e2uv = e2.sub(camera);
+    const e2uv2 = e2uv.map((n, i) => (i === 2 ? n : n / e2uv.$z));
+    p.moveTo(e1uv2.$x, e1uv2.$y, e1uv2.$z).lineTo(e2uv2.$x, e2uv2.$y, e2uv2.$z);
+  }
+
+  const d = svg({
+    width: 500,
+    height: 500,
+    domain,
+    range,
+    zDomain: domain,
+  }).children([
+    grid(domain, range).stroke(cssvar("dimgrey")).done(),
+    axis({ on: "x", domain, range }),
+    axis({ on: "y", domain, range }),
+    p.rotateZ(zRotation).rotateY(yRotation).rotateX(xRotation).scale(6, 6),
+  ]);
+  return (
+    <div>
+      <div className="flex items-center">
+        <input
+          step={0.1}
+          className="mr-5"
+          type="range"
+          onChange={handleXRotationChange}
+        />
+        <Tex content={`x\\text{-rotation} = ${xRotation}`} block />
+      </div>
+      <div className="flex items-center">
+        <input
+          step={0.1}
+          className="mr-5"
+          type="range"
+          onChange={handleYRotationChange}
+        />
+        <Tex content={`y\\text{-rotation} = ${yRotation}`} block />
+      </div>
+      <div className="flex items-center">
+        <input
+          step={0.1}
+          className="mr-5"
+          type="range"
+          onChange={handleZRotationChange}
+        />
+        <Tex content={`z\\text{-rotation} = ${zRotation}`} block />
+      </div>
+      <Fig data={d} />
+    </div>
+  );
+};
+
+export const BasicSineWave = () => {
+  const domain = tuple(-1.5, 7.5);
+  const range = tuple(-2.5, 2.5);
+  const ytick = (y: number, length: number = 0.05) =>
+    line([-length, y], [length, y]);
+  const xtick = (x: number, length: number = 0.05) =>
+    line([x, -length], [x, length]);
+  const d = svg({
+    width: 500,
+    height: 300,
+    domain,
+    range,
+  }).children([
+    // grid(domain, range).stroke(cssvar("dimgrey")).done(),
+    // axis({ on: "x", domain, range }),
+    // axis({ on: "y", domain, range }),
+    text("𝑥").fill(cssvar("dimgrey")).position(7, 0).dy(5).dx(10),
+    text("𝑦").fill(cssvar("dimgrey")).position(0, 2).dy(-15),
+    [
+      ytick(1),
+      ytick(-1),
+      xtick(Math.PI / 2),
+      xtick(Math.PI),
+      xtick((3 * Math.PI) / 2),
+      xtick(2 * Math.PI),
+    ].map((l) => l.stroke(cssvar("dimgrey"))),
+    [
+      text("1").position(0, 1).dy(5).dx(-10),
+      text("-1").position(0, -1).dy(5).dx(-10),
+      text("π/2")
+        .position(Math.PI / 2, 0)
+        .dy(20),
+      text("π").position(Math.PI, 0).dy(20),
+      text("3π/2")
+        .position((3 * Math.PI) / 2, 0)
+        .dy(20),
+      text("2π")
+        .position(2 * Math.PI, 0)
+        .dy(20),
+    ].map((t) => t.fill(cssvar("pencil"))),
+    line([0, 2], [0, -2]).stroke(cssvar("dimgrey")).arrowed(),
+    line([-1, 0], [7, 0]).stroke(cssvar("dimgrey")).arrowed(),
+    cplot("fn f(x) = sin(x)", [0, 2 * Math.PI], [-2, 2])
+      .stroke(cssvar("green"))
+      .samples(600)
+      .done(),
+  ]);
+  return <Fig data={d} width={70} paddingBottom={40} />;
+};
+
+export const BasicCosineWave = () => {
+  const domain = tuple(-1.5, 7.5);
+  const range = tuple(-2.5, 2.5);
+
+  const d = svg({
+    width: 500,
+    height: 300,
+    domain,
+    range,
+  }).children([
+    // grid(domain, range).stroke(cssvar("dimgrey")).done(),
+    // axis({ on: "x", domain, range }),
+    // axis({ on: "y", domain, range }),
+    text("𝑥").fill(cssvar("dimgrey")).position(7, 0).dy(5).dx(10),
+    text("𝑦").fill(cssvar("dimgrey")).position(0, 2).dy(-15),
+    [
+      ytick(1),
+      ytick(-1),
+      xtick(Math.PI / 2),
+      xtick(Math.PI),
+      xtick((3 * Math.PI) / 2),
+      xtick(2 * Math.PI),
+    ].map((l) => l.stroke(cssvar("dimgrey"))),
+    [
+      text("1").position(0, 1).dy(5).dx(-10),
+      text("-1").position(0, -1).dy(5).dx(-10),
+      text("π/2")
+        .position(Math.PI / 2, 0)
+        .dy(20),
+      text("π").position(Math.PI, 0).dy(20),
+      text("3π/2")
+        .position((3 * Math.PI) / 2, 0)
+        .dy(20),
+      text("2π")
+        .position(2 * Math.PI, 0)
+        .dy(20),
+    ].map((t) => t.fill(cssvar("pencil"))),
+    line([0, 2], [0, -2]).stroke(cssvar("dimgrey")).arrowed(),
+    line([-1, 0], [7, 0]).stroke(cssvar("dimgrey")).arrowed(),
+    cplot("fn f(x) = cos(x)", [0, 2 * Math.PI], [-2, 2])
+      .stroke(cssvar("blue"))
+      .samples(600)
+      .done(),
+  ]);
+  return <Fig data={d} width={70} paddingBottom={40} />;
+};
+
+export const ArcsinePlot = () => {
+  const domain = tuple(-2, 2);
+  const range = tuple(-2, 2);
+  const d = svg({
+    width: 500,
+    height: 500,
+    domain,
+    range,
+  }).children([
+    // grid(domain, range).stroke(cssvar("dimgrey")).done(),
+    // axis({ on: "x", domain, range }),
+    // axis({ on: "y", domain, range }),
+    [line([-2, 0], [2, 0]), line([0, -2], [0, 2])].map((l) =>
+      l.stroke(cssvar("grey"))
+    ),
+    [
+      line([-2, Math.PI / 2], [2, Math.PI / 2]),
+      line([-2, -Math.PI / 2], [2, -Math.PI / 2]),
+      line([1, -2], [1, 2]),
+      line([-1, -2], [-1, 2]),
+    ].map((l) => l.strokeDashArray(6).stroke(cssvar("dimgrey"))),
+    [xtick(1), xtick(-1), ytick(Math.PI / 2), ytick(-Math.PI / 2)].map((t) =>
+      t.stroke(cssvar("grey"))
+    ),
+    [
+      text("π/2")
+        .position(0, Math.PI / 2)
+        .dx(-25)
+        .dy(5),
+      text("-π/2")
+        .position(0, -Math.PI / 2)
+        .dx(-25)
+        .dy(5),
+      text("1").position(1, 0).dy(20),
+      text("-1").position(-1, 0).dy(20),
+    ].map((t) => t.fill(cssvar("pencil"))),
+    [circle(4, [1, Math.PI / 2]), circle(4, [-1, -Math.PI / 2])].map((c) =>
+      c.fill(cssvar("red"))
+    ),
+    cplot("fn f(x) = arcsin(x)", [-1, 1], range)
+      .stroke(cssvar("red"))
+      .samples(1200)
+      .strokeWidth(1.5)
+      .done(),
+  ]);
+  return <Fig data={d} width={70} />;
 };
 
 export default Fig;

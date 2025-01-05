@@ -12,6 +12,7 @@ import { Line1, AngleLab } from "@/components/Fig";
 - [Trigonometry](#trigonometry)
   - [Trigonometric Ratios](#trigonometric-ratios)
   - [Trigonometric Identities](#trigonometric-identities)
+  - [Radian Measure](#radian-measure)
 
 </TOC>
 
@@ -104,7 +105,81 @@ $$
   \cot \theta = \dfrac{1}{\tan \theta.}
 $$
 
+### Radian Measure
+<blockquote>
 
+__*definition*__. Let ${\theta}$ be an angle with its vertex at the center of a circle of radius ${r.}$ Let ${s}$ denote the length of the arc intercepted by the angle. The radian measure of ${\theta}$ is the ratio of the arc length ${s}$ to the radius ${r.}$
+
+$$
+  m(\theta) = \dfrac{s}{r}.
+$$
+
+import { RadianFig } from "@/components/Fig";
+
+<RadianFig/>
+
+</blockquote>
+
+One way to think about the radian measure: It is a fraction of the circumference of a circle. Recall that a circle's circumference is given by:
+
+$$
+  2 \pi r. 
+$$
+
+If the circle has a radius of ${1}$ (i.e., the radius of the unit circle), then the circumference is ${2\pi.}$ Thus, half the circle's circumference is ${\pi,}$ a quarter of the circle's circumference is ${\pi / 2,}$ ad infinitum. These fractional parts of the circle's circumference are called _arcs_. If we draw lines from the endpoints of these arcs to the circle's center, we get an angle between those lines. Thus, one way to measure the angle is by using the length of its corresponding arc. Hence:
+
+$$
+\begin{aligned}
+  360 \degree &= 2 \pi \\[2em]
+  180 \degree &= \pi \\[2em]
+  90 \degree &= \dfrac{\pi}{2} \\[2em]
+  45 \degree &= \dfrac{\pi}{4}
+\end{aligned}
+$$
+
+As one might garner, this is a much more mathematically elegant way of measuring angles, as opposed to the arbitrary use of multiples of ${360 \degree.}$ Nevertheless, degrees are still useful in many contexts. As such, it's helpful to know how to convert between degrees and radians:
+
+<blockquote>
+
+__*degrees-to-radians formula.*__ Given a degree measure ${d,}$ the radian measure ${r}$ is given by:
+
+$$
+  r = d \left( \dfrac{\pi}{180}\right).
+$$
+
+</blockquote>
+
+<blockquote>
+
+__*radians-to-degrees formula.*__ Given a radian measure ${r,}$ the degree measure ${d}$ is given by:
+
+$$
+  d = r \left( \dfrac{180}{\pi}\right).
+$$
+
+</blockquote>
+
+<blockquote>
+
+__*arc length formula*__. In a circle of radius ${r,}$ the arc length ${s}$ determined by a central angle of radian measure ${\theta}$ is given by
+
+$$
+  s = r \theta,
+$$
+
+where ${s}$ and ${r}$ have the same linear units.
+
+</blockquote>
+
+<blockquote>
+
+__*sector area formula*__. In a circle of radius ${r,}$ the area ${A}$ of a sector with central angle of radian measure ${\theta}$ is given by
+
+$$
+  A = \dfrac{1}{2} r^2 \theta.
+$$
+
+</blockquote>
 
 
 

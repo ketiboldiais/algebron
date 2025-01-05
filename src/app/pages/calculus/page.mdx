@@ -45,6 +45,13 @@ import MdxLayout from "@/components/mdx-layout";
     - [Manipulating Logarithms](#manipulating-logarithms)
     - [Logarithmic Behavior](#logarithmic-behavior)
   - [Trigonometric Functions](#trigonometric-functions)
+    - [Trigonometric Notational Conventions](#trigonometric-notational-conventions)
+    - [Periodic Functions](#periodic-functions)
+    - [The Sine Function](#the-sine-function)
+    - [The Cosine Function](#the-cosine-function)
+    - [The Arcsine Function](#the-arcsine-function)
+- [Sequences](#sequences)
+- [Limits](#limits)
 
 </TOC>
 
@@ -852,6 +859,121 @@ $$
   x = \cos \theta, \\[1em] y = \sin \theta.
 $$
 
+#### Trigonometric Notational Conventions
+The expression ${\sin \theta}$ really means ${\sin(\theta),}$ ${\cos \theta}$ means ${\cos(\theta),}$ and so on. For historical reasons, the parentheses are omitted. Parentheses are also omitted in the multiplication of trigonometric functions. E.g., ${(\sin \theta)(\cos \theta)}$ is usually written ${\sin \theta \cos \theta.}$ Similarly, ${a(\sin b)}$ is reduced to ${a \sin b.}$
+
+<aside>
+Historically, the symbols ${\sin,}$ ${\cos,}$ etc., were abbreviations of sine, cosine, etc. These abbreviations appeared before we began interpreting the trigonometric ratios as functions, and as abbreviations, parentheses were uncalled for.   
+</aside>
+
+Along the same lines, ${(\sin \theta)^n}$ is usually written ${\sin^n \theta.}$ Thus, the expression ${\sin^2 \theta}$ really means ${(\sin \theta)^2.}$ The one exception to this rule is when ${n = -1.}$ The expression ${\sin^{-1} \theta}$ denotes the _arcsine_ of ${\theta,}$ a function we will cover in a later section.
+
+#### Periodic Functions
+The trigonometic functions are instances of a broader class of functions called _periodic functions_. These are functions that exhibit cyclic behavior &mdash; they start at some initial state, undergo changes, then return back to their initial state; repeating the pattern over and over. Cyclic behavior is seen throughout pure and applied mathematics: the Fourier transform, sound waves, digital signal processing, electrocardiograms (EKGs), computer graphics, etc.
+
+<blockquote>
+
+__*definition*__. A nonconstant function ${f}$ is _periodic_ if there is a number ${p \gt 0}$ such that
+
+$$
+  f(x + p) = f(x)
+$$
+
+for all ${x}$ in the domain of ${f.}$ The smallest such ${p}$ is called the _period_ of ${f.}$
+
+</blockquote>
+
+Given the graph of a periodic function ${f,}$ the graph's _amplitude_ is the maximum height of the graph above the horizontal axis. 
+
+<blockquote>
+
+__*definition*__. Let ${f}$ be a periodic function and let ${m}$ and ${M}$ denote, respectively, the minimum and maximum values of the function. Then the amplitude of ${f}$ is the number
+
+$$
+  \dfrac{M - m}{2}.
+$$
+
+</blockquote>
+
+#### The Sine Function
+The domain of the sine function, ${f(x) = \sin x,}$ is ${\reals.}$ The range of the sine function is the closed interval ${[-1,1].}$ Thus, 
+
+$$
+  -1 \leq \sin x \leq 1
+$$
+
+for all ${x \in \reals.}$ The sine function is an odd periodic function, with a period of ${2 \pi.}$ Its amplitude is ${1.}$ The graph of ${f(x) = \sin x}$ comprises repetitions, over the entire domain, of the basic sine wave: 
+
+import {BasicSineWave} from "@/components/Fig";
+
+<BasicSineWave/>
+
+As an odd function, ${f(x) = \sin x}$ is symmetric about the origin. The basic sine wave crosses the ${x}$-axis at the beginning, middle, and end of the basic cycle. The curve reaches the highest point a fourth of the way through the basic cycle and its lowest point three-fourths of the way.   
+
+#### The Cosine Function
+The domain of the cosine function, ${f(x) = \cos x,}$ is ${\reals.}$ The range of the cosine function is the closed interval ${[-1,1],}$ and we have  
+
+$$
+  -1 \leq \cos x \leq 1,
+$$
+
+for all ${x \in \reals.}$ The cosine function is an even periodic function. The graph of ${f(x) = \cos x}$ comprises repetitions, over the entire domain, of the basic cosine wave:
+
+
+import {BasicCosineWave} from "@/components/Fig";
+
+<BasicCosineWave/>
+
+As an even function, ${f(x) = \cos x}$ is symmetric about the ${y}$-axis. The basic cosine wave crosses the ${x}$-axis a fourth of the way through the basic cycle and again three-fourths of the way. The curve reaches its highest point at the beginning and end of the basic cycle and reaches its lowest point halfway through the basic cycle.
+
+#### The Arcsine Function
+
+<blockquote>
+
+__*definition.*__ The arcsine of ${x,}$ denoted ${\arcsin x}$ or ${\sin^{-1} x,}$ is the unique number ${y}$ in the interval ${[0, \pi]}$ such that ${\cos y = x.}$ That is,
+
+$$
+  y = \arcsin x \iff y = \sin^{-1} x \iff \cos y = x. 
+$$
+
+</blockquote>
+
+Below is a plot of the arcsine function ${f(x) = \arcsin x.}$
+
+import {ArcsinePlot} from "@/components/Fig";
+
+<ArcsinePlot/>
+
+## Sequences
+
+<blockquote>
+
+__*definition.*__ A _sequence_ ${a}$ is a mapping from the natural numbers to the reals. That is, 
+
+$$
+  a : \natnums \to \reals.
+$$
+
+</blockquote>
+
+## Limits
+We'll start by stating the formal definition of a limit, then slowly unpack it.
+
+<blockquote>
+
+__*definition*__. Let ${f: x \mapsto y}$ be a function defined on an open interval about ${c,}$ except possibly at ${c}$ itself. We say that the limit of ${f}$ as ${x}$ approaches ${c}$ is ${L,}$ and denote it by
+
+$$
+  \lim_{x \to c} f(x) = L,
+$$
+
+if, for every ${\varepsilon \gt 0}$ there exists a ${\delta \gt 0}$ such that if ${0 \lt \lvert x - c \rvert \lt \delta,}$ then ${\lvert f(x) - L \rvert \lt \varepsilon.}$
+
+</blockquote>
+
+
+
 export default function MDXPage({ children }) {
   return <MdxLayout>{children}</MdxLayout>;
 }
+
