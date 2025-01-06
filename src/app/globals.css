@@ -23,7 +23,7 @@
   --code-bg: rgb(219, 219, 219);
   --aside-color: #7a7a7a;
   --peach: rgb(65, 65, 65);
-  --mocha: rgb(118, 118, 118);
+  --mocha: rgb(87, 87, 87);
   --brightBlue: rgb(44, 44, 44);
   --latte: rgb(73, 73, 73);
   --brighPink: rgb(32, 32, 32);
@@ -242,6 +242,8 @@ blockquote p {
 
 figcaption {
   font-style: italic;
+  font-size: 0.8rem;
+  color: var(--aside-color);
   margin: 0 auto;
   width: 60%;
   text-align: center;
@@ -344,7 +346,7 @@ a:hover {
   list-style: lower-roman;
 }
 
-.algebron-fig {
+.algebron-fig > div {
   font-family: KaTeX_main;
 }
 
@@ -479,7 +481,7 @@ div.procedure ol ol {
   border-left: solid thin rgb(226, 226, 226);
 }
 div.procedure ol {
-  margin-left: 1em;
+  margin-left: 1rem;
 }
 div.procedure li em {
   color: rgb(146, 171, 182);
@@ -493,6 +495,16 @@ div.procedure li em {
   padding: 0;
   float: right;
 }
+
+.warning {
+  display: block;
+  float: left;
+  clear: right;
+  position: relative;
+  margin-left: -1.5em;
+  font-size: 1.2rem;
+}
+
 div.procedure ol li::before {
   right: 1rem;
 }
@@ -503,7 +515,7 @@ div.procedure ol li li li::before {
   right: 3.1rem;
 }
 div.procedure ol li li li li::before {
-  right: 4.1rem;
+  right: 4.2rem;
 }
 div.procedure ol li li li li li::before {
   right: 5.1rem;

@@ -22,7 +22,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
         </div>
       );
     },
-
+    Warning: () => <span className="warning">&#9888;</span>,
     Procedure: (props) => <div className="procedure">{props.children}</div>,
     TOC: (props) => (
       <div className="toc">

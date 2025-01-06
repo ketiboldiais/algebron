@@ -32,6 +32,7 @@ import {
 - [Algebron Core Library](#algebron-core-library)
   - [CAS Modules](#cas-modules)
     - [simplify(u)](#simplifyu)
+      - [Distributive Transformations](#distributive-transformations)
     - [subexs(u)](#subexsu)
     - [freeOf(u,xs)](#freeofuxs)
     - [derive(u,x)](#deriveux)
@@ -44,6 +45,7 @@ import {
     - [coefGPE(u,x,j)](#coefgpeuxj)
     - [lcGPE(u,x)](#lcgpeux)
     - [expand(u)](#expandu)
+    - [distribute(𝑢)](#distribute𝑢)
     - [collectTerms(𝑢,𝑆)](#collectterms𝑢𝑆)
   - [2D Graphics](#2d-graphics)
     - [SVGObj](#svgobj)
@@ -66,13 +68,14 @@ import {
 
 Algebron is a math library written in TypeScript. The library provides: implementations of common data structures; APIs for scientific computation, numeric analysis, and statistics; CAS (Computer Algebra System) functions; an API for 2D and 3D graphics processing; and a scripting language called _Praxis_. This page documents the Algebron library.
 
-
 ## Praxis
+
 Praxis is a scripting language built with TypeScript. The language is used in Algebron's library to compile user-defined functions and perform symbolic computation procedures. This section documents Praxis's syntax, grammar, and features.
 
 In the following sections, various REPLs and terminals are provided. For the REPLs: Click to the right of the dollar sign (`$:`) to begin typing expressions and hit "Enter" to execute your expression. Some of the REPL windows have code preset and entered to serve as examples. To clear a REPL, type and enter `clear`. Note that the REPLs are strictly for evaluating expressions. To execute a statement (or an entire program), use a terminal: Type your code, and click the `run` button to execute.
 
 ### Basic Number Types & Arithmetic
+
 Praxis supports basic arithmetic operations. Praxis's core arithmetic operations are displayed in the REPL below.
 
 <REPL
@@ -132,21 +135,27 @@ Integers and floats are considered **primitives** in Algebron. The set of primit
 />
 
 ### Primitive Types
+
 Primitive types in Praxis are expressions that cannot be reduced any further.
 
 #### Integers
+
 Integers are the most basic type in Praxis. The largest possible integer in Praxis is ${9,007,199,254,740,991}$ or ${2^{53} - 1.}$ Any integer greater than this will be cast to a [big integer](#big-integers).
 
 #### Floating Point Numbers
+
 Floating point numbers in Praxis are represented in the 64-bit format.
 
 #### Fractions
+
 Fractions in Praxis are implemented as JavaScript objects.
 
 #### Big Integers
+
 In Praxis, integers larger than ${9,007,199,254,740,991}$ are automatically cast to big integers.
 
 #### Strings
+
 Strings in Praxis are _always_ double quoted. This syntax is established to distinguish primitive strings from [symbolic strings](#symbolic-strings).
 
 ```ts
@@ -154,87 +163,98 @@ Strings in Praxis are _always_ double quoted. This syntax is established to dist
 ```
 
 #### Symbolic Strings
+
 Any expression surrounded by the apostrophe (`'`) in Praxis is interpreted as a symbolic string. Symbolic strings are Praxis's data type for _algebraic expressions_. Only symbolic strings in Praxis may be passed to Algebron's [CAS modules](#cas-modules).
 
-~~~ts
-'2x^2 + 3'
-~~~
+```ts
+"2x^2 + 3";
+```
 
 ### Composite Data Types
-Composite types in Praxis are data types with an underlying data structure, made up of primitive (or composite) data types. Where primitives are the simplest data types that cannot be reduced further (i.e., atomic), composites are those that can be reduced further.   
+
+Composite types in Praxis are data types with an underlying data structure, made up of primitive (or composite) data types. Where primitives are the simplest data types that cannot be reduced further (i.e., atomic), composites are those that can be reduced further.
 
 #### Lists
+
 A list is any linear sequence of data. In Algebron, a list is written with open and closing parentheses. For example, below is a list with four integers as elements:
 
 ```ts
-const l = (1, 2, 3, 4)
+const l = (1, 2, 3, 4);
 ```
 
 #### Vectors
+
 A vector is similar to a list, except its elements can only be integers or floating point numbers, or expressions that reduce to integers or floating point numbers. Vectors are written with square brackets. For example:
 
 ```rust
 let v = [0, 1, 0, 1]
 ```
+
 ### Conditionals
+
 Conditional statements can be executed with the if-else syntax:
 
-~~~js
+```js
 let x = 0;
 let y = 3;
 
-if (x = 5) {
+if ((x = 5)) {
   y = y + 1;
 } else if (x < 5) {
   y = y + 2;
 } else {
   y = y + 3;
 }
-~~~
+```
 
 ### Functions
+
 A function in Praxis can be written as follows:
 
-~~~rust
+```rust
 fn f(x) {
   return x^2;
 }
-~~~
+```
 
 Since this function comprises just one line, we can also write:
 
-~~~rust
+```rust
 fn f(x) = x^2;
-~~~
+```
 
 ### Loops
+
 Loops can be written in Praxis in two ways. The while-loop:
 
-~~~ts
+```ts
 var i = 0;
 var x = 3;
 while (i < 5) {
-  x = x^2;
+  x = x ^ 2;
   i++;
 }
-~~~
+```
 
 or the for-loop:
 
-~~~ts
+```ts
 var x = 5;
 for (var i = 0; i < 5; i++) {
-  x = x^2;
+  x = x ^ 2;
 }
-~~~
+```
 
 ## Algebron Core Library
+
 The following sections document Algebron's core library. These are functions exported directly from Algebron, available for use directly in JavaScript/Typescript.
 
 ### CAS Modules
+
 [Symbolic strings](#symbolic-strings) in Algebron are interpreted as algebraic expressions. At runtime, these expressions are represented by the Algebron `MathObj` class. From there, they can be passed to Algebron's various CAS (Computer Algebra System) modules. The functions below are exported by Algebron publicly.
 
 #### simplify(u)
+
 Where `u` is a string or MathObj, simplifies the expression. Below is an example of using simplify directly in TypeScript.
 
 ```ts
@@ -254,7 +274,44 @@ $$
 
 If we passed an expression equivalent to either of those above, what should the expression simplify to? The engineer may be incentivized to only use sines and cosines. The user, however, may want the expression reduced to any one of these, depending on context. Of course, the more the engineer caters towards the user's preferences, the more complex the simplification algorithm.
 
+We say this up front as a prefatory warning on the `simplify` function's limitations. The following sections outline some of these limitations.
+
+##### Distributive Transformations
+
+For example, the following expression will have its terms rearranged, but not simplified:
+
+```ts
+const x = simplify("(x^2 + x)/x");
+console.log(x.strung()); // x^(-1) * (x + x^2)
+```
+
+This, however, will simplify:
+
+```ts
+const x = simplify("2x + y + (3|2) * x");
+console.log(x.strung()); // 7|2 * x + y
+```
+
+The expression
+
+$$
+  \dfrac{x^2 + x}{x}
+$$
+
+does not simplify further because Algebron's automatic simplification algorithm only applies the distributive property when combining constant (integer, fraction, or floating point) coefficients of like terms in a sum. It does not apply the distributive property as collecting non-constant coefficients of like terms as well as constants.
+
+There are several reasons for this:
+
+1. **"Like terms" can be ambiguous.** One application of the distributive property is its reversal &mdash; collecting "like terms." Given an expression ${u,}$ it's not always clear which parts of the expression are the like terms and which aren't. For example, consider the expression:
+
+   $$
+     ax + bx + by.
+   $$
+
+   If the like terms are coefficients of ${x,}$ then the expression should simplify to ${(a + b)x + by.}$ But if the like terms are coefficients of ${b,}$ ${u}$ should simplify to ${ax + b(x + y).}$
+
 #### subexs(u)
+
 Where `u` is a string or MathObj corresponding to an algebraic expression, returns an array of the subexpressions of `u`.
 
 ```ts
@@ -328,6 +385,7 @@ console.log(result2); // false
 ```
 
 #### gpeDeg(u,xs)
+
 Where `u` is a general polynomial expression and `xs` is a list of variables, returns the degree of `u` in `xs`.
 
 ```ts
@@ -339,6 +397,7 @@ console.log(result.strung()); // 7
 ```
 
 #### vars(u)
+
 Where `u` is a general polynomial expression, returns an array of the variables in the expression.
 
 ```ts
@@ -381,6 +440,45 @@ const b = expand("(x + 2)(x + 3)(x + 4)");
 console.log(b.strung()); // (24 + 26x + 9(x^2) + (x^3))
 ```
 
+#### distribute(𝑢)
+Where ${u}$ is a string or MathObj corresponding to an algebraic expression, returns the distributed form of ${u.}$
+
+~~~ts
+const e1 = distribute("a * (b + c)")
+console.log(e1.strung()) // a * b + a * c
+
+const e2 = distribute("a * (b + c) * (d + e)");
+console.log(e2.strung()); // a * b * (d + e) + a * c * (d + e)
+
+const e3 = distribute("(x + y)/(x * y)");
+console.log(e3.strung()); // x^(-1) + y^(-1)
+~~~
+
+ 
+<Warning/> There are some caveats to this function. First, the `distribute` function may not always return results the user expects (e.g., in the examples above, `e2` and `e3`). This is largely because of `distribute`'s underlying algorithm:
+
+<Procedure>
+
+1. __if__ ${u}$ is not a product:
+   1. __return__ ${u.}$ 
+2. __else__ (${u}$ is a product):
+   1. __if__ ${u}$ does not have an operand that is a sum:
+      1. __return__ ${u.}$
+   2. __else__ (${u}$ has an operand that is a sum):
+      1. __let__ ${v}$ be the first operand that is a sum.
+      2. __let__ ${S = 0.}$
+      3. __for each__ operand of ${v:}$
+         1. form a product with the remaining operands of ${u.}$
+         2. call this product ${p.}$
+         3. ${S = S + p}$
+      4. __return__ ${S.}$
+
+</Procedure>
+
+Take note of line 6. This line indicates that the `distribute` function only applies the distributive property with the first operand that is a sum. It will not distribute further past that. We do not distribute further because the expression could potentially explode in memory and space.
+
+This leads to the second caveat: The `distribute` function should be used with care. Distribution tends to make expressions _longer_. Because the result of `distribute` undergoes automatic simplification, calling this function may result in stack overflows or slow processing. 
+
 #### collectTerms(𝑢,𝑆)
 
 Where ${u}$ is an algebraic expression (represented as either a string or a MathObj), and ${S}$ is a list of generalized variables (represented as an array of strings or MathObjs), returns a MathObj corresponding to the collected form of ${u.}$ If ${u}$ is not a general polynomial expression, returns the MathObj `Undefined`.
@@ -409,35 +507,39 @@ console.log(x.strung()); // a * (4 * x + 2 * x * y) + b * (5 * x + 3 * x * y)
 ```
 
 ### 2D Graphics
+
 Algebron provides an API for 2D graphics. This API only performs the mathematical computations and data processing necessary for 2D graphics. Algebron _does not_ provide actual drawing methods. Any actual rendering on a frontend is left to the user's frontend of choice (React, Svelte, etc.). For example, on this site, all diagrams are generated with React. Documentation of the React components used on this site are found in the [React Components](#react-components) section.
 
 #### SVGObj
+
 An object corresponding to the description of an SVG element.
 
 #### Cartesian Plot
+
 Algebron can generate data for Cartesian plots with the `cplot` function. For example, the plot below is generated with the `cplot` function and React:
 
 <PlotTest />
 
 #### Linear Axes
+
 Linear axes can be rendered with the `vaxis` and `haxis` functions.
 
 <LinearAxesTest />
 
-
 #### Polar Plot
 
-<PolarPlotTest/>
+<PolarPlotTest />
 
 #### Tree Drawing
+
 Trees can be generated with Algebron's `tree` function.
 
 <TreeTest />
 
 For example, the diagram above is generated using React.
 
-
 #### Graph Drawing
+
 Graphs can be generated in Algebron with the `forceGraph` and `graph` functions. The `graph` function generates a graph data structure (implemented with an adjacency list). The `forceGraph` function uses a physics-based graph drawing algorithm to position each of the nodes and edges.
 
 import { GraphDemo } from "@/components/Fig";
@@ -446,8 +548,8 @@ import { GraphDemo } from "@/components/Fig";
 
 The code generating the graph above (using React):
 
-
 #### Splines
+
 Given a set of points, we often want to draw a line through these points. Algebron's spline functions provide this functionality.
 
 import { SplineLab } from "@/components/Fig";
@@ -470,30 +572,31 @@ Three-dimensional plots can be generated with Algebron's `plot3D` function:
 
 <Plot3DDemo />
 
-
 ##### Multiple Plots
 
-<MultiPlot3DDemo/>
-
+<MultiPlot3DDemo />
 
 ### 3D Paths
+
 The `path3D` function can be used to plot 3-dimensional paths.
 
-import {CubeTest, Path3DTest} from "@/components/Fig";
+import { CubeTest, Path3DTest } from "@/components/Fig";
 
-<CubeTest/>
+<CubeTest />
 
 ### 3D Function Plot Wireframes
+
 The `fplot3D` function can be used to plot wireframes of 3D functions in SVG.
 
-<Path3DTest/>
+<Path3DTest />
 
 ## React Components
+
 As mentioned earlier, Algebron does not provide any frontend components or do any rendering. This site, however, uses React and ThreeJS to render the data generated by Algebron's graphics modules. To provide users guidance on how to use Algebron's graphics modules, this section outlines the React components used by this site.
 
 ### Fig
-Figures on Algebron's site are rendered with the `Fig` component.
 
+Figures on Algebron's site are rendered with the `Fig` component.
 
 export default function MDXPage({ children }) {
     return <MdxLayout>{children}</MdxLayout>

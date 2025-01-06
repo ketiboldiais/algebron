@@ -66,6 +66,7 @@ import {
   isPolyline,
   Polygon,
   isPolygon,
+  plotSeq,
 } from "@/algebron/main";
 
 import {
@@ -2303,9 +2304,6 @@ export const ArcsinePlot = () => {
     domain,
     range,
   }).children([
-    // grid(domain, range).stroke(cssvar("dimgrey")).done(),
-    // axis({ on: "x", domain, range }),
-    // axis({ on: "y", domain, range }),
     [line([-2, 0], [2, 0]), line([0, -2], [0, 2])].map((l) =>
       l.stroke(cssvar("grey"))
     ),
@@ -2340,6 +2338,23 @@ export const ArcsinePlot = () => {
       .done(),
   ]);
   return <Fig data={d} width={70} />;
+};
+
+export const SeqPlot1 = () => {
+  const domain = tuple(-10, 85);
+  const range = tuple(-1, 1.05);
+  const d = svg({
+    width: 600,
+    height: 500,
+    domain,
+    range,
+  }).children([
+    plotSeq("fn f(x) = 1/x", 80, [0, 1])
+      .axisColor(cssvar('pencil'))
+      .pointMarker((p) => circle(1, p).fill(cssvar("red")))
+      .done(),
+  ]);
+  return <Fig data={d} paddingBottom={50}/>;
 };
 
 export default Fig;

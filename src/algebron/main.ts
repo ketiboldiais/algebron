@@ -3842,7 +3842,6 @@ class CartesianPlot extends Group {
       if (Number.isNaN(y) || y < ymin || ymax < y) point[1] = NaN;
       if (x < xmin || xmax < x) continue;
       else dataset.push(point);
-      dataset.push(point);
     }
     // TODO implement integration
     let moved = false;
@@ -3890,13 +3889,127 @@ class CartesianPlot extends Group {
 
 type Fn3DSpec = {
   fn: string;
+  /** The z-axis rotation. */
   a: number;
+  /** The y-axis rotation. */
   b: number;
+  /** The x-axis rotation. */
   c: number;
+  /** The number of segments. */
   n: number;
+  /** The scaling factor. */
   s: number;
+  /** The number of samples. */
   samples?: number;
 };
+
+export class SequencePlot extends Group {
+  $fn: string;
+  $indexDomain: [number, number];
+  $memberRange: [number, number];
+  constructor(fn: string, maxIndex: number, range: [number, number]) {
+    super([]);
+    this.$fn = fn;
+    this.$indexDomain = tuple(0, maxIndex);
+    this.$memberRange = range;
+  }
+  $compiledFunction: Fn | null = null;
+  $engine = engine();
+  $pointMarker: ((point: [number, number]) => Renderable) | null = null;
+  pointMarker(fn: (point: [number, number]) => Renderable) {
+    this.$pointMarker = fn;
+    return this;
+  }
+  $axisColor: string = "black";
+  axisColor(color: string) {
+    this.$axisColor = color;
+    return this;
+  }
+  done() {
+    const indexMin = this.$indexDomain[0];
+    const indexMax = this.$indexDomain[1];
+    const yMin = this.$memberRange[0];
+    const yMax = this.$memberRange[1];
+    const dataset: [number, number][] = [];
+    const fn = this.$engine.compile(this.$fn);
+    if (!(fn instanceof Fn)) {
+      console.error(strof(fn));
+      return this;
+    }
+    this.$compiledFunction = fn;
+    for (let i = indexMin; i < indexMax; i++) {
+      const x = i;
+      const _y = fn.call(this.$engine.compiler, [x]);
+      if (typeof _y !== "number") continue;
+      const y = _y;
+      const point = tuple(x, y);
+      if (Number.isNaN(y) || y < yMin || yMax < y) {
+        point[1] = NaN;
+      }
+      if (x < indexMin || indexMax < x) {
+        continue;
+      } else dataset.push(point);
+    }
+    const pointMarkers: Renderable[] = [];
+    for (let i = 0; i < dataset.length; i++) {
+      const datum = dataset[i];
+      if (!Number.isNaN(datum[1])) {
+        if (this.$pointMarker) {
+          pointMarkers.push(this.$pointMarker(datum));
+        } else {
+          pointMarkers.push(circle(1, datum));
+        }
+      }
+    }
+    pointMarkers.forEach((c) => this.$children.push(c));
+    const xaxis = line([indexMin, 0], [indexMax, 0]).stroke(this.$axisColor);
+    this.$children.push(xaxis);
+    const yaxis = line([indexMin, yMin], [indexMin, yMax]).stroke(
+      this.$axisColor
+    );
+    this.$children.push(yaxis);
+    const ticks: LineObj[] = [];
+    const tickLabels: TextObj[] = [];
+    dataset.forEach((p, i) => {
+      if (!Number.isNaN(p[1])) {
+        // x-axis ticks
+        const t = xtick(i, 0.01);
+        ticks.push(t.stroke(this.$axisColor));
+        if (
+          tickLabels.length === 0 ||
+          i % 5 === 0 ||
+          i === dataset.length - 1
+        ) {
+          tickLabels.push(
+            text(i).position(t.$end.$x, 0).dy(15).fill(this.$axisColor)
+          );
+        }
+      }
+    });
+    const r = range(0, dataset.length, 1);
+    const ip = interpolator([0, dataset.length], [yMin, yMax]);
+    r.forEach((n, i) => {
+      if (i % 10 === 0) {
+        const t = ytick(ip(n), 0.3);
+        ticks.push(t.stroke(this.$axisColor));
+        let num = ip(n).toPrecision(2);
+        if (Number.isInteger(+num)) {
+          num = `${Number.parseInt(num)}`;
+        }
+        tickLabels.push(
+          text(num).position(0, t.$end.$y).dy(5).dx(-20).fill(this.$axisColor)
+        );
+      }
+    });
+    ticks.forEach((t) => this.$children.push(t));
+    tickLabels.forEach((t) => this.$children.push(t));
+    return this;
+  }
+}
+
+export function plotSeq(fn: string, maxIndex: number, range: [number, number]) {
+  return new SequencePlot(fn, maxIndex, range);
+}
 
 export function fplot3D({ fn, a, b, c, n, s, samples }: Fn3DSpec) {
   const l = 0.94;
@@ -3953,7 +4066,6 @@ export function fplot3D({ fn, a, b, c, n, s, samples }: Fn3DSpec) {
   for (let t = 0; t <= 1; t += 0.01) {
     const x = x_arr(t, a_l * x_x, a_l * x_y);
     const y = y_arr(t, a_l * x_x, a_l * x_y);
-
     if (t === 0) {
       p.moveTo(x, y);
     } else {
@@ -3973,8 +4085,7 @@ export function fplot3D({ fn, a, b, c, n, s, samples }: Fn3DSpec) {
   for (let t = 0; t <= 1; t += 0.01) {
     const x = x_arr(t, a_l * z_x, a_l * z_y);
     const y = y_arr(t, a_l * z_x, a_l * z_y);
-    if (x === null) continue;
-    if (y === null) continue;
+
     if (t === 0) {
       p.moveTo(x, y);
     } else {
@@ -4012,7 +4123,7 @@ export function fplot3D({ fn, a, b, c, n, s, samples }: Fn3DSpec) {
     cp.lineTo(p1[0], p1[1]);
   }
 
-  const dataset2:[number,number][] = []
+  const dataset2: [number, number][] = [];
   for (let t = 0; t <= 1; t += samples) {
     const fxy = f.call(e.compiler, [h(t), g(t)]);
     if (typeof fxy !== "number") {
@@ -7747,7 +7858,7 @@ class Sum extends MathObj {
       .map((arg) => {
         let argstring = arg.strung();
         if (
-          arg.precedence() > this.precedence() &&
+          arg.precedence() < this.precedence() &&
           arg.precedence() !== bp.atom
         ) {
           argstring = `(${argstring})`;
@@ -7879,7 +7990,7 @@ class Product extends MathObj {
       .map((arg) => {
         let argstring = arg.strung();
         if (
-          arg.precedence() > this.precedence() &&
+          arg.precedence() < this.precedence() &&
           arg.precedence() !== bp.atom
         ) {
           argstring = `(${argstring})`;
@@ -7930,7 +8041,7 @@ function prod(...args: MathObj[]) {
 }
 
 function isProduct(u: MathObj): u is Product {
-  return u.kind() === expression_type.product;
+  return typeof u === "object" && u.kind() === expression_type.product;
 }
 
 class Quotient extends MathObj {
@@ -8000,7 +8111,10 @@ class Power extends MathObj {
   }
   strung(): string {
     const left = this.base.strung();
-    const right = this.exponent.strung();
+    let right = this.exponent.strung();
+    if (isReal(this.exponent) && this.exponent.value() < 0) {
+      right = `(${right})`;
+    }
     const out = `${left}^${right}`;
     return `${out}`;
   }
@@ -9541,6 +9655,100 @@ export function expand(expression: MathObj | string): MathObj {
     }
   }
   return u;
+}
+
+/**
+ * Given the list of `expressions`, returns true if the list
+ * contains an element that satisfies the `test` function.
+ *
+ * @example
+ * ~~~ts
+ * // reduces to true iff any of [a,b,c]
+ * // is a sum.
+ * hasExpr([a,b,c] (e) => isSum(e))
+ * ~~~
+ */
+function hasExpr(expressions: MathObj[], test: (element: MathObj) => boolean) {
+  for (let i = 0; i < expressions.length; i++) {
+    const expr = expressions[i];
+    if (test(expr)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+export function distribute(𝑢: string | MathObj) {
+  // const u = typeof 𝑢 === 'string' ? exp(𝑢).obj() : 𝑢;
+  const u = typeof 𝑢 === "string" ? simplify(𝑢) : 𝑢;
+  // If u is not a product, return u.
+  // There's nothing to distribute.
+  if (!isProduct(u)) {
+    return u;
+  }
+  // u is a product.
+  // if u does not have an operand that is a sum,
+  // return u.
+  if (!hasExpr(u.args, isSum)) {
+    return u;
+  }
+
+  // u has an operand that is a sum.
+  // Let v be the first operand that is a sum.
+  // We form a new sum by multiplying the remaining
+  // operands of u by each of operand of v.
+  // Example:
+  // a(b + c)(d + e)
+  //    ^ This is the first operand that's sum.
+  //      This is v.
+  // So, we make a new sum by multiplying each
+  // of the remaining operands:
+  //  a, (d + e)
+  // with each operand of v, which are `b` and `c`.
+  // [b * a * (d + e)] + [c * a * (d + e)]
+
+  // Approach: First, we locate the first operand
+  // that's a sum. We do that by looping through
+  // u's operands, checking whether the operand is
+  // a sum. On the first operand that's a sum, we
+  // note the index.
+  let index_of_first_sum_operand = 0;
+  for (let i = 0; i < u.args.length; i++) {
+    const arg = u.args[i];
+    if (isSum(arg)) {
+      index_of_first_sum_operand = i;
+      break;
+    }
+  }
+  // Now we have the index of the first sum operand.
+  // Save it as `v`.
+  const v = u.args[index_of_first_sum_operand] as Sum;
+  // Now create a new operand list with all the operands
+  // of u, without v.
+  const remaining_operands: MathObj[] = [];
+  for (let i = 0; i < u.args.length; i++) {
+    if (i !== index_of_first_sum_operand) {
+      remaining_operands.push(u.args[i]);
+    }
+  }
+  // We now have the remaining operands of u, without v.
+  // Multiply each operand in remaining_operands with each operand
+  // of v. We save these resulting products in a new operand list.
+  const new_products: Product[] = [];
+  for (let i = 0; i < v.args.length; i++) {
+    const v_arg = v.args[i];
+    let prodOfRest: MathObj | Product = prod(...remaining_operands);
+    // handle the special edge case where there's only one 
+    // operand in remaining_operands
+    if ((prodOfRest as Product).args.length === 1) {
+      prodOfRest = (prodOfRest as Product).args[0];
+    }
+    const product = prod(v_arg, prodOfRest);
+    new_products.push(product);
+  }
+  // now return the sum of these new products.
+  const out = simplify(sum(...new_products));
+  return out;
 }
 
 /**
