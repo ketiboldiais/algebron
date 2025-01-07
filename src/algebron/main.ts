@@ -1737,34 +1737,104 @@ export type SVGContext = {
 };
 
 export class SVG {
+  /**
+   * This SVG's Renderable child elements.
+   */
   _children: Renderable[] = [];
-  _markers: ArrowHead[] = [];
-  _domain: [number, number];
+
+  /**
+   * An array of Renderables corresponding
+   * to SVG <def> elements.
+   */
+  _defs: ArrowHead[] = [];
+
+  /**
+   * The interval of all possible x-coordinates.
+   * where `_xDomain[0]` corresponds to the least
+   * x-coordinate, and `_xDomain[1]` corresponds
+   * to the greatest.
+   */
+  _xDomain: [number, number];
+
+  /**
+   * The interval of all possible y-coordinates.
+   * where `_yDomain[0]` corresponds to the least
+   * y-coordinate, and `_yDomain[1]` corresponds
+   * to the greatest.
+   */
+  _yDomain: [number, number];
+
+  /**
+   * The interval of all possible y-coordinates.
+   * where `_zDomain[0]` corresponds to the least
+   * z-coordinate, and `_zDomain[1]` corresponds
+   * to the greatest.
+   */
   _zDomain: [number, number];
-  _range: [number, number];
+
+  /** The width of this svg. */
   _width: number;
+
+  /** The height of this svg. */
   _height: number;
+
+  /** Linear interpolation function for x-coordinates. */
   _fx: (x: number) => number;
+
+  /** Linear interpolation function for y-coordinates. */
   _fy: (y: number) => number;
+
+  /** Linear interpolation function for z-coordinates. */
   _fz: (y: number) => number;
+
   constructor(context: SVGContext) {
-    this._domain = context.domain;
+    this._xDomain = context.domain;
     this._zDomain = context.zDomain ? context.zDomain : context.domain;
-    this._range = context.range;
+    this._yDomain = context.range;
     this._width = context.width;
     this._height = context.height;
-    this._fx = interpolator(this._domain, [0, this._width]);
-    this._fy = interpolator(this._range, [this._height, 0]);
+    this._fx = interpolator(this._xDomain, [0, this._width]);
+    this._fy = interpolator(this._yDomain, [this._height, 0]);
     this._fz = interpolator(this._zDomain, [0, this._width]);
   }
-  children(objects: (Renderable | boolean | Renderable[])[]) {
-    const objs = objects.flat().filter((x) => x instanceof Renderable);
-    objs.forEach((obj) => {
-      this._children.push(obj.render(this._fx, this._fy, this._fz));
-      if (obj instanceof Path || obj instanceof LineObj) {
-        obj._arrowEnd && this._markers.push(obj._arrowEnd);
-        obj._arrowStart && this._markers.push(obj._arrowStart);
+
+  /**
+   * Includes the given Renderable to this SVG.
+   */
+  child(obj: Renderable) {
+    this._children.push(obj.render(this._fx, this._fy, this._fz));
+    if (obj instanceof Path || obj instanceof LineObj) {
+      obj._arrowEnd && this._defs.push(obj._arrowEnd);
+      obj._arrowStart && this._defs.push(obj._arrowStart);
+    }
+    return this;
+  }
+
+  /**
+   * The child elements of this SVG. Child elements should be
+   * of type Renderable (e.g., Path, Circle, Group, Polygon,
+   * Polyline, etc.) or a callback function that returns a 
+   * Renderable or primitive JavaScript type. If a callback function
+   * is provided and the function, on execution, returns a Renderable,
+   * the resulting Renderable will be included in the SVG. Otherwise,
+   * no Renderable is included.
+   */
+  children(objects: (Renderable | Renderable[] | (() => Renderable | boolean | null | void))[]) {
+    const objs = objects.flat();
+    const finalObjs: Renderable[] = [];
+    for (let i = 0; i < objs.length; i++) {
+      const child = objs[i];
+      if (typeof child === 'function') {
+        const x = child();
+        if (x && x instanceof Renderable) {
+          finalObjs.push(x);
+        }
+      } else {
+        finalObjs.push(child);
       }
+    }
+    finalObjs.forEach((obj) => {
+      this.child(obj);
     });
     return this;
   }
@@ -9738,7 +9808,7 @@ export function distribute(𝑢: string | MathObj) {
   for (let i = 0; i < v.args.length; i++) {
     const v_arg = v.args[i];
     let prodOfRest: MathObj | Product = prod(...remaining_operands);
-    // handle the special edge case where there's only one 
+    // handle the special edge case where there's only one
     // operand in remaining_operands
     if ((prodOfRest as Product).args.length === 1) {
       prodOfRest = (prodOfRest as Product).args[0];
@@ -9747,8 +9817,7 @@ export function distribute(𝑢: string | MathObj) {
     new_products.push(product);
   }
   // now return the sum of these new products.
-  const out = simplify(sum(...new_products));
-  return out;
+  return simplify(sum(...new_products));
 }
 
 /**

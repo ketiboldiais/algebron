@@ -52,6 +52,7 @@ import MdxLayout from "@/components/mdx-layout";
     - [The Arcsine Function](#the-arcsine-function)
 - [Sequences](#sequences)
 - [Limits](#limits)
+- [The Derivative](#the-derivative)
 
 </TOC>
 
@@ -1001,6 +1002,30 @@ $$
 if, for every ${\varepsilon \gt 0}$ there exists a ${\delta \gt 0}$ such that if ${0 \lt \lvert x - c \rvert \lt \delta,}$ then ${\lvert f(x) - L \rvert \lt \varepsilon.}$
 
 </blockquote>
+
+## The Derivative
+Suppose curve ${C}$ has equation ${y = f(x).}$ On ${C,}$ there exists a point ${A(a, f(a)),}$ and a point ${B(b, f(b)).}$ We can draw a line that passes through ${A}$ and ${B.}$ That line is called the _secant line_ ${AB.}$ We can bring ${B}$ closer and closer to ${A}$ by making ${b}$ closer and closer to ${a.}$ The closer we bring ${B}$ to ${A,}$ the more ${AB}$ looks like a line _tangent_ to ${A.}$ 
+
+Numerically, we can compute the _slope_ of ${AB,}$ call it ${m_{AB}:}$
+
+$$
+  m_{AB} = \dfrac{f(b) - f(a)}{b - a}.
+$$
+
+If we bring ${b}$ closer and closer to ${a,}$ and ${m_{AB}}$ approaches some number ${k,}$ then that number ${k}$ corresponds to the slope of the line _tangent_ to ${A.}$ That is, the line tanget to ${A}$ is the limiting position of secant line ${AB}$ as ${B}$ approaches ${A.}$
+
+<blockquote>
+
+__*definition*__. The _tangent line_ to the curve ${y = f(x)}$ at the point ${P(a, f(a))}$ is the line through ${P}$ with slope
+
+$$
+m = \lim_{x \to a} \dfrac{f(x) - f(a)}{x - a}
+$$
+
+provided the limit exists.
+
+</blockquote>
+
 
 
 

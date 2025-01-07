@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable react-hooks/rules-of-hooks */
 "use client";
 
@@ -72,6 +73,7 @@ import {
 import {
   ChangeEvent,
   CSSProperties,
+  MouseEvent,
   ReactNode,
   useEffect,
   useRef,
@@ -158,7 +160,7 @@ const Fig = ({
     <FIGURE>
       <div style={boxcss}>
         <svg viewBox={viewbox} preserveAspectRatio={par} style={svgcss}>
-          <DEF elements={data._markers} />
+          <DEF elements={data._defs} />
           <g transform={`translate(${tx},${ty})`}>
             <Fig2D elements={data._children} />
           </g>
@@ -1203,10 +1205,10 @@ export const SplineLab = () => {
     domain: D,
     range: R,
   }).children([
-    linearCurveChecked && lc.stroke(cssvar("red")),
-    bezierCurveChecked && cbc.stroke(cssvar("green")),
-    cardinalCurveChecked && cc.stroke(cssvar("purple")),
-    catmullRomCurveChecked && ccr.stroke(cssvar("blue")),
+    () => linearCurveChecked && lc.stroke(cssvar("red")),
+    () => bezierCurveChecked && cbc.stroke(cssvar("green")),
+    () => cardinalCurveChecked && cc.stroke(cssvar("purple")),
+    () => catmullRomCurveChecked && ccr.stroke(cssvar("blue")),
     circles,
   ]);
   return (
@@ -2350,11 +2352,54 @@ export const SeqPlot1 = () => {
     range,
   }).children([
     plotSeq("fn f(x) = 1/x", 80, [0, 1])
-      .axisColor(cssvar('pencil'))
+      .axisColor(cssvar("pencil"))
       .pointMarker((p) => circle(1, p).fill(cssvar("red")))
       .done(),
   ]);
-  return <Fig data={d} paddingBottom={50}/>;
+  return <Fig data={d} paddingBottom={50} />;
+};
+
+export const Freeform = () => {
+  const svgcss: CSSProperties = {
+    border: "thin solid grey",
+  };
+  const svgRef = useRef<SVGSVGElement | null>(null);
+  const [clickPos, setClickPos] = useState(vector([0, 0]));
+  const [svgChildren, setSVGChildren] = useState<Renderable[]>([]);
+  // const sx = interpolator([0, 500], [-5, 5]);
+  // const sy = interpolator([500, 0], [-5, 5]);
+  const handleSVGClick = (event: MouseEvent<SVGSVGElement>) => {
+    event.preventDefault();
+    if (svgRef.current) {
+      const p = svgRef.current.createSVGPoint();
+      p.x = event.clientX;
+      p.y = event.clientY;
+      let _ctm = svgRef.current.getScreenCTM();
+      if (_ctm) {
+        _ctm = _ctm.inverse();
+        const s = p.matrixTransform(_ctm);
+        const v = vector([s.x, s.y]);
+        setClickPos(v);
+        const k = circle(3, [v.$x, v.$y]).id(`circle(${v.$x},${v.$y})`);
+        setSVGChildren((cs) => [...cs, k]);
+      }
+    }
+  };
+
+  return (
+    <div>
+      <p>{clickPos.toString()}</p>
+      <svg
+        onClick={handleSVGClick}
+        ref={svgRef}
+        width={500}
+        height={500}
+        style={svgcss}
+      >
+        <Fig2D elements={svgChildren} />
+      </svg>
+    </div>
+  );
 };
 
 export default Fig;
