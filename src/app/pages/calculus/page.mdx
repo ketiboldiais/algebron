@@ -1026,8 +1026,37 @@ provided the limit exists.
 
 </blockquote>
 
+To illustrate, consider the interactive diagram below. The ${x_B}$ slider corresponds to the ${x}$-coordinate of ${B.}$ Changing this value will move ${B}$ along the curve ${y = x^2.}$ Notice that as ${B}$ gets closer to ${A}$ (which we can do by decreasing the distance between ${A}$ and ${B;}$ i.e., bringing ${x_B}$ closer and closer to ${x = -1,}$ the ${x}$-coordinate of ${A}$), the more the line looks as if it's tangent to ${A.}$  
 
+import {TangentLineLab} from "@/components/Fig";
 
+<TangentLineLab/>
+
+The slope of the line is shown above by the value ${m.}$ If we try and place ${B}$ directly over ${A,}$ we get the value ${-1.99.}$ The correct value is ${-2,}$ but because of the limitations of floating point arithmetic on a computer, we get something very close to it (in this case, ${-1.99}$). 
+
+Now let's try finding the derivative of ${y = x^2}$ at the point ${A(-1,1)}$ algebraically. We have ${a = -1,}$ and ${f(x) = x^2,}$ so the slope is:
+
+$$
+\begin{aligned}
+  m &= \lim_{x \to -1} \dfrac{f(x) - f(-1)}{x - (-1)} \\[2em]
+  &= \lim_{x \to -1} \dfrac{x^2 - 1}{x + 1} \\[2em]
+  &= \lim_{x \to -1} \dfrac{(x - 1)(x + 1)}{x + 1} \\[2em]
+  &= \lim_{x \to -1} (x - 1) \\[2em]
+  &= -1 - 1 \\[2em]
+  &= -2.
+\end{aligned}
+$$
+
+Using the point-slope form of the equation of a line, we find that an equation of the tangent line at ${(-1,1)}$ is:
+
+$$
+\begin{aligned}
+  y - 1 &= -2(x - (-1)) \\[1em]
+  &= -2(x + 1)
+\end{aligned}  \\[1em]
+  \text{or} \\[1em]
+  y = -2x - 1.
+$$
 
 export default function MDXPage({ children }) {
   return <MdxLayout>{children}</MdxLayout>;

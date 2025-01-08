@@ -1400,17 +1400,6 @@ export function dir2D(
   return (angV + Math.PI * 2) % (Math.PI * 2);
 }
 
-export function midpoint2D(
-  p1: [number, number] | Vector,
-  p2: [number, number] | Vector
-) {
-  const pt1 = Array.isArray(p1) ? vector(p1) : p1;
-  const pt2 = Array.isArray(p2) ? vector(p2) : p2;
-  const x = (pt1.$x + pt2.$x) / 2;
-  const y = (pt1.$y + pt2.$y) / 2;
-  return vector([x, y]);
-}
-
 /**
  * An object implementing a matrix.
  */
@@ -1813,18 +1802,24 @@ export class SVG {
   /**
    * The child elements of this SVG. Child elements should be
    * of type Renderable (e.g., Path, Circle, Group, Polygon,
-   * Polyline, etc.) or a callback function that returns a 
+   * Polyline, etc.) or a callback function that returns a
    * Renderable or primitive JavaScript type. If a callback function
    * is provided and the function, on execution, returns a Renderable,
    * the resulting Renderable will be included in the SVG. Otherwise,
    * no Renderable is included.
    */
-  children(objects: (Renderable | Renderable[] | (() => Renderable | boolean | null | void))[]) {
+  children(
+    objects: (
+      | Renderable
+      | Renderable[]
+      | (() => Renderable | boolean | null | void)
+    )[]
+  ) {
     const objs = objects.flat();
     const finalObjs: Renderable[] = [];
     for (let i = 0; i < objs.length; i++) {
       const child = objs[i];
-      if (typeof child === 'function') {
+      if (typeof child === "function") {
         const x = child();
         if (x && x instanceof Renderable) {
           finalObjs.push(x);
@@ -1845,7 +1840,7 @@ export const svg = (context: SVGContext) => new SVG(context);
 /**
  * A tuple corresponding to an SVG Path command.
  */
-type PCommand =
+export type PCommand =
   | MCommand
   | LCommand
   | CCommand
@@ -1862,7 +1857,7 @@ type PCommand =
 type MCommand = [command: "M", endPointX: number, endPointY: number];
 
 /** Returns a new SVG `moveto` command. */
-const M = (x: number, y: number): MCommand => ["M", x, y];
+export const M = (x: number, y: number): MCommand => ["M", x, y];
 
 /**
  * A tuple corresponding to an SVG path
@@ -1880,7 +1875,7 @@ type ACommand = [
 ];
 
 /** Returns a new SVG `arc` command. */
-const A = (
+export const A = (
   rx: number,
   ry: number,
   rotation: number,
@@ -1901,7 +1896,7 @@ const A = (
 
 type LCommand = ["L", number, number];
 
-const L = (x: number, y: number): LCommand => ["L", x, y];
+export const L = (x: number, y: number): LCommand => ["L", x, y];
 
 type CCommand = ["C", number, number, number, number, number, number];
 
@@ -1916,7 +1911,7 @@ const C = (
 
 type QCommand = ["Q", number, number, number, number];
 
-const Q = (cx: number, cy: number, ex: number, ey: number): QCommand => [
+export const Q = (cx: number, cy: number, ex: number, ey: number): QCommand => [
   "Q",
   cx,
   cy,
@@ -1926,7 +1921,7 @@ const Q = (cx: number, cy: number, ex: number, ey: number): QCommand => [
 
 type ARCTOCommand = ["ARCTO", number, number, number, number, number];
 
-const ARCTO = (
+export const ARCTO = (
   x1: number,
   y1: number,
   x2: number,
@@ -1936,7 +1931,7 @@ const ARCTO = (
 
 type ARCCommand = ["ARC", number, number, number, number, number, 0 | 1];
 
-const ARC = (
+export const ARC = (
   x: number,
   y: number,
   r: number,
@@ -1947,7 +1942,7 @@ const ARC = (
 
 type ZCommand = ["Z"];
 
-const Z = (): ZCommand => ["Z"];
+export const Z = (): ZCommand => ["Z"];
 
 const pi = Math.PI,
   tau = 2 * pi,
@@ -4227,6 +4222,23 @@ export function cplot(
   range: [number, number]
 ) {
   return new CartesianPlot(fn, domain, range);
+}
+
+export function midpointOf(point1: [number, number], point2: [number, number]) {
+  const [x1, x2] = point1;
+  const [y1, y2] = point2;
+  return tuple((x1 + x2) / 2, (y1 + y2) / 2);
+}
+
+export function linearSlope(
+  point1: [number, number],
+  point2: [number, number]
+) {
+  const [x1, y1] = point1;
+  const [x2, y2] = point2;
+  const rise = y2 - y1;
+  const run = x2 - x1;
+  return rise / run;
 }
 
 class Disc extends Path {

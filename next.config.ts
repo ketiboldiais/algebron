@@ -8,8 +8,8 @@ import rehypeSlug from "rehype-slug";
 const withMDX = nextMDX({
   options: {
     remarkPlugins: [remarkMath, remarkGfm],
-    rehypePlugins: [rehypeKatex, rehypeHighlight, rehypeSlug]
-  }
+    rehypePlugins: [rehypeKatex, rehypeHighlight, rehypeSlug],
+  },
 });
 
 /** @type {import('next').NextConfig} */

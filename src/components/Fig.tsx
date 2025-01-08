@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable react-hooks/rules-of-hooks */
 "use client";
 
@@ -68,6 +67,8 @@ import {
   Polygon,
   isPolygon,
   plotSeq,
+  linearSlope,
+  dist2D,
 } from "@/algebron/main";
 
 import {
@@ -2357,6 +2358,108 @@ export const SeqPlot1 = () => {
       .done(),
   ]);
   return <Fig data={d} paddingBottom={50} />;
+};
+
+export const TangentLineLab = () => {
+  const domain = tuple(-4, 4);
+  const range = tuple(-2, 10);
+  const [xValue, setXValue] = useState(2);
+  const [yValue, setYValue] = useState(4);
+
+  const xInterp = interpolator([0, 10], [-3.1, 3.1]);
+  const f = cplot("fn f(x) = x^2", domain, range).stroke(cssvar("blue")).done();
+  const fx = f.$compiledFunction;
+
+  const handleXChange = (event: ChangeEvent<HTMLInputElement>) => {
+    event.preventDefault();
+    const value = xInterp(Number.parseFloat(event.target.value));
+    setXValue(value);
+    if (fx) {
+      const n = fx.call(f.$engine.compiler, [value]);
+      if (typeof n === "number") {
+        setYValue(+n);
+      }
+    }
+  };
+
+  const d = svg({
+    width: 500,
+    height: 500,
+    domain,
+    range,
+  }).children([
+    // grid(domain, range).stroke(cssvar("dimgrey")).done(),
+    axis({ on: "x", domain, range }),
+    axis({ on: "y", domain, range }),
+    f,
+    cplot(
+      `fn f(x) = (${
+        Number.isNaN(linearSlope([xValue, yValue], [-1, 1]))
+          ? 2
+          : linearSlope([xValue, yValue], [-1, 1])
+      }) * (x - ${xValue}) + ${yValue}`,
+      domain,
+      range
+    )
+      .stroke(cssvar("red"))
+      .done(),
+    line([xValue, 0], [xValue, yValue])
+      .stroke(cssvar("green"))
+      .strokeDashArray(5),
+    line([-1, 0], [-1, 1]).stroke(cssvar("green")).strokeDashArray(5),
+    line(
+      yValue < 1 ? [xValue, yValue] : [-1, 1],
+      yValue < 1
+        ? [
+            -1,
+            1 -
+              Math.sqrt(
+                dist2D([-1, 1], [xValue, yValue]) ** 2 - (xValue - -1) ** 2
+              ),
+          ]
+        : [
+            xValue,
+            yValue -
+              // a^2 + b^2 = c^2
+              // c^2 - a^2 = b^2
+              // sqrt(c^2 - a^2) = b
+              // a = xvalue - (-1)
+              // c = distance between a and b
+              Math.sqrt(
+                dist2D([-1, 1], [xValue, yValue]) ** 2 - (xValue - -1) ** 2
+              ),
+          ]
+    )
+      .stroke(cssvar("purple"))
+      .strokeDashArray(5),
+    circle(3, [xValue, yValue]).fill(cssvar("blue")),
+    text("𝐵").position(xValue, yValue).fill(cssvar("blue")).dy(-5).dx(10),
+    text("𝐴").position(-1, 1).fill(cssvar("blue")).dy(-5).dx(10),
+    circle(3, [-1, 1]).fill(cssvar("blue")),
+  ]);
+  return (
+    <div>
+      <div>
+        <div className="flex items-center">
+          <input
+            step={0.1}
+            max="10"
+            className="mr-5"
+            type="range"
+            onChange={handleXChange}
+          />
+          <Tex content={`x_B = ${xValue.toPrecision(3)}`} block />
+        </div>
+        <Tex
+          content={`m = ${(Number.isNaN(linearSlope([xValue, yValue], [-1, 1]))
+            ? 0
+            : linearSlope([xValue, yValue], [-1, 1])
+          ).toPrecision(3)}`}
+        />
+      </div>
+      <Fig data={d} width={60}/>
+    </div>
+  );
 };
 
 export const Freeform = () => {
