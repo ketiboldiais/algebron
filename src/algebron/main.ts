@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-unused-expressions */
 // Copyright (C) 2025 Ketib Oldiais - All Rights Reserved.
 // You may use, distribute, and modify this code under the
 // terms of the MIT license (see the bottom of this file).
@@ -11,6 +9,7 @@
 // with explicit types.
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 
 // § Utility Functions
 
