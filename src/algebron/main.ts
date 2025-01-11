@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-namespace */
 // Copyright (C) 2025 Ketib Oldiais - All Rights Reserved.
 // You may use, distribute, and modify this code under the
 // terms of the MIT license (see the bottom of this file).
@@ -723,6 +724,20 @@ export const {
 
 export const HALF_PI = PI / 2;
 export const TWO_PI = 2 * PI;
+
+export function minmax(numbers: number[]) {
+  let min = numbers[0];
+  let max = numbers[0];
+  for (let i = 0; i < numbers.length; i++) {
+    if (numbers[i] < min) {
+      min = numbers[i];
+    }
+    if (numbers[i] > max) {
+      max = numbers[i];
+    }
+  }
+  return { min, max };
+}
 
 /** Converts the provided number (assumed to be radians) to degrees. */
 export function toDegrees(radians: number) {
@@ -1572,8 +1587,8 @@ class Matrix {
   /**
    * Returns the minor of the element at [row, col].
    */
-  minor(row:number, col:number) {
-    const out:(number[])[] = [];
+  minor(row: number, col: number) {
+    const out: number[][] = [];
     for (let i = 0; i < this.$R; i++) {
       if (i === row - 1) {
         continue;
@@ -1595,7 +1610,7 @@ class Matrix {
    * Note that to have a determinant, the matrix
    * must be suare.
    */
-  det():number {
+  det(): number {
     if (this.$R === 2 && this.$C === 2) {
       const p1 = this.$vectors[0].$elements[0] * this.$vectors[1].$elements[1];
       const p2 = this.$vectors[0].$elements[1] * this.$vectors[1].$elements[0];
@@ -1607,13 +1622,11 @@ class Matrix {
   /**
    * Returns the inverse of this matrix.
    * Note that not all matrices have an inverse.
-   * To have an inverse, the matrix must be square 
+   * To have an inverse, the matrix must be square
    * (same number of rows and columns) and must
    * be non-singular (its determinant is not zero).
    */
-  inverse() {
-
-  }
+  inverse() {}
 
   /** Returns the matrix product of this matrix and the provided matrix. */
   mul(arg: number | Matrix | number[][]) {
@@ -1650,7 +1663,7 @@ class Matrix {
     });
     return out;
   }
-  
+
   flat() {
     const out = [];
     for (let i = 0; i < this.$R; i++) {
@@ -1796,9 +1809,32 @@ export type SVGContext = {
 };
 
 export class SVG {
-  _translate: [number, number] = [0,0];
-  translate(x:number, y:number) {
-    this._translate = tuple(x,y);
+  margins: [top: number, right: number, bottom: number, left: number] = [
+    10, 10, 10, 10,
+  ];
+  get _marginTop() {
+    return this.margins[0];
+  }
+  get _marginRight() {
+    return this.margins[1];
+  }
+  get _marginBottom() {
+    return this.margins[2];
+  }
+  get _marginLeft() {
+    return this.margins[3];
+  }
+  get _adjustedWidth() {
+    const w = this._width - (this._marginLeft + this._marginRight);
+    return w;
+  }
+  get _adjustedHeight() {
+    const h = this._height - (this._marginTop + this._marginBottom);
+    return h;
+  }
+  _translate: [number, number] = [this._marginTop, this._marginBottom];
+  translate(x: number, y: number) {
+    this._translate = tuple(x, y);
     return this;
   }
   translateX(value: number) {
@@ -1809,6 +1845,7 @@ export class SVG {
     this._translate[1] = value;
     return this;
   }
+  
   /**
    * This SVG's Renderable child elements.
    */
@@ -1865,9 +1902,9 @@ export class SVG {
     this._yDomain = context.range;
     this._width = context.width;
     this._height = context.height;
-    this._fx = interpolator(this._xDomain, [0, this._width]);
-    this._fy = interpolator(this._yDomain, [this._height, 0]);
-    this._fz = interpolator(this._zDomain, [0, this._width]);
+    this._fx = interpolator(this._xDomain, [0, this._adjustedWidth]);
+    this._fy = interpolator(this._yDomain, [this._adjustedHeight, 0]);
+    this._fz = interpolator(this._zDomain, [0, this._adjustedWidth]);
   }
 
   /**
@@ -3332,8 +3369,8 @@ export function curveCubicBezier(points: [number, number][], tension: number) {
   return draw();
 }
 
-export function plotPoints(points: ([number,number])[], pointSize:number=2) {
-  return points.map(([x,y]) => circle(pointSize,[x,y]))
+export function plotPoints(points: [number, number][], pointSize: number = 2) {
+  return points.map(([x, y]) => circle(pointSize, [x, y]));
 }
 
 /**
@@ -3971,6 +4008,9 @@ class CartesianPlot extends Group {
   $compiledFunction: Fn | null = null;
   $engine = engine();
 
+  _axisX: boolean = true;
+  _axisY: boolean = true;
+
   done() {
     const out: (LCommand | MCommand)[] = [];
     const xmin = this.$xPlotDomain[0];
@@ -4037,6 +4077,66 @@ class CartesianPlot extends Group {
     this.$stroke = value;
     return this;
   }
+}
+
+class AxisLinear extends Group {
+  _dataset: [number, number][] = [];
+  _color: string = "black";
+  _direction: "x" | "y";
+  _tickLength: number = 0.01;
+  _labelInterval: number = 5;
+  _includeFirstLabel: boolean = true;
+  _includeLastLabel: boolean = true;
+  _x_min: number;
+  _x_max: number;
+  _y_min: number;
+  _y_max: number;
+  constructor(direction: "x" | "y", dataset: [number, number][]) {
+    super([]);
+    this._direction = direction;
+    this._dataset = dataset;
+    const { min: xMin, max: xMax } = minmax(dataset.map((p) => p[0]));
+    this._x_min = xMin;
+    this._x_max = xMax;
+    const { min: yMin, max: yMax } = minmax(dataset.map((p) => p[1]));
+    this._y_min = yMin;
+    this._y_max = yMax;
+  }
+  done() {
+    const ticks: LineObj[] = [];
+    const tickLabels: TextObj[] = [];
+    if (this._direction === "y") {
+      const scale = interpolator(
+        [0, this._dataset.length],
+        [this._y_min, this._y_max]
+      );
+      // const mid = (this._x_max + this._x_min)/2;
+      const axisLine = line(
+        [this._x_min, this._y_min],
+        [this._x_min, this._y_max]
+      ).stroke(this._color);
+      this.$children.push(axisLine);
+      this._dataset.forEach((point, index) => {
+        if (index % this._labelInterval === 0) {
+          const n = point[1];
+          const t = xtick(index, this._tickLength);
+          t.stroke(this._color);
+          ticks.push(t);
+          const num = scale(n);
+          tickLabels.push(
+            text(num).position(0, t.$end.$y).dy(5).dx(-20).fill(this._color)
+          );
+        }
+      });
+    }
+    // ticks.forEach((t) => this.$children.push(t));
+    // tickLabels.forEach((t) => this.$children.push(t));
+    return this;
+  }
+}
+
+export function axisLinear(direction: "x" | "y", dataset: [number, number][]) {
+  return new AxisLinear(direction, dataset);
 }
 
 type Fn3DSpec = {
@@ -6052,6 +6152,190 @@ export function forceGraph(graph: Graph) {
   return new ForceGraph(graph);
 }
 
+// Beginning of Cartography Module
+export namespace GeoJSON {
+  /**
+   * The valid values for the "type" property of GeoJSON geometry objects.
+   * https://tools.ietf.org/html/rfc7946#section-1.4
+   */
+  export type GeoJSONGeometryTypes = Geometry["type"];
+
+  /**
+   * The value values for the "type" property of GeoJSON Objects.
+   * https://tools.ietf.org/html/rfc7946#section-1.4
+   */
+  export type GeoJSONTypes = GeoJSON["type"];
+
+  /**
+   * Bounding box
+   * https://tools.ietf.org/html/rfc7946#section-5
+   */
+  export type BBox =
+    | [number, number, number, number]
+    | [number, number, number, number, number, number];
+
+  /**
+   * A Position is an array of coordinates.
+   * https://tools.ietf.org/html/rfc7946#section-3.1.1
+   * Array should contain between two and three elements.
+   * The previous GeoJSON specification allowed more elements (e.g., which could be used to represent M values),
+   * but the current specification only allows X, Y, and (optionally) Z to be defined.
+   */
+  export type Position = number[]; // [number, number] | [number, number, number];
+
+  /**
+   * The base GeoJSON object.
+   * https://tools.ietf.org/html/rfc7946#section-3
+   * The GeoJSON specification also allows foreign members
+   * (https://tools.ietf.org/html/rfc7946#section-6.1)
+   * Developers should use "&" type in TypeScript or extend the interface
+   * to add these foreign members.
+   */
+  export interface GeoJSONObject {
+    // Don't include foreign members directly into this type def.
+    // in order to preserve type safety.
+    // [key: string]: any;
+    /**
+     * Specifies the type of GeoJSON object.
+     */
+    type: GeoJSONTypes;
+    /**
+     * Bounding box of the coordinate range of the object's Geometries, Features, or Feature Collections.
+     * The value of the bbox member is an array of length 2*n where n is the number of dimensions
+     * represented in the contained geometries, with all axes of the most southwesterly point
+     * followed by all axes of the more northeasterly point.
+     * The axes order of a bbox follows the axes order of geometries.
+     * https://tools.ietf.org/html/rfc7946#section-5
+     */
+    bbox?: BBox | undefined;
+  }
+
+  /**
+   * Union of GeoJSON objects.
+   */
+  export type GeoJSON<
+    G extends Geometry | null = Geometry,
+    P = GeoJsonProperties
+  > = G | Feature<G, P> | FeatureCollection<G, P>;
+
+  /**
+   * Geometry object.
+   * https://tools.ietf.org/html/rfc7946#section-3
+   */
+  export type Geometry =
+    | Point
+    | MultiPoint
+    | LineString
+    | MultiLineString
+    | Polygon
+    | MultiPolygon
+    | GeometryCollection;
+
+  export type GeometryObject = Geometry;
+
+  /**
+   * Point geometry object.
+   * https://tools.ietf.org/html/rfc7946#section-3.1.2
+   */
+  export interface Point extends GeoJSONObject {
+    type: "Point";
+    coordinates: Position;
+  }
+
+  /**
+   * MultiPoint geometry object.
+   *  https://tools.ietf.org/html/rfc7946#section-3.1.3
+   */
+  export interface MultiPoint extends GeoJSONObject {
+    type: "MultiPoint";
+    coordinates: Position[];
+  }
+
+  /**
+   * LineString geometry object.
+   * https://tools.ietf.org/html/rfc7946#section-3.1.4
+   */
+  export interface LineString extends GeoJSONObject {
+    type: "LineString";
+    coordinates: Position[];
+  }
+
+  /**
+   * MultiLineString geometry object.
+   * https://tools.ietf.org/html/rfc7946#section-3.1.5
+   */
+  export interface MultiLineString extends GeoJSONObject {
+    type: "MultiLineString";
+    coordinates: Position[][];
+  }
+
+  /**
+   * Polygon geometry object.
+   * https://tools.ietf.org/html/rfc7946#section-3.1.6
+   */
+  export interface Polygon extends GeoJSONObject {
+    type: "Polygon";
+    coordinates: Position[][];
+  }
+
+  /**
+   * MultiPolygon geometry object.
+   * https://tools.ietf.org/html/rfc7946#section-3.1.7
+   */
+  export interface MultiPolygon extends GeoJSONObject {
+    type: "MultiPolygon";
+    coordinates: Position[][][];
+  }
+
+  /**
+   * Geometry Collection
+   * https://tools.ietf.org/html/rfc7946#section-3.1.8
+   */
+  export interface GeometryCollection<G extends Geometry = Geometry>
+    extends GeoJSONObject {
+    type: "GeometryCollection";
+    geometries: G[];
+  }
+
+  export type GeoJsonProperties = { [name: string]: any } | null;
+
+  /**
+   * A feature object which contains a geometry and associated properties.
+   * https://tools.ietf.org/html/rfc7946#section-3.2
+   */
+  export interface Feature<
+    G extends Geometry | null = Geometry,
+    P = GeoJsonProperties
+  > extends GeoJSONObject {
+    type: "Feature";
+    /**
+     * The feature's geometry
+     */
+    geometry: G;
+    /**
+     * A value that uniquely identifies this feature in a
+     * https://tools.ietf.org/html/rfc7946#section-3.2.
+     */
+    id?: string | number | undefined;
+    /**
+     * Properties associated with this feature.
+     */
+    properties: P;
+  }
+
+  /**
+   * A collection of feature objects.
+   *  https://tools.ietf.org/html/rfc7946#section-3.3
+   */
+  export interface FeatureCollection<
+    G extends Geometry | null = Geometry,
+    P = GeoJsonProperties
+  > extends GeoJSONObject {
+    type: "FeatureCollection";
+    features: Array<Feature<G, P>>;
+  }
+}
+
 /** A value native to Winnow. */
 type Primitive =
   | number
@@ -6170,7 +6454,7 @@ enum token_type {
 class Token<
   T extends token_type = token_type,
   L extends Primitive = Primitive
->{
+> {
   /** This token's type. */
   $type: T;
 
@@ -11382,13 +11666,13 @@ export function syntax(source: string) {
   const listExpression: Parslet<Expr> = (op) => {
     let args: Expr[] = [];
     if (!state.nextIs(token_type.left_paren)) {
-      return state.error('Expected an opening "("', op.$line)
+      return state.error('Expected an opening "("', op.$line);
     }
     if (!state.check(token_type.right_paren)) {
       const arglist = commaSepList(
         (node): node is Expr => node instanceof Expr,
-        'Expected an expression',
-      )
+        "Expected an expression"
+      );
       if (arglist.isLeft()) return arglist;
       args = arglist.unwrap();
     }
@@ -11396,8 +11680,8 @@ export function syntax(source: string) {
     if (!paren.isType(token_type.right_paren)) {
       return state.error('Expected a closing ")"', paren.$line);
     }
-    return state.newExpr($tuple(args))
-  }
+    return state.newExpr($tuple(args));
+  };
 
   /** Parses a parenthesized expression */
   const primary = () => {
@@ -13616,4 +13900,3 @@ export function engine() {
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-

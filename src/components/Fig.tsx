@@ -101,7 +101,7 @@ type AxisSpec = {
 
 const axis = (spec: AxisSpec) => {
   const out = spec.on === "x" ? haxis(spec.domain, 1) : vaxis(spec.range, 1);
-  out.stroke(cssvar("lightgrey"));
+  out.stroke(cssvar("pencil"));
   if (!spec.hideTicks) {
     if (spec.on === "x") {
       out.ticks((t) => {
@@ -130,12 +130,7 @@ type FigProps = {
   title?: ReactNode;
 };
 
-const Fig = ({
-  data,
-  width = 100,
-  paddingBottom = width,
-  title,
-}: FigProps) => {
+const Fig = ({ data, width = 100, paddingBottom = width, title }: FigProps) => {
   const par = "xMidYMid meet";
   const viewbox = `0 0 ${data._width} ${data._height}`;
   const boxcss = {
@@ -160,7 +155,9 @@ const Fig = ({
       <div style={boxcss}>
         <svg viewBox={viewbox} preserveAspectRatio={par} style={svgcss}>
           <DEF elements={data._defs} />
-          <g transform={`translate(${data._translate[0]},${data._translate[1]})`}>
+          <g
+            transform={`translate(${data._translate[0]},${data._translate[1]})`}
+          >
             <Fig2D elements={data._children} />
           </g>
         </svg>
@@ -1737,30 +1734,36 @@ export const TriangleLab = () => {
     range: R,
     width: 500,
     height: 500,
-  }).translate(-40, 0).children([
-    // grid(D, R).stroke(cssvar("dimgrey")).done(),
-    // axis({ on: "x", domain: D, range: R }),
-    // axis({ on: "y", domain: D, range: R }),
-    [
-      angleMarker([1, 0], [0, 0], [0, 1], 20),
-      angleMarker([0, 0], [0, 4], [3, 0], 20),
-      angleMarker([0, 4], [3, 0], [0, 0], 20),
-    ].map((a) => a.stroke(cssvar("red")).fill(cssvar("red")).fillOpacity(0.3)),
+  })
+    .translate(-40, 0)
+    .children([
+      // grid(D, R).stroke(cssvar("dimgrey")).done(),
+      // axis({ on: "x", domain: D, range: R }),
+      // axis({ on: "y", domain: D, range: R }),
+      [
+        angleMarker([1, 0], [0, 0], [0, 1], 20),
+        angleMarker([0, 0], [0, 4], [3, 0], 20),
+        angleMarker([0, 4], [3, 0], [0, 0], 20),
+      ].map((a) =>
+        a.stroke(cssvar("red")).fill(cssvar("red")).fillOpacity(0.3)
+      ),
 
-    triangle([0, 0], [3, 0], [0, 4]).stroke(cssvar("foreground")).fill("none"),
-    [
-      text("A").position(-0.3, 1.5),
-      text("B").position(1.5, -0.3),
-      text("C").position(1.7, 2),
-      text("α").position(0.2, 3.3),
-      text("β").position(0.4, 0.4),
-      text("θ").position(2.4, 0.3),
-    ].map((t) => t.fontStyle("italic").fill(cssvar("foreground"))),
-  ]);
+      triangle([0, 0], [3, 0], [0, 4])
+        .stroke(cssvar("foreground"))
+        .fill("none"),
+      [
+        text("A").position(-0.3, 1.5),
+        text("B").position(1.5, -0.3),
+        text("C").position(1.7, 2),
+        text("α").position(0.2, 3.3),
+        text("β").position(0.4, 0.4),
+        text("θ").position(2.4, 0.3),
+      ].map((t) => t.fontStyle("italic").fill(cssvar("foreground"))),
+    ]);
 
   return (
     <div>
-      <Fig data={d} width={75} paddingBottom={50}/>
+      <Fig data={d} width={75} paddingBottom={50} />
     </div>
   );
 };
@@ -1809,7 +1812,7 @@ export const CongruentTriangles = () => {
 
   return (
     <div>
-      <Fig data={d} width={75} paddingBottom={80}/>
+      <Fig data={d} width={75} paddingBottom={80} />
     </div>
   );
 };
@@ -1880,46 +1883,48 @@ export const UnitCircleTrig = () => {
     range,
     width: 500,
     height: 500,
-  }).translateY(-100).children([
-    // grid(domain, range).stroke(cssvar("dimgrey")).done(),
-    // axis({ on: "x", domain, range }),
-    // axis({ on: "y", domain, range }),
-    triangle([0, 0], [a1.$x, a1.$y], [a1.$x, 0])
-      .fill(cssvar("dimgrey"))
-      .fillOpacity(0.5)
-      .stroke("none"),
-    line([-3, 0], [3, 0]).stroke(cssvar("dimgrey")).arrowed(),
-    line([0, -3], [0, 3]).stroke(cssvar("dimgrey")).arrowed(),
-    line([0, 0], [2, 0]).stroke(cssvar("pencil")),
-    line([0, 0], [a1.$x, a1.$y]).strokeDashArray(2).stroke(cssvar("pencil")),
-    line([a1.$x, a1.$y], [a1.$x, 0])
-      .stroke(cssvar("pencil"))
-      .strokeDashArray(2),
-    line([a1.$x + 0.8, a1.$y], [a1.$x + 0.8, 0]).stroke(cssvar("pencil")),
-    line([0, -0.3], [a1.$x, -0.3]).stroke(cssvar("pencil")),
-    [
-      text("𝑎").position(0.5, 0.8),
-      text("𝑏").position(1.6, 0.6),
-      text("𝑐").position(0.8, -0.2),
-      text("𝑦").position(a1.$x + 1.2, a1.$y / 2),
-      text("𝑥").position(a1.$x / 2, -0.5),
-      text("θ").position(0.35, 0.05),
-      text("𝑃(𝑥, 𝑦)").position(a1.$x, a1.$y).dy(-10).dx(15),
-      text("𝑥² + 𝑦² = 1").position(-2, 2),
-    ].map((t) => t.fill(cssvar("foreground"))),
-    path()
-      .arc(0, 0, 40, 0, -Math.PI / 4, true)
-      .stroke(cssvar("pencil"))
-      .arrowEnd(),
-    circle(100, [0, 0])
-      .fill("none")
-      .stroke(cssvar("dimgrey"))
-      .strokeDashArray(5),
-    circle(3, [0, 0]).fill(cssvar("foreground")),
-    circle(3, [2, 0]).fill(cssvar("foreground")),
-    circle(3, [a1.$x, a1.$y]).fill(cssvar("foreground")),
-  ]);
-  return <Fig data={d} width={80} paddingBottom={50}/>;
+  })
+    .translateY(-100)
+    .children([
+      // grid(domain, range).stroke(cssvar("dimgrey")).done(),
+      // axis({ on: "x", domain, range }),
+      // axis({ on: "y", domain, range }),
+      triangle([0, 0], [a1.$x, a1.$y], [a1.$x, 0])
+        .fill(cssvar("dimgrey"))
+        .fillOpacity(0.5)
+        .stroke("none"),
+      line([-3, 0], [3, 0]).stroke(cssvar("dimgrey")).arrowed(),
+      line([0, -3], [0, 3]).stroke(cssvar("dimgrey")).arrowed(),
+      line([0, 0], [2, 0]).stroke(cssvar("pencil")),
+      line([0, 0], [a1.$x, a1.$y]).strokeDashArray(2).stroke(cssvar("pencil")),
+      line([a1.$x, a1.$y], [a1.$x, 0])
+        .stroke(cssvar("pencil"))
+        .strokeDashArray(2),
+      line([a1.$x + 0.8, a1.$y], [a1.$x + 0.8, 0]).stroke(cssvar("pencil")),
+      line([0, -0.3], [a1.$x, -0.3]).stroke(cssvar("pencil")),
+      [
+        text("𝑎").position(0.5, 0.8),
+        text("𝑏").position(1.6, 0.6),
+        text("𝑐").position(0.8, -0.2),
+        text("𝑦").position(a1.$x + 1.2, a1.$y / 2),
+        text("𝑥").position(a1.$x / 2, -0.5),
+        text("θ").position(0.35, 0.05),
+        text("𝑃(𝑥, 𝑦)").position(a1.$x, a1.$y).dy(-10).dx(15),
+        text("𝑥² + 𝑦² = 1").position(-2, 2),
+      ].map((t) => t.fill(cssvar("foreground"))),
+      path()
+        .arc(0, 0, 40, 0, -Math.PI / 4, true)
+        .stroke(cssvar("pencil"))
+        .arrowEnd(),
+      circle(100, [0, 0])
+        .fill("none")
+        .stroke(cssvar("dimgrey"))
+        .strokeDashArray(5),
+      circle(3, [0, 0]).fill(cssvar("foreground")),
+      circle(3, [2, 0]).fill(cssvar("foreground")),
+      circle(3, [a1.$x, a1.$y]).fill(cssvar("foreground")),
+    ]);
+  return <Fig data={d} width={80} paddingBottom={50} />;
 };
 
 function lineFromAngle(
@@ -1946,29 +1951,31 @@ export const RadianFig = () => {
     range,
     width: 500,
     height: 500,
-  }).translateY(-70).children([
-    // grid(domain, range).stroke(cssvar("dimgrey")).done(),
-    // axis({ on: "x", domain, range }),
-    // axis({ on: "y", domain, range }),
-    line([0, -3], [0, 3]).stroke(cssvar("dimgrey")),
-    line([-3, 0], [3, 0]).stroke(cssvar("dimgrey")),
-    circle(100, [0, 0]).fill("none").stroke(cssvar("pencil")),
-    text("𝑠").position(2, 0).dx(20).dy(2.5),
-    text("θ").position(0.5, 0).dx(15).dy(5),
-    text("𝑟").position(1, 1).dx(-20).dy(10),
-    text("𝑦").position(0, 3).dy(-10),
-    text("𝑥").position(3, 0).dx(10).dy(4),
-    angleMarker([aEnd.$x, aEnd.$y], [0, 0], [bEnd.$x, bEnd.$y], 30, false)
-      .fill(cssvar("dimgrey"))
-      .strokeDashArray(3),
-    arcFromPoints([aEnd.$x, aEnd.$y], [0, 0], [bEnd.$x, bEnd.$y], 110, false)
-      .id("am")
-      .stroke(cssvar("pencil"))
-      .strokeDashArray(2)
-      .arrowed(arrowhead("am").refX(0), arrowhead("am").refX(11)),
-    a.stroke(cssvar("foreground")).arrowEnd(),
-    b.stroke(cssvar("foreground")).arrowEnd(),
-  ]);
+  })
+    .translateY(-70)
+    .children([
+      // grid(domain, range).stroke(cssvar("dimgrey")).done(),
+      // axis({ on: "x", domain, range }),
+      // axis({ on: "y", domain, range }),
+      line([0, -3], [0, 3]).stroke(cssvar("dimgrey")),
+      line([-3, 0], [3, 0]).stroke(cssvar("dimgrey")),
+      circle(100, [0, 0]).fill("none").stroke(cssvar("pencil")),
+      text("𝑠").position(2, 0).dx(20).dy(2.5),
+      text("θ").position(0.5, 0).dx(15).dy(5),
+      text("𝑟").position(1, 1).dx(-20).dy(10),
+      text("𝑦").position(0, 3).dy(-10),
+      text("𝑥").position(3, 0).dx(10).dy(4),
+      angleMarker([aEnd.$x, aEnd.$y], [0, 0], [bEnd.$x, bEnd.$y], 30, false)
+        .fill(cssvar("dimgrey"))
+        .strokeDashArray(3),
+      arcFromPoints([aEnd.$x, aEnd.$y], [0, 0], [bEnd.$x, bEnd.$y], 110, false)
+        .id("am")
+        .stroke(cssvar("pencil"))
+        .strokeDashArray(2)
+        .arrowed(arrowhead("am").refX(0), arrowhead("am").refX(11)),
+      a.stroke(cssvar("foreground")).arrowEnd(),
+      b.stroke(cssvar("foreground")).arrowEnd(),
+    ]);
   return <Fig data={d} width={80} paddingBottom={55} />;
 };
 
@@ -2466,34 +2473,36 @@ export const EpsilonNeighborhood = () => {
     height: 300,
     domain: [-5, 5],
     range: [-3, 3],
-  }).translateY(-100).children([
-    line([-3, 0], [3, 0]).stroke(cssvar("dimgrey")).arrowed(),
-    [
-      line([1, 0], [1, -0.25]),
-      line([0, 0], [0, -0.25]),
-      line([2, 0], [2, -0.25]),
-    ].map((l) => l.stroke(cssvar("dimgrey"))),
-    quad([0, 0.125], 2, 0.25)
-      .stroke("none")
-      .fill(cssvar("dimgrey"))
-      .fillOpacity(0.6),
-    [
-      text("ɛ - c").position(0, 0.0125).dy(25),
-      text("ɛ + c").position(2, 0.0125).dy(25),
-      text("c").position(1, 0).dy(25),
-    ].map((t) => t.fill(cssvar("foreground"))),
-    circle(4, [1, 0]).fill(cssvar("red")),
-    circle(2, [-0.9, 0]).fill(cssvar("red")),
-    circle(2, [0.3, 0]).fill(cssvar("red")),
-    circle(2, [0.65, 0]).fill(cssvar("red")),
-    circle(2, [0.8, 0]).fill(cssvar("red")),
-    circle(2, [0.9, 0]).fill(cssvar("red")),
-    circle(2, [1.1, 0]).fill(cssvar("red")),
-    circle(2, [1.2, 0]).fill(cssvar("red")),
-    circle(2, [1.5, 0]).fill(cssvar("red")),
-    circle(2, [2.2, 0]).fill(cssvar("red")),
-  ]);
-  return <Fig data={d} width={100} paddingBottom={15}/>;
+  })
+    .translateY(-100)
+    .children([
+      line([-3, 0], [3, 0]).stroke(cssvar("dimgrey")).arrowed(),
+      [
+        line([1, 0], [1, -0.25]),
+        line([0, 0], [0, -0.25]),
+        line([2, 0], [2, -0.25]),
+      ].map((l) => l.stroke(cssvar("dimgrey"))),
+      quad([0, 0.125], 2, 0.25)
+        .stroke("none")
+        .fill(cssvar("dimgrey"))
+        .fillOpacity(0.6),
+      [
+        text("ɛ - c").position(0, 0.0125).dy(25),
+        text("ɛ + c").position(2, 0.0125).dy(25),
+        text("c").position(1, 0).dy(25),
+      ].map((t) => t.fill(cssvar("foreground"))),
+      circle(4, [1, 0]).fill(cssvar("red")),
+      circle(2, [-0.9, 0]).fill(cssvar("red")),
+      circle(2, [0.3, 0]).fill(cssvar("red")),
+      circle(2, [0.65, 0]).fill(cssvar("red")),
+      circle(2, [0.8, 0]).fill(cssvar("red")),
+      circle(2, [0.9, 0]).fill(cssvar("red")),
+      circle(2, [1.1, 0]).fill(cssvar("red")),
+      circle(2, [1.2, 0]).fill(cssvar("red")),
+      circle(2, [1.5, 0]).fill(cssvar("red")),
+      circle(2, [2.2, 0]).fill(cssvar("red")),
+    ]);
+  return <Fig data={d} width={100} paddingBottom={15} />;
 };
 
 export const Freeform = () => {
@@ -2541,55 +2550,142 @@ export const Freeform = () => {
 
 // Probability Diagrams
 export const UnitSquare = () => {
-  const domain = tuple(-5,5);
-  const range = tuple(-5,5);
+  const domain = tuple(-5, 5);
+  const range = tuple(-5, 5);
   const d = svg({
     width: 500,
     height: 500,
     domain,
     range,
-  }).translateY(-110).children([
-    // axis({on: 'x', domain, range}),
-    // axis({on: 'y', domain, range}),
-    line([0,0], [0,2]).arrowEnd(),
-    line([0,0], [2,0]).arrowEnd(),
-    text("𝑥").position(2.2,0).dy(3),
-    text("𝑦").position(0,2.2),
-    xtick(1,0.1),
-    ytick(1, 0.1),
-    text('1').position(1,-.5),
-    text('1').position(-.25,0.9),
-    quad([0,1], 1, 1).fill(cssvar('dimgrey'))
-  ]).translateX(-20)
-  return <Fig data={d} paddingBottom={35}/>
-}
+  })
+    .translateY(-110)
+    .children([
+      // axis({on: 'x', domain, range}),
+      // axis({on: 'y', domain, range}),
+      line([0, 0], [0, 2]).arrowEnd(),
+      line([0, 0], [2, 0]).arrowEnd(),
+      text("𝑥").position(2.2, 0).dy(3),
+      text("𝑦").position(0, 2.2),
+      xtick(1, 0.1),
+      ytick(1, 0.1),
+      text("1").position(1, -0.5),
+      text("1").position(-0.25, 0.9),
+      quad([0, 1], 1, 1).fill(cssvar("dimgrey")),
+    ])
+    .translateX(-20);
+  return <Fig data={d} paddingBottom={35} />;
+};
 
 export const EventDiagram = () => {
-  const domain = tuple(-5,5);
-  const range = tuple(-5,5);
+  const domain = tuple(-5, 5);
+  const range = tuple(-5, 5);
   const d = svg({
     width: 500,
     height: 500,
     domain,
     range,
-  }).children([
-    // axis({on: 'x', domain, range}),
-    // axis({on: 'y', domain, range}),
-    // grid(domain, range).done(),
-    [curveBlob([
-      [0,2], [-1,1.5], [-2,0], [-1, -2], [0,-3], [2,-2], [2,0], [1.5, 1.5]
-    ]).fill(cssvar('dimgrey')),
-    curveBlob([
-      [1,1], [0,1.5], [-1,1], [-.5, 0], [-1,-1], [1, -1], [1,0]
-    ]).fill(cssvar('grey')),
-    curveBlob([
-      [0, -1.5], [-.5, -2], [0, -2.5], [0.5, -2.2], [1, -1.5]
-    ]).fill(cssvar('grey'))].map(b => b.fillOpacity(.4)),
-    [text('Ω').position(1.2,1).dx(10),
-    text('A').position(0,0).dx(10).dy(15),
-    text('B').position(0,-1.8).dx(10).dy(15)].map(t => t.fontSize(20)),
-  ]).translateX(-50).translateY(-130)
-  return <Fig data={d} width={80} paddingBottom={50}/>
+  })
+    .children([
+      // axis({on: 'x', domain, range}),
+      // axis({on: 'y', domain, range}),
+      // grid(domain, range).done(),
+      [
+        curveBlob([
+          [0, 2],
+          [-1, 1.5],
+          [-2, 0],
+          [-1, -2],
+          [0, -3],
+          [2, -2],
+          [2, 0],
+          [1.5, 1.5],
+        ]).fill(cssvar("dimgrey")),
+        curveBlob([
+          [1, 1],
+          [0, 1.5],
+          [-1, 1],
+          [-0.5, 0],
+          [-1, -1],
+          [1, -1],
+          [1, 0],
+        ]).fill(cssvar("grey")),
+        curveBlob([
+          [0, -1.5],
+          [-0.5, -2],
+          [0, -2.5],
+          [0.5, -2.2],
+          [1, -1.5],
+        ]).fill(cssvar("grey")),
+      ].map((b) => b.fillOpacity(0.4)),
+      [
+        text("Ω").position(1.2, 1).dx(10),
+        text("A").position(0, 0).dx(10).dy(15),
+        text("B").position(0, -1.8).dx(10).dy(15),
+      ].map((t) => t.fontSize(20)),
+    ])
+    .translateX(-50)
+    .translateY(-130);
+  return <Fig data={d} width={80} paddingBottom={50} />;
+};
+
+import geojson from "./world.json";
+
+import { GeoJSON } from "@/algebron/main";
+
+function geomap(
+  geoJsonData: GeoJSON.FeatureCollection, 
+  mapsize: number,
+  domain: [number,number],
+  range: [number,number],
+) {
+  const MAP_SIZE = mapsize;
+  // projection radius
+  const R = MAP_SIZE / (2 * Math.PI);
+  // Diameter of the globe.
+  const D = R * 2 * Math.PI;
+  const map = path();
+  function drawGeoJson() {
+    geoJsonData.features.forEach((feature) => {
+      if (feature.geometry.type === "Polygon") {
+        drawPolygon(map, feature.geometry.coordinates[0]);
+      }
+      if (feature.geometry.type === "MultiPolygon") {
+        feature.geometry.coordinates.forEach((coords) =>
+          drawPolygon(map, coords[0])
+        );
+      }
+    });
+  }
+  function drawPolygon(ctx: Path, coords: GeoJSON.Position[]) {
+    const initialPoint = project(coords.shift() ?? [0, 0]);
+    ctx.moveTo(initialPoint.x, initialPoint.y);
+    coords.map(project).forEach((point) => ctx.lineTo(point.x, point.y));
+    // ctx.closePath();
+    ctx.fill(cssvar("dimgrey"));
+  }
+  function project([lon, lat]: GeoJSON.Position) {
+    const xfn = interpolator([0, MAP_SIZE], domain);
+    const yfn = interpolator([MAP_SIZE, 0], range);
+    const sinlat = Math.sin((lat * Math.PI) / 180);
+    const x = (D * lon) / 360;
+    const y = (R / 2) * Math.log((1 + sinlat) / (1 - sinlat));
+    return { x: xfn(D / 2 + x), y: yfn(D - (D / 2 + y)) };
+  }
+  drawGeoJson();
+  return map;
 }
+
+export const MapDemo = () => {
+  const SIZE = 800;
+  const domain = tuple(-10, 10);
+  const range = tuple(-10, 10);
+  const d = svg({
+    width: SIZE,
+    height: SIZE,
+    domain,
+    range,
+  }).children([geomap(geojson as GeoJSON.FeatureCollection, SIZE, domain, range)]);
+  return <Fig data={d} />;
+};
 
 export default Fig;

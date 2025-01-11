@@ -50,1137 +50,1055 @@ import MdxLayout from "@/components/mdx-layout";
 </TOC>
 
 ## Vectors
+- A vector is a mathematical object that can be added to another vector or multiplied by a scalar to produce another vector. This general definition yields numerous examples:
+    1. **Geometric Vectors.** We can think of a vector as a geometric object with a magnitude (a line of given length) and a direction (an arrowhead). For example, consider two vectors ${a = [3,3]}$ and ${b = [4,1].}$ The sum of these vectors is ${a + b = [3 + 4, 3 + 1],}$ which reduces to ${[7,4].}$ Geometrically:
 
-A vector is a mathematical object that can be added to another vector or multiplied by a scalar to produce another vector. This general definition yields numerous examples:
+        <LA1 />
 
-1. **Geometric Vectors.** We can think of a vector as a geometric object with a magnitude (a line of given length) and a direction (an arrowhead). For example, consider two vectors ${a = [3,3]}$ and ${b = [4,1].}$ The sum of these vectors is ${a + b = [3 + 4, 3 + 1],}$ which reduces to ${[7,4].}$ Geometrically:
+        Similarly, we can _scale_ the geometric vector, which will still yield a vector, longer, shorter, or just the same.
 
-   <LA1 />
+        <LA3 />
 
-   Similarly, we can _scale_ the geometric vector, which will still yield a vector, longer, shorter, or just the same.
+    2. **Polynomials.** Polynomials may also be interpreted as vectors. Consider the two polynomials:
 
-   <LA3 />
+        $$
+            3x^2 + 4x - 1 \\
+            4x^2 - 2x + 2
+        $$
 
-2. **Polynomials.** Polynomials may also be interpreted as vectors. Consider the two polynomials:
+        We can represent these expressions as the vectors ${[3,4,-1]}$ and ${[4,-2,2],}$ where the polynomials' coefficients comprise the vector components. Adding these two vectors corresponds to adding the two polynomials, the sum of which is itself a polynomial (i.e., a vector). Thus,
 
-   $$
-       3x^2 + 4x - 1 \\
-       4x^2 - 2x + 2
-   $$
+        $$
+            [3,4,-1] + [4,-2,2] = [7,2,1]
+        $$
 
-   We can represent these expressions as the vectors ${[3,4,-1]}$ and ${[4,-2,2],}$ where the polynomials' coefficients comprise the vector components. Adding these two vectors corresponds to adding the two polynomials, the sum of which is itself a polynomial (i.e., a vector). Thus,
+        maps to the polynomial
 
-   $$
-       [3,4,-1] + [4,-2,2] = [7,2,1]
-   $$
+        $$
+            7x + 2x + 1.
+        $$
 
-   maps to the polynomial
+        As an aside, recall that if we plot the two polynomials, the point where they intersect is the solution to the polynomial system. We will revisit this curiousity in later sections.
 
-   $$
-       7x + 2x + 1.
-   $$
+        <LA2 />
 
-   As an aside, recall that if we plot the two polynomials, the point where they intersect is the solution to the polynomial system. We will revisit this curiousity in later sections.
+    3. **Audio Signals.** Audio signals can also be interpreted as vectors. We can add audio signals together to produce another audio signal, and we can also scale them to produce yet another.
 
-   <LA2 />
+    <LA4 />
 
-3. **Audio Signals.** Audio signals can also be interpreted as vectors. We can add audio signals together to produce another audio signal, and we can also scale them to produce yet another.
-
-   <LA4 />
-
-4. **Tuples.** More abstractly, elements of ${\reals^n}$ (tuples, or arrays, of ${n}$ real numbers) are vectors.
+    4. **Tuples.** More abstractly, elements of ${\reals^n}$ (tuples, or arrays, of ${n}$ real numbers) are vectors.
 
 ## Real Vectors
-
-For now, we'll focus only on vectors in ${\reals^n.}$ That is, vectors with ${n}$ components, all of which are real numbers.
-
-> **_definition_**. The zero vector in ${\reals^n}$ is the vector ${\bold{0}^n,}$ whose components are all zero.
->
-> $$
->    \bold{0}^n = \begin{bmatrix}
->    0_1 \\
->    0_2 \\
->    \vdots \\
->    0_n
->     \end{bmatrix}.
-> $$
-
-The zero vector is special for a few reasons:
-
-1. Given a vector ${\bold{v} \in \reals^n,}$ adding the zero vector ${\bold{0}^n}$ will always return ${\bold{v}.}$ Because of this result, we call the zero vector ${\bold{0}^n}$ the **additive identity** of ${\reals^n.}$
-2. The zero vector is the only vector with a magnitude of zero.
-3. The zero vector is the only vector with no direction.
-
+- For now, we'll focus only on vectors in ${\reals^n.}$ That is, vectors with ${n}$ components, all of which are real numbers.
+- **_definition_**. The zero vector in ${\reals^n}$ is the vector ${\bold{0}^n,}$ whose components are all zero.
+    $$
+        \bold{0}^n = \begin{bmatrix}
+        0_1 \\
+        0_2 \\
+        \vdots \\
+        0_n
+        \end{bmatrix}.
+    $$
+- The zero vector is special for a few reasons:
+  1. Given a vector ${\bold{v} \in \reals^n,}$ adding the zero vector ${\bold{0}^n}$ will always return ${\bold{v}.}$ Because of this result, we call the zero vector ${\bold{0}^n}$ the **additive identity** of ${\reals^n.}$
+  2. The zero vector is the only vector with a magnitude of zero.
+  3. The zero vector is the only vector with no direction.
 ### Scalar Multiplication
-
-Scalar multiplication is straightforward: We multiply each component of the vector by the given scalar ${k.}$ Geometrically (in ${\reals^2}$ or ${\reals^3}$), if ${k \gt 0,}$ this has the effect of making the vector shorter or longer.
-
-> **_definition_**. Let ${\bold{v}}$ be a vector in ${\reals^n,}$ and let ${k \in \reals}$ be a scalar. Then:
->
-> $$
->     k \bold{v} = \begin{bmatrix}
->     k\bold{v}_1 \\
->     k\bold{v}_2 \\
->     \vdots \\
->     k\bold{v}_n
->     \end{bmatrix}.
-> $$
-
-**_example_**.
-
-$$
-    3 \begin{bmatrix}
-    5 \\
-    8 \\
-    7
-    \end{bmatrix}
-    =
-    \begin{bmatrix}
-    3 \times 5 \\
-    3 \times 8 \\
-    3 \times 7
-    \end{bmatrix}
-    =
-    \begin{bmatrix}
-    15 \\
-    24 \\
-    21
-    \end{bmatrix}.
-$$
-
-Since ${k}$ can be any real number, scalar multiplication's definition implies that we can negate a vector and perform element-wise division.
-
-> **_definition_**. Given a vector ${\bold{v},}$ the negation of ${\bold{v},}$ denoted ${-\bold{v},}$ is:
->
-> $$
->     -\bold{v} = \begin{bmatrix}
->     -1 \times \bold{v}_1 \\
->     -1 \times \bold{v}_2 \\
->     \vdots \\
->     -1 \times \bold{v}_n
->     \end{bmatrix}
->     =
->     \begin{bmatrix}
->     -\bold{v}_1 \\
->     -\bold{v}_2 \\
->     \vdots \\
->     -\bold{v}_n
->     \end{bmatrix}
->     .
-> $$
-
-Geometrically, negating a vector ${\bold{v}}$ "switches" its direction.
+- Scalar multiplication is straightforward: We multiply each component of the vector by the given scalar ${k.}$ Geometrically (in ${\reals^2}$ or ${\reals^3}$), if ${k \gt 0,}$ this has the effect of making the vector shorter or longer.
+-  **_definition_**. Let ${\bold{v}}$ be a vector in ${\reals^n,}$ and let ${k \in \reals}$ be a scalar. Then:
+    $$
+        k \bold{v} = \begin{bmatrix}
+        k\bold{v}_1 \\
+        k\bold{v}_2 \\
+        \vdots \\
+        k\bold{v}_n
+        \end{bmatrix}.
+    $$
+- **_example_**.
+    $$
+        3 \begin{bmatrix}
+        5 \\
+        8 \\
+        7
+        \end{bmatrix}
+        =
+        \begin{bmatrix}
+        3 \times 5 \\
+        3 \times 8 \\
+        3 \times 7
+        \end{bmatrix}
+        =
+        \begin{bmatrix}
+        15 \\
+        24 \\
+        21
+        \end{bmatrix}.
+    $$
+    Since ${k}$ can be any real number, scalar multiplication's definition implies that we can negate a vector and perform element-wise division.
+- **_definition_**. Given a vector ${\bold{v},}$ the negation of ${\bold{v},}$ denoted ${-\bold{v},}$ is:
+    $$
+        -\bold{v} = \begin{bmatrix}
+        -1 \times \bold{v}_1 \\
+        -1 \times \bold{v}_2 \\
+        \vdots \\
+        -1 \times \bold{v}_n
+        \end{bmatrix}
+        =
+        \begin{bmatrix}
+        -\bold{v}_1 \\
+        -\bold{v}_2 \\
+        \vdots \\
+        -\bold{v}_n
+        \end{bmatrix}
+        .
+    $$
+    Geometrically, negating a vector ${\bold{v}}$ "switches" its direction.
 
 ## Linear Equations
-
-> **_definition_**. A linear equation with variables ${x_1, x_2, \ldots, x_n}$ is an equation of the form
->
-> $$
->     a_1 x_1 + a_2 x_2 + \ldots + a_n x_n = b
-> $$
->
-> where ${a_1, a_2, \ldots, a_n}$ are constants.
-
-If ${x_1 = c_1, x_2 = c_2, \ldots, x_n = c_n}$ satisfy the equation ${a_1x_1 + a_2x_2 + \ldots + a_nx_n = b,}$ we say that ${c_1, c_2, \ldots, c_n}$ is a _solution_ to the equation.
-
-**_example_**. Consider ${x_1 + 2x_2 - 3x_3 = 8.}$ One solution to the equation is ${x_1 = 3, x_2 = 4, x_3 = 1,}$ since ${3 + 2(4) - 3(1) = 8.}$ Another solution is ${x_1 = -1, x_2 = 3, x_3 = -1,}$ since ${-1 + 2(3) - 3(-1) = 8.}$ There are, in fact, an infinite number of solutions to the equation. We can express this infinite set of solutions as follows:
-
-$$
-    \begin{bmatrix}
-    x_1 \\
-    x_2 \\
-    x_3
-    \end{bmatrix}
-    =
-    \begin{bmatrix}
-    8 - 2s + 3t \\
-    s \\
-    t
-    \end{bmatrix}
-    ~~~~ (s, t \in \reals).
-$$
-
-The set of all solutions to a linear equation is called the linear equation's _solution space_.
+- **_definition_**. A linear equation with variables ${x_1, x_2, \ldots, x_n}$ is an equation of the form
+    $$
+        a_1 x_1 + a_2 x_2 + \ldots + a_n x_n = b
+    $$
+    where ${a_1, a_2, \ldots, a_n}$ are constants.
+- If ${x_1 = c_1, x_2 = c_2, \ldots, x_n = c_n}$ satisfy the equation ${a_1x_1 + a_2x_2 + \ldots + a_nx_n = b,}$ we say that ${c_1, c_2, \ldots, c_n}$ is a _solution_ to the equation.
+- **_example_**. Consider ${x_1 + 2x_2 - 3x_3 = 8.}$ One solution to the equation is ${x_1 = 3, x_2 = 4, x_3 = 1,}$ since ${3 + 2(4) - 3(1) = 8.}$ Another solution is ${x_1 = -1, x_2 = 3, x_3 = -1,}$ since ${-1 + 2(3) - 3(-1) = 8.}$ There are, in fact, an infinite number of solutions to the equation. We can express this infinite set of solutions as follows:
+    $$
+        \begin{bmatrix}
+        x_1 \\
+        x_2 \\
+        x_3
+        \end{bmatrix}
+        =
+        \begin{bmatrix}
+        8 - 2s + 3t \\
+        s \\
+        t
+        \end{bmatrix}
+        ~~~~ (s, t \in \reals).
+    $$
+- The set of all solutions to a linear equation is called the linear equation's _solution space_.
 
 ## Systems of Linear Equations
+- Many problems in mathematics can be reduced to systems of linear equations. Linear algebra provides us the tools for solving these systems.
+- **_definition_**. The system
+    $$
+    \begin{aligned}
+        a_{1,1}x_1 &+ &\ldots &+ a_{1,n}x_n = b_1 \\
+        &\vdots & &\vdots  \\
+        a_{m,1}x_1 &+ &\ldots &+ a_{m,n}x_n = b_n
+    \end{aligned}
+    $$
+    is called an ${(m,n)}$ (or ${m \times n}$) _system of linear equations_, or _linear system_, where ${a_{i,j}, b_{i} \in \reals}$ and each ${x_i}$ is a real number called an _unknown_ of the system.
+- Given a system of linear equations ${S,}$ each ${n}$-tuple ${(x_1, \ldots, x_n) \in \reals^n}$ that satisfies ${S}$ is called a _solution_ of ${S.}$ In a system with two unknowns ${x_1}$ and ${x_2,}$ each linear equation defines a line on the ${x_1}$-${x_2}$ plane.
+- **_example_**. Consider the system
+    $$
+        4x_1 + 4x_2 = 5 \\
+        2x_1 - 4x_2 = 1
+    $$
 
-Many problems in mathematics can be reduced to systems of linear equations. Linear algebra provides us the tools for solving these systems.
+    Note that we chose the variables ${x_1}$ and ${x_2}$ arbitrarily. We could've just used ${x}$ and ${y:}$
 
-> **_definition_**. The system
->
-> $$
-> \begin{aligned}
->     a_{1,1}x_1 &+ &\ldots &+ a_{1,n}x_n = b_1 \\
->     &\vdots & &\vdots  \\
->     a_{m,1}x_1 &+ &\ldots &+ a_{m,n}x_n = b_n
-> \end{aligned}
-> $$
->
-> is called an ${(m,n)}$ (or ${m \times n}$) _system of linear equations_, or _linear system_, where ${a_{i,j}, b_{i} \in \reals}$ and each ${x_i}$ is a real number called an _unknown_ of the system.
+    $$
+        4x + 4y = 5 \\
+        2x - 4y = 1.
+    $$
 
-Given a system of linear equations ${S,}$ each ${n}$-tuple ${(x_1, \ldots, x_n) \in \reals^n}$ that satisfies ${S}$ is called a _solution_ of ${S.}$ In a system with two unknowns ${x_1}$ and ${x_2,}$ each linear equation defines a line on the ${x_1}$-${x_2}$ plane.
+    Notice that these are simple linear equations. Solving for ${y:}$
 
-**_example_**. Consider the system
+    $$
+        y = -x + \dfrac{5}{4} \\[1em]
+        y = \dfrac{x}{2} - \dfrac{1}{4}.
+    $$
 
-$$
-    4x_1 + 4x_2 = 5 \\
-    2x_1 - 4x_2 = 1
-$$
+    The point where these lines intersect is a solution to the system. In this case, the point ${(1, \frac{1}{4}).}$ Thus, the system above has the solution space of ${\lbrace (1, \frac{1}{4}) \rbrace.}$ Notice the graph for this system. What are the coordinates of the point where the two lines meet?
 
-Note that we chose the variables ${x_1}$ and ${x_2}$ arbitrarily. We could've just used ${x}$ and ${y:}$
+    <LA5 />
 
-$$
-    4x + 4y = 5 \\
-    2x - 4y = 1.
-$$
-
-Notice that these are simple linear equations. Solving for ${y:}$
-
-$$
-    y = -x + \dfrac{5}{4} \\[1em]
-    y = \dfrac{x}{2} - \dfrac{1}{4}.
-$$
-
-The point where these lines intersect is a solution to the system. In this case, the point ${(1, \frac{1}{4}).}$ Thus, the system above has the solution space of ${\lbrace (1, \frac{1}{4}) \rbrace.}$ Notice the graph for this system. What are the coordinates of the point where the two lines meet?
-
-<LA5 />
-
-An ${(m,n)}$ system of linear equations is _inconsistent_ if it has no solution (i.e., a solution space of ${\varnothing}$). The system is _consistent_ if it has at least one solution. An ${(m,n)}$ system of linear equations is _underspecified_ if it has more unknowns than equations ${(n \gt m).}$ If the system has more equations than unknowns ${(m \gt n),}$ then the system is _overspecified_. If an underspecified system of linear equations is consistent, then it will have infinitely many solutions.
+    An ${(m,n)}$ system of linear equations is _inconsistent_ if it has no solution (i.e., a solution space of ${\varnothing}$). The system is _consistent_ if it has at least one solution. An ${(m,n)}$ system of linear equations is _underspecified_ if it has more unknowns than equations ${(n \gt m).}$ If the system has more equations than unknowns ${(m \gt n),}$ then the system is _overspecified_. If an underspecified system of linear equations is consistent, then it will have infinitely many solutions.
 
 ### Homogeneous Linear Systems
-
-Given the linear system
-
-$$
-    \begin{aligned}
-    a_{1,1} x_1 + a_{1,2}& x_2 + \ldots a_{1,n} x_n = b_1 \\
-    a_{2,1} x_1 + a_{2,2}& x_2 + \ldots a_{2,n} x_n = b_2 \\
-    a_{3,1} x_1 + a_{3,2}& x_2 + \ldots a_{3,n} x_n = b_3 \\
-     &\vdots \\
-    a_{m,1} x_1 + a_{m,2}& x_2 + \ldots a_{m,n} x_n = b_m
-    \end{aligned}
-$$
-
-If ${b_i = 0}$ for all ${i = 1,2,3,\ldots,n,}$ we say that the system is _homogeneous_. Homogeneous linear systems have a special property: If a system is homogeneous, then ${x_1 = x_2 = \ldots = x_n = 0}$ is always a solution (but not necessarily the only solution).
-
-Every homogeneous linear system is consistent because all such systems have the solution ${x_1 = 0, x_2 = 0, \ldots, x_n = 0.}$ This solution is called the _trivial solution_. All other solutions (if there are any) are called _nontrivial solutions_. Because homogeneous systems always have the trivial solution, there are only two possibilities for their solutions:
-
-1. The system has only one solution (the trivial solution), or
-2. the system has infinitely many solutions, including the trivial solution.
-
-The one case where a homogeneous system _always_ has nontrivial solutions is the _underspecified homogenous linear system_ &mdash; a homogeneous linear system with more unknowns than equations.
-
-> **_theorem_**. If a homogeneous linear system has ${n}$ unknowns, and if the reduced row echelon form of its augmented matrix has ${r}$ nonzero rows, then the system has ${n - r}$ free variables.
-
-> **_theorem_**. A homogeneous linear system with more unknowns than equations has infinitely many solutions.
+- Given the linear system
+    $$
+        \begin{aligned}
+        a_{1,1} x_1 + a_{1,2}& x_2 + \ldots a_{1,n} x_n = b_1 \\
+        a_{2,1} x_1 + a_{2,2}& x_2 + \ldots a_{2,n} x_n = b_2 \\
+        a_{3,1} x_1 + a_{3,2}& x_2 + \ldots a_{3,n} x_n = b_3 \\
+        &\vdots \\
+        a_{m,1} x_1 + a_{m,2}& x_2 + \ldots a_{m,n} x_n = b_m
+        \end{aligned}
+    $$
+    If ${b_i = 0}$ for all ${i = 1,2,3,\ldots,n,}$ we say that the system is _homogeneous_. Homogeneous linear systems have a special property: If a system is homogeneous, then ${x_1 = x_2 = \ldots = x_n = 0}$ is always a solution (but not necessarily the only solution).
+- Every homogeneous linear system is consistent because all such systems have the solution ${x_1 = 0, x_2 = 0, \ldots, x_n = 0.}$ This solution is called the _trivial solution_. All other solutions (if there are any) are called _nontrivial solutions_. Because homogeneous systems always have the trivial solution, there are only two possibilities for their solutions:
+    1. The system has only one solution (the trivial solution), or
+    2. the system has infinitely many solutions, including the trivial solution.
+- The one case where a homogeneous system _always_ has nontrivial solutions is the _underspecified homogenous linear system_ &mdash; a homogeneous linear system with more unknowns than equations.
+- **_theorem_**. If a homogeneous linear system has ${n}$ unknowns, and if the reduced row echelon form of its augmented matrix has ${r}$ nonzero rows, then the system has ${n - r}$ free variables.
+- **_theorem_**. A homogeneous linear system with more unknowns than equations has infinitely many solutions.
 
 ### Augmented Matrices
+- An ${(m,n)}$ linear system can be written as a rectangular array of ${m}$ by ${(n + 1)}$ numbers by leaving out the ${+}$ and ${=}$ signs and the variables. We call this an augmented matrix. The general system
+    $$
+        \begin{aligned}
+        a_{1,1} x_1 + a_{1,2}& x_2 + \ldots a_{1,n} x_n = b_1 \\
+        a_{2,1} x_1 + a_{2,2}& x_2 + \ldots a_{2,n} x_n = b_2 \\
+        a_{3,1} x_1 + a_{3,2}& x_2 + \ldots a_{3,n} x_n = b_3 \\
+        &\vdots \\
+        a_{m,1} x_1 + a_{m,2}& x_2 + \ldots a_{m,n} x_n = b_m
+        \end{aligned}
+    $$
 
-An ${(m,n)}$ linear system can be written as a rectangular array of ${m}$ by ${(n + 1)}$ numbers by leaving out the ${+}$ and ${=}$ signs and the variables. We call this an augmented matrix. The general system
+    has the augmented matrix
 
-$$
-    \begin{aligned}
-    a_{1,1} x_1 + a_{1,2}& x_2 + \ldots a_{1,n} x_n = b_1 \\
-    a_{2,1} x_1 + a_{2,2}& x_2 + \ldots a_{2,n} x_n = b_2 \\
-    a_{3,1} x_1 + a_{3,2}& x_2 + \ldots a_{3,n} x_n = b_3 \\
-     &\vdots \\
-    a_{m,1} x_1 + a_{m,2}& x_2 + \ldots a_{m,n} x_n = b_m
-    \end{aligned}
-$$
-
-has the augmented matrix
-
-$$
-    \left\lbrack\hspace{-12pt}\begin{array}{ccccc|c}
-    &a_{1,1} & a_{1,2} & \ldots & a_{1,n} & b_1 \\
-    &a_{2,1} & a_{2,2} & \ldots & a_{2,n} & b_2 \\
-    &a_{3,1} & a_{3,2} & \ldots & a_{3,n} & b_3 \\
-    &\vdots &\vdots &\vdots &\vdots &\vdots \\
-    &a_{m,1} & a_{m,2} & \ldots & a_{m,n} & b_m \\
-    \end{array}\hspace{-3pt}\right\rbrack.
-$$
+    $$
+        \left\lbrack\hspace{-12pt}\begin{array}{ccccc|c}
+        &a_{1,1} & a_{1,2} & \ldots & a_{1,n} & b_1 \\
+        &a_{2,1} & a_{2,2} & \ldots & a_{2,n} & b_2 \\
+        &a_{3,1} & a_{3,2} & \ldots & a_{3,n} & b_3 \\
+        &\vdots &\vdots &\vdots &\vdots &\vdots \\
+        &a_{m,1} & a_{m,2} & \ldots & a_{m,n} & b_m \\
+        \end{array}\hspace{-3pt}\right\rbrack.
+    $$
 
 ## Gaussian Elimination
+- We can solve a linear system (find its solution space) through _Gaussian elimination_. The method of Gaussian elmination employs three operations:
+    1. **Swapping**: Interchange the equations.
+    2. **Scaling**: Replace an equation by any nonzero multiple of itself.
+    3. **Pivoting**: Replace an equation by a multiple of itself plus a multiple of another equation.
 
-We can solve a linear system (find its solution space) through _Gaussian elimination_. The method of Gaussian elmination employs three operations:
+- **_example_**. Consider the system
+    $$
+        \begin{cases}
+        2x + y = 17 \\
+        x - 3y = 17
+        \end{cases}.
+    $$
 
-1. **Swapping**: Interchange the equations.
-2. **Scaling**: Replace an equation by any nonzero multiple of itself.
-3. **Pivoting**: Replace an equation by a multiple of itself plus a multiple of another equation.
+    Swapping:
 
-**_example_**. Consider the system
+    $$
+        \begin{cases}
+        \textcolor{teal}{2x + y = 17} \\
+        x - 3y = 17
+        \end{cases}
+        \rightarrow
+        \begin{cases}
+        x - 3y = 17 \\
+        \textcolor{teal}{2x + y = 17}
+        \end{cases}.
+    $$
 
-$$
+    Scaling by the first equation ${-3}$:
+
+    $$
+        \begin{cases}
+        -3(2x + y = -1) \\
+        x - 3y = 17
+        \end{cases}
+        \rightarrow
+        \begin{cases}
+        -6x - 3y = 3 \\
+        x - 3y = 17
+        \end{cases}
+    $$
+
+    Pivoting (replace the second equation by "two times the second equation minus the first equation"):
+
+    1. Two times the second equation:
+    $$
+        2(x - 3y = 17) \\
+        \downarrow \\
+        2x - 6y = 34
+    $$
+    2. Minus the first equation:
+    $$
+    \begin{align*}
+            2x - 6y &= 34 \\
+        -(2x + y &= -1) \\
+        \hline
+        -7y &= 35
+    \end{align*}
+    $$
+    3. Result:
+    $$
     \begin{cases}
-    2x + y = 17 \\
-    x - 3y = 17
+        2x + y = -1 \\
+        -7y = 35
     \end{cases}.
-$$
-
-Swapping:
-
-$$
-    \begin{cases}
-    \textcolor{teal}{2x + y = 17} \\
-    x - 3y = 17
-    \end{cases}
-    \rightarrow
-    \begin{cases}
-    x - 3y = 17 \\
-    \textcolor{teal}{2x + y = 17}
-    \end{cases}.
-$$
-
-Scaling by the first equation ${-3}$:
-
-$$
-    \begin{cases}
-    -3(2x + y = -1) \\
-    x - 3y = 17
-    \end{cases}
-    \rightarrow
-    \begin{cases}
-    -6x - 3y = 3 \\
-    x - 3y = 17
-    \end{cases}
-$$
-
-Pivoting (replace the second equation by "two times the second equation minus the first equation"):
-
-1. Two times the second equation:
-   $$
-       2(x - 3y = 17) \\
-       \downarrow \\
-       2x - 6y = 34
-   $$
-2. Minus the first equation:
-   $$
-   \begin{align*}
-        2x - 6y &= 34 \\
-       -(2x + y &= -1) \\
-       \hline
-       -7y &= 35
-   \end{align*}
-   $$
-3. Result:
-   $$
-   \begin{cases}
-       2x + y = -1 \\
-       -7y = 35
-   \end{cases}.
-   $$
+    $$
 
 ## Row Reduction
+- Since linear systems can be represented with augmented matrices, we can frame Gaussian elimination in terms of augmented matrices:
+    1. **Swapping**: Interchange rows.
+    2. **Scaling**: Replace any row by a non-zero multiple of itself.
+    3. **Pivoting**: Replace any row by itself plus a multiple of another row.
+- **_example_**. Using the augmented matrix for our previous system:
+    $$
+        \begin{cases}
+        2x + y = 17 \\
+        x - 3y = 17
+        \end{cases}
+        \rightarrow
+        \left\lbrack\hspace{-5pt}\begin{array}{cc|c}
+        2 & 1 & -1 \\
+        1 & -3 & 17
+        \end{array}\hspace{-5pt}\right\rbrack.
+    $$
 
-Since linear systems can be represented with augmented matrices, we can frame Gaussian elimination in terms of augmented matrices:
+    Swapping rows ${1}$ and ${2}$ (we can express this notationally with ${R_1 \harr R_2}$):
 
-1. **Swapping**: Interchange rows.
-2. **Scaling**: Replace any row by a non-zero multiple of itself.
-3. **Pivoting**: Replace any row by itself plus a multiple of another row.
+    $$
+        \left\lbrack\hspace{-5pt}\begin{array}{cc|c}
+        2 & 1 & -1 \\
+        1 & -3 & 17
+        \end{array}\hspace{-5pt}\right\rbrack
+        \rightarrow
+        \left\lbrack\hspace{-5pt}\begin{array}{cc|c}
+        1 & -3 & 17 \\
+        2 & 1 & -1
+        \end{array}\hspace{-5pt}\right\rbrack.
+    $$
 
-**_example_**. Using the augmented matrix for our previous system:
+    Multiply row ${1}$ by ${-3}$ (scaling, expressed notationally as ${-3R_1 \rightarrow R_1}$):
 
-$$
-    \begin{cases}
-    2x + y = 17 \\
-    x - 3y = 17
-    \end{cases}
-    \rightarrow
-    \left\lbrack\hspace{-5pt}\begin{array}{cc|c}
-    2 & 1 & -1 \\
-    1 & -3 & 17
-    \end{array}\hspace{-5pt}\right\rbrack.
-$$
+    $$
+        \left\lbrack\hspace{-5pt}\begin{array}{cc|c}
+        2 & 1 & -1 \\
+        1 & -3 & 17
+        \end{array}\hspace{-5pt}\right\rbrack
+        \rightarrow
+        \left\lbrack\hspace{-5pt}\begin{array}{cc|c}
+        -6 & -3 & 3 \\
+        1 & -3 & 17
+        \end{array}\hspace{-5pt}\right\rbrack.
+    $$
 
-Swapping rows ${1}$ and ${2}$ (we can express this notationally with ${R_1 \harr R_2}$):
+    Replace row ${2}$ by "${2}$ times row ${2}$ minus row ${1}$ (a pivot, expressed notationally as ${2R_2 - R_1 \rightarrow R_2}$):
 
-$$
-    \left\lbrack\hspace{-5pt}\begin{array}{cc|c}
-    2 & 1 & -1 \\
-    1 & -3 & 17
-    \end{array}\hspace{-5pt}\right\rbrack
-    \rightarrow
-    \left\lbrack\hspace{-5pt}\begin{array}{cc|c}
-    1 & -3 & 17 \\
-    2 & 1 & -1
-    \end{array}\hspace{-5pt}\right\rbrack.
-$$
-
-Multiply row ${1}$ by ${-3}$ (scaling, expressed notationally as ${-3R_1 \rightarrow R_1}$):
-
-$$
-    \left\lbrack\hspace{-5pt}\begin{array}{cc|c}
-    2 & 1 & -1 \\
-    1 & -3 & 17
-    \end{array}\hspace{-5pt}\right\rbrack
-    \rightarrow
-    \left\lbrack\hspace{-5pt}\begin{array}{cc|c}
-    -6 & -3 & 3 \\
-    1 & -3 & 17
-    \end{array}\hspace{-5pt}\right\rbrack.
-$$
-
-Replace row ${2}$ by "${2}$ times row ${2}$ minus row ${1}$ (a pivot, expressed notationally as ${2R_2 - R_1 \rightarrow R_2}$):
-
-$$
-    \left\lbrack\hspace{-5pt}\begin{array}{cc|c}
-    2 & 1 & -1 \\
-    1 & -3 & 17
-    \end{array}\hspace{-5pt}\right\rbrack
-    \rightarrow
-    \left\lbrack\hspace{-5pt}\begin{array}{cc|c}
-    2 & 1 & -1 \\
-    0 & -7 & 35
-    \end{array}\hspace{-5pt}\right\rbrack.
-$$
-
-The goal of Gaussian elimination, as applied to augmented matrices, is _row reduction_: We use the elementary row operations to eliminate variables from selected rows of the augmented matrix until we obtain a solution space.
+    $$
+        \left\lbrack\hspace{-5pt}\begin{array}{cc|c}
+        2 & 1 & -1 \\
+        1 & -3 & 17
+        \end{array}\hspace{-5pt}\right\rbrack
+        \rightarrow
+        \left\lbrack\hspace{-5pt}\begin{array}{cc|c}
+        2 & 1 & -1 \\
+        0 & -7 & 35
+        \end{array}\hspace{-5pt}\right\rbrack.
+    $$
+- The goal of Gaussian elimination, as applied to augmented matrices, is _row reduction_: We use the elementary row operations to eliminate variables from selected rows of the augmented matrix until we obtain a solution space.
 
 ## Graphical Solutions
-
-For linear systems in ${\reals^2}$ and ${\reals^3,}$ we can quickly see solutions with the aid of plotting.
+- For linear systems in ${\reals^2}$ and ${\reals^3,}$ we can quickly see solutions with the aid of plotting.
 
 ### Linear Systems in ℝ²
+- A linear equation of the form ${ax + by = c,}$ where ${a,b,c}$ are real constants, graphically corresponds to a line in the Cartesian plane. Given two such lines (i.e., a ${2 \times 2}$ linear system), there are three possible cases which may occur:
 
-A linear equation of the form ${ax + by = c,}$ where ${a,b,c}$ are real constants, graphically corresponds to a line in the Cartesian plane. Given two such lines (i.e., a ${2 \times 2}$ linear system), there are three possible cases which may occur:
-
-<table>
-  <thead>
-    <tr>
-      <th>Intersecting Lines</th>
-      <th>Parallel Lines</th>
-      <th>Coincident Lines</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>One point of intersection; there is a unique solution.</td>
-      <td>No points of intersection; there are no solutions.</td>
-      <td>
-        Infinitely many points of intersection; there are infinitely many
-        solutions.
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <IntersectingLines />
-      </td>
-      <td>
-        <ParallelLines />
-      </td>
-      <td>
-        <CoincidentLines />
-      </td>
-    </tr>
-  </tbody>
-</table>
+    <table>
+    <thead>
+        <tr>
+        <th>Intersecting Lines</th>
+        <th>Parallel Lines</th>
+        <th>Coincident Lines</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+        <td>One point of intersection; there is a unique solution.</td>
+        <td>No points of intersection; there are no solutions.</td>
+        <td>
+            Infinitely many points of intersection; there are infinitely many
+            solutions.
+        </td>
+        </tr>
+        <tr>
+        <td>
+            <IntersectingLines />
+        </td>
+        <td>
+            <ParallelLines />
+        </td>
+        <td>
+            <CoincidentLines />
+        </td>
+        </tr>
+    </tbody>
+    </table>
 
 ### Linear Systems in ℝ³
 
-In ${\reals^3,}$ parallel planes indicate there are no solutions, since there is no common intersection. For example, the system
+- In ${\reals^3,}$ parallel planes indicate there are no solutions, since there is no common intersection.
+- __*exmaple*__. The system
 
-<Cols of={3}>
-  $$ \begin{cases}
-  2x + 3y - z = -5 \\ 2x + 3y - z = -2 \\ 2x + 3y - z = 3 \end{cases}
-  $$
-  <ParallelPlanes />
-</Cols>
+    <Cols of={3}>
 
-has no solution. Examining the plot above, there is no point of intersection since the resulting planes are parallel. The fact that planes intersect, however, does not imply that there is a solution.
+    $$
+    \begin{cases}
+    2x + 3y - z = -5 \\ 2x + 3y - z = -2 \\ 2x + 3y - z = 3
+    \end{cases}
+    $$
 
-Two parallel planes with no common intersection also indicates that the system has no solutions. For example, the system
+    <ParallelPlanes />
 
-<Cols of={3}>
-  $$ \begin{cases}x + 2y + z = -2 \\ x + 2y + z = -\frac{1}
-  {4} \\ 2x - y + z = 1 \end{cases}
-  $$
-  <PlanesDemo2 />
-</Cols>
+    </Cols>
 
-has no solution. While there are infinitely many points of intersection, there isn't a _common_ intersection.
+    has no solution. Examining the plot above, there is no point of intersection since the resulting planes are parallel. The fact that planes intersect, however, does not imply that there is a solution.
+- Two parallel planes with no common intersection also indicates that the system has no solutions.
+- __*example*__. The system
+    <Cols of={3}>
 
-If the planes share a common intersection, then either the intersection is a line or a point. If it's a line, then there are infinitely many solutions, since the line comprises infinitely many points. For example, the system
+    $$
+        \begin{cases}
+            x + 2y + z = -2 \\ 
+            x + 2y + z = -\frac{1}{4} \\
+            2x - y + z = 1
+        \end{cases}
+    $$
 
-<Cols of={3}>
-  $$ \begin{cases}x + 2y + z = 2 \\ 2x - y + z = 1 \end{cases}
-  $$
-  <PlanesDemo3 />
-</Cols>
+    <PlanesDemo2 />
+    </Cols>
+    has no solution. While there are infinitely many points of intersection, there isn't a _common_ intersection.
+- If the planes share a common intersection, then either the intersection is a line or a point. If it's a line, then there are infinitely many solutions, since the line comprises infinitely many points.
+- __*example*__. The system
 
-has infinitely many solutions since its common intersection is a line. If, however, the common intersection is a point, then there is exactly one solution. For example, the system
+    <Cols of={3}>
 
-<Cols of={3}>
-  $$ \begin{cases}
-  3x + y + 2z = 0 \\ 4x - y + 3z = -1 \\ x + y - z = -1 \end{cases}
-  $$
-  <PlanesDemo4 />
-</Cols>
+    $$
+        \begin{cases}
+            x + 2y + z = 2 \\ 
+            2x - y + z = 1
+        \end{cases}
+    $$
 
-has exactly one solution, since the equations' corresponding planes intersect at a single, common point of intersection. Nevertheless, the following fact always applies, regardless of what linear system we're in:
+    <PlanesDemo3 />
+    </Cols>
 
-> **_theorem_**. Every system of linear equations has zero, one, or infinitely many solutions. There are no other possibilities.
+    has infinitely many solutions since its common intersection is a line.
+- If, however, the common intersection is a point, then there is exactly one solution.
+- __*example*__. The system
+
+    <Cols of={3}>
+    $$
+        \begin{cases}
+            3x + y + 2z = 0 \\
+            4x - y + 3z = -1 \\
+            x + y - z = -1
+        \end{cases}
+    $$
+    <PlanesDemo4 />
+    </Cols>
+
+    has exactly one solution, since the equations' corresponding planes intersect at a single, common point of intersection. Nevertheless, the following fact always applies, regardless of what linear system we're in:
+- **_theorem_**. Every system of linear equations has zero, one, or infinitely many solutions. There are no other possibilities.
 
 ## Echelon Forms
+- Consider the following system, with its corresponding augmented matrix and plot.
+    <Cols of={2}>
+    $$
+        \begin{cases}
+        x + y + 2z = 9 \\
+        2x + 4y - 3z = 1 \\
+        3x + 6y - 5z = 0
+        \end{cases}
+    $$
 
-Consider the following system, with its corresponding augmented matrix and plot.
+    $$
+        \left\lbrack\hspace{-5pt}\begin{array}{ccc|c}
+        1 & 1 & 2 & 9 \\
+        2 & 4 & -3 & 1 \\
+        3 & 6 & -5 & 0
+        \end{array}\hspace{-5pt}\right\rbrack.
+    $$
 
-<Cols of={3}>
-$$
-    \begin{cases}
-    x + y + 2z = 9 \\
-    2x + 4y - 3z = 1 \\
-    3x + 6y - 5z = 0
-    \end{cases}
-$$
-$$
-    \left\lbrack\hspace{-5pt}\begin{array}{ccc|c}
-    1 & 1 & 2 & 9 \\
-    2 & 4 & -3 & 1 \\
-    3 & 6 & -5 & 0
-    \end{array}\hspace{-5pt}\right\rbrack.
-$$
-<EchelonPlanes/>
-</Cols>
+    </Cols>
 
-What is the solution space for this system? We will use the elementary row operations.
+    <EchelonPlanes/>
 
-<Cols of={2}>
-<div>
-Add ${-2}$ times the first equation to the second equation.
+    What is the solution space for this system? We will use the elementary row operations.
+    <Cols of={2}>
+    <div>
+    Add ${-2}$ times the first equation to the second equation.
 
-$$
-    \begin{cases}
-    x + y + 2z = 9 \\
-    2y - 7z = -17 \\
-    3x + 6y - 5z = 0
-    \end{cases}
-$$
+    $$
+        \begin{cases}
+        x + y + 2z = 9 \\
+        2y - 7z = -17 \\
+        3x + 6y - 5z = 0
+        \end{cases}
+    $$
 
-</div>
-<div>
-Add ${-2}$ times the first row to the second row.
+    </div>
+    <div>
+    Add ${-2}$ times the first row to the second row.
 
-$$
-    \left\lbrack\hspace{-5pt}\begin{array}{ccc|c}
-    1 & 1 & 2 & 9 \\
-    0 & 2 & -7 & -17 \\
-    3 & 6 & -5 & 0
-    \end{array}\hspace{-5pt}\right\rbrack.
-$$
+    $$
+        \left\lbrack\hspace{-5pt}\begin{array}{ccc|c}
+        1 & 1 & 2 & 9 \\
+        0 & 2 & -7 & -17 \\
+        3 & 6 & -5 & 0
+        \end{array}\hspace{-5pt}\right\rbrack.
+    $$
 
-</div>
-</Cols>
+    </div>
+    </Cols>
+    <Cols of={2}>
+    <div>
+    Add ${-3}$ times the first equation to the third equation.
 
-<Cols of={2}>
-<div>
-Add ${-3}$ times the first equation to the third equation.
+    $$
+        \begin{cases}
+        x + y + 2z = 9 \\
+        2y - 7z = -17 \\
+        3y - 11z = -27
+        \end{cases}
+    $$
 
-$$
-    \begin{cases}
-    x + y + 2z = 9 \\
-    2y - 7z = -17 \\
-    3y - 11z = -27
-    \end{cases}
-$$
+    </div>
+    <div>
+    Add ${-2}$ times the first row to the second row.
 
-</div>
-<div>
-Add ${-2}$ times the first row to the second row.
+    $$
+        \left\lbrack\hspace{-5pt}\begin{array}{ccc|c}
+        1 & 1 & 2 & 9 \\
+        0 & 2 & -7 & -17 \\
+        0 & 3 & -11 & -27
+        \end{array}\hspace{-5pt}\right\rbrack.
+    $$
 
-$$
-    \left\lbrack\hspace{-5pt}\begin{array}{ccc|c}
-    1 & 1 & 2 & 9 \\
-    0 & 2 & -7 & -17 \\
-    0 & 3 & -11 & -27
-    \end{array}\hspace{-5pt}\right\rbrack.
-$$
+    </div>
+    </Cols>
+    <Cols of={2}>
+    <div>
+    Multiply the second equation by ${\frac{1}{2}.}$
 
-</div>
-</Cols>
+    $$
+        \begin{cases}
+        x + y + 2z = 9 \\
+        y - \frac{7}{2}z = -\frac{17}{2} \\
+        3y - 11z = -27
+        \end{cases}
+    $$
 
-<Cols of={2}>
-<div>
-Multiply the second equation by ${\frac{1}{2}.}$
+    </div>
+    <div>
+    Multiply the second row by ${\frac{1}{2}.}$
 
-$$
-    \begin{cases}
-    x + y + 2z = 9 \\
-    y - \frac{7}{2}z = -\frac{17}{2} \\
-    3y - 11z = -27
-    \end{cases}
-$$
+    $$
+        \left\lbrack\hspace{-5pt}\begin{array}{ccc|c}
+        1 & 1 & 2 & 9 \\
+        0 & 1 & -\frac{7}{2} & -\frac{17}{2} \\
+        0 & 3 & -11 & -27
+        \end{array}\hspace{-5pt}\right\rbrack.
+    $$
 
-</div>
-<div>
-Multiply the second row by ${\frac{1}{2}.}$
+    </div>
+    </Cols>
+    <Cols of={2}>
+    <div>
+    Add ${-3}$ times the second equation to the third equation.
 
-$$
-    \left\lbrack\hspace{-5pt}\begin{array}{ccc|c}
-    1 & 1 & 2 & 9 \\
-    0 & 1 & -\frac{7}{2} & -\frac{17}{2} \\
-    0 & 3 & -11 & -27
-    \end{array}\hspace{-5pt}\right\rbrack.
-$$
+    $$
+        \begin{cases}
+        x + y + 2z = 9 \\
+        y - \frac{7}{2}z = -\frac{17}{2} \\
+        -\frac{1}{2}z = -\frac{3}{2}
+        \end{cases}
+    $$
 
-</div>
-</Cols>
+    </div>
+    <div>
+    Add ${-3}$ times the second row to the third row.
 
-<Cols of={2}>
-<div>
-Add ${-3}$ times the second equation to the third equation.
+    $$
+        \left\lbrack\hspace{-5pt}\begin{array}{ccc|c}
+        1 & 1 & 2 & 9 \\
+        0 & 1 & -\frac{7}{2} & -\frac{17}{2} \\
+        0 & 0 & -\frac{1}{2} & -\frac{3}{2}
+        \end{array}\hspace{-5pt}\right\rbrack.
+    $$
 
-$$
-    \begin{cases}
-    x + y + 2z = 9 \\
-    y - \frac{7}{2}z = -\frac{17}{2} \\
-    -\frac{1}{2}z = -\frac{3}{2}
-    \end{cases}
-$$
+    </div>
+    </Cols>
+    <Cols of={2}>
+    <div>
+    Multiply the third equation by ${-2.}$
 
-</div>
-<div>
-Add ${-3}$ times the second row to the third row.
+    $$
+        \begin{cases}
+        x + y + 2z = 9 \\
+        y - \frac{7}{2}z = -\frac{17}{2} \\
+        z = 3
+        \end{cases}
+    $$
 
-$$
-    \left\lbrack\hspace{-5pt}\begin{array}{ccc|c}
-    1 & 1 & 2 & 9 \\
-    0 & 1 & -\frac{7}{2} & -\frac{17}{2} \\
-    0 & 0 & -\frac{1}{2} & -\frac{3}{2}
-    \end{array}\hspace{-5pt}\right\rbrack.
-$$
+    </div>
+    <div>
+    Multiply the third row by ${-2.}$
 
-</div>
-</Cols>
+    $$
+        \left\lbrack\hspace{-5pt}\begin{array}{ccc|c}
+        1 & 1 & 2 & 9 \\
+        0 & 1 & -\frac{7}{2} & -\frac{17}{2} \\
+        0 & 0 & 1 & 3
+        \end{array}\hspace{-5pt}\right\rbrack.
+    $$
 
-<Cols of={2}>
-<div>
-Multiply the third equation by ${-2.}$
+    </div>
+    </Cols>
+    <Cols of={2}>
+    <div>
+    Add ${-1}$ times the second equation to the first equation.
 
-$$
-    \begin{cases}
-    x + y + 2z = 9 \\
-    y - \frac{7}{2}z = -\frac{17}{2} \\
-    z = 3
-    \end{cases}
-$$
+    $$
+        \begin{cases}
+        x + \frac{11}{2} z = \frac{35}{2} \\
+        y - \frac{7}{2}z = -\frac{17}{2} \\
+        z = 3
+        \end{cases}
+    $$
 
-</div>
-<div>
-Multiply the third row by ${-2.}$
+    </div>
+    <div>
+    Add ${-1}$ times the second row to the first row.
 
-$$
-    \left\lbrack\hspace{-5pt}\begin{array}{ccc|c}
-    1 & 1 & 2 & 9 \\
-    0 & 1 & -\frac{7}{2} & -\frac{17}{2} \\
-    0 & 0 & 1 & 3
-    \end{array}\hspace{-5pt}\right\rbrack.
-$$
+    $$
+        \left\lbrack\hspace{-5pt}\begin{array}{ccc|c}
+        1 & 0 & \frac{11}{2} & \frac{35}{2} \\
+        0 & 1 & -\frac{7}{2} & -\frac{17}{2} \\
+        0 & 0 & 1 & 3
+        \end{array}\hspace{-5pt}\right\rbrack.
+    $$
 
-</div>
-</Cols>
+    </div>
+    </Cols>
+    <Cols of={2}>
+    <div>
+    Add ${-\frac{11}{2}}$ times the third equation to the first equation and ${\frac{7}{2}}$ times the third equation to the second equation.
 
-<Cols of={2}>
-<div>
-Add ${-1}$ times the second equation to the first equation.
+    $$
+        \begin{cases}
+        x = 1 \\
+        y = 2 \\
+        z = 3
+        \end{cases}
+    $$
 
-$$
-    \begin{cases}
-    x + \frac{11}{2} z = \frac{35}{2} \\
-    y - \frac{7}{2}z = -\frac{17}{2} \\
-    z = 3
-    \end{cases}
-$$
+    </div>
+    <div>
+    Add ${-\frac{11}{2}}$ times the third row to the first row and ${\frac{7}{2}}$ times the third row to the second row.
 
-</div>
-<div>
-Add ${-1}$ times the second row to the first row.
+    $$
+        \left\lbrack\hspace{-5pt}\begin{array}{ccc|c}
+        1 & 0 & 0 & 1 \\
+        0 & 1 & 0 & 2 \\
+        0 & 0 & 1 & 3
+        \end{array}\hspace{-5pt}\right\rbrack.
+    $$
 
-$$
-    \left\lbrack\hspace{-5pt}\begin{array}{ccc|c}
-    1 & 0 & \frac{11}{2} & \frac{35}{2} \\
-    0 & 1 & -\frac{7}{2} & -\frac{17}{2} \\
-    0 & 0 & 1 & 3
-    \end{array}\hspace{-5pt}\right\rbrack.
-$$
-
-</div>
-</Cols>
-
-<Cols of={2}>
-<div>
-Add ${-\frac{11}{2}}$ times the third equation to the first equation and ${\frac{7}{2}}$ times the third equation to the second equation.
-
-$$
-    \begin{cases}
-    x = 1 \\
-    y = 2 \\
-    z = 3
-    \end{cases}
-$$
-
-</div>
-<div>
-Add ${-\frac{11}{2}}$ times the third row to the first row and ${\frac{7}{2}}$ times the third row to the second row.
-
-$$
-    \left\lbrack\hspace{-5pt}\begin{array}{ccc|c}
-    1 & 0 & 0 & 1 \\
-    0 & 1 & 0 & 2 \\
-    0 & 0 & 1 & 3
-    \end{array}\hspace{-5pt}\right\rbrack.
-$$
-
-</div>
-</Cols>
-
-We see that the solution space comprises exactly one solution:
-
-$$
-    \begin{bmatrix}
-    x \\
-    y \\
-    z
-    \end{bmatrix}
-    =
-    \begin{bmatrix}
-    1 \\
-    2 \\
-    3
-    \end{bmatrix}.
-$$
-
-If we rewrite the augmented matrix as a plain, old matrix
-
-$$
-    \begin{bmatrix}
-    1 & 0 & 0 & 1 \\
-    0 & 1 & 0 & 2 \\
-    0 & 0 & 1 & 3
-    \end{bmatrix}
-$$
-
-we get a particularly special kind of matrix &mdash; a matrix in _reduced row echelon form_.
-
-> **_definition_**. A matrix ${M}$ is in _reduced row echelon form_ if, and only if, the following properties hold for ${M:}$
->
-> 1. If a row does not consist entirely of zeros, then the first nonzero number in the row is ${1.}$ This is called the _leading 1_.
-> 2. If there are any rows that consist entirely of zeros, then they are grouped together at the bottom of the matrix.
-> 3. In any two successive rows that do not consist entirely of zeros, the leading ${1}$ in the lower row occurs farther to the right than the leading ${1}$ in the higher row.
-> 4. Each column that contains a leading ${1}$ has zeros everywhere else in that column.
-
-Variables that correspond to the leading ${1}$s are called _leading variables_, and all others _free variables_.
-
-Matrices that satisfy the first three properties are said to be in _row echelon form_. To be in _reduced row echelon form_, the matrix must satisfy all four properties.
+    </div>
+    </Cols>
+    We see that the solution space comprises exactly one solution:
+    $$
+        \begin{bmatrix}
+        x \\
+        y \\
+        z
+        \end{bmatrix}
+        =
+        \begin{bmatrix}
+        1 \\
+        2 \\
+        3
+        \end{bmatrix}.
+    $$
+- If we rewrite the augmented matrix as a plain, old matrix
+    $$
+        \begin{bmatrix}
+        1 & 0 & 0 & 1 \\
+        0 & 1 & 0 & 2 \\
+        0 & 0 & 1 & 3
+        \end{bmatrix}
+    $$
+    we get a particularly special kind of matrix &mdash; a matrix in _reduced row echelon form_.
+- **_definition_**. A matrix ${M}$ is in _reduced row echelon form_ if, and only if, the following properties hold for ${M:}$
+    1. If a row does not consist entirely of zeros, then the first nonzero number in the row is ${1.}$ This is called the _leading 1_.
+    2. If there are any rows that consist entirely of zeros, then they are grouped together at the bottom of the matrix.
+    3. In any two successive rows that do not consist entirely of zeros, the leading ${1}$ in the lower row occurs farther to the right than the leading ${1}$ in the higher row.
+    4. Each column that contains a leading ${1}$ has zeros everywhere else in that column.
+- Variables that correspond to the leading ${1}$s are called _leading variables_, and all others _free variables_.
+- Matrices that satisfy the first three properties are said to be in _row echelon form_.
+- To be in _reduced row echelon form_, the matrix must satisfy all four properties.
 
 ## Parametric Solutions
-
-Consider the augmented matrix below (vertical separator omitted):
-
-$$
-    \begin{bmatrix}
-    1 & 0 & 3 & -1 \\
-    0 & 1 & -4 & 2 \\
-    0 & 0 & 0 & 0
-    \end{bmatrix}.
-$$
-
-The last row maps to the equation ${0x + 0y + 0z = 0.}$ This is trivial and can be discarded since it holds no restrictions on ${x,}$ ${y,}$ or ${z.}$ Thus:
-
-$$
-    \begin{bmatrix}
-    1 & 0 & 3 & -1 \\
-    0 & 1 & -4 & 2 \\
-    \end{bmatrix}
-    \rightarrow
-    \begin{cases}
-    x + 3z = -1 \\
-    y - 4z = 2
-    \end{cases}
-    .
-$$
-
-Above, we see that the leading variables are ${x}$ and ${y,}$ with ${z}$ a free variable. If we solve for the leading variables in terms of the free variables, we get:
-
-$$
-    x = -1 - 3z \\
-    y = 2 + 4z.
-$$
-
-It's now apparent that ${z}$ can be treated as a _parameter_. So we can express the solution space with the parametric equations
-
-$$
-    \begin{cases}
-    x = -1 - 3t \\
-    y = 2 + 4t \\
-    z = t
-    \end{cases}
-    ~~~
-    t \in \reals.
-$$
+- Consider the augmented matrix below (vertical separator omitted):
+    $$
+        \begin{bmatrix}
+        1 & 0 & 3 & -1 \\
+        0 & 1 & -4 & 2 \\
+        0 & 0 & 0 & 0
+        \end{bmatrix}.
+    $$
+- The last row maps to the equation ${0x + 0y + 0z = 0.}$ This is trivial and can be discarded since it holds no restrictions on ${x,}$ ${y,}$ or ${z.}$ Thus:
+    $$
+        \begin{bmatrix}
+        1 & 0 & 3 & -1 \\
+        0 & 1 & -4 & 2 \\
+        \end{bmatrix}
+        \rightarrow
+        \begin{cases}
+        x + 3z = -1 \\
+        y - 4z = 2
+        \end{cases}
+        .
+    $$
+- Above, we see that the leading variables are ${x}$ and ${y,}$ with ${z}$ a free variable. If we solve for the leading variables in terms of the free variables, we get:
+    $$
+        x = -1 - 3z \\
+        y = 2 + 4z.
+    $$
+    It's now apparent that ${z}$ can be treated as a _parameter_. So we can express the solution space with the parametric equations
+    $$
+        \begin{cases}
+        x = -1 - 3t \\
+        y = 2 + 4t \\
+        z = t
+        \end{cases}
+        ~~~
+        t \in \reals.
+    $$
 
 ## Gauss-Jordan Elimination
+- In the preceding examples, we saw that we can solve a linear system by casting its augmented matrix into reduced row echelon form. But how did we know which elementary operations to perform? Our choices seemed arbitrary, if not the result of trial and error. We now introduce an algorithm for reducing any matrix to reduced row echelon form &mdash; _Gauss-Jordan Elimination_. To illustrate, we will reduce this matrix:
+    $$
+        \begin{bmatrix}
+        0 & 0 & -2 & 0 & 7 & 12 \\
+        2 & 4 & -10 & 6 & 12 & 28 \\
+        2 & 4 & -5 & 6 & -5 & -1
+        \end{bmatrix}.
+    $$
+    **Step 1.** Find the leftmost column that does not consist entirely of zeros.
+    <Cols of={2}>
 
-In the preceding examples, we saw that we can solve a linear system by casting its augmented matrix into reduced row echelon form. But how did we know which elementary operations to perform? Our choices seemed arbitrary, if not the result of trial and error. We now introduce an algorithm for reducing any matrix to reduced row echelon form &mdash; _Gauss-Jordan Elimination_. To illustrate, we will reduce this matrix:
+    $$
+        \begin{bmatrix}
+        \color{red}{0} & 0 & -2 & 0 & 7 & 12 \\
+        \color{red}{2} & 4 & -10 & 6 & 12 & 28 \\
+        \color{red}{2} & 4 & -5 & 6 & -5 & -1
+        \end{bmatrix}.
+    $$
 
-$$
-    \begin{bmatrix}
-    0 & 0 & -2 & 0 & 7 & 12 \\
-    2 & 4 & -10 & 6 & 12 & 28 \\
-    2 & 4 & -5 & 6 & -5 & -1
-    \end{bmatrix}.
-$$
+    _The leftmost column not entirely of zeros is colored red._
 
-**Step 1.** Find the leftmost column that does not consist entirely of zeros.
+    </Cols>
 
-<Cols of={2}>
+    **Step 2.** Swap the top row with another row, if necessary, to bring a nonzero entry to the top of the column found in step ${1.}$
 
-$$
-    \begin{bmatrix}
-    \color{red}{0} & 0 & -2 & 0 & 7 & 12 \\
-    \color{red}{2} & 4 & -10 & 6 & 12 & 28 \\
-    \color{red}{2} & 4 & -5 & 6 & -5 & -1
-    \end{bmatrix}.
-$$
+    <Cols of={2}>
 
-_The leftmost column not entirely of zeros is colored red._
+    $$
+        \begin{bmatrix}
+        2 & 4 & -10 & 6 & 12 & 28 \\
+        0 & 0 & -2 & 0 & 7 & 12 \\
+        2 & 4 & -5 & 6 & -5 & -1
+        \end{bmatrix}.
+    $$
 
-</Cols>
+    _We swapped the first and second rows._
 
-**Step 2.** Swap the top row with another row, if necessary, to bring a nonzero entry to the top of the column found in step ${1.}$
+    </Cols>
 
-<Cols of={2}>
+    **Step 3.** If the entry on top of the column found in step ${1}$ is ${a,}$ multiply the first row by ${1/a}$ to introduce a leading ${1.}$
 
-$$
-    \begin{bmatrix}
-    2 & 4 & -10 & 6 & 12 & 28 \\
-    0 & 0 & -2 & 0 & 7 & 12 \\
-    2 & 4 & -5 & 6 & -5 & -1
-    \end{bmatrix}.
-$$
+    <Cols of={2}>
+    $$
+        \begin{bmatrix}
+        1 & 2 & -5 & 3 & 6 & 14 \\
+        0 & 0 & -2 & 0 & 7 & 12 \\
+        2 & 4 & -5 & 6 & -5 & -1
+        \end{bmatrix}.
+    $$
 
-_We swapped the first and second rows._
+    _We multiplied the first row by ${\frac{1}{2}.}$_
 
-</Cols>
+    </Cols>
 
-**Step 3.** If the entry on top of the column found in step ${1}$ is ${a,}$ multiply the first row by ${1/a}$ to introduce a leading ${1.}$
+    **Step 4.** Add multiples of the top row to the rows below so that all entries below the leading ${1}$ become zeros.
 
-<Cols of={2}>
-$$
-    \begin{bmatrix}
-    1 & 2 & -5 & 3 & 6 & 14 \\
-    0 & 0 & -2 & 0 & 7 & 12 \\
-    2 & 4 & -5 & 6 & -5 & -1
-    \end{bmatrix}.
-$$
+    <Cols of={2}>
+    $$
+        \begin{bmatrix}
+        1 & 2 & -5 & 3 & 6 & 14 \\
+        0 & 0 & -2 & 0 & 7 & 12 \\
+        0 & 0 & 5 & 0 & -17 & -29
+        \end{bmatrix}.
+    $$
 
-_We multiplied the first row by ${\frac{1}{2}.}$_
+    _We added ${-2}$ times the first row of the preceding matrix to the third row._
 
-</Cols>
+    </Cols>
 
-**Step 4.** Add multiples of the top row to the rows below so that all entries below the leading ${1}$ become zeros.
+    **Step 5.** Now cover (ignore) the top row in the matrix. With the remaining rows (the submatrix) repeat the process again starting from step ${1.}$
 
-<Cols of={2}>
-$$
-    \begin{bmatrix}
-    1 & 2 & -5 & 3 & 6 & 14 \\
-    0 & 0 & -2 & 0 & 7 & 12 \\
-    0 & 0 & 5 & 0 & -17 & -29
-    \end{bmatrix}.
-$$
+    <Cols of={2}>
+    $$
+        \begin{bmatrix}
+        \color{lightgrey}{1} & \color{lightgrey}{2} & \color{lightgrey}{-5} & \color{lightgrey}{3} & \color{lightgrey}{6} & \color{lightgrey}{14} \\
+        0 & 0 & \color{red}{-2} & 0 & 7 & 12 \\
+        0 & 0 & \color{red}{5} & 0 & -17 & -29
+        \end{bmatrix}.
+    $$
 
-_We added ${-2}$ times the first row of the preceding matrix to the third row._
+    _Leftmost nonzero column is colored red._
 
-</Cols>
+    </Cols>
 
-**Step 5.** Now cover (ignore) the top row in the matrix. With the remaining rows (the submatrix) repeat the process again starting from step ${1.}$
+    <Cols of={2}>
+    $$
+        \begin{bmatrix}
+        \color{lightgrey}{1} & \color{lightgrey}{2} & \color{lightgrey}{-5} & \color{lightgrey}{3} & \color{lightgrey}{6} & \color{lightgrey}{14} \\
+        0 & 0 & 1 & 0 & -\frac{7}{2} & -6 \\
+        0 & 0 & 5 & 0 & -17 & -29
+        \end{bmatrix}.
+    $$
 
-<Cols of={2}>
-$$
-    \begin{bmatrix}
-    \color{lightgrey}{1} & \color{lightgrey}{2} & \color{lightgrey}{-5} & \color{lightgrey}{3} & \color{lightgrey}{6} & \color{lightgrey}{14} \\
-    0 & 0 & \color{red}{-2} & 0 & 7 & 12 \\
-    0 & 0 & \color{red}{5} & 0 & -17 & -29
-    \end{bmatrix}.
-$$
+    _We multiply the first row in the submatrix by ${-\frac{1}{2}}$ to introduce a leading ${1.}$_
 
-_Leftmost nonzero column is colored red._
+    </Cols>
 
-</Cols>
+    <Cols of={2}>
+    $$
+        \begin{bmatrix}
+        \color{lightgrey}{1} & \color{lightgrey}{2} & \color{lightgrey}{-5} & \color{lightgrey}{3} & \color{lightgrey}{6} & \color{lightgrey}{14} \\
+        0 & 0 & 1 & 0 & -\frac{7}{2} & -6 \\
+        0 & 0 & 0 & 0 & \frac{1}{2} & 1
+        \end{bmatrix}.
+    $$
 
-<Cols of={2}>
-$$
-    \begin{bmatrix}
-    \color{lightgrey}{1} & \color{lightgrey}{2} & \color{lightgrey}{-5} & \color{lightgrey}{3} & \color{lightgrey}{6} & \color{lightgrey}{14} \\
-    0 & 0 & 1 & 0 & -\frac{7}{2} & -6 \\
-    0 & 0 & 5 & 0 & -17 & -29
-    \end{bmatrix}.
-$$
+    _We add ${-5}$ times the first row of the submatrix to the second row of the submatrix to introduce a zero below the leading ${1.}$_
 
-_We multiply the first row in the submatrix by ${-\frac{1}{2}}$ to introduce a leading ${1.}$_
+    </Cols>
 
-</Cols>
+    <Cols of={2}>
+    $$
+        \begin{bmatrix}
+        \color{lightgrey}{1} & \color{lightgrey}{2} & \color{lightgrey}{-5} & \color{lightgrey}{3} & \color{lightgrey}{6} & \color{lightgrey}{14} \\
+        \color{lightgrey}{0} & \color{lightgrey}{0} & \color{lightgrey}{1} & \color{lightgrey}{0} & \color{lightgrey}{-\frac{7}{2}} & \color{lightgrey}{-6} \\
+        0 & 0 & 0 & 0 & \color{red}{\frac{1}{2}} & 1
+        \end{bmatrix}.
+    $$
 
-<Cols of={2}>
-$$
-    \begin{bmatrix}
-    \color{lightgrey}{1} & \color{lightgrey}{2} & \color{lightgrey}{-5} & \color{lightgrey}{3} & \color{lightgrey}{6} & \color{lightgrey}{14} \\
-    0 & 0 & 1 & 0 & -\frac{7}{2} & -6 \\
-    0 & 0 & 0 & 0 & \frac{1}{2} & 1
-    \end{bmatrix}.
-$$
+    _We cover the top row of the submatrix and return again to step ${1.}$ The leftmost nonzero column is colored red._
 
-_We add ${-5}$ times the first row of the submatrix to the second row of the submatrix to introduce a zero below the leading ${1.}$_
+    </Cols>
 
-</Cols>
+    <Cols of={2}>
+    $$
+        \begin{bmatrix}
+        \color{lightgrey}{1} & \color{lightgrey}{2} & \color{lightgrey}{-5} & \color{lightgrey}{3} & \color{lightgrey}{6} & \color{lightgrey}{14} \\
+        \color{lightgrey}{0} & \color{lightgrey}{0} & \color{lightgrey}{1} & \color{lightgrey}{0} & \color{lightgrey}{-\frac{7}{2}} & \color{lightgrey}{-6} \\
+        0 & 0 & 0 & 0 & 1 & 2
+        \end{bmatrix}.
+    $$
 
-<Cols of={2}>
-$$
-    \begin{bmatrix}
-    \color{lightgrey}{1} & \color{lightgrey}{2} & \color{lightgrey}{-5} & \color{lightgrey}{3} & \color{lightgrey}{6} & \color{lightgrey}{14} \\
-    \color{lightgrey}{0} & \color{lightgrey}{0} & \color{lightgrey}{1} & \color{lightgrey}{0} & \color{lightgrey}{-\frac{7}{2}} & \color{lightgrey}{-6} \\
-    0 & 0 & 0 & 0 & \color{red}{\frac{1}{2}} & 1
-    \end{bmatrix}.
-$$
+    _The first (and only) row in the new submatrix is multiplied by ${2}$ to introduce a leading ${1.}$_
 
-_We cover the top row of the submatrix and return again to step ${1.}$ The leftmost nonzero column is colored red._
+    </Cols>
 
-</Cols>
+    <Cols of={2}>
+    $$
+        \begin{bmatrix}
+        {1} & {2} & {-5} & {3} & {6} & {14} \\
+        {0} & {0} & {1} & {0} & {-\frac{7}{2}} & {-6} \\
+        0 & 0 & 0 & 0 & 1 & 2
+        \end{bmatrix}.
+    $$
 
-<Cols of={2}>
-$$
-    \begin{bmatrix}
-    \color{lightgrey}{1} & \color{lightgrey}{2} & \color{lightgrey}{-5} & \color{lightgrey}{3} & \color{lightgrey}{6} & \color{lightgrey}{14} \\
-    \color{lightgrey}{0} & \color{lightgrey}{0} & \color{lightgrey}{1} & \color{lightgrey}{0} & \color{lightgrey}{-\frac{7}{2}} & \color{lightgrey}{-6} \\
-    0 & 0 & 0 & 0 & 1 & 2
-    \end{bmatrix}.
-$$
+    _The matrix is now in row echelon form. To find the reduced row echelon form, proceed to step ${6.}$_
 
-_The first (and only) row in the new submatrix is multiplied by ${2}$ to introduce a leading ${1.}$_
+    </Cols>
 
-</Cols>
+    **Step 6.** Beginning with the last nonzero row and working upward, add suitable multiples of each row to the rows above to introduce zeros above the leading ${1s.}$
 
-<Cols of={2}>
-$$
-    \begin{bmatrix}
-    {1} & {2} & {-5} & {3} & {6} & {14} \\
-    {0} & {0} & {1} & {0} & {-\frac{7}{2}} & {-6} \\
-    0 & 0 & 0 & 0 & 1 & 2
-    \end{bmatrix}.
-$$
+    <Cols of={2}>
+    $$
+        \begin{bmatrix}
+        {1} & {2} & {-5} & {3} & {6} & {14} \\
+        {0} & {0} & {1} & {0} & {0} & {1} \\
+        0 & 0 & 0 & 0 & 1 & 2
+        \end{bmatrix}.
+    $$
 
-_The matrix is now in row echelon form. To find the reduced row echelon form, proceed to step ${6.}$_
+    _We added ${\frac{7}{2}}$ times the third row of the preceding matrix to the second row._
 
-</Cols>
+    </Cols>
 
-**Step 6.** Beginning with the last nonzero row and working upward, add suitable multiples of each row to the rows above to introduce zeros above the leading ${1s.}$
+    <Cols of={2}>
+    $$
+        \begin{bmatrix}
+        {1} & {2} & {-5} & {3} & {0} & {2} \\
+        {0} & {0} & {1} & {0} & {0} & {1} \\
+        0 & 0 & 0 & 0 & 1 & 2
+        \end{bmatrix}.
+    $$
 
-<Cols of={2}>
-$$
-    \begin{bmatrix}
-    {1} & {2} & {-5} & {3} & {6} & {14} \\
-    {0} & {0} & {1} & {0} & {0} & {1} \\
-    0 & 0 & 0 & 0 & 1 & 2
-    \end{bmatrix}.
-$$
+    _We added ${-6}$ times the third row to the first row._
 
-_We added ${\frac{7}{2}}$ times the third row of the preceding matrix to the second row._
+    </Cols>
 
-</Cols>
+    <Cols of={2}>
+    $$
+        \begin{bmatrix}
+        {1} & {2} & {0} & {3} & {0} & {7} \\
+        {0} & {0} & {1} & {0} & {0} & {1} \\
+        0 & 0 & 0 & 0 & 1 & 2
+        \end{bmatrix}.
+    $$
 
-<Cols of={2}>
-$$
-    \begin{bmatrix}
-    {1} & {2} & {-5} & {3} & {0} & {2} \\
-    {0} & {0} & {1} & {0} & {0} & {1} \\
-    0 & 0 & 0 & 0 & 1 & 2
-    \end{bmatrix}.
-$$
+    _We added ${5}$ times the second row to the first row. The matrix is now in reduced row echelon form._
 
-_We added ${-6}$ times the third row to the first row._
-
-</Cols>
-
-<Cols of={2}>
-$$
-    \begin{bmatrix}
-    {1} & {2} & {0} & {3} & {0} & {7} \\
-    {0} & {0} & {1} & {0} & {0} & {1} \\
-    0 & 0 & 0 & 0 & 1 & 2
-    \end{bmatrix}.
-$$
-
-_We added ${5}$ times the second row to the first row. The matrix is now in reduced row echelon form._
-
-</Cols>
+    </Cols>
 
 ## Matrices & Linear Equations
+- We can represent a system of linear equations with matrices. We place the coefficients ${a_{i,j}}$ into vectors,
+    $$
+        \begin{bmatrix}
+        a_{1,1} \\ \vdots \\ a_{m,1}
+        \end{bmatrix}
+        x_1
+        +
+        \begin{bmatrix}
+        a_{1,2} \\ \vdots \\ a_{m,2}
+        \end{bmatrix}
+        x_2
+        +
+        \ldots
+        +
+        \begin{bmatrix}
+        a_{1,n} \\ \vdots \\ a_{m,n}
+        \end{bmatrix}
+        x_n
+        =
+        \begin{bmatrix}
+        b_1 \\ \vdots \\ b_m
+        \end{bmatrix},
+    $$
 
-We can represent a system of linear equations with matrices. We place the coefficients ${a_{i,j}}$ into vectors,
+    then place the vectors into matrices
 
-$$
-    \begin{bmatrix}
-    a_{1,1} \\ \vdots \\ a_{m,1}
-    \end{bmatrix}
-    x_1
-    +
-    \begin{bmatrix}
-    a_{1,2} \\ \vdots \\ a_{m,2}
-    \end{bmatrix}
-    x_2
-    +
-    \ldots
-    +
-    \begin{bmatrix}
-    a_{1,n} \\ \vdots \\ a_{m,n}
-    \end{bmatrix}
-    x_n
-    =
-    \begin{bmatrix}
-    b_1 \\ \vdots \\ b_m
-    \end{bmatrix},
-$$
+    $$
+        \begin{aligned}
+        \begin{bmatrix}
+        a_{1,1} &\ldots &a_{1,n} \\
+        \vdots   &~     \vdots &\vdots \\
+        a_{m,1} &\ldots &a_{m,n}
+        \end{bmatrix}
+        \end{aligned}
 
-then place the vectors into matrices
-
-$$
-    \begin{aligned}
-    \begin{bmatrix}
-    a_{1,1} &\ldots &a_{1,n} \\
-    \vdots   &~     \vdots &\vdots \\
-    a_{m,1} &\ldots &a_{m,n}
-    \end{bmatrix}
-    \end{aligned}
-
-    \begin{bmatrix}
-    x_1 \\ \vdots \\ x_n
-    \end{bmatrix}
-    =
-    \begin{bmatrix}
-    b_1 \\ \vdots \\ b_m
-    \end{bmatrix}.
-$$
+        \begin{bmatrix}
+        x_1 \\ \vdots \\ x_n
+        \end{bmatrix}
+        =
+        \begin{bmatrix}
+        b_1 \\ \vdots \\ b_m
+        \end{bmatrix}.
+    $$
 
 ## Matrices
-
-A matrix can be thought of as an array of arrays. They allow us to compactly represent a system of linear equations.
-
-> **_definition_**. Let ${m,n \in \N.}$ A real-valued ${(m,n)}$ matrix ${\bold{A}}$
-> is an ${m \cdot n}$ tuple of elements ${a_{i,j},}$ ${i = 1, \ldots, m,}$ ${j =
-> 1, \ldots, n.}$ This tuple is ordered as a rectangle of ${m}$ rows and ${n}$
-> columns:
->
-> $$
->     \bold{A} =
->     \begin{bmatrix}
->     a_{1,1} & a_{1,2} & \ldots & a_{1,n} \\
->     a_{2,1} & a_{2,2} & \ldots & a_{2,n} \\
->     \vdots  & \vdots  & \vdots & \vdots \\
->     a_{m,1} & a_{m,2} & \ldots & a_{m,n}
->     \end{bmatrix},
->     ~~ a_{i,j} \in \R.
-> $$
->
-> We call ${i}$ the _row index_, and ${j}$ the _column index_.
-
-Some additional terminology: A ${(1,n)}$ matrix is called a **row vector**, and a ${(m,1)}$ matrix is called a **column vector**.
-
-**_example_**. In programming, we can represent a row vector with a simple array:
-
-```ts
-let R = [1, 2, 3, 4];
-```
-
-**_example_**. A matrix would be an array of arrays:
-
-```ts
-let M = [
-  [1, 2, 3],
-  [4, 5, 6],
-  [7, 8, 9],
-];
-```
-
-**_example_**. A column vector would be an array of one-element arrays:
-
-```ts
-let C = [[1], [2], [3]];
-```
-
+- A matrix can be thought of as an array of arrays. They allow us to compactly represent a system of linear equations.
+- **_definition_**. Let ${m,n \in \N.}$ A real-valued ${(m,n)}$ matrix ${\bold{A}}$
+ is an ${m \cdot n}$ tuple of elements ${a_{i,j},}$ ${i = 1, \ldots, m,}$ ${j =
+ 1, \ldots, n.}$ This tuple is ordered as a rectangle of ${m}$ rows and ${n}$
+ columns:
+    $$
+        \bold{A} =
+        \begin{bmatrix}
+        a_{1,1} & a_{1,2} & \ldots & a_{1,n} \\
+        a_{2,1} & a_{2,2} & \ldots & a_{2,n} \\
+        \vdots  & \vdots  & \vdots & \vdots \\
+        a_{m,1} & a_{m,2} & \ldots & a_{m,n}
+        \end{bmatrix},
+        ~~ a_{i,j} \in \R.
+    $$
+    We call ${i}$ the _row index_, and ${j}$ the _column index_.
+- Some additional terminology: A ${(1,n)}$ matrix is called a **row vector**, and a ${(m,1)}$ matrix is called a **column vector**.
+- **_example_**. In programming, we can represent a row vector with a simple array:
+    ```ts
+    let R = [1, 2, 3, 4];
+    ```
+- **_example_**. A matrix would be an array of arrays:
+    ```ts
+    let M = [
+        [1, 2, 3],
+        [4, 5, 6],
+        [7, 8, 9],
+    ];
+    ```
+- **_example_**. A column vector would be an array of one-element arrays:
+    ```ts
+    let C = [[1], [2], [3]];
+    ```
 ### Matrix Equality
-
-> **_definition_**. Two matrices are equal if and only if they have the same size and their corresponding entries are equal.
+- **_definition_**. Two matrices are equal if and only if they have the same size and their corresponding entries are equal.
 
 ### Matrix Addition
-
-To add two matrices, we add each element of one matrix to the corresponding element (the element of the same indices) in the other matrix (element-wise sum).
-
-> **_definition_**. Let ${\bold{A} \in \R^{m \times n},}$ and let ${\bold{B} \in \R^{m \times n}.}$ Then the sum ${\bold{A} + \bold{B}}$ is defined as:
->
-> $$
->     \bold{A} + \bold{B} :=
->     \begin{bmatrix}
->     a_{1,1} + b_{1,1} & \ldots & a_{1,n} + b_{1,n} \\
->     \vdots & \vdots & \vdots \\
->     a_{m,1} + b_{m,1} & \ldots & a_{m,n} + b_{m,n}
->     \end{bmatrix}
->     \in
->     \reals^{m \times n}.
-> $$
-
-**_example_**.
-
-$$
-\begin{aligned}
-    \begin{bmatrix}
-    3 & 0 & 3 \\
-    5 & 7 & 4 \\
-    2 & 1 & 8
-    \end{bmatrix}
-    +
-    \begin{bmatrix}
-    1 & 2 & 5 \\
-    4 & 1 & 4 \\
-    3 & 0 & 1
-    \end{bmatrix}
-    &=
-    \begin{bmatrix}
-    3 + 1 & 0 + 2 & 3 + 5 \\
-    5 + 4 & 7 + 1 & 4 + 4 \\
-    2 + 3 & 1 + 0 & 8 + 1
-    \end{bmatrix} \\
-    &=
-    \begin{bmatrix}
-    4 & 2 & 8 \\
-    9 & 8 & 8 \\
-    5 & 1 & 9
-    \end{bmatrix}
-\end{aligned}.
-$$
-
-From the definition, we see that matrices of different sizes _cannot_ be added.
+- To add two matrices, we add each element of one matrix to the corresponding element (the element of the same indices) in the other matrix (element-wise sum).
+- **_definition_**. Let ${\bold{A} \in \R^{m \times n},}$ and let ${\bold{B} \in \R^{m \times n}.}$ Then the sum ${\bold{A} + \bold{B}}$ is defined as:
+    $$
+        \bold{A} + \bold{B} :=
+        \begin{bmatrix}
+        a_{1,1} + b_{1,1} & \ldots & a_{1,n} + b_{1,n} \\
+        \vdots & \vdots & \vdots \\
+        a_{m,1} + b_{m,1} & \ldots & a_{m,n} + b_{m,n}
+        \end{bmatrix}
+        \in
+        \reals^{m \times n}.
+    $$
+- **_example_**.
+    $$
+    \begin{aligned}
+        \begin{bmatrix}
+        3 & 0 & 3 \\
+        5 & 7 & 4 \\
+        2 & 1 & 8
+        \end{bmatrix}
+        +
+        \begin{bmatrix}
+        1 & 2 & 5 \\
+        4 & 1 & 4 \\
+        3 & 0 & 1
+        \end{bmatrix}
+        &=
+        \begin{bmatrix}
+        3 + 1 & 0 + 2 & 3 + 5 \\
+        5 + 4 & 7 + 1 & 4 + 4 \\
+        2 + 3 & 1 + 0 & 8 + 1
+        \end{bmatrix} \\
+        &=
+        \begin{bmatrix}
+        4 & 2 & 8 \\
+        9 & 8 & 8 \\
+        5 & 1 & 9
+        \end{bmatrix}
+    \end{aligned}.
+    $$
+- From the definition, we see that matrices of different sizes _cannot_ be added.
 
 ### Matrix Multiplication
-
-There are three forms of matrix multiplication: **scalar multiplication**, the **Hadamard product**, and the **row-column dot product**.
+- There are three forms of matrix multiplication: **scalar multiplication**, the **Hadamard product**, and the **row-column dot product**.
 
 #### Hadamard Product
-
-The Hadamard product is simply element-wise multiplication.
-
-**_definition_**. Let ${\bold{A} \in \R^{m \times n},}$ and let ${\bold{B} \in \R^{m \times n}.}$ Then the Hadamard product ${\bold{A} \odot \bold{B}}$ is defined as:
-
-$$
-    \bold{A} \odot \bold{B} :=
-    \begin{bmatrix}
-    a_{1,1}b_{1,1} & \ldots & a_{1,n}b_{1,n} \\
-    \vdots & \vdots & \vdots \\
-    a_{m,1}b_{m,1} & \ldots & a_{m,n}b_{m,n}
-    \end{bmatrix}
-    \in
-    \reals^{m \times n}.
-$$
-
-Like the matrix sum, the Hadamard product is defined only if ${\bold{A}}$ and ${\bold{B}}$ have the same dimensions.
+- The Hadamard product is simply element-wise multiplication.
+- **_definition_**. Let ${\bold{A} \in \R^{m \times n},}$ and let ${\bold{B} \in \R^{m \times n}.}$ Then the Hadamard product ${\bold{A} \odot \bold{B}}$ is defined as:
+    $$
+        \bold{A} \odot \bold{B} :=
+        \begin{bmatrix}
+        a_{1,1}b_{1,1} & \ldots & a_{1,n}b_{1,n} \\
+        \vdots & \vdots & \vdots \\
+        a_{m,1}b_{m,1} & \ldots & a_{m,n}b_{m,n}
+        \end{bmatrix}
+        \in
+        \reals^{m \times n}.
+    $$
+- Like the matrix sum, the Hadamard product is defined only if ${\bold{A}}$ and ${\bold{B}}$ have the same dimensions.
 
 <aside>
   The Hadamard product is attributed to, and named after, the French
@@ -1190,181 +1108,156 @@ Like the matrix sum, the Hadamard product is defined only if ${\bold{A}}$ and ${
   was the wife of Alfred Dreyfus of the Dreyfus affair.
 </aside>
 
-**_example_**.
-
-$$
-\begin{aligned}
-    \begin{bmatrix}
-    2 & 7 & 5 \\
-    9 & 4 & 3 \\
-    1 & 3 & 8
-    \end{bmatrix}
-    +
-    \begin{bmatrix}
-    7 & 3 & 5 \\
-    9 & 8 & 4 \\
-    1 & 6 & 3
-    \end{bmatrix}
-    &=
-    \begin{bmatrix}
-    2 \times 7 & 7 \times 3 & 5 \times 5 \\
-    9 \times 9 & 4 \times 8 & 3 \times 4 \\
-    1 \times 1 & 3 \times 6 & 8 \times 3
-    \end{bmatrix} \\
-    &=
-    \begin{bmatrix}
-    14 & 21 & 25 \\
-    81 & 32 & 12 \\
-    1 & 18 & 24
-    \end{bmatrix}
-\end{aligned}.
-$$
+- **_example_**.
+    $$
+    \begin{aligned}
+        \begin{bmatrix}
+        2 & 7 & 5 \\
+        9 & 4 & 3 \\
+        1 & 3 & 8
+        \end{bmatrix}
+        +
+        \begin{bmatrix}
+        7 & 3 & 5 \\
+        9 & 8 & 4 \\
+        1 & 6 & 3
+        \end{bmatrix}
+        &=
+        \begin{bmatrix}
+        2 \times 7 & 7 \times 3 & 5 \times 5 \\
+        9 \times 9 & 4 \times 8 & 3 \times 4 \\
+        1 \times 1 & 3 \times 6 & 8 \times 3
+        \end{bmatrix} \\
+        &=
+        \begin{bmatrix}
+        14 & 21 & 25 \\
+        81 & 32 & 12 \\
+        1 & 18 & 24
+        \end{bmatrix}
+    \end{aligned}.
+    $$
 
 #### Scalar Multiplication
-
-When we multiply a scalar to a matrix, we multiply each element of the matrix with the scalar.
+- When we multiply a scalar to a matrix, we multiply each element of the matrix with the scalar.
 
 #### Row-Column Dot Product
+- With matrix sums, we simply perform element-wise addition. Matrix multiplication, however, looks a little different:
+- __*definition*__. Given matrices ${\bold{A} \in \reals^{m \times n}}$ and${\bold{B} \in \reals^{n \times k},}$ the elements ${c_{i,j}}$ of the product ${\bold{C} = \bold{A}\bold{B} \in \reals^{m \times k}}$ are computed as:
+    $$
+        c_{i,j} = \sum_{\ell = 1}^{n} a_{i,\ell} b_{i,\ell,} \\[1em]
+        i = 1, \ldots, m \\
+        j = 1, \ldots, k.
+    $$
+    That is, to compute the element ${c_{i,j},}$ multiply the ${i^{\text{th}}}$ row of ${\bold{A}}$ with the ${j^{\text{th}}}$ column of ${\bold{B}}$ and sum them.
 
-With matrix sums, we simply perform element-wise addition. Matrix multiplication, however, looks a little different:
+- **_example_**. To compute the row-column dot product of
+    $$
+        \underbrace{
+        \begin{bmatrix}
+        1 & 2 & 3 \\
+        4 & 5 & 6
+        \end{bmatrix}}_{\bold{A}}
+        \cdot
+        \underbrace{
+        \begin{bmatrix}
+        7 & 8 \\
+        9 & 10 \\
+        11 & 12
+        \end{bmatrix}}_{\bold{B}},
+    $$
+    we start by computing the dot product of the first row of ${A}$ and the first column of ${B:}$
+    $$
+    \begin{aligned}
+        [1,2,3] \cdot [7,9,11] &= (1 \times 7) + (2 \times 9) + (3 \times 11) \\
+        &= 58.
+    \end{aligned}
+    $$
+    This gives us the first row, first column entry:
+    $$
+        \begin{bmatrix}
+        58 & ~ \\
+        ~ & ~
+        \end{bmatrix}.
+    $$
+    Next we compute the first row, second column dot product:
+    $$
+    \begin{aligned}
+        [1,2,3] \cdot [8,10,12] &= (1 \times 8) + (2 \times 10) + (3 \times 12) \\
+        &= 64.
+    \end{aligned}
+    $$
+    This gives us the first row, second column entry:
+    $$
+        \begin{bmatrix}
+        58 & 64 \\
+        ~ & ~
+        \end{bmatrix}.
+    $$
+    Now the second row, first column:
+    $$
+    \begin{aligned}
+        [4,5,6] \cdot [7,9,11] &= (4 \times 7) + (5 \times 9) + (6 \times 11) \\
+        &= 139.
+    \end{aligned}
+    $$
+    Thus, we now have:
+    $$
+        \begin{bmatrix}
+        58 & 64 \\
+        139 & ~
+        \end{bmatrix}.
+    $$
+    Finally, compute the second row, second column:
+    $$
+        \begin{aligned}
+        [4,5,6] \cdot [8,10,12] &= (4 \times 8) + (5 \times 10) + (6 \times 12) \\
+        &= 154.
+        \end{aligned}
+    $$
+    The result:
+    $$
+        \begin{bmatrix}
+        58 & 64 \\
+        139 & 154
+        \end{bmatrix}.
+    $$
+- Notice: Given a matrix ${\bold{A}}$ and a matrix ${\bold{B},}$ the row-column product ${\bold{A} \cdot \bold{B}}$ is defined only if the number of columns of ${\bold{A}}$ is equal to the number of rows of ${\bold{B}.}$ In general, given an ${m \times n}$ matrix ${\bold{A}}$ and an ${n \times k}$ matrix ${\bold{B},}$ ${\bold{A}\cdot\bold{B}}$ is defined only if the ${n}$s are the same. The result ${\bold{A} \cdot \bold{B}}$ is an ${m \times k}$ matrix.
+- **Why do we multiply matrices like this?** A small bakery sells three types of cake slices: Coffee is ${\text{\textdollar} 3}$ a slice; chocolate is ${\text{\textdollar}4}$ a slice; and carrot is ${\text{\textdollar} 2}$ a slice. The bakery maintains a ledger of how many that've sold. Here is a snippet for the past four days:
 
-> **Definition.** Given matrices ${\bold{A} \in \reals^{m \times n}}$ and${\bold{B} \in \reals^{n \times k},}$ the elements ${c_{i,j}}$ of the product ${\bold{C} = \bold{A}\bold{B} \in \reals^{m \times k}}$ are computed as:
->
-> $$
->     c_{i,j} = \sum_{\ell = 1}^{n} a_{i,\ell} b_{i,\ell,} \\[1em]
->     i = 1, \ldots, m \\
->     j = 1, \ldots, k.
-> $$
+    |           | Mon. | Tue. | Wed. | Thu. |
+    | --------- | ---- | ---- | ---- | ---- |
+    | Coffee    | 13   | 9    | 7    | 15   |
+    | Chocolate | 8    | 7    | 4    | 6    |
+    | Carrot    | 6    | 4    | 0    | 3    |
 
-That is, to compute the element ${c_{i,j},}$ multiply the ${i^{\text{th}}}$ row of ${\bold{A}}$ with the ${j^{\text{th}}}$ column of ${\bold{B}}$ and sum them.
+    And here are the prices per slice:
 
-**_example_**. To compute the row-column dot product of
+    |           | Price |
+    | --------- | ----- |
+    | Coffee    | 3     |
+    | Chocolate | 4     |
+    | Carrot    | 2     |
 
-$$
-    \underbrace{
-    \begin{bmatrix}
-    1 & 2 & 3 \\
-    4 & 5 & 6
-    \end{bmatrix}}_{\bold{A}}
-    \cdot
-    \underbrace{
-    \begin{bmatrix}
-    7 & 8 \\
-    9 & 10 \\
-    11 & 12
-    \end{bmatrix}}_{\bold{B}},
-$$
+    How much revenue did the bakery generate on Monday? We multiply the number of slices sold for that type with the type's price per slice, perform that operation for each type, and sum the products: 
 
-we start by computing the dot product of the first row of ${A}$ and the first column of ${B:}$
+    $$
+        (3 \times 13) + (4 \times 8) + (2 \times 6) = 83.
+    $$
 
-$$
-\begin{aligned}
-    [1,2,3] \cdot [7,9,11] &= (1 \times 7) + (2 \times 9) + (3 \times 11) \\
-    &= 58.
-\end{aligned}
-$$
+    To compute the revenue for each day, we compute the row-column dot product:
 
-This gives us the first row, first column entry:
+    $$
+        [3 ~~ 4 ~~ 2]
+        \begin{bmatrix}
+            13 & 9 & 7 & 15 \\
+            8 & 7 & 4 & 6 \\
+            6 & 4 & 0 & 3
+        \end{bmatrix}
+        =
+        [83 ~~ 63 ~~ 37 ~~ 75].
+    $$
 
-$$
-    \begin{bmatrix}
-    58 & ~ \\
-    ~ & ~
-    \end{bmatrix}.
-$$
-
-Next we compute the first row, second column dot product:
-
-$$
-\begin{aligned}
-    [1,2,3] \cdot [8,10,12] &= (1 \times 8) + (2 \times 10) + (3 \times 12) \\
-    &= 64.
-\end{aligned}
-$$
-
-This gives us the first row, second column entry:
-
-$$
-    \begin{bmatrix}
-    58 & 64 \\
-    ~ & ~
-    \end{bmatrix}.
-$$
-
-Now the second row, first column:
-
-$$
-\begin{aligned}
-    [4,5,6] \cdot [7,9,11] &= (4 \times 7) + (5 \times 9) + (6 \times 11) \\
-    &= 139.
-\end{aligned}
-$$
-
-Thus, we now have:
-
-$$
-\begin{bmatrix}
-58 & 64 \\
-139 & ~
-\end{bmatrix}.
-$$
-
-Finally, compute the second row, second column:
-
-$$
-\begin{aligned}
-[4,5,6] \cdot [8,10,12] &= (4 \times 8) + (5 \times 10) + (6 \times 12) \\
-&= 154.
-\end{aligned}
-$$
-
-The result:
-
-$$
-\begin{bmatrix}
-58 & 64 \\
-139 & 154
-\end{bmatrix}.
-$$
-
-Notice: Given a matrix ${\bold{A}}$ and a matrix ${\bold{B},}$ the row-column product ${\bold{A} \cdot \bold{B}}$ is defined only if the number of columns of ${\bold{A}}$ is equal to the number of rows of ${\bold{B}.}$ In general, given an ${m \times n}$ matrix ${\bold{A}}$ and an ${n \times k}$ matrix ${\bold{B},}$ ${\bold{A}\cdot\bold{B}}$ is defined only if the ${n}$s are the same. The result ${\bold{A} \cdot \bold{B}}$ is an ${m \times k}$ matrix.
-
-**Why do we multiply matrices like this?** A small bakery sells three types of cake slices: Coffee is ${\text{\textdollar} 3}$ a slice; chocolate is ${\text{\textdollar}4}$ a slice; and carrot is ${\text{\textdollar} 2}$ a slice. The bakery maintains a ledger of how many that've sold. Here is a snippet for the past four days:
-
-|           | Mon. | Tue. | Wed. | Thu. |
-| --------- | ---- | ---- | ---- | ---- |
-| Coffee    | 13   | 9    | 7    | 15   |
-| Chocolate | 8    | 7    | 4    | 6    |
-| Carrot    | 6    | 4    | 0    | 3    |
-
-And here are the prices per slice:
-
-|           | Price |
-| --------- | ----- |
-| Coffee    | 3     |
-| Chocolate | 4     |
-| Carrot    | 2     |
-
-How much revenue did the bakery generate on Monday? We multiply the number of slices sold for that type with the type's price per slice, perform that operation for each type, and sum the products: 
-
-$$
-    (3 \times 13) + (4 \times 8) + (2 \times 6) = 83.
-$$
-
-To compute the revenue for each day, we compute the row-column dot product:
-
-$$
-    [3 ~~ 4 ~~ 2]
-    \begin{bmatrix}
-        13 & 9 & 7 & 15 \\
-        8 & 7 & 4 & 6 \\
-        6 & 4 & 0 & 3
-    \end{bmatrix}
-    =
-    [83 ~~ 63 ~~ 37 ~~ 75].
-$$
-
-In other words, to find the revenue, we must match each price to each quantity. As it turns out, this operation (matching entries in one table to the entries in another, multiplying them, and then summing the results) occurs over and over again in pure and applied mathematics. So much so that we've defined it as its own operation, the _row-column dot product_, or simply, the _matrix product_.
+    In other words, to find the revenue, we must match each price to each quantity. As it turns out, this operation (matching entries in one table to the entries in another, multiplying them, and then summing the results) occurs over and over again in pure and applied mathematics. So much so that we've defined it as its own operation, the _row-column dot product_, or simply, the _matrix product_.
 
 <Warning/> In real arithmetic, we know that ${ab = ba}$ (the _commutative law of multiplication_). This law does not hold for matrix multiplication (it is very rarely the case that ${AB = BA;}$ in fact, you have better luck assuming ${AB \neq BA}$). The test ${AB = BA}$ can fail for possible reasons:
 
@@ -1373,84 +1266,71 @@ In other words, to find the revenue, we must match each price to each quantity. 
 3. ${AB}$ and ${BA}$ are both defined, ${AB}$ and ${BA}$ have the same orders, but the product's entries are different.
 
 ## Matrices & Linear Combinations
+- **_definition_**. If ${A_1, A_2, \ldots, A_r}$ are matrices of the same size, and if ${c_1, c_2, \ldots, c_r}$ are scalars, then an expression of the form
 
-> **_definition_**. If ${A_1, A_2, \ldots, A_r}$ are matrices of the same size, and if ${c_1, c_2, \ldots, c_r}$ are scalars, then an expression of the form
->
-> $$
->    c_1 A_1 + c_2 A_2 + \ldots + c_r A_r
-> $$
->
-> is called a _linear combination_ of ${A_1, A_2, \ldots, A_r}$ with coefficients ${c_1, c_2, \ldots, c_r.}$
+    $$
+        c_1 A_1 + c_2 A_2 + \ldots + c_r A_r
+    $$
 
+    is called a _linear combination_ of ${A_1, A_2, \ldots, A_r}$ with coefficients ${c_1, c_2, \ldots, c_r.}$
 
 ## Transpose of a Matrix
+- If ${M}$ is any ${m \times n}$ matrix, then the transpose of ${M,}$ denoted ${M^T,}$ is defined to be the ${n \times m}$ matrix that results from interchanging the rows and columns of ${M.}$ 
+- __*example.*__ If 
+    $$
+        M = 
+        \begin{bmatrix}
+        2 & 3 \\
+        1 & 4 \\
+        5 & 6
+        \end{bmatrix},
+    $$
 
-> If ${M}$ is any ${m \times n}$ matrix, then the transpose of ${M,}$ denoted ${M^T,}$ is defined to be the ${n \times m}$ matrix that results from interchanging the rows and columns of ${M.}$ 
+    then
 
-__*example.*__ If 
-
-$$
-    M = 
-    \begin{bmatrix}
-    2 & 3 \\
-    1 & 4 \\
-    5 & 6
-    \end{bmatrix},
-$$
-
-then
-
-$$
-    M^T =
-    \begin{bmatrix}
-    2 & 1 & 5 \\
-    3 & 4 & 6
-    \end{bmatrix}.
-$$
+    $$
+        M^T =
+        \begin{bmatrix}
+        2 & 1 & 5 \\
+        3 & 4 & 6
+        \end{bmatrix}.
+    $$
 
 ## Trace of a Matrix
+- If ${M}$ is a square matrix, then the trace of ${M,}$ denoted by ${\text{tr}(M),}$ is the sum of the entries on the main diagonal of ${M.}$ If ${M}$ is not a square matrix, then ${\text{tr}(M)}$ is undefined.
+- __*example.*__ If
+    $$
+        A =
+        \begin{bmatrix}
+        a_{1,1} & a_{1,2} & a_{1,3} \\
+        a_{2,1} & a_{2,2} & a_{2,3} \\
+        a_{3,1} & a_{3,2} & a_{3,3}
+        \end{bmatrix},
+    $$
 
-> If ${M}$ is a square matrix, then the trace of ${M,}$ denoted by ${\text{tr}(M),}$ is the sum of the entries on the main diagonal of ${M.}$ If ${M}$ is not a square matrix, then ${\text{tr}(M)}$ is undefined.
+    then
 
-__*example.*__ If
-
-$$
-    A =
-    \begin{bmatrix}
-    a_{1,1} & a_{1,2} & a_{1,3} \\
-    a_{2,1} & a_{2,2} & a_{2,3} \\
-    a_{3,1} & a_{3,2} & a_{3,3}
-    \end{bmatrix},
-$$
-
-then
-
-$$
-    \text{tr}(A) = a_{1,1} + a_{2,2} + a_{3,3}.
-$$
+    $$
+        \text{tr}(A) = a_{1,1} + a_{2,2} + a_{3,3}.
+    $$
 
 ## Properties of Matrix Algebra
-
-<blockquote>
-
-Let ${A}$ and ${B}$ be matrices and ${a}$ and ${b}$ be scalars. Then:
-
-1. ${A + B = B + A.}$
-2. ${A + (B + C) = (A + B) + C.}$
-3. ${A(BC) = (AB)C.}$
-4. ${A(B + C) = AB + AC.}$
-5. ${(B + C)A = BA + CA.}$
-6. ${A(B - C) = AB - AC.}$
-7. ${(B - C)A = BA - CA.}$
-8. ${a(B + C) = aB + aC.}$
-9. ${a(B - C) = aB - aC.}$
-10. ${(a + b)C = aC + bC.}$
-11. ${(a - b)C = aC - bC.}$
-12. ${a(bC) = (ab)C.}$
-13. ${a(BC) = (aB)C = B(aC).}$
+- Let ${A}$ and ${B}$ be matrices and ${a}$ and ${b}$ be scalars. Then:
+    1. ${A + B = B + A.}$
+    2. ${A + (B + C) = (A + B) + C.}$
+    3. ${A(BC) = (AB)C.}$
+    4. ${A(B + C) = AB + AC.}$
+    5. ${(B + C)A = BA + CA.}$
+    6. ${A(B - C) = AB - AC.}$
+    7. ${(B - C)A = BA - CA.}$
+    8. ${a(B + C) = aB + aC.}$
+    9. ${a(B - C) = aB - aC.}$
+    10. ${(a + b)C = aC + bC.}$
+    11. ${(a - b)C = aC - bC.}$
+    12. ${a(bC) = (ab)C.}$
+    13. ${a(BC) = (aB)C = B(aC).}$
 
 
-</blockquote>
 
 
 

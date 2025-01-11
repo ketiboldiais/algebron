@@ -17,7 +17,7 @@
   /* --lightgrey: #B2BEB5; */
   --lightgrey: #c3c3c3;
   /* --dimgrey: rgb(184, 199, 188); */
-  --dimgrey: rgb(189, 189, 189);
+  --dimgrey: rgb(174, 174, 174);
   /* --purple: rgb(232, 100, 232); */
   --purple: rgb(66, 66, 66);
   --code-bg: rgb(219, 219, 219);
@@ -97,8 +97,8 @@ body {
   color: var(--foreground);
   background: var(--background);
   font-family: "tp";
-  /* font-family: KaTeX_Main; */
   padding: 1vh 5vw;
+  overscroll-behavior-x: none;
 }
 
 pre,
@@ -268,24 +268,25 @@ textarea {
 
 ul {
   list-style: disc;
-  margin-left: 2vw;
+  margin-left: 20px;
+}
+ol {
+  list-style: decimal;
+  margin-left: 20px;
 }
 
 ul ul {
   list-style: circle;
 }
 
-ol {
-  list-style: decimal;
-  margin-left: 3vw;
-}
-
 article {
   width: clamp(300px, 70%, 600px);
   margin: 0 auto;
   margin-bottom: 10vh;
-  /* overflow-x: hidden; */
+  overflow-x: hidden;
+  overflow-y: hidden;
 }
+
 
 footer {
   display: block;
@@ -367,6 +368,12 @@ a:hover {
 
 .algebron-fig > div {
   font-family: KaTeX_main;
+}
+
+@media (max-width: 500px) {
+  html {
+    font-size: 11px;
+  }
 }
 
 /* Wide viewport */
