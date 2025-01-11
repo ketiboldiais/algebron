@@ -47,6 +47,8 @@ import {
 
     This is an example of a _continuous_ and _infinite_ sample space, since there are infinitely many pairs ${(x,y)}$ with ${0 \leq x,y \leq 1.}$
 
+import { L016B } from "@/components/Fig"; 
+
 ## Probability Axioms
 - Probabilities are assigned to _events_. 
 - __*definition*__. An _event_ is a subset of the sample space. 
@@ -65,7 +67,7 @@ import {
 - __*axiom*__. Given events ${A}$ and ${B,}$ if ${A \cap B = \varnothing,}$ then ${P(A \cup B) = P(A) + P(B).}$
   - This is called the _Finite Additivity Axiom_ of Probability Theory. 
   - We will state a stronger version of this axiom in later sections.
-- From the three axioms, we have the following corollary.
+- From the three axioms, we can derive several corollaries.
   - __*corollary*__. ${P(A) + P(A^c) = 1.}$
   - __*corollary*__.
     $$
@@ -74,6 +76,13 @@ import {
         &= P(s_1) + \ldots + P(s_2).
     \end{aligned}
     $$
+  - __*corollary*__. If ${A \subset B,}$ then ${P(A) \leq P(B).}$ That is, if we have a set ${A}$ that's smaller than a set ${B,}$ then the probability that an outcome falls inside ${B}$ is at least as big as the probability that an outcome falls inside ${A.}$  
+  - __*corollary*__. ${P(A \cup B) = P(A) + P(B) - P(A \cap B).}$
+    <L016B/>
+  - __*corollary*__. ${P(A \cup B) \leq P(A) - P(B).}$
+    - This is called the _union bound inequality_.
+  - __*corollary*__. ${P(A \cup B \cup C) = P(A) + P(A^c \cap B) + P(A^c \cap B^c \cap C).}$
+
 
 
 export default function MDXPage({ children }) {

@@ -71,6 +71,7 @@ import {
   linearSlope,
   dist2D,
   quad,
+  plotPoints,
 } from "@/algebron/main";
 
 import {
@@ -91,6 +92,12 @@ import { Canvas, useThree } from "@react-three/fiber";
 import { AxesHelper, DoubleSide, GridHelper, Vector3 } from "three";
 
 const cssvar = (varname: string) => `var(--${varname})`;
+const defaultSVGContext: SVGContext = {
+  width: 500,
+  height: 500,
+  domain: [-5, 5],
+  range: [-5, 5],
+};
 
 type AxisSpec = {
   on: "x" | "y";
@@ -125,8 +132,8 @@ const FIGURE = ({ children }: { children: ReactNode }) => {
 
 type FigProps = {
   data: SVG;
-  width?: number;
-  paddingBottom?: number;
+  width?: number | string;
+  paddingBottom?: number | string;
   title?: ReactNode;
 };
 
@@ -137,8 +144,9 @@ const Fig = ({ data, width = 100, paddingBottom = width, title }: FigProps) => {
     display: "block",
     margin: "0 auto",
     position: "relative",
-    width: `${width}%`,
-    paddingBottom: `${paddingBottom}%`,
+    width: typeof width === "number" ? `${width}%` : width,
+    paddingBottom:
+      typeof paddingBottom === "number" ? `${paddingBottom}%` : paddingBottom,
     overflow: "hidden",
   } as const;
   const svgcss = {
@@ -2599,7 +2607,7 @@ export const EventDiagram = () => {
           [2, -2],
           [2, 0],
           [1.5, 1.5],
-        ]).fill(cssvar("dimgrey")),
+        ]).strokeDashArray(5),
         curveBlob([
           [1, 1],
           [0, 1.5],
@@ -2625,7 +2633,60 @@ export const EventDiagram = () => {
     ])
     .translateX(-50)
     .translateY(-130);
-  return <Fig data={d} width={80} paddingBottom={50} />;
+  return <Fig data={d} width={70} paddingBottom={40} />;
+};
+
+export const L016B = () => {
+  const d = svg(defaultSVGContext)
+    .children([
+      // axis({
+      //   on: "x",
+      //   domain: defaultSVGContext.domain,
+      //   range: defaultSVGContext.range,
+      // }),
+      // axis({
+      //   on: "y",
+      //   domain: defaultSVGContext.domain,
+      //   range: defaultSVGContext.range,
+      // }),
+      curveBlob([
+        [0, 2.2],
+        [-1.1, 1.5],
+        [-1.4, 0.5],
+        [0, -1.2],
+        [1, -1.4],
+        [1.3, 0.5],
+        [1, 1.5],
+      ])
+        .strokeDashArray(5)
+        // .fill(cssvar("grey"))
+        .fillOpacity(0.25),
+      curveBlob([
+        [1, 1],
+        [0, 1.5],
+        [-1, 1],
+        [-1, 0],
+        [0, -0.3],
+        [0.8, 0],
+      ])
+        .fill(cssvar("red"))
+        .fillOpacity(0.2),
+      curveBlob([
+        [0, 1],
+        [-0.5, 0],
+        [0, -1],
+        [1, -1],
+        [1, 0],
+      ])
+        .fill(cssvar("blue"))
+        .fillOpacity(0.2),
+      text("Ω").fontSize(16).position(0, 1.8),
+      text("A").fontSize(16).position(-0.5, 1),
+      text("B").fontSize(16).position(0.5, -0.7),
+      text("A ∩ B").fontSize(16).position(0.1, 0.1),
+    ])
+    .translateY(-120);
+  return <Fig data={d} paddingBottom={40} />;
 };
 
 import geojson from "./world.json";
@@ -2633,10 +2694,10 @@ import geojson from "./world.json";
 import { GeoJSON } from "@/algebron/main";
 
 function geomap(
-  geoJsonData: GeoJSON.FeatureCollection, 
+  geoJsonData: GeoJSON.FeatureCollection,
   mapsize: number,
-  domain: [number,number],
-  range: [number,number],
+  domain: [number, number],
+  range: [number, number]
 ) {
   const MAP_SIZE = mapsize;
   // projection radius
@@ -2684,7 +2745,9 @@ export const MapDemo = () => {
     height: SIZE,
     domain,
     range,
-  }).children([geomap(geojson as GeoJSON.FeatureCollection, SIZE, domain, range)]);
+  }).children([
+    geomap(geojson as GeoJSON.FeatureCollection, SIZE, domain, range),
+  ]);
   return <Fig data={d} />;
 };
 
