@@ -1,4 +1,5 @@
 /* eslint-disable react-hooks/rules-of-hooks */
+
 "use client";
 
 import {
@@ -69,6 +70,7 @@ import {
   plotSeq,
   linearSlope,
   dist2D,
+  quad,
 } from "@/algebron/main";
 
 import {
@@ -126,7 +128,6 @@ type FigProps = {
   width?: number;
   paddingBottom?: number;
   title?: ReactNode;
-  translate?: [number, number];
 };
 
 const Fig = ({
@@ -134,11 +135,8 @@ const Fig = ({
   width = 100,
   paddingBottom = width,
   title,
-  translate,
 }: FigProps) => {
   const par = "xMidYMid meet";
-  const tx = translate ? translate[0] : 0;
-  const ty = translate ? translate[1] : 0;
   const viewbox = `0 0 ${data._width} ${data._height}`;
   const boxcss = {
     display: "block",
@@ -162,7 +160,7 @@ const Fig = ({
       <div style={boxcss}>
         <svg viewBox={viewbox} preserveAspectRatio={par} style={svgcss}>
           <DEF elements={data._defs} />
-          <g transform={`translate(${tx},${ty})`}>
+          <g transform={`translate(${data._translate[0]},${data._translate[1]})`}>
             <Fig2D elements={data._children} />
           </g>
         </svg>
@@ -1739,7 +1737,7 @@ export const TriangleLab = () => {
     range: R,
     width: 500,
     height: 500,
-  }).children([
+  }).translate(-40, 0).children([
     // grid(D, R).stroke(cssvar("dimgrey")).done(),
     // axis({ on: "x", domain: D, range: R }),
     // axis({ on: "y", domain: D, range: R }),
@@ -1762,7 +1760,7 @@ export const TriangleLab = () => {
 
   return (
     <div>
-      <Fig data={d} width={75} paddingBottom={50} translate={[-40, 0]} />
+      <Fig data={d} width={75} paddingBottom={50}/>
     </div>
   );
 };
@@ -1811,7 +1809,7 @@ export const CongruentTriangles = () => {
 
   return (
     <div>
-      <Fig data={d} width={75} paddingBottom={80} translate={[0, 0]} />
+      <Fig data={d} width={75} paddingBottom={80}/>
     </div>
   );
 };
@@ -1882,7 +1880,7 @@ export const UnitCircleTrig = () => {
     range,
     width: 500,
     height: 500,
-  }).children([
+  }).translateY(-100).children([
     // grid(domain, range).stroke(cssvar("dimgrey")).done(),
     // axis({ on: "x", domain, range }),
     // axis({ on: "y", domain, range }),
@@ -1921,7 +1919,7 @@ export const UnitCircleTrig = () => {
     circle(3, [2, 0]).fill(cssvar("foreground")),
     circle(3, [a1.$x, a1.$y]).fill(cssvar("foreground")),
   ]);
-  return <Fig data={d} width={80} paddingBottom={50} translate={[0, -100]} />;
+  return <Fig data={d} width={80} paddingBottom={50}/>;
 };
 
 function lineFromAngle(
@@ -1948,7 +1946,7 @@ export const RadianFig = () => {
     range,
     width: 500,
     height: 500,
-  }).children([
+  }).translateY(-70).children([
     // grid(domain, range).stroke(cssvar("dimgrey")).done(),
     // axis({ on: "x", domain, range }),
     // axis({ on: "y", domain, range }),
@@ -1971,7 +1969,7 @@ export const RadianFig = () => {
     a.stroke(cssvar("foreground")).arrowEnd(),
     b.stroke(cssvar("foreground")).arrowEnd(),
   ]);
-  return <Fig data={d} width={80} translate={[0, -70]} paddingBottom={55} />;
+  return <Fig data={d} width={80} paddingBottom={55} />;
 };
 
 export const Path3DTest = () => {
@@ -2457,9 +2455,45 @@ export const TangentLineLab = () => {
           ).toPrecision(3)}`}
         />
       </div>
-      <Fig data={d} width={60}/>
+      <Fig data={d} width={60} />
     </div>
   );
+};
+
+export const EpsilonNeighborhood = () => {
+  const d = svg({
+    width: 500,
+    height: 300,
+    domain: [-5, 5],
+    range: [-3, 3],
+  }).translateY(-100).children([
+    line([-3, 0], [3, 0]).stroke(cssvar("dimgrey")).arrowed(),
+    [
+      line([1, 0], [1, -0.25]),
+      line([0, 0], [0, -0.25]),
+      line([2, 0], [2, -0.25]),
+    ].map((l) => l.stroke(cssvar("dimgrey"))),
+    quad([0, 0.125], 2, 0.25)
+      .stroke("none")
+      .fill(cssvar("dimgrey"))
+      .fillOpacity(0.6),
+    [
+      text("ɛ - c").position(0, 0.0125).dy(25),
+      text("ɛ + c").position(2, 0.0125).dy(25),
+      text("c").position(1, 0).dy(25),
+    ].map((t) => t.fill(cssvar("foreground"))),
+    circle(4, [1, 0]).fill(cssvar("red")),
+    circle(2, [-0.9, 0]).fill(cssvar("red")),
+    circle(2, [0.3, 0]).fill(cssvar("red")),
+    circle(2, [0.65, 0]).fill(cssvar("red")),
+    circle(2, [0.8, 0]).fill(cssvar("red")),
+    circle(2, [0.9, 0]).fill(cssvar("red")),
+    circle(2, [1.1, 0]).fill(cssvar("red")),
+    circle(2, [1.2, 0]).fill(cssvar("red")),
+    circle(2, [1.5, 0]).fill(cssvar("red")),
+    circle(2, [2.2, 0]).fill(cssvar("red")),
+  ]);
+  return <Fig data={d} width={100} paddingBottom={15}/>;
 };
 
 export const Freeform = () => {
@@ -2504,5 +2538,58 @@ export const Freeform = () => {
     </div>
   );
 };
+
+// Probability Diagrams
+export const UnitSquare = () => {
+  const domain = tuple(-5,5);
+  const range = tuple(-5,5);
+  const d = svg({
+    width: 500,
+    height: 500,
+    domain,
+    range,
+  }).translateY(-110).children([
+    // axis({on: 'x', domain, range}),
+    // axis({on: 'y', domain, range}),
+    line([0,0], [0,2]).arrowEnd(),
+    line([0,0], [2,0]).arrowEnd(),
+    text("𝑥").position(2.2,0).dy(3),
+    text("𝑦").position(0,2.2),
+    xtick(1,0.1),
+    ytick(1, 0.1),
+    text('1').position(1,-.5),
+    text('1').position(-.25,0.9),
+    quad([0,1], 1, 1).fill(cssvar('dimgrey'))
+  ]).translateX(-20)
+  return <Fig data={d} paddingBottom={35}/>
+}
+
+export const EventDiagram = () => {
+  const domain = tuple(-5,5);
+  const range = tuple(-5,5);
+  const d = svg({
+    width: 500,
+    height: 500,
+    domain,
+    range,
+  }).children([
+    // axis({on: 'x', domain, range}),
+    // axis({on: 'y', domain, range}),
+    // grid(domain, range).done(),
+    [curveBlob([
+      [0,2], [-1,1.5], [-2,0], [-1, -2], [0,-3], [2,-2], [2,0], [1.5, 1.5]
+    ]).fill(cssvar('dimgrey')),
+    curveBlob([
+      [1,1], [0,1.5], [-1,1], [-.5, 0], [-1,-1], [1, -1], [1,0]
+    ]).fill(cssvar('grey')),
+    curveBlob([
+      [0, -1.5], [-.5, -2], [0, -2.5], [0.5, -2.2], [1, -1.5]
+    ]).fill(cssvar('grey'))].map(b => b.fillOpacity(.4)),
+    [text('Ω').position(1.2,1).dx(10),
+    text('A').position(0,0).dx(10).dy(15),
+    text('B').position(0,-1.8).dx(10).dy(15)].map(t => t.fontSize(20)),
+  ]).translateX(-50).translateY(-130)
+  return <Fig data={d} width={80} paddingBottom={50}/>
+}
 
 export default Fig;

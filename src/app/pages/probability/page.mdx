@@ -1,0 +1,81 @@
+import MdxLayout from "@/components/mdx-layout";
+import {
+    UnitSquare, 
+    EventDiagram,
+} from "@/components/Fig";
+
+# Probability
+
+<TOC>
+
+- [Sample Space](#sample-space)
+- [Probability Axioms](#probability-axioms)
+
+</TOC>
+
+
+## Sample Space
+- __*definition*__. A _probability model_ is a sample space and an operation of assigning probabilities.
+- __*definition*__. The _sample space_, denoted ${\Omega,}$ is the set of all possible outcomes of a statistical experiment. Each outcome in a sample space is called a _sample point_. 
+- __*example*__. When we toss a coin, we have a sample space with two outcomes:
+
+    $$
+        \Omega = \set{H, T}.
+    $$
+
+    where ${H}$ is _heads_ and ${T}$ is _tails_.  
+- __*example*__. If we toss the coin three times, then the sample space is:
+    $$
+        
+        \Omega = \left\lbrace \begin{matrix}
+            HHH & HHT \\ 
+            HTH & THH \\ 
+            HTT & TTH \\ 
+            THT & TTT
+        \end{matrix} \right\rbrace.
+    $$
+- The sample space resulting from tossing a coin finitely many times is an example of a _discrete_ and _finite_ sample space.
+- __*example*__. A bullet is shot at the square target below.
+
+    <UnitSquare/>
+
+    The sample space of the bullet hitting the target is the set 
+
+    $$
+        \set{(x,y) : 0 \leq x,y \leq 1}.
+    $$
+
+    This is an example of a _continuous_ and _infinite_ sample space, since there are infinitely many pairs ${(x,y)}$ with ${0 \leq x,y \leq 1.}$
+
+## Probability Axioms
+- Probabilities are assigned to _events_. 
+- __*definition*__. An _event_ is a subset of the sample space. 
+  - __*example*__. Below is a sample space, with events ${A}$ and ${B.}$
+
+    <EventDiagram/>
+
+- By convention, a probability value is always between ${0}$ and ${1.}$
+- __*axiom*__. A probability of some event ${A,}$ denoted ${P(A),}$ is a nonnegative real number. That is, ${P(A) \geq 0.}$
+  - This is called the _Nonnegativity Axiom_ of Probability Theory.
+- __*axiom*__. The probability of a sample space is ${1.}$ That is, ${P(\Omega) = 1.}$
+  - This is called the _Normalization Axiom_ of Probability Theory.
+- With just the two axioms, we have the following corollaries:
+    1. __*corollary*__. Given an event ${A,}$ we have ${P(A) \leq 1.}$
+    2. __*corollary*__. ${P(\varnothing) = 0.}$
+- __*axiom*__. Given events ${A}$ and ${B,}$ if ${A \cap B = \varnothing,}$ then ${P(A \cup B) = P(A) + P(B).}$
+  - This is called the _Finite Additivity Axiom_ of Probability Theory. 
+  - We will state a stronger version of this axiom in later sections.
+- From the three axioms, we have the following corollary.
+  - __*corollary*__. ${P(A) + P(A^c) = 1.}$
+  - __*corollary*__.
+    $$
+    \begin{aligned}
+        P(\set{s_1, s_2, \ldots, s_k}) &= P(\set{s_1}) + \ldots + P(\set{s_k}) \\[1em]
+        &= P(s_1) + \ldots + P(s_2).
+    \end{aligned}
+    $$
+
+
+export default function MDXPage({ children }) {
+  return <MdxLayout>{children}</MdxLayout>;
+}

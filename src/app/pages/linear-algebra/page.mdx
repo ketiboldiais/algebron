@@ -1,17 +1,17 @@
 import {
-    LA1,
-    LA2,
-    LA3,
-    LA4,
-    LA5,
-    IntersectingLines,
-    ParallelLines,
-    CoincidentLines,
-    ParallelPlanes,
-    PlanesDemo2,
-    PlanesDemo3,
-    PlanesDemo4,
-    EchelonPlanes,
+  LA1,
+  LA2,
+  LA3,
+  LA4,
+  LA5,
+  IntersectingLines,
+  ParallelLines,
+  CoincidentLines,
+  ParallelPlanes,
+  PlanesDemo2,
+  PlanesDemo3,
+  PlanesDemo4,
+  EchelonPlanes,
 } from "@/components/Fig";
 import MdxLayout from "@/components/mdx-layout";
 
@@ -43,6 +43,9 @@ import MdxLayout from "@/components/mdx-layout";
     - [Scalar Multiplication](#scalar-multiplication-1)
     - [Row-Column Dot Product](#row-column-dot-product)
 - [Matrices \& Linear Combinations](#matrices--linear-combinations)
+- [Transpose of a Matrix](#transpose-of-a-matrix)
+- [Trace of a Matrix](#trace-of-a-matrix)
+- [Properties of Matrix Algebra](#properties-of-matrix-algebra)
 
 </TOC>
 
@@ -265,12 +268,11 @@ Every homogeneous linear system is consistent because all such systems have the 
 1. The system has only one solution (the trivial solution), or
 2. the system has infinitely many solutions, including the trivial solution.
 
-The one case where a homogeneous system _always_ has nontrivial solutions is the _underspecified homogenous linear system_ &mdash; a homogeneous linear system with more unknowns than equations. 
+The one case where a homogeneous system _always_ has nontrivial solutions is the _underspecified homogenous linear system_ &mdash; a homogeneous linear system with more unknowns than equations.
 
-> __*theorem*__. If a homogeneous linear system has ${n}$ unknowns, and if the reduced row echelon form of its augmented matrix has ${r}$ nonzero rows, then the system has ${n - r}$ free variables.
+> **_theorem_**. If a homogeneous linear system has ${n}$ unknowns, and if the reduced row echelon form of its augmented matrix has ${r}$ nonzero rows, then the system has ${n - r}$ free variables.
 
-
-> __*theorem*__. A homogeneous linear system with more unknowns than equations has infinitely many solutions.
+> **_theorem_**. A homogeneous linear system with more unknowns than equations has infinitely many solutions.
 
 ### Augmented Matrices
 
@@ -435,9 +437,11 @@ $$
 The goal of Gaussian elimination, as applied to augmented matrices, is _row reduction_: We use the elementary row operations to eliminate variables from selected rows of the augmented matrix until we obtain a solution space.
 
 ## Graphical Solutions
+
 For linear systems in ${\reals^2}$ and ${\reals^3,}$ we can quickly see solutions with the aid of plotting.
 
 ### Linear Systems in ℝ²
+
 A linear equation of the form ${ax + by = c,}$ where ${a,b,c}$ are real constants, graphically corresponds to a line in the Cartesian plane. Given two such lines (i.e., a ${2 \times 2}$ linear system), there are three possible cases which may occur:
 
 <table>
@@ -450,57 +454,47 @@ A linear equation of the form ${ax + by = c,}$ where ${a,b,c}$ are real constant
   </thead>
   <tbody>
     <tr>
-        <td>
-            One point of intersection; there is a unique solution.
-        </td>
-        <td>
-            No points of intersection; there are no solutions.
-        </td>
-        <td>
-            Infinitely many points of intersection; there are infinitely many solutions.
-        </td>
+      <td>One point of intersection; there is a unique solution.</td>
+      <td>No points of intersection; there are no solutions.</td>
+      <td>
+        Infinitely many points of intersection; there are infinitely many
+        solutions.
+      </td>
     </tr>
     <tr>
-        <td>
-            <IntersectingLines/>
-        </td>
-        <td>
-            <ParallelLines/>
-        </td>
-        <td>
-            <CoincidentLines/>
-        </td>
+      <td>
+        <IntersectingLines />
+      </td>
+      <td>
+        <ParallelLines />
+      </td>
+      <td>
+        <CoincidentLines />
+      </td>
     </tr>
   </tbody>
 </table>
 
 ### Linear Systems in ℝ³
+
 In ${\reals^3,}$ parallel planes indicate there are no solutions, since there is no common intersection. For example, the system
 
 <Cols of={3}>
-$$
-    \begin{cases}
-    2x + 3y - z = -5 \\
-    2x + 3y - z = -2 \\
-    2x + 3y - z = 3
-    \end{cases}
-$$
-<ParallelPlanes/>
+  $$ \begin{cases}
+  2x + 3y - z = -5 \\ 2x + 3y - z = -2 \\ 2x + 3y - z = 3 \end{cases}
+  $$
+  <ParallelPlanes />
 </Cols>
 
-has no solution. Examining the plot above, there is no point of intersection since the resulting planes are parallel. The fact that planes intersect, however, does not imply that there is a solution. 
+has no solution. Examining the plot above, there is no point of intersection since the resulting planes are parallel. The fact that planes intersect, however, does not imply that there is a solution.
 
-Two parallel planes with no common intersection also indicates that the system has no solutions.  For example, the system
+Two parallel planes with no common intersection also indicates that the system has no solutions. For example, the system
 
 <Cols of={3}>
-$$
-    \begin{cases}
-    x + 2y + z = -2 \\
-    x + 2y + z = -\frac{1}{4} \\
-    2x - y + z = 1
-    \end{cases}
-$$
-<PlanesDemo2/>
+  $$ \begin{cases}x + 2y + z = -2 \\ x + 2y + z = -\frac{1}
+  {4} \\ 2x - y + z = 1 \end{cases}
+  $$
+  <PlanesDemo2 />
 </Cols>
 
 has no solution. While there are infinitely many points of intersection, there isn't a _common_ intersection.
@@ -508,34 +502,27 @@ has no solution. While there are infinitely many points of intersection, there i
 If the planes share a common intersection, then either the intersection is a line or a point. If it's a line, then there are infinitely many solutions, since the line comprises infinitely many points. For example, the system
 
 <Cols of={3}>
-$$
-    \begin{cases}
-     x + 2y + z = 2 \\
-     2x - y + z = 1
-    \end{cases}
-$$
-<PlanesDemo3/>
+  $$ \begin{cases}x + 2y + z = 2 \\ 2x - y + z = 1 \end{cases}
+  $$
+  <PlanesDemo3 />
 </Cols>
 
 has infinitely many solutions since its common intersection is a line. If, however, the common intersection is a point, then there is exactly one solution. For example, the system
 
 <Cols of={3}>
-$$
-    \begin{cases}
-     3x + y + 2z = 0 \\
-     4x - y + 3z = -1 \\
-     x + y - z = -1
-    \end{cases}
-$$
-<PlanesDemo4/>
+  $$ \begin{cases}
+  3x + y + 2z = 0 \\ 4x - y + 3z = -1 \\ x + y - z = -1 \end{cases}
+  $$
+  <PlanesDemo4 />
 </Cols>
 
 has exactly one solution, since the equations' corresponding planes intersect at a single, common point of intersection. Nevertheless, the following fact always applies, regardless of what linear system we're in:
 
-> __*theorem*__. Every system of linear equations has zero, one, or infinitely many solutions. There are no other possibilities.
+> **_theorem_**. Every system of linear equations has zero, one, or infinitely many solutions. There are no other possibilities.
 
 ## Echelon Forms
-Consider the following system, with its corresponding augmented matrix and plot. 
+
+Consider the following system, with its corresponding augmented matrix and plot.
 
 <Cols of={3}>
 $$
@@ -555,11 +542,11 @@ $$
 <EchelonPlanes/>
 </Cols>
 
-What is the solution space for this system? We will use the elementary row operations. 
+What is the solution space for this system? We will use the elementary row operations.
 
 <Cols of={2}>
 <div>
-Add ${-2}$ times the first equation to the second equation. 
+Add ${-2}$ times the first equation to the second equation.
 
 $$
     \begin{cases}
@@ -568,6 +555,7 @@ $$
     3x + 6y - 5z = 0
     \end{cases}
 $$
+
 </div>
 <div>
 Add ${-2}$ times the first row to the second row.
@@ -579,12 +567,13 @@ $$
     3 & 6 & -5 & 0
     \end{array}\hspace{-5pt}\right\rbrack.
 $$
+
 </div>
 </Cols>
 
 <Cols of={2}>
 <div>
-Add ${-3}$ times the first equation to the third equation. 
+Add ${-3}$ times the first equation to the third equation.
 
 $$
     \begin{cases}
@@ -593,6 +582,7 @@ $$
     3y - 11z = -27
     \end{cases}
 $$
+
 </div>
 <div>
 Add ${-2}$ times the first row to the second row.
@@ -604,6 +594,7 @@ $$
     0 & 3 & -11 & -27
     \end{array}\hspace{-5pt}\right\rbrack.
 $$
+
 </div>
 </Cols>
 
@@ -618,6 +609,7 @@ $$
     3y - 11z = -27
     \end{cases}
 $$
+
 </div>
 <div>
 Multiply the second row by ${\frac{1}{2}.}$
@@ -629,6 +621,7 @@ $$
     0 & 3 & -11 & -27
     \end{array}\hspace{-5pt}\right\rbrack.
 $$
+
 </div>
 </Cols>
 
@@ -643,6 +636,7 @@ $$
     -\frac{1}{2}z = -\frac{3}{2}
     \end{cases}
 $$
+
 </div>
 <div>
 Add ${-3}$ times the second row to the third row.
@@ -654,6 +648,7 @@ $$
     0 & 0 & -\frac{1}{2} & -\frac{3}{2}
     \end{array}\hspace{-5pt}\right\rbrack.
 $$
+
 </div>
 </Cols>
 
@@ -668,6 +663,7 @@ $$
     z = 3
     \end{cases}
 $$
+
 </div>
 <div>
 Multiply the third row by ${-2.}$
@@ -679,6 +675,7 @@ $$
     0 & 0 & 1 & 3
     \end{array}\hspace{-5pt}\right\rbrack.
 $$
+
 </div>
 </Cols>
 
@@ -693,6 +690,7 @@ $$
     z = 3
     \end{cases}
 $$
+
 </div>
 <div>
 Add ${-1}$ times the second row to the first row.
@@ -704,6 +702,7 @@ $$
     0 & 0 & 1 & 3
     \end{array}\hspace{-5pt}\right\rbrack.
 $$
+
 </div>
 </Cols>
 
@@ -718,6 +717,7 @@ $$
     z = 3
     \end{cases}
 $$
+
 </div>
 <div>
 Add ${-\frac{11}{2}}$ times the third row to the first row and ${\frac{7}{2}}$ times the third row to the second row.
@@ -729,20 +729,21 @@ $$
     0 & 0 & 1 & 3
     \end{array}\hspace{-5pt}\right\rbrack.
 $$
+
 </div>
 </Cols>
 
-We see that the solution space comprises exactly one solution: 
+We see that the solution space comprises exactly one solution:
 
 $$
     \begin{bmatrix}
-    x \\ 
+    x \\
     y \\
     z
     \end{bmatrix}
     =
     \begin{bmatrix}
-    1 \\ 
+    1 \\
     2 \\
     3
     \end{bmatrix}.
@@ -758,20 +759,21 @@ $$
     \end{bmatrix}
 $$
 
-we get a particularly special kind of matrix &mdash; a matrix in _reduced row echelon form_. 
+we get a particularly special kind of matrix &mdash; a matrix in _reduced row echelon form_.
 
-> __*definition*__. A matrix ${M}$ is in _reduced row echelon form_ if, and only if, the following properties hold for ${M:}$ 
+> **_definition_**. A matrix ${M}$ is in _reduced row echelon form_ if, and only if, the following properties hold for ${M:}$
 >
 > 1. If a row does not consist entirely of zeros, then the first nonzero number in the row is ${1.}$ This is called the _leading 1_.
 > 2. If there are any rows that consist entirely of zeros, then they are grouped together at the bottom of the matrix.
-> 3. In any two successive rows that do not consist entirely of zeros, the leading ${1}$ in the lower row occurs farther to the right than the leading ${1}$ in the higher row. 
-> 4. Each column that contains a leading ${1}$ has zeros everywhere else in that column. 
+> 3. In any two successive rows that do not consist entirely of zeros, the leading ${1}$ in the lower row occurs farther to the right than the leading ${1}$ in the higher row.
+> 4. Each column that contains a leading ${1}$ has zeros everywhere else in that column.
 
 Variables that correspond to the leading ${1}$s are called _leading variables_, and all others _free variables_.
 
 Matrices that satisfy the first three properties are said to be in _row echelon form_. To be in _reduced row echelon form_, the matrix must satisfy all four properties.
 
 ## Parametric Solutions
+
 Consider the augmented matrix below (vertical separator omitted):
 
 $$
@@ -783,7 +785,6 @@ $$
 $$
 
 The last row maps to the equation ${0x + 0y + 0z = 0.}$ This is trivial and can be discarded since it holds no restrictions on ${x,}$ ${y,}$ or ${z.}$ Thus:
-
 
 $$
     \begin{bmatrix}
@@ -798,14 +799,14 @@ $$
     .
 $$
 
-Above, we see that the leading variables are ${x}$ and ${y,}$ with ${z}$ a free variable. If we solve for the leading variables in terms of the free variables, we get: 
+Above, we see that the leading variables are ${x}$ and ${y,}$ with ${z}$ a free variable. If we solve for the leading variables in terms of the free variables, we get:
 
 $$
     x = -1 - 3z \\
     y = 2 + 4z.
 $$
 
-It's now apparent that ${z}$ can be treated as a _parameter_. So we can express the solution space with the parametric equations 
+It's now apparent that ${z}$ can be treated as a _parameter_. So we can express the solution space with the parametric equations
 
 $$
     \begin{cases}
@@ -818,6 +819,7 @@ $$
 $$
 
 ## Gauss-Jordan Elimination
+
 In the preceding examples, we saw that we can solve a linear system by casting its augmented matrix into reduced row echelon form. But how did we know which elementary operations to perform? Our choices seemed arbitrary, if not the result of trial and error. We now introduce an algorithm for reducing any matrix to reduced row echelon form &mdash; _Gauss-Jordan Elimination_. To illustrate, we will reduce this matrix:
 
 $$
@@ -828,7 +830,7 @@ $$
     \end{bmatrix}.
 $$
 
-__Step 1.__ Find the leftmost column that does not consist entirely of zeros.
+**Step 1.** Find the leftmost column that does not consist entirely of zeros.
 
 <Cols of={2}>
 
@@ -844,8 +846,7 @@ _The leftmost column not entirely of zeros is colored red._
 
 </Cols>
 
-__Step 2.__ Swap the top row with another row, if necessary, to bring a nonzero entry to the top of the column found in step ${1.}$
-
+**Step 2.** Swap the top row with another row, if necessary, to bring a nonzero entry to the top of the column found in step ${1.}$
 
 <Cols of={2}>
 
@@ -861,7 +862,7 @@ _We swapped the first and second rows._
 
 </Cols>
 
-__Step 3.__ If the entry on top of the column found in step ${1}$ is ${a,}$ multiply the first row by ${1/a}$ to introduce a leading ${1.}$
+**Step 3.** If the entry on top of the column found in step ${1}$ is ${a,}$ multiply the first row by ${1/a}$ to introduce a leading ${1.}$
 
 <Cols of={2}>
 $$
@@ -876,7 +877,7 @@ _We multiplied the first row by ${\frac{1}{2}.}$_
 
 </Cols>
 
-__Step 4.__ Add multiples of the top row to the rows below so that all entries below the leading ${1}$ become zeros.
+**Step 4.** Add multiples of the top row to the rows below so that all entries below the leading ${1}$ become zeros.
 
 <Cols of={2}>
 $$
@@ -888,9 +889,10 @@ $$
 $$
 
 _We added ${-2}$ times the first row of the preceding matrix to the third row._
+
 </Cols>
 
-__Step 5.__ Now cover (ignore) the top row in the matrix. With the remaining rows (the submatrix) repeat the process again starting from step ${1.}$ 
+**Step 5.** Now cover (ignore) the top row in the matrix. With the remaining rows (the submatrix) repeat the process again starting from step ${1.}$
 
 <Cols of={2}>
 $$
@@ -902,6 +904,7 @@ $$
 $$
 
 _Leftmost nonzero column is colored red._
+
 </Cols>
 
 <Cols of={2}>
@@ -914,6 +917,7 @@ $$
 $$
 
 _We multiply the first row in the submatrix by ${-\frac{1}{2}}$ to introduce a leading ${1.}$_
+
 </Cols>
 
 <Cols of={2}>
@@ -926,6 +930,7 @@ $$
 $$
 
 _We add ${-5}$ times the first row of the submatrix to the second row of the submatrix to introduce a zero below the leading ${1.}$_
+
 </Cols>
 
 <Cols of={2}>
@@ -938,6 +943,7 @@ $$
 $$
 
 _We cover the top row of the submatrix and return again to step ${1.}$ The leftmost nonzero column is colored red._
+
 </Cols>
 
 <Cols of={2}>
@@ -950,6 +956,7 @@ $$
 $$
 
 _The first (and only) row in the new submatrix is multiplied by ${2}$ to introduce a leading ${1.}$_
+
 </Cols>
 
 <Cols of={2}>
@@ -962,9 +969,10 @@ $$
 $$
 
 _The matrix is now in row echelon form. To find the reduced row echelon form, proceed to step ${6.}$_
+
 </Cols>
 
-__Step 6.__ Beginning with the last nonzero row and working upward, add suitable multiples of each row to the rows above to introduce zeros above the leading ${1s.}$
+**Step 6.** Beginning with the last nonzero row and working upward, add suitable multiples of each row to the rows above to introduce zeros above the leading ${1s.}$
 
 <Cols of={2}>
 $$
@@ -976,6 +984,7 @@ $$
 $$
 
 _We added ${\frac{7}{2}}$ times the third row of the preceding matrix to the second row._
+
 </Cols>
 
 <Cols of={2}>
@@ -988,6 +997,7 @@ $$
 $$
 
 _We added ${-6}$ times the third row to the first row._
+
 </Cols>
 
 <Cols of={2}>
@@ -1000,11 +1010,11 @@ $$
 $$
 
 _We added ${5}$ times the second row to the first row. The matrix is now in reduced row echelon form._
+
 </Cols>
 
-
-
 ## Matrices & Linear Equations
+
 We can represent a system of linear equations with matrices. We place the coefficients ${a_{i,j}}$ into vectors,
 
 $$
@@ -1051,6 +1061,7 @@ $$
 $$
 
 ## Matrices
+
 A matrix can be thought of as an array of arrays. They allow us to compactly represent a system of linear equations.
 
 > **_definition_**. Let ${m,n \in \N.}$ A real-valued ${(m,n)}$ matrix ${\bold{A}}$
@@ -1097,9 +1108,10 @@ let C = [[1], [2], [3]];
 
 ### Matrix Equality
 
-> __*definition*__. Two matrices are equal if and only if they have the same size and their corresponding entries are equal.
+> **_definition_**. Two matrices are equal if and only if they have the same size and their corresponding entries are equal.
 
 ### Matrix Addition
+
 To add two matrices, we add each element of one matrix to the corresponding element (the element of the same indices) in the other matrix (element-wise sum).
 
 > **_definition_**. Let ${\bold{A} \in \R^{m \times n},}$ and let ${\bold{B} \in \R^{m \times n}.}$ Then the sum ${\bold{A} + \bold{B}}$ is defined as:
@@ -1148,9 +1160,11 @@ $$
 From the definition, we see that matrices of different sizes _cannot_ be added.
 
 ### Matrix Multiplication
+
 There are three forms of matrix multiplication: **scalar multiplication**, the **Hadamard product**, and the **row-column dot product**.
 
 #### Hadamard Product
+
 The Hadamard product is simply element-wise multiplication.
 
 **_definition_**. Let ${\bold{A} \in \R^{m \times n},}$ and let ${\bold{B} \in \R^{m \times n}.}$ Then the Hadamard product ${\bold{A} \odot \bold{B}}$ is defined as:
@@ -1207,9 +1221,11 @@ $$
 $$
 
 #### Scalar Multiplication
+
 When we multiply a scalar to a matrix, we multiply each element of the matrix with the scalar.
 
 #### Row-Column Dot Product
+
 With matrix sums, we simply perform element-wise addition. Matrix multiplication, however, looks a little different:
 
 > **Definition.** Given matrices ${\bold{A} \in \reals^{m \times n}}$ and${\bold{B} \in \reals^{n \times k},}$ the elements ${c_{i,j}}$ of the product ${\bold{C} = \bold{A}\bold{B} \in \reals^{m \times k}}$ are computed as:
@@ -1313,8 +1329,52 @@ $$
 
 Notice: Given a matrix ${\bold{A}}$ and a matrix ${\bold{B},}$ the row-column product ${\bold{A} \cdot \bold{B}}$ is defined only if the number of columns of ${\bold{A}}$ is equal to the number of rows of ${\bold{B}.}$ In general, given an ${m \times n}$ matrix ${\bold{A}}$ and an ${n \times k}$ matrix ${\bold{B},}$ ${\bold{A}\cdot\bold{B}}$ is defined only if the ${n}$s are the same. The result ${\bold{A} \cdot \bold{B}}$ is an ${m \times k}$ matrix.
 
+**Why do we multiply matrices like this?** A small bakery sells three types of cake slices: Coffee is ${\text{\textdollar} 3}$ a slice; chocolate is ${\text{\textdollar}4}$ a slice; and carrot is ${\text{\textdollar} 2}$ a slice. The bakery maintains a ledger of how many that've sold. Here is a snippet for the past four days:
+
+|           | Mon. | Tue. | Wed. | Thu. |
+| --------- | ---- | ---- | ---- | ---- |
+| Coffee    | 13   | 9    | 7    | 15   |
+| Chocolate | 8    | 7    | 4    | 6    |
+| Carrot    | 6    | 4    | 0    | 3    |
+
+And here are the prices per slice:
+
+|           | Price |
+| --------- | ----- |
+| Coffee    | 3     |
+| Chocolate | 4     |
+| Carrot    | 2     |
+
+How much revenue did the bakery generate on Monday? We multiply the number of slices sold for that type with the type's price per slice, perform that operation for each type, and sum the products: 
+
+$$
+    (3 \times 13) + (4 \times 8) + (2 \times 6) = 83.
+$$
+
+To compute the revenue for each day, we compute the row-column dot product:
+
+$$
+    [3 ~~ 4 ~~ 2]
+    \begin{bmatrix}
+        13 & 9 & 7 & 15 \\
+        8 & 7 & 4 & 6 \\
+        6 & 4 & 0 & 3
+    \end{bmatrix}
+    =
+    [83 ~~ 63 ~~ 37 ~~ 75].
+$$
+
+In other words, to find the revenue, we must match each price to each quantity. As it turns out, this operation (matching entries in one table to the entries in another, multiplying them, and then summing the results) occurs over and over again in pure and applied mathematics. So much so that we've defined it as its own operation, the _row-column dot product_, or simply, the _matrix product_.
+
+<Warning/> In real arithmetic, we know that ${ab = ba}$ (the _commutative law of multiplication_). This law does not hold for matrix multiplication (it is very rarely the case that ${AB = BA;}$ in fact, you have better luck assuming ${AB \neq BA}$). The test ${AB = BA}$ can fail for possible reasons:
+
+1. ${AB}$ is defined, but ${BA}$ is not. 
+2. ${AB}$ and ${BA}$ are both defined, but they are of different orders.
+3. ${AB}$ and ${BA}$ are both defined, ${AB}$ and ${BA}$ have the same orders, but the product's entries are different.
+
 ## Matrices & Linear Combinations
-> __*definition*__. If ${A_1, A_2, \ldots, A_r}$ are matrices of the same size, and if ${c_1, c_2, \ldots, c_r}$ are scalars, then an expression of the form
+
+> **_definition_**. If ${A_1, A_2, \ldots, A_r}$ are matrices of the same size, and if ${c_1, c_2, \ldots, c_r}$ are scalars, then an expression of the form
 >
 > $$
 >    c_1 A_1 + c_2 A_2 + \ldots + c_r A_r
@@ -1322,6 +1382,80 @@ Notice: Given a matrix ${\bold{A}}$ and a matrix ${\bold{B},}$ the row-column pr
 >
 > is called a _linear combination_ of ${A_1, A_2, \ldots, A_r}$ with coefficients ${c_1, c_2, \ldots, c_r.}$
 
+
+## Transpose of a Matrix
+
+> If ${M}$ is any ${m \times n}$ matrix, then the transpose of ${M,}$ denoted ${M^T,}$ is defined to be the ${n \times m}$ matrix that results from interchanging the rows and columns of ${M.}$ 
+
+__*example.*__ If 
+
+$$
+    M = 
+    \begin{bmatrix}
+    2 & 3 \\
+    1 & 4 \\
+    5 & 6
+    \end{bmatrix},
+$$
+
+then
+
+$$
+    M^T =
+    \begin{bmatrix}
+    2 & 1 & 5 \\
+    3 & 4 & 6
+    \end{bmatrix}.
+$$
+
+## Trace of a Matrix
+
+> If ${M}$ is a square matrix, then the trace of ${M,}$ denoted by ${\text{tr}(M),}$ is the sum of the entries on the main diagonal of ${M.}$ If ${M}$ is not a square matrix, then ${\text{tr}(M)}$ is undefined.
+
+__*example.*__ If
+
+$$
+    A =
+    \begin{bmatrix}
+    a_{1,1} & a_{1,2} & a_{1,3} \\
+    a_{2,1} & a_{2,2} & a_{2,3} \\
+    a_{3,1} & a_{3,2} & a_{3,3}
+    \end{bmatrix},
+$$
+
+then
+
+$$
+    \text{tr}(A) = a_{1,1} + a_{2,2} + a_{3,3}.
+$$
+
+## Properties of Matrix Algebra
+
+<blockquote>
+
+Let ${A}$ and ${B}$ be matrices and ${a}$ and ${b}$ be scalars. Then:
+
+1. ${A + B = B + A.}$
+2. ${A + (B + C) = (A + B) + C.}$
+3. ${A(BC) = (AB)C.}$
+4. ${A(B + C) = AB + AC.}$
+5. ${(B + C)A = BA + CA.}$
+6. ${A(B - C) = AB - AC.}$
+7. ${(B - C)A = BA - CA.}$
+8. ${a(B + C) = aB + aC.}$
+9. ${a(B - C) = aB - aC.}$
+10. ${(a + b)C = aC + bC.}$
+11. ${(a - b)C = aC - bC.}$
+12. ${a(bC) = (ab)C.}$
+13. ${a(BC) = (aB)C = B(aC).}$
+
+
+</blockquote>
+
+
+
+
+
 export default function MDXPage({ children }) {
-    return <MdxLayout>{children}</MdxLayout>
+  return <MdxLayout>{children}</MdxLayout>;
 }

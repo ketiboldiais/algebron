@@ -57,67 +57,62 @@ import MdxLayout from "@/components/mdx-layout";
 </TOC>
 
 ## Expressions
+- In algebra, we use letters like ${x,}$ ${y,}$ ${n,}$ and ${m}$ to represent some object (e.g., numbers). These letters are called _variables_. When we combine these variables with mathematical operations (e.g., addition, subtraction, multiplication, etc.), we obtain an _expression_.
+  - __*example.*__ The following are all expressions:
+      $$
+          a + 2 \\[1em]
+          x^2 \\[1em]
+          \dfrac{x^{1/3} + y}{xy}
+      $$
+  - __*example.*__ Of course, expressions need not have variables. These are expressions, too:
 
-In algebra, we use letters like ${x,}$ ${y,}$ ${n,}$ and ${m}$ to represent some object (e.g., numbers). These letters are called **variables**. When we combine these variables with mathematical operations (e.g., addition, subtraction, multiplication, etc.), we obtain an **expression**. For example, the following are all expressions:
-
-$$
-    a + 2 \\[1em]
-    x^2 \\[1em]
-    \dfrac{x^{1/3} + y}{xy}
-$$
-
-Of course, expressions need not have variables. These are expressions, too:
-
-$$
-    1 + 1 \\[1em]
-    2/3 \\[1em]
-    \pi
-$$
-
-When we place an equal sign between two expressions, we have an equation. This is just a symbolic way of saying, "These two expressions are the same." Here is a rather famous one:
-
-$$
-    a^2 + b^2 = c^2.
-$$
+    $$
+        1 + 1 \\[1em]
+        2/3 \\[1em]
+        \pi
+    $$
+- When we place an equal sign between two expressions, we have an _equation_. This is just a symbolic way of saying, "These two expressions are the same."
+  - __*example.*__ Here is a famous equation:
+    $$
+        a^2 + b^2 = c^2.
+    $$
 
 ## The Domain of an Expression
 
-All mathematical expressions have a **domain** – the set of all values for which the expression is defined. For example, in the expression ${a^2 + b^2 = c^2,}$ we assume the expression is defined for real numbers. That is, it only makes sense if we plug real numbers into the variables. It would not make sense if the domain included, say, dogs. Of course, it very well could, but we'd have to define what it means to square and add dogs:
+- All mathematical expressions have a _domain_ – the set of all values for which the expression is defined.
+  - __*example.*__ In the expression ${a^2 + b^2 = c^2,}$ we assume the expression is defined for real numbers. That is, the expression only makes sense if we plug real numbers into the variables. It would not make sense if the domain included, say, dogs. Of course, it very well could, but we'd have to define what it means to square and add dogs:
 
-$$
-    \text{rottweiler}^2 + \text{greyhound}^2 = \text{mastiff}^2.
-$$
+    $$
+        \text{rottweiler}^2 + \text{greyhound}^2 = \text{mastiff}^2.
+    $$
 
-The point is, outside the expression's domain, the expression is undefined.
+    The point is, outside the expression's domain, the expression is undefined.
 
-> **Definition.** Given an expression ${u,}$ the notation
->
-> $$
->    \text{dom}(u)
-> $$
->
-> denotes the domain of ${u.}$
+- __*definition.*__ Given an expression ${u,}$ the notation
 
-**_example_**. In the expression ${1/((t-1)(t-3)),}$ we define the domain to be all real numbers (${\reals}$), not including ${1}$ and not including ${-3.}$ If we let ${t = 1}$ or ${t = -3,}$ then we have a zero denominator. And as we all know, we cannot divide by zero.
+  $$
+      \text{dom}(u)
+  $$
 
-$$
-    \text{dom} \left( \dfrac{1}{(t-1)(t+3)} \right) = \set{t \in \reals | t \neq 1, t \neq -3}.
-$$
+  denotes the domain of ${u.}$
+
+  - **_example_**. In the expression ${1/((t-1)(t-3)),}$ we define the domain to be all real numbers (${\reals}$), not including ${1}$ and not including ${-3.}$ If we let ${t = 1}$ or ${t = -3,}$ then we have a zero denominator. And as we all know, we cannot divide by zero.
+
+    $$
+        \text{dom} \left( \dfrac{1}{(t-1)(t+3)} \right) = \set{t \in \reals | t \neq 1, t \neq -3}.
+    $$
 
 ## Solution Sets
-
-Because an expression may contain variables, an equation is true or false only if we substitute values into those variables. Until then, the equation is neither true nor false. If a value is substituted and the equation is true, we call that value the **solution**, or **root**, of the equation. The set of all roots to an equation is called the equation's **truth set** or **solution set**.
-
-If the equation's solution set is the equation's domain, we call the equation an
-**identity**.
-
-**_example_**. ${x^2 - 9 = (x - 3)(x + 3).}$
-
-**_example_**. ${\dfrac{x^2}{x} = x.}$
+- Because an expression may contain variables, an equation is true or false only if we substitute values into those variables. Until then, the equation is neither true nor false.
+- If a value is substituted and the equation is true, we call that value the _solution_, or _root_, of the equation.
+- The set of all roots to an equation is called the equation's _truth set_ or _solution set_.
+- If the equation's solution set is the equation's domain, we call the equation an
+_identity_.
+  - **_example_**. ${x^2 - 9 = (x - 3)(x + 3).}$
+  - **_example_**. ${\dfrac{x^2}{x} = x.}$
 
 ## Number Sets
-
-For the purposes of calculus, it suffices to give informal definitions of numbers.
+- For the purposes of calculus, it suffices to give informal definitions of numbers.
 
 <aside>
   Thorough definitions of the naturals and integers are typically presented in a
@@ -125,120 +120,87 @@ For the purposes of calculus, it suffices to give informal definitions of number
   course; and the complex numbers in a linear algebra course.
 </aside>
 
-> **Definition (informal): Real Numbers.** A real number is any number that can be expressed in decimal form. We denote the set of real numbers with the symbol ${\reals.}$
-
-The real numbers can be represented as points on a _number line_. A fundamental fact: There is a one-to-one correspondence between the set of real numbers and the set of points on a line. For each given point, the real number associated with that point is called the point's **coordinate**.
-
-The naturals are the most basic numbers. These are the numbers we use for counting.
-
-> **Definition (informal): Natural Numbers.** A natural number is any number of the set ${\{ 0, 1, 2, 3, \ldots \}.}$ We denote this set with the symbol ${\N.}$
-
-The naturals with the negative numbers comprise the set of integers.
-
-> **Definition (informal): Integers.** An integer is any number of the set ${\{ \ldots, -2, -1, 0, 1, 2, \ldots \}.}$ We denote this set with the symbol ${\Z.}$
-
-As its name suggests, a rational number is any number that can be written as the ratio of two integers.
-
-> **Definition (informal): Rational Numbers.** Let ${a \in \Z}$ and let ${b \in \Z.}$ Then a rational number is any number of the form ${a/b.}$ We denote the set of all such numbers with the symbol ${\mathbb{Q}.}$
-
-Any number that does not satisfy the definition of rational numbers is called an irrational number.
-
-> **Definition (informal): Irrational Numbers.** Let ${x}$ be some number. If ${x \notin \mathbb{Q},}$ then ${x}$ is an irrational number.
-
-Examples of irrational numbers include ${\sqrt{2},}$ ${\pi,}$ and Euler's number ${e.}$ None of these numbers can be written as a ratio of integers.
+- __*informal definition*__. A real number is any number that can be expressed in decimal form. We denote the set of real numbers with the symbol ${\reals.}$
+  - The real numbers can be represented as points on a _number line_.
+  - A fundamental fact: There is a one-to-one correspondence between the set of real numbers and the set of points on a line. For each given point, the real number associated with that point is called the point's **coordinate**.
+- __*informal definition*__. A natural number is any number of the set ${\{ 0, 1, 2, 3, \ldots \}.}$ We denote this set with the symbol ${\N.}$
+  - The naturals are the most basic numbers. These are the numbers we use for counting.
+- __*informal definition*__. An integer is any number of the set ${\{ \ldots, -2, -1, 0, 1, 2, \ldots \}.}$ We denote this set with the symbol ${\Z.}$
+  - The naturals with the negative numbers comprise the set of integers.
+  - As its name suggests, a rational number is any number that can be written as the ratio of two integers.
+- __*informal definition*__. Let ${a \in \Z}$ and let ${b \in \Z.}$ Then a rational number is any number of the form ${a/b.}$ We denote the set of all such numbers with the symbol ${\mathbb{Q}.}$
+- __*informal definition*__. Let ${x}$ be some number. If ${x \notin \mathbb{Q},}$ then ${x}$ is an irrational number.
+  - Any number that does not satisfy the definition of rational numbers is called an irrational number.
+  - Examples of irrational numbers include ${\sqrt{2},}$ ${\pi,}$ and Euler's number ${e.}$ None of these numbers can be written as a ratio of integers.
 
 ## Relations
-
-In mathematics, a **relation** is the definition of some relationship between mathematical objects. We can relate one real to another in terms of their position on the real line. For example, viewing the real line, we can say that ${0}$ is "to the left" of ${1,}$ or, more succinctly, ${0 \lt 1.}$ We can talk about the reals in terms of their relations to other reals because of the fact that the real numbers are _ordered_: ${2}$ comes after ${1,}$ ${3}$ comes after ${2,}$ ${0}$ comes before ${1,}$ ${\pi}$ comes before ${4,}$ etc.
-
-| Notation     | Definition                               | Example                     |
-| ------------ | ---------------------------------------- | --------------------------- |
-| ${a \lt b}$  | ${a}$ is less than ${b.}$                | ${0 \lt 1.}$                |
-| ${a \leq b}$ | ${a}$ is less than or equal to ${b.}$    | ${1 \leq 1,}$ ${0 \leq 1.}$ |
-| ${a \gt b}$  | ${a}$ is greater than ${b.}$             | ${1 \gt 0.}$                |
-| ${a \geq b}$ | ${a}$ is greater than or equal to ${b.}$ | ${1 \gt 1, 1 \gt 0.}$       |
+- In mathematics, a **relation** is the definition of some relationship between mathematical objects.
+- We can relate one real to another in terms of their position on the real line. 
+  - __*example*__. Viewing the real line, we can say that ${0}$ is "to the left" of ${1,}$ or, more succinctly, ${0 \lt 1.}$ We can talk about the reals in terms of their relations to other reals because of the fact that the real numbers are _ordered_: ${2}$ comes after ${1,}$ ${3}$ comes after ${2,}$ ${0}$ comes before ${1,}$ ${\pi}$ comes before ${4,}$ etc.
+- Below is a table of common notations for relations.
+  | Notation     | Definition                               | Example                     |
+  | ------------ | ---------------------------------------- | --------------------------- |
+  | ${a \lt b}$  | ${a}$ is less than ${b.}$                | ${0 \lt 1.}$                |
+  | ${a \leq b}$ | ${a}$ is less than or equal to ${b.}$    | ${1 \leq 1,}$ ${0 \leq 1.}$ |
+  | ${a \gt b}$  | ${a}$ is greater than ${b.}$             | ${1 \gt 0.}$                |
+  | ${a \geq b}$ | ${a}$ is greater than or equal to ${b.}$ | ${1 \gt 1, 1 \gt 0.}$       |
 
 ## Intervals
-
-When we work with ${\reals,}$ we often want to talk about sections of the real line (or, in terms of set theory, subsets of ${\reals}$). These sections, or subsets, can be defined in terms of intervals.
-
-> **Definition.** The open interval ${(a,b)}$ consists of all reals ${x}$ such that ${a \lt x \lt b.}$ The closed interval ${[a,b]}$ consists of all reals ${x}$ such that ${a \leq x \leq b.}$ The left-inclusive interval ${[a,b)}$ consists of all reals ${x}$ such that ${a \leq x \lt b.}$ The right-inclusive interval ${(a,b]}$ consits of all reals ${x}$ such that ${a \lt x \leq b.}$
-
-In some cases, we may want talk about a subset of the reals that extends indefinitely in some direction. Such subsets are called **unbounded intervals**.
-
-| Notation              | Inequality   |
-| --------------------- | ------------ |
-| ${(a, \infty)}$       | ${x \gt a}$  |
-| ${[a, \infty)}$       | ${x \geq a}$ |
-| ${(-\infty, a)}$      | ${x \lt a}$  |
-| ${(-\infty, a]}$      | ${x \leq a}$ |
-| ${(-\infty, \infty)}$ |              |
+- When we work with ${\reals,}$ we often want to talk about sections of the real line (or, in terms of set theory, subsets of ${\reals}$). These sections, or subsets, can be defined in terms of intervals.
+- __*definition*__. The open interval ${(a,b)}$ consists of all reals ${x}$ such that ${a \lt x \lt b.}$ The closed interval ${[a,b]}$ consists of all reals ${x}$ such that ${a \leq x \leq b.}$ The left-inclusive interval ${[a,b)}$ consists of all reals ${x}$ such that ${a \leq x \lt b.}$ The right-inclusive interval ${(a,b]}$ consits of all reals ${x}$ such that ${a \lt x \leq b.}$
+- In some cases, we may want talk about a subset of the reals that extends indefinitely in some direction. Such subsets are called **unbounded intervals**.
+- Below are common notations for intervals.
+  | Notation              | Inequality   |
+  | --------------------- | ------------ |
+  | ${(a, \infty)}$       | ${x \gt a}$  |
+  | ${[a, \infty)}$       | ${x \geq a}$ |
+  | ${(-\infty, a)}$      | ${x \lt a}$  |
+  | ${(-\infty, a]}$      | ${x \leq a}$ |
+  | ${(-\infty, \infty)}$ |              |
 
 ## Absolute Value
-
-For some problems, we want to think about how far a given real number ${x}$ is from ${0.}$ The operator for computing this distance is the _absolute value_.
-
-> **Definition: Absolute Value.** Given ${x \in \reals,}$ the absolute value of ${x,}$ denoted ${| x |,}$ is defined as:
->
-> $$
->     | x | = \begin{cases}
->     -x & \text{if} ~ x \lt 0 \\
->     x & \text{else}
->     \end{cases}.
-> $$
-
-**_example_**. ${|6 - 7| = |-1| = 1.}$
-
-Given that real numbers can be interpreted as points on a number line, the distance between two real numbers is the absolute value of their difference.
-
-> **Property.** Given ${a, b \in \R,}$ the distance between ${a}$ and ${b}$ is ${\vert a - b \vert = \vert b - a \vert.}$
-
-Below are some additional properties of the absolute value.
-
-| Property                                                                       | Comment                                                               |
-| ------------------------------------------------------------------------------ | --------------------------------------------------------------------- |
-| ${\vert x \vert \geq 0}$                                                       | Absolute values are always nonnegative.                               |
-| ${x \leq \vert x \vert}$                                                       |                                                                       |
-| ${-x \leq \vert x \vert}$                                                      |                                                                       |
-| ${\vert x \vert^2 = x^2}$                                                      |                                                                       |
-| ${\sqrt{x^2} = \vert x \vert}$                                                 |                                                                       |
-| ${\vert ab \vert = \vert a \vert \vert b \vert}$                               |                                                                       |
-| ${\left\vert \dfrac{a}{b} \right\vert = \dfrac{\vert a \vert}{\vert b \vert}}$ | ${b \neq 0}$                                                          |
-| ${\vert a + b \vert \leq \vert a \vert + \vert b \vert}$                       | This is a rather famous property, called the **triangle inequality**. |
+- For some problems, we want to think about how far a given real number ${x}$ is from ${0.}$ The operator for computing this distance is the _absolute value_.
+- __*definition*__. Given ${x \in \reals,}$ the absolute value of ${x,}$ denoted ${| x |,}$ is defined as:
+  $$
+      | x | = \begin{cases}
+      -x & \text{if} ~ x \lt 0 \\
+      x & \text{else}
+      \end{cases}.
+  $$
+  - **_example_**. ${|6 - 7| = |-1| = 1.}$
+- Given that real numbers can be interpreted as points on a number line, the distance between two real numbers is the absolute value of their difference.
+- __*property*__. Given ${a, b \in \R,}$ the distance between ${a}$ and ${b}$ is ${\vert a - b \vert = \vert b - a \vert.}$
+- Below are some additional properties of the absolute value.
+  | Property                                                                       | Comment                                                               |
+  | ------------------------------------------------------------------------------ | --------------------------------------------------------------------- |
+  | ${\vert x \vert \geq 0}$                                                       | Absolute values are always nonnegative.                               |
+  | ${x \leq \vert x \vert}$                                                       |                                                                       |
+  | ${-x \leq \vert x \vert}$                                                      |                                                                       |
+  | ${\vert x \vert^2 = x^2}$                                                      |                                                                       |
+  | ${\sqrt{x^2} = \vert x \vert}$                                                 |                                                                       |
+  | ${\vert ab \vert = \vert a \vert \vert b \vert}$                               |                                                                       |
+  | ${\left\vert \dfrac{a}{b} \right\vert = \dfrac{\vert a \vert}{\vert b \vert}}$ | ${b \neq 0}$                                                          |
+  | ${\vert a + b \vert \leq \vert a \vert + \vert b \vert}$                       | This is a rather famous property, called the **triangle inequality**. |
 
 ## Equations
-
-We now examine equations. Recall that an equation is a special type of mathematical statement. Specifically, one that claims: "The expression on the left of the "${=}$" is the same, in every way, as the expression on the right of the "${=.}$"
-
-**_example_**. ${a = b}$ means "${a}$ is the same, in every way, as ${b.}$"
-
-When equations contain variables, they belong to a type of mathematical statement called an **open sentence** &mdash; a statement that contains one or more variables, and becomes a proposition when each variable is substituted with an element from the expression's domain. For example, the equation ${a = b}$ is true when ${a = 1}$ and ${b = 1,}$ but false when ${a = 0}$ and ${b = 1.}$
-
-When a value is substituted for a variable in an equation such that the equation is true, we say that the value **satisfies** the equation, and that the value is a **solution** to the equation. When two equations have the exact same set of solutions, we say that the two equations are **equivalent**. A common procedure in algebra is solving for a given variable. This is done by writing a sequence of equivalent equations until we get to the form ${\text{variable} = \text{constant}}$ (e.g., ${x = 1}$ or ${z = \pi}$).
-
-The following principles apply to generating equivalent equations:
-
-1. Adding or subtracting the same quantity on both sides of an equation produces an equivalent equation.
-2. Multiplying or dividing both sides of an equation by the same nonzero quantity produces an equivalent equation.
-3. Simplifying an expression on either side of an equation produces an equivalent equation.
-
-Equations &mdash; and more generally, expressions &mdash; are simply succinct ways of expressing sentences that would otherwise be too cumbersome to write by prose. For example, consider the following sentence:
-
-- The integral with respect to ${z}$ from zero to three point eight of the quotient of the product of the fourth power of Pi, ${x,}$ and ${y}$ multiplied by the sum of ${a,}$ the product of eight, ${b,}$ and the cosine of the quotient of the product of Pi and ${z}$ divided by ${l,}$ the product of eighteen, ${c,}$ and the cosine of the quotient of two, Pi, and ${z,}$ and the square of the sine of the quotient of Pi and ${z}$ divided by ${l,}$ all divided by the the fourth power of ${l.}$
-
-This mouthful can be _expressed_ as:
-
-$$
-	\int_0^{3.8}\frac{\pi^4 x y (a+9 c+8 b \cos(\frac{\pi z}{l})+18 c \cos(\frac{2 \pi z}{l})) \sin^2(\frac{\pi z}{l})}{l^4} dz.
-$$
+- An equation is a mathematical statement that claims: "The expression on the left of the "${=}$" is the same, in every way, as the expression on the right of the "${=.}$"
+- **_example_**. ${a = b}$ means "${a}$ is the same, in every way, as ${b.}$"
+- When equations contain variables, they belong to a type of mathematical statement called an _open sentence_ &mdash; a statement that contains one or more variables, and becomes a proposition when each variable is substituted with an element from the expression's domain.
+- __*example*__. The equation ${a = b}$ is true when ${a = 1}$ and ${b = 1,}$ but false when ${a = 0}$ and ${b = 1.}$
+- When a value is substituted for a variable in an equation such that the equation is true, we say that the value _satisfies_ the equation, and that the value is a _solution_ to the equation.
+- When two equations have the exact same set of solutions, we say that the two equations are _equivalent_.
+- A common procedure in algebra is solving for a given variable. This is done by writing a sequence of equivalent equations until we get to the form ${\text{variable} = \text{constant}}$ (e.g., ${x = 1}$ or ${z = \pi}$).
+- The following principles apply to generating equivalent equations:
+  1. Adding or subtracting the same quantity on both sides of an equation produces an equivalent equation.
+  2. Multiplying or dividing both sides of an equation by the same nonzero quantity produces an equivalent equation.
+  3. Simplifying an expression on either side of an equation produces an equivalent equation.
+- Equations &mdash; and more generally, expressions &mdash; are simply succinct ways of expressing sentences that would otherwise be too cumbersome to write by prose.
 
 ## Families of Expressions
-
-When we examine the variety of expressions found in mathematics, we find that certain groups of expressions share similiar patterns and properties. To try and organize this vast variety, we will organize these expressions into _families of expressions_, or _kinds of expressions_.
+- When we examine the variety of expressions found in mathematics, we find that certain groups of expressions share similiar patterns and properties. To try and organize this vast variety, we will organize these expressions into _families of expressions_, or _kinds of expressions_.
 
 ### Linear Expressions
-
-The simplest family of expressions is the **linear expression in one variable**. As simple as such expressions are, many real world problems can be reduced to linear expressions, or more specifically, linear equations.
+- The simplest family of expressions is the _linear expression in one variable_. As simple as such expressions are, many real world problems can be reduced to linear expressions, or more specifically, linear equations.
 
 <aside>
 
@@ -246,109 +208,62 @@ Complex problems can be reduced to _systems of linear equations_. Analyzing thes
 
 </aside>
 
-> **Definition.** A linear expression in one variable is an expression that can be written in the form
->
-> $$
->    ax + b,
-> $$
->
-> where ${a}$ and ${b}$ are real numbers and ${a \neq 0.}$
+- __*definition*__. A linear expression in one variable is an expression that can be written in the form
 
-In the definition above, we call the expressions ${ax}$ and ${b}$ the **terms** &mdash; or, more generally, the **subexpressions** &mdash; of the linear expression.
+  $$
+      ax + b,
+  $$
+
+  where ${a}$ and ${b}$ are real numbers and ${a \neq 0.}$
+- In the definition above, we call the expressions ${ax}$ and ${b}$ the _terms_ &mdash; or, more generally, the _subexpressions_ &mdash; of the linear expression.
 
 ### Monomial Expressions
-
-The terms of a linear expression are themselves a special type of expression called **monomial expressions**. The simplest monomial expression is the **univariate monomial expression**, or the **monomial expression in one variable**.
-
-> **Definition.** Let ${u}$ be an expression. We say that ${u}$ is a _univariate monomial expression_ in a single variable ${x}$ if ${u}$ satisfies one of the following rules:
->
-> 1. ${u}$ is an integer or fraction.
-> 2. ${u = x.}$
-> 3. ${u = x^n,}$ where ${n \in \Z}$ and ${n \gt 1.}$
-> 4. ${u}$ is a product with two operands that satisfies either (1), (2), or (3).
-
-Below is a procedure for determining whether a given expression is a univariate monomial in a variable ${x}$:
-
-<Procedure>
-
-- **Procedure** isMonomial(${u}$, ${x}$)
-- **Input**
-  - ${u}$: An algebraic expression.
-  - ${x}$: A symbol.
-- **Output**
-  - true or false
-
-1. if ${u \in (\Z \cup \mathbb{Q})}$ then
-   1. return true
-2. else if ${u = x}$ then
-   1. return true
-3. else if ${u}$ is a power
-   1. ${base}$ ${\coloneqq}$ operand(${u}$, 1)
-   2. ${exponent}$ ${\coloneqq}$ operand(${u}$, 2)
-   3. if ${(base = x) \land (base \in \Z) \land (exponent \gt 1)}$ then
-      1. return true
-4. else if ${u}$ is a product
-   1. ${opcount \coloneqq operandCount(u,2)}$
-   2. ${r_1 \coloneqq isMonomial(operand(u,1),x)}$
-   3. ${r_2 \coloneqq isMonomial(operand(u,2), x)}$
-   4. return ${opcount \land r_1 \land r_2}$
-5. return false
-
-</Procedure>
+- The terms of a linear expression are themselves a special type of expression called _monomial expressions_.
+- The simplest monomial expression is the _univariate monomial expression_, or the _monomial expression in one variable_.
+- __*definition*__. Let ${u}$ be an expression. We say that ${u}$ is a _univariate monomial expression_ in a single variable ${x}$ if ${u}$ satisfies one of the following rules:
+  1. ${u}$ is an integer or fraction.
+  2. ${u = x.}$
+  3. ${u = x^n,}$ where ${n \in \Z}$ and ${n \gt 1.}$
+  4. ${u}$ is a product with two operands that satisfies either (1), (2), or (3).
 
 ### Quadratic Expressions
-
-> **Definition.** A quadratic expression in one variable is an expression that can be written in the form
->
-> $$
->    ax^2 + bx + c,
-> $$
->
-> with ${a,b,c \in \reals}$ and ${a \neq 0.}$
-
-The following property is often useful to solving quadratic equations:
-
-> **Property.** ${pq = 0}$ if and only if ${p = 0}$ or ${q = 0.}$
+- __*definition*__. A quadratic expression in one variable is an expression that can be written in the form
+  $$
+      ax^2 + bx + c,
+  $$
+  with ${a,b,c \in \reals}$ and ${a \neq 0.}$
+- __*property*__. ${pq = 0}$ if and only if ${p = 0}$ or ${q = 0.}$
 
 #### The Quadratic Formula
-
-We can also solve quadratic equations directly with the quadratic formula:
-
-> **Formula.** The solutions of the quadratic equation ${ax^2 + bx + c = 0,}$ where ${a \neq 0,}$ are given by
->
-> $$
->    x = \dfrac{-b \pm \sqrt{b^2 - 4ac}}{2a}.
-> $$
+- We can also solve quadratic equations directly with the quadratic formula:
+- __*formula*__. The solutions of the quadratic equation ${ax^2 + bx + c = 0,}$ where ${a \neq 0,}$ are given by
+  $$
+      x = \dfrac{-b \pm \sqrt{b^2 - 4ac}}{2a}.
+  $$
 
 ### Polynomial Expressions
+- Quadratic expressions can be generalized as polynomial expressions in one variable. I.e., they are a specific type of polynomial expression in one variable.
 
-Quadratic expressions can be generalized as polynomial expressions in one variable. I.e., they are a specific type of polynomial expression in one variable.
+- __*definition*__. A polynomial ${u}$ in one variable is an expression of the form:
+  $$
+      u_nx^n + u_{n-1}x^{n-1} + \ldots + u_1x + u_0,
+  $$
+  where the coefficients ${u_j}$ are rational numbers, and ${n}$ is a non-negative integer.
+- If ${u_n \neq 0,}$ we call ${u_n}$ the _leading coefficient_ of ${u}$ and ${n}$ the _degree_ of ${u.}$ The expression ${u = 0}$ is called the _zero polynomial_. 
+- By convention, the zero polynomial has leading coefficient ${0}$ and, according to mathematical convention, has degree ${-\infty.}$
+- __*definition*__. Let ${u}$ be a polynomial expression in a single variable ${x.}$ Then:
 
-> **Definition.** A polynomial ${u}$ in one variable is an expression of the form:
->
-> $$
->    u_nx^n + u_{n-1}x^{n-1} + \ldots + u_1x + u_0,
-> $$
->
-> where the coefficients ${u_j}$ are rational numbers, and ${n}$ is a non-negative integer.
+  $$
+      \text{deg}(u,x)
+  $$
 
-If ${u_n \neq 0,}$ we call ${u_n}$ the **leading coefficient** of ${u}$ and ${n}$ the **degree** of ${u.}$ The expression ${u = 0}$ is called the **zero polynomial**. By convention, the zero polynomial has leading coefficient ${0}$ and, according to mathematical convention, has degree ${-\infty.}$
+  corresponds to the degree of ${u}$ and
 
-To aid our discussion on polynomials, we define the following operators.
+  $$
+      \text{lc}(u,x)
+  $$
 
-> **Definition.** Let ${u}$ be a polynomial expression in a single variable ${x.}$ Then:
->
-> $$
->    \text{deg}(u,x)
-> $$
->
-> corresponds to the degree of ${u}$ and
->
-> $$
->    \text{lc}(u,x)
-> $$
->
-> corresponds to the leading coefficient of ${u.}$ If the variable ${x}$ is clear from context, we use the shorthand notation ${\text{deg}(u)}$ and ${\text{lc}(u).}$
+  corresponds to the leading coefficient of ${u.}$ If the variable ${x}$ is clear from context, we use the shorthand notation ${\text{deg}(u)}$ and ${\text{lc}(u).}$
 
 #### Multivariate Polynomials
 
@@ -987,6 +902,26 @@ import {SeqPlot1} from "@/components/Fig";
 <SeqPlot1/>
 
 If we imagine walking down the sequence from first to last (a fool's errand; as we'll never see the last), we find that each sequence member starts looking more and more like zero. They're never quite zero, but they're uncannily close. This phenomenon, a sequence's members tending towards a particular number, is captured by the notion of a _limit_. 
+
+<blockquote>
+
+__*definition.*__ A sequence ${(a_n)_{n \in \natnums}}$ is _convergent_ to a real number ${c}$ if for all ${\varepsilon \gt 0,}$ there exists an index ${N}$ such that, for all indices ${n \geq N,}$ ${\lvert a_n - c \rvert \lt \varepsilon.}$
+
+</blockquote>
+
+A convergent sequence is a sequence with the following properties: There is some number ${c}$ such that, given a positive number ${\varepsilon,}$ the sequence's members all tend towards ${c,}$ with the majority of sequence members gathering around ${c.}$ I.e., most members are in the interval ${(a-\varepsilon, a + \varepsilon).}$
+
+import {EpsilonNeighborhood} from "@/components/Fig";
+
+<EpsilonNeighborhood/>
+
+If there is no number ${c}$ where the sequence members tend to congregate, then the sequence is _divergent_.
+
+<blockquote>
+
+__*definition.*__ Given a sequence ${a_n,}$ if ${a_n}$ is not convergent, then ${a_n}$ is _divergent_.
+
+</blockquote>
 
 ## Limits
 We'll start by stating the formal definition of a limit, then slowly unpack it.

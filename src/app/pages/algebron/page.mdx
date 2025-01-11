@@ -24,7 +24,6 @@ import {
     - [Strings](#strings)
     - [Symbolic Strings](#symbolic-strings)
   - [Composite Data Types](#composite-data-types)
-    - [Lists](#lists)
     - [Vectors](#vectors)
   - [Conditionals](#conditionals)
   - [Functions](#functions)
@@ -174,16 +173,8 @@ Any expression surrounded by the apostrophe (`'`) in Praxis is interpreted as a 
 
 Composite types in Praxis are data types with an underlying data structure, made up of primitive (or composite) data types. Where primitives are the simplest data types that cannot be reduced further (i.e., atomic), composites are those that can be reduced further.
 
-#### Lists
-
-A list is any linear sequence of data. In Algebron, a list is written with open and closing parentheses. For example, below is a list with four integers as elements:
-
-```ts
-const l = (1, 2, 3, 4);
-```
 
 #### Vectors
-
 A vector is similar to a list, except its elements can only be integers or floating point numbers, or expressions that reduce to integers or floating point numbers. Vectors are written with square brackets. For example:
 
 ```rust
@@ -597,8 +588,6 @@ As mentioned earlier, Algebron does not provide any frontend components or do an
 ### Fig
 
 Figures on Algebron's site are rendered with the `Fig` component.
-
-
 
 export default function MDXPage({ children }) {
     return <MdxLayout>{children}</MdxLayout>

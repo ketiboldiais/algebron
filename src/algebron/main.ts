@@ -1555,6 +1555,66 @@ class Matrix {
     return matrix(copy.map((c) => vector(c)));
   }
 
+  /** Returns the cofactor of this matrix. */
+  cofactor() {
+    let det = 0;
+    for (let r = 0; r < this.$R; r++) {
+      const a = (-1) ** r;
+      const b = this.$vectors[0].$elements[r];
+      const c = a * b;
+      const mMinor = this.minor(1, r + 1);
+      const minorDeterminant = mMinor.det();
+      det += c * minorDeterminant;
+    }
+    return det;
+  }
+
+  /**
+   * Returns the minor of the element at [row, col].
+   */
+  minor(row:number, col:number) {
+    const out:(number[])[] = [];
+    for (let i = 0; i < this.$R; i++) {
+      if (i === row - 1) {
+        continue;
+      }
+      const minorRow = [];
+      for (let j = 0; j < this.$C; j++) {
+        if (j === col - 1) {
+          continue;
+        }
+        minorRow.push(this.$vectors[i].$elements[j]);
+      }
+      out.push(minorRow);
+    }
+    return matrix(out);
+  }
+
+  /**
+   * Returns the determinant of this matrix.
+   * Note that to have a determinant, the matrix
+   * must be suare.
+   */
+  det():number {
+    if (this.$R === 2 && this.$C === 2) {
+      const p1 = this.$vectors[0].$elements[0] * this.$vectors[1].$elements[1];
+      const p2 = this.$vectors[0].$elements[1] * this.$vectors[1].$elements[0];
+      return p1 - p2;
+    }
+    return this.cofactor();
+  }
+
+  /**
+   * Returns the inverse of this matrix.
+   * Note that not all matrices have an inverse.
+   * To have an inverse, the matrix must be square 
+   * (same number of rows and columns) and must
+   * be non-singular (its determinant is not zero).
+   */
+  inverse() {
+
+  }
+
   /** Returns the matrix product of this matrix and the provided matrix. */
   mul(arg: number | Matrix | number[][]) {
     const Ar = this.$R;
@@ -1590,6 +1650,17 @@ class Matrix {
     });
     return out;
   }
+  
+  flat() {
+    const out = [];
+    for (let i = 0; i < this.$R; i++) {
+      for (let j = 0; j < this.$C; j++) {
+        const e = this.$vectors[i].$elements[j];
+        out.push(e);
+      }
+    }
+    return out;
+  }
 
   static fill(rows: number, columns: number, arg: number) {
     const vectors: Vector[] = [];
@@ -1618,7 +1689,7 @@ class Matrix {
 }
 
 /** Returns a new matrix. */
-function matrix(rows: Vector[] | number[][], cols?: number) {
+export function matrix(rows: Vector[] | number[][], cols?: number) {
   const vectors = rows.map((v) => (isVector(v) ? v : Vector.from(v)));
   return new Matrix(
     vectors,
@@ -1725,6 +1796,19 @@ export type SVGContext = {
 };
 
 export class SVG {
+  _translate: [number, number] = [0,0];
+  translate(x:number, y:number) {
+    this._translate = tuple(x,y);
+    return this;
+  }
+  translateX(value: number) {
+    this._translate[0] = value;
+    return this;
+  }
+  translateY(value: number) {
+    this._translate[1] = value;
+    return this;
+  }
   /**
    * This SVG's Renderable child elements.
    */
@@ -3246,6 +3330,10 @@ export function curveCubicBezier(points: [number, number][], tension: number) {
     return drawCurvedPath(cps, pts);
   };
   return draw();
+}
+
+export function plotPoints(points: ([number,number])[], pointSize:number=2) {
+  return points.map(([x,y]) => circle(pointSize,[x,y]))
 }
 
 /**
@@ -6072,6 +6160,8 @@ enum token_type {
   native,
   // algebra strings
   algebra_string,
+  // structures
+  list,
 }
 
 // § Token Object
@@ -6080,7 +6170,7 @@ enum token_type {
 class Token<
   T extends token_type = token_type,
   L extends Primitive = Primitive
-> {
+>{
   /** This token's type. */
   $type: T;
 
@@ -6473,6 +6563,7 @@ export function lexical(code: string) {
     xnor: () => tkn(token_type.xnor),
     not: () => tkn(token_type.not),
     nand: () => tkn(token_type.nand),
+    list: () => tkn(token_type.list),
   };
 
   const numConsts: Record<NativeConstants, () => Token> = {
@@ -11288,24 +11379,44 @@ export function syntax(source: string) {
     }
   };
 
+  const listExpression: Parslet<Expr> = (op) => {
+    let args: Expr[] = [];
+    if (!state.nextIs(token_type.left_paren)) {
+      return state.error('Expected an opening "("', op.$line)
+    }
+    if (!state.check(token_type.right_paren)) {
+      const arglist = commaSepList(
+        (node): node is Expr => node instanceof Expr,
+        'Expected an expression',
+      )
+      if (arglist.isLeft()) return arglist;
+      args = arglist.unwrap();
+    }
+    const paren = state.next();
+    if (!paren.isType(token_type.right_paren)) {
+      return state.error('Expected a closing ")"', paren.$line);
+    }
+    return state.newExpr($tuple(args))
+  }
+
   /** Parses a parenthesized expression */
   const primary = () => {
     const innerExpression = expr();
     if (innerExpression.isLeft()) return innerExpression;
-    if (state.nextIs(token_type.comma)) {
-      const elements: Expr[] = [innerExpression.unwrap()];
-      do {
-        const e = expr();
-        if (e.isLeft()) return e;
-        elements.push(e.unwrap());
-      } while (state.nextIs(token_type.comma));
-      if (!state.nextIs(token_type.right_paren))
-        return state.error(
-          `Expected a ")" to close the tuple.`,
-          state.$current.$line
-        );
-      return state.newExpr($tuple(elements));
-    }
+    // if (state.nextIs(token_type.comma)) {
+    //   const elements: Expr[] = [innerExpression.unwrap()];
+    //   do {
+    //     const e = expr();
+    //     if (e.isLeft()) return e;
+    //     elements.push(e.unwrap());
+    //   } while (state.nextIs(token_type.comma));
+    //   if (!state.nextIs(token_type.right_paren))
+    //     return state.error(
+    //       `Expected a ")" to close the tuple.`,
+    //       state.$current.$line
+    //     );
+    //   return state.newExpr($tuple(elements));
+    // }
     if (!state.nextIs(token_type.right_paren)) {
       return state.error(`Expected a closing ")".`, state.$current.$line);
     }
@@ -11748,6 +11859,9 @@ export function syntax(source: string) {
     [token_type.end]: [___, ___, ___o],
     [token_type.error]: [___, ___, ___o],
     [token_type.empty]: [___, ___, ___o],
+
+    [token_type.list]: [listExpression, ___, ___o],
+
     [token_type.left_paren]: [primary, funCall, bp.call],
     [token_type.right_paren]: [___, ___, ___o],
     [token_type.left_brace]: [___, ___, ___o],
@@ -13502,3 +13616,4 @@ export function engine() {
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+
