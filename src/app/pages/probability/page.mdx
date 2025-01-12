@@ -10,6 +10,9 @@ import {
 
 - [Sample Space](#sample-space)
 - [Probability Axioms](#probability-axioms)
+- [Discrete Uniform Law](#discrete-uniform-law)
+- [Probability Calculation Steps](#probability-calculation-steps)
+- [Countable Additivity](#countable-additivity)
 
 </TOC>
 
@@ -82,6 +85,70 @@ import { L016B } from "@/components/Fig";
   - __*corollary*__. ${P(A \cup B) \leq P(A) - P(B).}$
     - This is called the _union bound inequality_.
   - __*corollary*__. ${P(A \cup B \cup C) = P(A) + P(A^c \cap B) + P(A^c \cap B^c \cap C).}$
+
+## Discrete Uniform Law
+- __*definition*__. A probability model obeys the _discrete uniform law_ if it satisfies the following conditions:
+  1. The sample space ${\Omega}$ is _finite_.
+  2. The sample space ${\Omega}$ comprises ${n}$ elements, each equally likely. That is, each element has probability ${1/n.}$
+  3. If an event ${A \subset \Omega}$ consists of ${k}$ elements, then
+      $$
+          P(A) = k \cdot \dfrac{1}{n} = \dfrac{k}{n}.
+      $$
+
+## Probability Calculation Steps
+1. Specify the sample space.
+2. Specify a probability law.
+3. Identify the event of interest.
+4. Calculate the probability of that event. 
+
+## Countable Additivity
+- Consider an experiment where we toss a coin. We count how many times we had to toss until we reach first reach heads. The first heads might appear in the first toss, the second toss, the third, fourth, etc. Thus, our sample space is the set of positive integers:
+  $$
+    \Omega = \set{1,2,3,\ldots} = \Z^+.
+  $$ 
+- This is an example of a _discrete_ but _infinite_ sample space.
+- Now let's determine what probability law applies. We will discuss this law later, but for now, assume that the probability law is:
+  $$
+    P(n) = \dfrac{1}{2^n}.
+  $$ 
+  where ${n}$ is the number of tosses until the first heads.
+  - Let's verify that this probability law, as applied, makes sense. 
+  - The probabilities must sum to ${1:}$
+    $$
+      \begin{aligned}
+      \sum_{n = 1}^{\infty} \dfrac{1}{2^n} &= \dfrac{1}{2} \sum_{n = 0}^{\infty} \dfrac{1}{2^n} \\[2em]
+      &= \dfrac{1}{2} \cdot \dfrac{1}{1 - (1/2)} \\[2em]
+      &= 1.
+      \end{aligned}
+    $$
+  - It appears that our probability law is valid.
+- Now consider calculating the probability that the outcome is even (that is, the number of tosses it took us to reach the first heads is even).
+  $$
+  \begin{aligned}
+    P(\text{$n$ is even}) &= P(\set{2,4,6,\ldots}) \\[2em]
+    &= P(\set{2} \cup \set{4} \cup \set{6} \cup \ldots) \\[2em]
+    &= P(2) + P(4) + P(6) + \ldots \\[2em]
+    &= \dfrac{1}{2^2} + \dfrac{1}{2^4} + \dfrac{1}{2^6} + \ldots \\[2em]
+    &= \dfrac{1}{4} \left( 1 + \dfrac{1}{4} + \dfrac{1}{4^2} + \ldots \right) \\[2em]
+    &= \dfrac{1}{4} \left( \dfrac{1}{1-(1/4)}\right) \\[2em]
+    &= \dfrac{1}{3}.
+  \end{aligned}
+  $$
+- That's an awfully nice rational number. Is our calculation correct? Yes, but only by luck. We made a mistake. Nothing that we've discussed so far allows us to take this step:
+  $$
+    P(\set{2} \cup \set{4} \cup \set{6} \cup \ldots)
+    = P(2) + P(4) + P(6) + \ldots \\[2em]
+  $$
+- Our rule for summing disjoint sets only applies to _finitely many_ disjoint sets, not _infinitely many_. 
+- We patch this issue with the _Countable Additivity Axiom_:
+  - __*axiom*__. If ${A_1, A_2, A_3, \ldots}$ is an infinite sequence of disjoint events, then
+    $$
+      P(A_1 \cup A_2 \cup A_3 \cup \ldots) = P(A_1) + P(A_2) + P(A_3) + \ldots.
+    $$  
+    or, more concisely:
+    $$
+      P\left( \bigcup_{i = 0}^{\infty} A_i \right) = \sum_{i = 0}^{\infty} P(A_i).
+    $$
 
 
 

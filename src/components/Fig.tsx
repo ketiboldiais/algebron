@@ -71,7 +71,6 @@ import {
   linearSlope,
   dist2D,
   quad,
-  plotPoints,
 } from "@/algebron/main";
 
 import {
