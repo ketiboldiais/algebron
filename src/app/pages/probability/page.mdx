@@ -8,18 +8,24 @@ import {
 
 <TOC>
 
-- [Sample Space](#sample-space)
+- [Terminology](#terminology)
 - [Probability Axioms](#probability-axioms)
 - [Discrete Uniform Law](#discrete-uniform-law)
 - [Probability Calculation Steps](#probability-calculation-steps)
 - [Countable Additivity](#countable-additivity)
+- [Conditional Probabilities](#conditional-probabilities)
 
 </TOC>
 
 
-## Sample Space
-- __*definition*__. A _probability model_ is a sample space and an operation of assigning probabilities.
+
+
+## Terminology
+- An _experiment_ is a sequence of operations carried out under specified conditions.
+- The result of an experiment is called an _outcome_.     
+- If an experiment's outcomes are not predetermined, then the experiment is called a _chance_ experiment. 
 - __*definition*__. The _sample space_, denoted ${\Omega,}$ is the set of all possible outcomes of a statistical experiment. Each outcome in a sample space is called a _sample point_. 
+- __*definition*__. A _probability model_ is a sample space and an operation of assigning probabilities.
 - __*example*__. When we toss a coin, we have a sample space with two outcomes:
 
     $$
@@ -49,16 +55,14 @@ import {
     $$
 
     This is an example of a _continuous_ and _infinite_ sample space, since there are infinitely many pairs ${(x,y)}$ with ${0 \leq x,y \leq 1.}$
+- Probabilities are assigned to _events_. 
+- __*definition*__. An _event_ is a subset of the sample space. 
+  - __*example*__. Below is a sample space, with events ${A}$ and ${B.}$
+    <EventDiagram/>
 
 import { L016B } from "@/components/Fig"; 
 
 ## Probability Axioms
-- Probabilities are assigned to _events_. 
-- __*definition*__. An _event_ is a subset of the sample space. 
-  - __*example*__. Below is a sample space, with events ${A}$ and ${B.}$
-
-    <EventDiagram/>
-
 - By convention, a probability value is always between ${0}$ and ${1.}$
 - __*axiom*__. A probability of some event ${A,}$ denoted ${P(A),}$ is a nonnegative real number. That is, ${P(A) \geq 0.}$
   - This is called the _Nonnegativity Axiom_ of Probability Theory.
@@ -150,7 +154,73 @@ import { L016B } from "@/components/Fig";
       P\left( \bigcup_{i = 0}^{\infty} A_i \right) = \sum_{i = 0}^{\infty} P(A_i).
     $$
 
+import { L02_2, RadarExample } from "@/components/Fig";
 
+## Conditional Probabilities
+- Consider the following sample space for some experiment, comprising ${12}$ equally likely outcomes.
+  <L02_2/>
+- We see that ${P(A) = 5/12}$ and ${P(B) = 6/12.}$
+- Suppose we're told that ${B}$ occurs. How does the model change?
+  1. The outcomes outside of ${B}$ are no longer possible, so we assign them zero probability.
+  2. There are six outcomes in ${B.}$ We stated that the outcomes are all equally likely, and we have not been given any reason to change the relative probabilities. So, these six outcomes remain equally likely. Thus, each outcome in ${B}$ now has a probability of ${1/6.}$
+- We introduce some new notation for this situation:
+  - ${P(A|B).}$ This means "the probability of ${A,}$ given that ${B}$ occurred." Here, we have two outcomes in ${A}$ and ${B,}$ each equally likely, so:
+    $$
+      P(A | B) = \dfrac{1}{6} + \dfrac{1}{6} = \dfrac{2}{6} = \dfrac{1}{3}.
+    $$ 
+  - ${P(B|B).}$ This means "the probability of ${B,}$ given that ${B}$ occurred." Since ${B}$ has occurred, we have:
+    $$
+      P(B | B) = 1.
+    $$
+- __*definition*__. The probability of ${A,}$ give that ${B}$ occurred, is given by:
+  $$
+    P(A | B) = \dfrac{P(A \cap B)}{P(B)}.
+  $$
+  provided that ${P(B) \gt 0.}$
+- __*example*__. Consider a drone detection system. Suppose ${A}$ is the event where a drone is flying above. Suppose ${B}$ is the event where a red dot, indicating a drone, appears on the screen. Let's outline the possible scenarios:
+
+<RadarExample/>
+
+  - Here are what the set theoretic notations mean:
+    1. ${A:}$ a drone is flying above.
+    2. ${B:}$ red dot appears on the screen.
+    3. ${A \cap B:}$ a drone is flying above _and_ a red dot appears on the screen.
+    4. ${A \cap B^c:}$ a drone is flying above and a red dot _does not_ appear on the screen (a _false negative_).
+    5. ${A^c \cap B:}$ a drone is _not_ flying above and a red dot appears on the screen (a _false positive_).
+    6. ${A^c \cap B^c:}$ a drone is _not_ flying above and a red dot _does not_ appear on the screen. 
+  - Let's say, through repeated testing of the drone detection system, we find that: 
+    - ${P(A) = 0.05.}$
+    - ${P(A^c) = 0.95.}$ 
+  - We annotate these probabilities along the tree's edges above.
+  - What do the other probabilities mean?
+    - ${0.99}$ corresponds to the probability of ${B}$ (a red dot appearing on the screen) given ${A}$ (a drone flying). I.e., ${P(B | A) = 0.99.}$
+    - ${0.01}$ corresponds to the probability of _not_ ${B}$ (a red dot _not_ appearing on the screen) given ${A}$ (no drone is flying above). I.e., ${P(B^c | A).}$ 
+    - Similarly, ${P(B | A^c) = 0.1}$ (the probability of a red dot appearing given _no_ drone flying above is ${0.1}$).
+    - And ${P(A^c | B^c) = 0.9}$ (the probability of a red dot _not_ appearing given _no_ drone is flying above is ${0.9}$). 
+- __*example.*__ Let's calculate some probabilities.
+  1. The probability of a drone flying overhead and the system detecting it: 
+    $$
+      \begin{aligned}
+        P(A \cap B) &= P(A) \cdot P(B) \\ 
+        &= 0.05 \cdot 0.99 \\
+        &= 0.0495.
+      \end{aligned}
+    $$
+  2. The probability of ${B:}$
+    $$
+      \begin{aligned}
+        P(B) &= (0.05 \cdot 0.99) + (0.95 \cdot 0.1) \\
+        &= 0.1445.
+      \end{aligned}
+    $$
+  3. The probability of a drone flying overhead given the system has detected it.
+    $$
+      \begin{aligned}
+        P(A | B) &= \dfrac{0.05 \cdot 0.99}{0.95 \cdot 0.1} \\[2em]
+        &= 0.34.
+      \end{aligned}
+    $$
+    This example is interesting. It tells us that, despite such an accurate system, the fact that it detects a drone does not imply that there is a drone. 
 
 export default function MDXPage({ children }) {
   return <MdxLayout>{children}</MdxLayout>;

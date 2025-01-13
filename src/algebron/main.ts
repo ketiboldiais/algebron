@@ -3,6 +3,7 @@
 // You may use, distribute, and modify this code under the
 // terms of the MIT license (see the bottom of this file).
 
+
 // Disabling TypeScript's no-explicity-any rule because we
 // have to do some heavy recursion in the CAS modules;
 // TypeScript goes insane with certain recursive types,
@@ -1845,7 +1846,7 @@ export class SVG {
     this._translate[1] = value;
     return this;
   }
-  
+
   /**
    * This SVG's Renderable child elements.
    */
@@ -3377,7 +3378,10 @@ export function plotPoints(points: [number, number][], pointSize: number = 2) {
  * Given the set of points, draws a smooth path through each of the points,
  * closed.
  */
-export function curveBlob(points: [number, number][], smoothing: number = 0.2) {
+export function curveBlob(
+  points: [number, number][],
+  smoothing: number = 0.2,
+) {
   const getCurvePathData = (points: Vector[], closed = true) => {
     if (closed) {
       points = points.concat(points.slice(0, 2));
@@ -4879,6 +4883,16 @@ class TNode {
   $dy: number = 0;
   $id: string | number = uid(10);
   $commands: (MCommand | LCommand)[] = [];
+  _labelDx: number = 0;
+  labelDx(value: number) {
+    this._labelDx = value;
+    return this;
+  }
+  _labelDy: number = 0;
+  labelDy(value: number) {
+    this._labelDy = value;
+    return this;
+  }
   get $x() {
     return this.$commands[0][1];
   }
@@ -5142,6 +5156,10 @@ class TreeObj extends Group {
     return this;
   }
   $nodeFill: string = "white";
+  nodeFill(color: string) {
+    this.$nodeFill = color;
+    return this;
+  }
   $nodeFn: ((node: TreeChild) => Renderable) | null = null;
   nodeFn(callback: (node: TreeChild) => Renderable) {
     this.$nodeFn = callback;
@@ -5152,7 +5170,7 @@ class TreeObj extends Group {
     this.$labelFn = callback;
     return this;
   }
-  $edgeColor: string = "salmon";
+  $edgeColor: string = "black";
   edgeColor(color: string) {
     this.$edgeColor = color;
     return this;
@@ -5177,7 +5195,7 @@ class TreeObj extends Group {
     this.$tree.bfs((node) => {
       if (this.$nodeFn) {
         nodes.push(this.$nodeFn(node));
-      } else {
+      } else if (this.$nodeRadius) {
         const c = circle(this.$nodeRadius, [node.$x, node.$y])
           .fill(this.$nodeFill)
           .stroke(this.$edgeColor);
@@ -5190,7 +5208,8 @@ class TreeObj extends Group {
           .position(node.$x, node.$y)
           .textAnchor("middle")
           .fill(this.$textColor)
-          .dy(this.$nodeRadius * 2);
+          .dx(node._labelDx)
+          .dy(node._labelDy);
         labels.push(t);
       }
     });

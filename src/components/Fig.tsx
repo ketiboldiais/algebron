@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-hooks/rules-of-hooks */
 
 "use client";
@@ -71,6 +72,7 @@ import {
   linearSlope,
   dist2D,
   quad,
+  plotPoints,
 } from "@/algebron/main";
 
 import {
@@ -2658,7 +2660,7 @@ export const L016B = () => {
         [1, 1.5],
       ])
         .strokeDashArray(5)
-        // .fill(cssvar("grey"))
+        .stroke(cssvar("foreground"))
         .fillOpacity(0.25),
       curveBlob([
         [1, 1],
@@ -2679,13 +2681,81 @@ export const L016B = () => {
       ])
         .fill(cssvar("blue"))
         .fillOpacity(0.2),
-      text("Ω").fontSize(16).position(0, 1.8),
-      text("A").fontSize(16).position(-0.5, 1),
-      text("B").fontSize(16).position(0.5, -0.7),
-      text("A ∩ B").fontSize(16).position(0.1, 0.1),
+      [
+        text("Ω").position(0, 1.8),
+        text("A").position(-0.5, 1),
+        text("B").position(0.5, -0.7),
+        text("A ∩ B").fontSize(16).position(0.1, 0.1),
+      ].map((t) => t.fill(cssvar("foreground")).fontSize(16)),
     ])
     .translateY(-120);
   return <Fig data={d} paddingBottom={40} />;
+};
+
+export const L02_2 = () => {
+  const d = svg(defaultSVGContext)
+    .children([
+      // axis({
+      //   on: "x",
+      //   domain: defaultSVGContext.domain,
+      //   range: defaultSVGContext.range,
+      // }),
+      // axis({
+      //   on: "y",
+      //   domain: defaultSVGContext.domain,
+      //   range: defaultSVGContext.range,
+      // }),
+      // grid(defaultSVGContext.domain, defaultSVGContext.range).done(),
+      curveBlob([
+        [1, 1],
+        [-3, 0.5],
+        [-2, -2],
+        [1, -2],
+      ])
+        .stroke(cssvar("foreground"))
+        .strokeDashArray(5),
+      curveBlob([
+        [-1, 0.5],
+        [-2, 0],
+        [-1, -1.5],
+        [0, -0.5],
+      ])
+        .fill(cssvar("red"))
+        .fillOpacity(0.4),
+      curveBlob([
+        [-1, -1],
+        [-0.8, -1.7],
+        [0, -1.9],
+        [0.5, -1],
+      ])
+        .fill(cssvar("blue"))
+        .fillOpacity(0.4),
+      [
+        text("Ω").position(0, 0.8),
+        text("A").position(-1, 0),
+        text("B").position(0.1, -1.5),
+      ].map((t) => t.fill(cssvar("foreground")).fontSize(20)),
+      [
+        [1, 0],
+        [0.5, 0.5],
+        [0.5, -0.5],
+      ].map((pt) => circle(2, [pt[0], pt[1]]).fill(cssvar("foreground"))),
+      [
+        [-1, -0.5],
+        [-1.3, 0.1],
+        [-1.5, -0.3],
+      ].map((pt) => circle(2, [pt[0], pt[1]]).fill(cssvar("foreground"))),
+      [
+        [0, -1],
+        [-0.5, -1],
+        [-0.75, -1.2],
+        [-0.5, -1.5],
+        [-0.25, -1.3],
+        [-0.3, -1.8],
+      ].map((pt) => circle(2, [pt[0], pt[1]]).fill(cssvar("foreground"))),
+    ])
+    .translateY(-150);
+  return <Fig data={d} width={70} paddingBottom={30} />;
 };
 
 import geojson from "./world.json";
@@ -2735,6 +2805,47 @@ function geomap(
   return map;
 }
 
+export const RadarExample = () => {
+  const d = svg({ ...defaultSVGContext, range: [-2, 2] }).children([
+    // axis({
+    //   on: "x",
+    //   domain: defaultSVGContext.domain,
+    //   range: defaultSVGContext.range,
+    // }),
+    // axis({
+    //   on: "y",
+    //   domain: defaultSVGContext.domain,
+    //   range: defaultSVGContext.range,
+    // }),
+    // grid(defaultSVGContext.domain, defaultSVGContext.range).done(),
+    [text("0.95").position(1, 1).dx(15).dy(-5),
+    text("0.05").position(-1, 1).dx(-15).dy(-5),
+    text("0.99").position(-2.5, 0).dx(-15),
+    text("0.01").position(-1.5, 0).dx(15),
+    text("0.90").position(2.5, 0).dx(15),
+    text("0.1").position(1.5, 0).dx(-15)].map(t => t.fill(cssvar('pencil'))),
+    tree(
+      subtree("start")
+        .labelDy(-10)
+        .nodes([
+          subtree("A")
+            .labelDx(-12)
+            .nodes([leaf("A ∩ B"), leaf("A ∩ Bᶜ")].map(l => l.labelDy(20))),
+          subtree("Aᶜ")
+            .labelDx(17)
+            .nodes([leaf("Aᶜ ∩ B"), leaf("Aᶜ ∩ Bᶜ")].map(l => l.labelDy(20))),
+        ])
+    )
+      .textColor(cssvar('pencil'))
+      .edgeColor(cssvar('pencil'))
+      .nodeFill(cssvar('pencil'))
+      .nodeRadius(5)
+      .layout("reingold-tilford")
+      .done(),
+  ]).translateY(-20);
+  return <Fig data={d} width={70} paddingBottom={45}/>;
+};
+
 export const MapDemo = () => {
   const SIZE = 800;
   const domain = tuple(-10, 10);
@@ -2751,3 +2862,20 @@ export const MapDemo = () => {
 };
 
 export default Fig;
+
+// export const TEMPLATE = () => {
+//   const d = svg(defaultSVGContext).children([
+//       axis({
+//         on: "x",
+//         domain: defaultSVGContext.domain,
+//         range: defaultSVGContext.range,
+//       }),
+//       axis({
+//         on: "y",
+//         domain: defaultSVGContext.domain,
+//         range: defaultSVGContext.range,
+//       }),
+//       grid(defaultSVGContext.domain, defaultSVGContext.range).done(),
+//   ])
+//   return <Fig data={d}/>
+// }
