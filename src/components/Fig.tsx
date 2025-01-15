@@ -2806,44 +2806,50 @@ function geomap(
 }
 
 export const RadarExample = () => {
-  const d = svg({ ...defaultSVGContext, range: [-2, 2] }).children([
-    // axis({
-    //   on: "x",
-    //   domain: defaultSVGContext.domain,
-    //   range: defaultSVGContext.range,
-    // }),
-    // axis({
-    //   on: "y",
-    //   domain: defaultSVGContext.domain,
-    //   range: defaultSVGContext.range,
-    // }),
-    // grid(defaultSVGContext.domain, defaultSVGContext.range).done(),
-    [text("0.95").position(1, 1).dx(15).dy(-5),
-    text("0.05").position(-1, 1).dx(-15).dy(-5),
-    text("0.99").position(-2.5, 0).dx(-15),
-    text("0.01").position(-1.5, 0).dx(15),
-    text("0.90").position(2.5, 0).dx(15),
-    text("0.1").position(1.5, 0).dx(-15)].map(t => t.fill(cssvar('pencil'))),
-    tree(
-      subtree("start")
-        .labelDy(-10)
-        .nodes([
-          subtree("A")
-            .labelDx(-12)
-            .nodes([leaf("A ∩ B"), leaf("A ∩ Bᶜ")].map(l => l.labelDy(20))),
-          subtree("Aᶜ")
-            .labelDx(17)
-            .nodes([leaf("Aᶜ ∩ B"), leaf("Aᶜ ∩ Bᶜ")].map(l => l.labelDy(20))),
-        ])
-    )
-      .textColor(cssvar('pencil'))
-      .edgeColor(cssvar('pencil'))
-      .nodeFill(cssvar('pencil'))
-      .nodeRadius(5)
-      .layout("reingold-tilford")
-      .done(),
-  ]).translateY(-20);
-  return <Fig data={d} width={70} paddingBottom={45}/>;
+  const d = svg({ ...defaultSVGContext, range: [-2, 2] })
+    .children([
+      // axis({
+      //   on: "x",
+      //   domain: defaultSVGContext.domain,
+      //   range: defaultSVGContext.range,
+      // }),
+      // axis({
+      //   on: "y",
+      //   domain: defaultSVGContext.domain,
+      //   range: defaultSVGContext.range,
+      // }),
+      // grid(defaultSVGContext.domain, defaultSVGContext.range).done(),
+      [
+        text("0.95").position(1, 1).dx(15).dy(-5),
+        text("0.05").position(-1, 1).dx(-15).dy(-5),
+        text("0.99").position(-2.5, 0).dx(-15),
+        text("0.01").position(-1.5, 0).dx(15),
+        text("0.90").position(2.5, 0).dx(15),
+        text("0.1").position(1.5, 0).dx(-15),
+      ].map((t) => t.fill(cssvar("pencil"))),
+      tree(
+        subtree("start")
+          .labelDy(-10)
+          .nodes([
+            subtree("A")
+              .labelDx(-12)
+              .nodes([leaf("A ∩ B"), leaf("A ∩ Bᶜ")].map((l) => l.labelDy(20))),
+            subtree("Aᶜ")
+              .labelDx(17)
+              .nodes(
+                [leaf("Aᶜ ∩ B"), leaf("Aᶜ ∩ Bᶜ")].map((l) => l.labelDy(20))
+              ),
+          ])
+      )
+        .textColor(cssvar("pencil"))
+        .edgeColor(cssvar("pencil"))
+        .nodeFill(cssvar("pencil"))
+        .nodeRadius(5)
+        .layout("reingold-tilford")
+        .done(),
+    ])
+    .translateY(-20);
+  return <Fig data={d} width={70} paddingBottom={45} />;
 };
 
 export const MapDemo = () => {
@@ -2859,6 +2865,37 @@ export const MapDemo = () => {
     geomap(geojson as GeoJSON.FeatureCollection, SIZE, domain, range),
   ]);
   return <Fig data={d} />;
+};
+
+export const PartitionedSampleSpace = () => {
+  const d = svg(defaultSVGContext).children([
+    // axis({
+    //   on: "x",
+    //   domain: defaultSVGContext.domain,
+    //   range: defaultSVGContext.range,
+    // }),
+    // axis({
+    //   on: "y",
+    //   domain: defaultSVGContext.domain,
+    //   range: defaultSVGContext.range,
+    // }),
+    // grid(defaultSVGContext.domain, defaultSVGContext.range).done(),
+    curveBlob([
+      [1, 1],
+      [0, 2],
+      [-0.5, 1],
+      [-1, 0],
+      [0, -1],
+    ]),
+    curveBlob([[0,1], [-.25,-.2], [.5,.1]]),
+    line([0, 2], [0, -1]),
+    line([-1, 0], [0, 0]),
+    text("A₁").position(0.5, 1),
+    text("A₂").position(-0.5, 0.25),
+    text("A₃").position(-0.35, -0.5),
+    text("B").position(0.2,0.1)
+  ]).translateY(-130);
+  return <Fig data={d} paddingBottom={35}/>;
 };
 
 export default Fig;

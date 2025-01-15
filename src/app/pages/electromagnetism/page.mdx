@@ -1,0 +1,90 @@
+import MdxLayout from "@/components/mdx-layout";
+
+# Electromagnetism
+
+<TOC>
+
+- [Electric Charge](#electric-charge)
+- [Conductors \& Insulators](#conductors--insulators)
+  - [Grounding](#grounding)
+- [Coulomb's Law](#coulombs-law)
+  - [Units of Charge](#units-of-charge)
+  - [Electrostatic Constant](#electrostatic-constant)
+  - [Shell Theories](#shell-theories)
+
+</TOC>
+
+
+## Electric Charge
+- Objects are made up of atoms.
+- Atoms consist of three fundamental particles: _protons_, _electrons_, and _neutrons_.
+- The protons and neutrons are packed tightly in a central nucleus.
+- Protons and electrons have _electric charge_.
+- There are two types of electric charge, positive (denoted ${+}$) and negative (denoted ${-}$).
+- Protons have a positive charge and electrons have a negative charge.
+- The charges of a single proton and a single electron have the same magnitude but opposite signs. 
+- We can add up the charges of an object to find the object's _net charge_.
+- Thus, an atom with equal numbers of protons and electrons is _electrically neutral_.
+- If an object has more negative charge than positive, the object is _electrically negative_. 
+- If an object has more positive charge than negative, the object is _electrically positive_.
+- __*law*__. Particles with the same sign of electrical charge repel each other, and particles with opposite signs attract each other.
+
+## Conductors & Insulators
+- _Conductors_ are materials through which charge can move freely, with a negligible amount of hindrance (e.g., copper wire, the human body, and tap water).
+- _Insulators_ are materials through which charge cannot move freely (e.g., rubber, plastic, glass, and chemically pure water).
+- _Semiconductors_ are materials where charge can move freely, but with some amount of hindrance (e.g., silicon and germanium).
+- _Superconductors_ are materials where charge can move freely without _any_ hindrance. 
+
+### Grounding
+- __*example*__. Rub a copper rod with wool, and charge is transferred from the wool to the rod.
+  - If you hold the rod while also touching a faucet, no charge is transferred. Why?
+  - Because you, the rod, and the faucet are all conductors, and they are all connected to the Earth's surface, which is a huge conductor.
+  - The excess charges put on the rod by the wool repel each other. 
+  - They move away from one another by moving through the rod, then through you, then through the faucet, through the plumbing, all the way to the earth's surface, where they spread out. 
+  - By setting up a pathway of conductors between an object and Earth's surface, we are said to _ground_ the object.
+  - In neutralizing the object, we are said to _discharge_ the object.
+
+## Coulomb's Law
+- If two charged particles are brought near each other, each particle exerts an electrostatic force on the other.
+- The direction of the force depends on the signs of the charges.
+- If the particles have the same sign of charge, they repel one another.
+  - I.e., the force vector on each is directly away from the other.
+  - If the particles are released while the electrostatic force is applied, they accelerate away from each other. 
+- If the particles have opposite signs of charge, they attract each other. 
+  - I.e., the force vector on each is directly toward the other.
+  - If we release the particles, they accelerate toward each other.
+- _Coulomb's Law_ states an equation between the electrostatic force and the charges of the particles:   
+    $$
+        \overrightarrow{F} = k \dfrac{q_1 q_2}{d^2} \hat{r}.
+    $$
+    where particle ${1}$ has charge ${q_1,}$ particle ${2}$ has charge ${q_2,}$ ${d}$ is the separation between the particles, ${k}$ is a positive constant called the _electrostatic constant_, and ${\hat{r}}$ is a _unit vector_ pointing along a radial axis extending through the two particles, radially away from particle ${2.}$
+
+### Units of Charge
+- The SI unit of charge is the _coulomb_, denoted ${\text{C}.}$ 
+- The coulomb unit is derived from the SI unit _ampere_ (${\text{A}}$) for electric current ${i.}$
+- We will discuss currents in a later section, but for now, we note that
+    $$
+        i = \dfrac{\text{d}q}{\text{d}t}.
+    $$
+- Rearranging, we will see that
+  $$
+    1 \text{C} = (1 \text{A})(1 \text{s}).
+  $$
+
+### Electrostatic Constant
+- The electrostatic constant is a fundamental physical constant, written as:
+  $$
+    k = \dfrac{1}{4 \pi \varepsilon_0}
+  $$ 
+  where ${\varepsilon_0}$ is the _permittivity constant_, defined as:
+  $$
+    \varepsilon_0 = 8.85 \times 10^{-12} \text{C}^2/\text{N} \cdot \text{m}^2.
+  $$
+
+### Shell Theories
+
+
+export default function MDXPage({ children }) {
+    return <MdxLayout>{children}</MdxLayout>
+
+}

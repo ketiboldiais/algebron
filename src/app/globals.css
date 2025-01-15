@@ -3,7 +3,8 @@
 @tailwind utilities;
 
 :root {
-  --background: #ededed;
+  /* --background: #ededed; */
+  --background: #fafaf3;
   --foreground: #171717;
   --blockquote-bg: rgb(227, 227, 227);
   /* --red: tomato; */
@@ -33,7 +34,7 @@
   :root {
     --background: #2a2a2a;
     --foreground: #ededed;
-    --blockquote-bg: rgb(60, 60, 60); 
+    --blockquote-bg: rgb(60, 60, 60);
     --grey: rgb(129, 129, 129);
     --red: tomato;
     --blue: cyan;
@@ -43,11 +44,11 @@
     --lightgrey: #6a726c;
     --code-bg: rgb(55, 55, 55);
     --aside-color: #62f6f6;
-  --peach: rgb(237, 161, 126);
-  --mocha: rgb(195,147,128);
-  --brightBlue: rgb(109, 197, 200);
-  --latte: rgb(207, 175, 159);
-  --brighPink: rgb(249, 107, 107);
+    --peach: rgb(237, 161, 126);
+    --mocha: rgb(195, 147, 128);
+    --brightBlue: rgb(109, 197, 200);
+    --latte: rgb(207, 175, 159);
+    --brighPink: rgb(249, 107, 107);
   }
 }
 
@@ -77,7 +78,7 @@
 }
 
 html {
-  font-size: 15px;
+  font-size: 16px;
 }
 
 @media (min-width: 300px) and (max-width: 750px) {
@@ -124,7 +125,7 @@ pre {
   padding: 0.8rem;
   border-radius: 0.2em;
   overflow-x: scroll;
-  background-color:var(--code-bg);
+  background-color: var(--code-bg);
   color: var(--foreground);
 }
 
@@ -141,12 +142,12 @@ pre {
 }
 
 .hljs-built_in {
-  color:var(--brightBlue);
+  color: var(--brightBlue);
 }
 
 .hljs-number,
 .hljs-string {
-  color:var(--mocha);
+  color: var(--mocha);
   /* color: rgb(231, 188, 95); */
 }
 
@@ -233,8 +234,6 @@ h5 + h6 {
   margin-top: 0;
 }
 
-
-
 blockquote {
   padding: 8px 10px;
   padding-bottom: 13px;
@@ -268,11 +267,11 @@ textarea {
 
 ul {
   list-style: disc;
-  margin-left: 20px;
+  margin-left: 25px;
 }
 ol {
   list-style: decimal;
-  margin-left: 20px;
+  margin-left: 25px;
 }
 
 ul ul {
@@ -286,7 +285,6 @@ article {
   overflow-x: hidden;
   overflow-y: hidden;
 }
-
 
 footer {
   display: block;
@@ -323,19 +321,27 @@ aside p {
 li p {
   margin: 0;
 }
+li {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+@media (max-width: 450px) {
+  li {margin: 0}
+}
+.toc li {
+  margin: 0;
+}
 
 a {
   color: inherit;
   border-bottom: 1px dotted var(--grey);
   display: inline-block;
-  padding-bottom:0px;
+  padding-bottom: 0px;
   background-image: linear-gradient(var(--grey) 0 0);
   background-position: 0 100%; /*OR bottom left*/
   background-size: 0% 1px;
   background-repeat: no-repeat;
-  transition:
-    background-size 0.3s,
-    background-position 0s 0.3s; /*change after the size immediately*/
+  transition: background-size 0.3s, background-position 0s 0.3s; /*change after the size immediately*/
 }
 a:hover {
   background-position: 100% 100%; /*OR bottom right*/

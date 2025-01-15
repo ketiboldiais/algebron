@@ -14,6 +14,9 @@ import {
 - [Probability Calculation Steps](#probability-calculation-steps)
 - [Countable Additivity](#countable-additivity)
 - [Conditional Probabilities](#conditional-probabilities)
+  - [Multiplication Rule](#multiplication-rule)
+- [Total Probability Theorem](#total-probability-theorem)
+- [Bayes's Rule](#bayess-rule)
 
 </TOC>
 
@@ -221,6 +224,56 @@ import { L02_2, RadarExample } from "@/components/Fig";
       \end{aligned}
     $$
     This example is interesting. It tells us that, despite such an accurate system, the fact that it detects a drone does not imply that there is a drone. 
+
+### Multiplication Rule
+- Consider:
+  $$
+    P(A ~|~ B) = \dfrac{P(A \cap B)}{P(B)}.
+  $$ 
+  Rearranging:
+  $$
+    \begin{aligned}
+      P(A \cap B) &= P(B) \cdot P(A ~|~ B) \\
+      &= P(A) \cdot P(B ~|~ A).
+    \end{aligned}
+  $$
+- This is a simple application of the _multiplication rule of probabilities_.
+  - __*multiplication rule*__. 
+    $$
+      P(A_1 \cap A_2 \cap \ldots \cap A_n) = P(A_1) \prod_{i=2}^{n} P(A_i ~|~ A_1 \cap A_2 \cap \ldots \cap A_{i-1}).
+    $$ 
+
+import { PartitionedSampleSpace } from "@/components/Fig";
+
+## Total Probability Theorem
+- Say we have the following sample space, partitioned into ${A_1,}$ ${A_2,}$ and ${A_3.}$
+  <PartitionedSampleSpace/>
+- The event ${B}$ can happen in three different ways:
+  1. ${B}$ given ${A_1}$ occurred (${A_3 \cap B}$).
+  2. ${B}$ given ${A_2}$ occurred (${A_2 \cap B}$).
+  3. ${B}$ given ${A_3}$ occurred (${A_3 \cap B}$).
+- Can we compute ${P(B)}$? Yes:
+  $$
+    \begin{aligned}
+      P(B) &= P(B \cap A_1) + P(B \cap A_2) + P(B \cap A_3) \\ 
+      &= P(A_1) \cdot P(B ~|~ A_1) + P(A_2) \cdot P(B ~|~ A_2) + \ldots + \ldots
+    \end{aligned}
+  $$  
+- This leads to the following formula:
+  $$
+    P(B) = \sum_{i=1}^{n} P(A_i) P(B ~|~ A_i).
+  $$ 
+  - Notice that ${P(B)}$ looks like a _weighted average_ of ${P(B ~|~ A_i),}$ where the weight is ${P(A_i).}$ 
+
+## Bayes's Rule
+- Bayes's Rule is a systematic approach for incorporating new evidence. 
+- Imagine a sample space partitioned in three tripartites: ${A_1,}$ ${A_2,}$ and ${A_3.}$ We call each tripartite a _scenario_.
+- Now let's say we assign each scenario a probability (based on some method; perhaps repeated experimentation, inferences from other experiments, etc.) Thus, we have ${P(A_i)}$ for every ${i.}$ We call these initial probabilities our _initial beliefs_. 
+- Under each scenario, we have an event ${B.}$ Each event ${B}$ under ${A_i}$ has a probability that it will occur given the scenario ${A_i.}$ Thus, we have ${P(B ~|~ A_i)}$ for every ${i.}$
+- Now the experiment is carried out, and we observe that ${B}$ does occur. 
+- The moment this happens, we ought to revise our beliefs about the likelihoods of  the different scenarios, ${A_i.}$ 
+
+
 
 export default function MDXPage({ children }) {
   return <MdxLayout>{children}</MdxLayout>;
