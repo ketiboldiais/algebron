@@ -5,28 +5,33 @@ import MdxLayout from "@/components/mdx-layout";
 
 <TOC>
 
-- [Position](#position)
-- [Displacement](#displacement)
-- [Average Velocity](#average-velocity)
-- [Average Speed](#average-speed)
-- [Instantaneous Velocity](#instantaneous-velocity)
-- [Average Acceleration](#average-acceleration)
-- [Instantaneous Acceleration](#instantaneous-acceleration)
+- [1D Motion](#1d-motion)
+  - [Position](#position)
+  - [Displacement](#displacement)
+  - [Average Velocity](#average-velocity)
+  - [Average Speed](#average-speed)
+  - [Instantaneous Velocity](#instantaneous-velocity)
+  - [Average Acceleration](#average-acceleration)
+  - [Instantaneous Acceleration](#instantaneous-acceleration)
 
 
 </TOC>
 
-## Position
+## 1D Motion
+- 1D motion is motion along a straight line.
+- The principles and concepts of 1D motion will be later extended to 2 and 3D motion.
+
+### Position
 - __*definition: position.*__ Let ${p}$ be some object. If ${p}$ exists in one-dimensional space ${\reals,}$ then ${p}$'s _position_ is an ${x \in \reals,}$ relative to some _reference point_ ${\mathscr{O}.}$ If ${p}$ exists in two-dimensional space ${\reals^2,}$ then ${p}$'s position is a pair ${(x,y) \in \reals^2,}$ again relative to some reference point ${\mathscr{O}.}$ If ${p}$ exists in three-dimensional space, then ${p}$'s position is a triple ${(x,y,z) \in \reals^3}$ (relative to some reference point ${\mathscr{O}.}$)
 
-## Displacement
+### Displacement
 - __*definition: displacement.*__ Suppose an object ${p}$ has an initial position ${x_1}$ and a final position ${x_2.}$ Then the change from position ${x_1}$ to ${x_2}$ is called the _displacement_ of ${p,}$ denoted ${\Delta x,}$ where     
 $$
     \Delta x = x_2 - x_1.
 $$
 - Displacement is a vector quantity &mdash; it has a magnitude and a direction.
 
-## Average Velocity
+### Average Velocity
 - __*definition*__. _Average velocity_, denoted ${v_{\text{avg}},}$ is the ratio of an object's displacement ${\Delta x}$ over a particular time interval ${\Delta t.}$
     $$
         v_{\text{avg}} = \dfrac{\Delta x}{\Delta t}
@@ -37,11 +42,11 @@ $$
 - Like displacement, ${v_{\text{avg}}}$ is a vector quantity &mdash; it has a magnitude and a direction.  
 - ${v_{\text{avg}}}$ always has the same sign as ${\Delta x}$ because ${\Delta t}$ is always positive.
 
-## Average Speed
+### Average Speed
 - __*definition*__. _Average speed_, denoted ${s_{\text{avg}},}$ is the ratio of the total distance an object travels over a particular time interval ${\Delta t.}$
 - Average speed is a _scalar quantity_ &mdash; it has a magnitude but no direction (ergo, no algebraic sign).
 
-## Instantaneous Velocity
+### Instantaneous Velocity
 - __*definition*__. A moving object's _instantaneous velocity_ (or simply _velocity_), denoted ${v,}$ is
     $$
         v = \lim_{\Delta t \to 0} \dfrac{\Delta x}{\Delta t}
@@ -50,7 +55,7 @@ $$
 - In physics, the term _speed_ refers to the magnitude of ${v.}$
 - A common unit for velocity is ${\text{m}/\text{s}}$ (meters per second).
 
-## Average Acceleration
+### Average Acceleration
 - __*definition*__. An object's _average acceleration_, denoted ${a_{\text{avg}},}$ is the ratio of a change in velocity ${\Delta v}$ to the time interval ${\Delta t}$ in which the change occurs:
   $$
     a_{\text{avg}} = \dfrac{\Delta v}{\Delta t}
@@ -60,7 +65,7 @@ $$
 - ${a_{\text{avg}}}$ is a vector quantity &mdash; it has a magnitude and a direction.
 - The algebraic sign of ${a_{\text{avg}}}$ indicates the direction of ${a_{\text{avg}}.}$ 
 
-## Instantaneous Acceleration
+### Instantaneous Acceleration
 - __*definition*__. An object's _instantaneous acceleration_ (or simply _acceleration_), is
     $$
         a = \dfrac{\text{d} v}{\text{d} t}

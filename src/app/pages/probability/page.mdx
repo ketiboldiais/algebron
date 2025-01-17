@@ -271,7 +271,8 @@ import { PartitionedSampleSpace } from "@/components/Fig";
 - Now let's say we assign each scenario a probability (based on some method; perhaps repeated experimentation, inferences from other experiments, etc.) Thus, we have ${P(A_i)}$ for every ${i.}$ We call these initial probabilities our _initial beliefs_. 
 - Under each scenario, we have an event ${B.}$ Each event ${B}$ under ${A_i}$ has a probability that it will occur given the scenario ${A_i.}$ Thus, we have ${P(B ~|~ A_i)}$ for every ${i.}$
 - Now the experiment is carried out, and we observe that ${B}$ does occur. 
-- The moment this happens, we ought to revise our beliefs about the likelihoods of  the different scenarios, ${A_i.}$ 
+- The moment this happens, we ought to revise our beliefs about the likelihoods of  the different scenarios, ${A_i.}$ Perhaps, because of ${B}$'s occurrence, other events become suddenly more likely.
+- We revise our beliefs by calculating conditional probabilities.
 
 
 

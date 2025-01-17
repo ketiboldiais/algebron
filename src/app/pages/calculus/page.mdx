@@ -7,7 +7,7 @@ import MdxLayout from "@/components/mdx-layout";
 - [Expressions](#expressions)
 - [The Domain of an Expression](#the-domain-of-an-expression)
 - [Solution Sets](#solution-sets)
-- [Number Sets](#number-sets)
+- [Numbers](#numbers)
 - [Relations](#relations)
 - [Intervals](#intervals)
 - [Absolute Value](#absolute-value)
@@ -51,7 +51,20 @@ import MdxLayout from "@/components/mdx-layout";
     - [The Cosine Function](#the-cosine-function)
     - [The Arcsine Function](#the-arcsine-function)
 - [Sequences](#sequences)
+  - [Convergent Sequences](#convergent-sequences)
+  - [Divergent Sequences](#divergent-sequences)
+  - [Bounded Sequences](#bounded-sequences)
+  - [Unbounded Sequences](#unbounded-sequences)
+  - [Convergence Theorems](#convergence-theorems)
 - [Limits](#limits)
+  - [Limit Theorems](#limit-theorems)
+  - [Monotonicity of Sequences](#monotonicity-of-sequences)
+  - [Terminology of Real Intervals](#terminology-of-real-intervals)
+    - [Upper \& Lower Bounds](#upper--lower-bounds)
+    - [Maximum \& Minimum](#maximum--minimum)
+    - [Supremum \& Infimum](#supremum--infimum)
+  - [Cauchy Sequences](#cauchy-sequences)
+  - [The Sandwich Theorem](#the-sandwich-theorem)
 - [The Derivative](#the-derivative)
 
 </TOC>
@@ -111,15 +124,8 @@ _identity_.
   - **_example_**. ${x^2 - 9 = (x - 3)(x + 3).}$
   - **_example_**. ${\dfrac{x^2}{x} = x.}$
 
-## Number Sets
-- For the purposes of calculus, it suffices to give informal definitions of numbers.
-
-<aside>
-  Thorough definitions of the naturals and integers are typically presented in a
-  set theory course; the rationals, irrationals, and reals in a real analysis
-  course; and the complex numbers in a linear algebra course.
-</aside>
-
+## Numbers
+- We will start by giving informal definitions of numbers.
 - __*informal definition*__. A real number is any number that can be expressed in decimal form. We denote the set of real numbers with the symbol ${\reals.}$
   - The real numbers can be represented as points on a _number line_.
   - A fundamental fact: There is a one-to-one correspondence between the set of real numbers and the set of points on a line. For each given point, the real number associated with that point is called the point's **coordinate**.
@@ -818,13 +824,30 @@ import {EpsilonNeighborhood} from "@/components/Fig";
   <SeqPlot1/>
 
 - If we imagine walking down the sequence from first to last (a fool's errand; as we'll never see the last), we find that each sequence member starts looking more and more like zero. They're never quite zero, but they're uncannily close. This phenomenon, a sequence's members tending towards a particular number, is captured by the notion of a _limit_. 
+
+### Convergent Sequences
 - __*definition.*__ A sequence ${(a_n)_{n \in \natnums}}$ is _convergent_ to a real number ${c}$ if for all ${\varepsilon \gt 0,}$ there exists an index ${N}$ such that, for all indices ${n \geq N,}$ ${\lvert a_n - c \rvert \lt \varepsilon.}$
-- A convergent sequence is a sequence with the following properties: There is some number ${c}$ such that, given a positive number ${\varepsilon,}$ the sequence's members all tend towards ${c,}$ with the majority of sequence members gathering around ${c.}$ I.e., most members are in the interval ${(a-\varepsilon, a + \varepsilon).}$
-
+- A convergent sequence is a sequence with the following properties: There is some number ${c}$ such that, given a positive number ${\varepsilon,}$ the sequence's members all tend towards ${c,}$ with the majority of sequence members gathering around ${c.}$ I.e., most members are in the interval ${(c-\varepsilon, c + \varepsilon).}$
   <EpsilonNeighborhood/>
+- We call the interval ${(c - \varepsilon, c + \varepsilon)}$ the _epsilon neighborhood_ of ${c.}$
 
+### Divergent Sequences
 - If there is no number ${c}$ where the sequence members tend to congregate, then the sequence is _divergent_.
 - __*definition.*__ Given a sequence ${a_n,}$ if ${a_n}$ is not convergent, then ${a_n}$ is _divergent_.
+
+### Bounded Sequences
+- __*definition.*__ A sequence ${(a_n)_{n \in \natnums}}$ is _bounded_ if there exists a ${C \in \reals,}$ such that, for all ${n \in \natnums,}$ ${\lvert a_n \rvert \leq C.}$ 
+  - We can think of a bounded sequence as a sequence with all its members living in some interval ${[=C, C],}$ where ${C}$ is a real number. 
+
+### Unbounded Sequences
+- __*definition.*__ A sequence ${(a_n)_{n \in \natnums}}$ is _unbounded_ if there is no ${C \in \reals}$ such that, for all ${n \in \natnums,}$ ${\lvert a_n \rvert \leq C.}$
+
+### Convergence Theorems
+- __*theorem*__. If a sequence is convergent, then it is bounded. 
+  - The converse is _not_ true. The fact that a sequence is bounded does not mean it is convergent. For example, the sequence ${(-1)^n}$ is bounded (its members oscillate between ${1}$ and ${-1}$), but it is not convergent.
+  - The contrapositive, of course, is true. If a sequence is unbounded, then it is convergent.
+- __*theorem*__. If a sequence ${a_n}$ is convergent, then there is only one limit ${c \in \reals.}$
+  - I.e., if ${a_n}$ is convergent, ${\lim_{n \to \infty} a_n = c,}$ where ${c \in \reals.}$
 
 ## Limits
 - __*definition*__. Let ${f: x \mapsto y}$ be a function defined on an open interval about ${c,}$ except possibly at ${c}$ itself. We say that the limit of ${f}$ as ${x}$ approaches ${c}$ is ${L,}$ and denote it by
@@ -832,6 +855,60 @@ import {EpsilonNeighborhood} from "@/components/Fig";
     \lim_{x \to c} f(x) = L,
   $$
   if, for every ${\varepsilon \gt 0}$ there exists a ${\delta \gt 0}$ such that if ${0 \lt \lvert x - c \rvert \lt \delta,}$ then ${\lvert f(x) - L \rvert \lt \varepsilon.}$
+
+
+### Limit Theorems
+- Suppose ${a_n}$ and ${b_n}$ are convergent sequences. Then the following laws hold:
+  1. ${\lim\limits_{n \to \infty} (a_n + b_n) = \lim\limits_{n \to \infty} a_n + \lim\limits_{n \to \infty} b_n.}$
+  2. ${\lim\limits_{n \to \infty} (a_n - b_n) = \lim\limits_{n \to \infty} a_n - \lim\limits_{n \to \infty} b_n.}$
+  3. ${\lim\limits_{n \to \infty} (a_n \cdot b_n) = \lim\limits_{n \to \infty} a_n \cdot \lim\limits_{n \to \infty} b_n.}$
+  4. ${\lim\limits_{n \to \infty} \left(\dfrac{a_n}{b_n}\right) = \dfrac{\lim\limits_{n \to \infty} a_n}{\lim\limits_{n \to \infty} b_n},}$ provided ${\lim\limits_{n \to \infty} b_n \neq 0.}$
+
+### Monotonicity of Sequences
+- Given convergent sequences ${a_n}$ and ${b_n,}$ if ${a_n \leq b_n}$ for all ${n \in \natnums,}$ then ${\lim\limits_{n \to \infty} a_n \leq \lim\limits_{n \to \infty} b_n.}$
+  - Be careful with this theorem. The implication is always ${\lim\limits_{n \to \infty} a_n \leq \lim\limits_{n \to \infty} b_n.}$ E.g., if ${a_n \lt b_n,}$ the implication is still ${\lim\limits_{n \to \infty} a_n \leq \lim\limits_{n \to \infty} b_n.}$ 
+
+### Terminology of Real Intervals
+- Because ${\reals}$ is ordered and infinite, we need robust terminology for describing any given subset of ${\reals.}$
+
+#### Upper & Lower Bounds
+- __*definition.*__ Let ${R}$ be a set of real numbers. An upper bound of ${R,}$ denoted ${u,}$ is a real number such that ${x \leq u}$ for all ${x \in R.}$  
+  - __*example.*__ If ${R = [0,1],}$ then ${1, 1.1, 2, \pi, 10^{10}, \ldots}$ are all upper bounds.
+  - A set of reals ${R}$ has infinitely many upper bounds. 
+- __*definition.*__ Let ${R}$ be a set of real numbers. A lower bound of ${R,}$ denoted ${\ell,}$ is a real number such that ${x \geq \ell}$ for all ${x \in R.}$  
+  - __*example.*__ If ${R = [-5,5],}$ then ${-5, -20/3, -10.3\overline{33}, -e, -10^{100}, \ldots}$ are all lower bounds.
+  - A set of reals ${R}$ has infinitely many lower bounds.
+- A lower/upper bound may or may not be included in the set ${R.}$
+  - __*example.*__ If ${R = (0,1],}$ then ${0}$ is a lower bound, but is not included in ${R.}$
+
+#### Maximum & Minimum
+- __*definition.*__ Let ${R}$ be a set of reals. If ${u}$ is an upper bound of ${R,}$ and ${u \in R,}$ then ${u}$ is called the _maximum_ of ${R.}$
+- __*definition.*__ Let ${R}$ be a set of reals. If ${\ell}$ is a lower bound of ${R,}$ and ${\ell \in R,}$ then ${\ell}$ is called the _minimum_ of ${R.}$
+
+#### Supremum & Infimum
+- Let ${R}$ be a set of reals. If ${u}$ is an upper bound of ${R,}$ and ${u}$ is the smallest upper bound of ${R,}$ then ${u}$ is called the _supremum_ of ${R.}$ We denote the supremum of ${R}$ with
+  $$
+    \sup R.
+  $$
+  - The supremum is also called the _least upper bound_, denoted
+    $$
+      \text{LUB}~R.
+    $$ 
+- Let ${R}$ be a set of reals. If ${\ell}$ is a lower bound of ${R,}$ and ${\ell}$ is the greatest lower bound of ${R,}$ then ${\ell}$ is called the _infimum_ of ${R.}$ We denote the infimum of ${R}$ with
+  $$
+    \inf R.
+  $$
+  - The infimum is also called the _greatest lower bound_, denoted
+  $$
+    \text{GLB}~R.
+  $$
+
+### Cauchy Sequences
+- 
+
+
+### The Sandwich Theorem
+- Let ${a_n,}$ ${b_n,}$ and ${c_n}$ be sequences. If ${a_n \leq c_n \leq b_n,}$ and ${\lim\limits_{n \to \infty} a_n = \lim\limits_{n \to \infty} b_n,}$ then ${c_n}$ is convergent with ${\lim\limits_{n \to \infty} c_n = \lim\limits_{n \to \infty} a_n = \lim\limits_{n \to \infty} b_n.}$
 
 import {TangentLineLab} from "@/components/Fig";
 

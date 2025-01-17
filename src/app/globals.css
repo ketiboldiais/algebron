@@ -98,6 +98,7 @@ body {
   color: var(--foreground);
   background: var(--background);
   font-family: "tp";
+  /* font-family: KaTeX_main; */
   padding: 1vh 5vw;
   overscroll-behavior-x: none;
 }
@@ -234,6 +235,19 @@ h5 + h6 {
   margin-top: 0;
 }
 
+h2 + ul > li,
+h2 + ol > li,
+h3 + ul > li,
+h3 + ol > li,
+h4 + ul > li,
+h4 + ol > li,
+h5 + ul > li,
+h5 + ol > li,
+h6 + ul > li,
+h6 + ol > li {
+  margin-top: 0;
+}
+
 blockquote {
   padding: 8px 10px;
   padding-bottom: 13px;
@@ -326,11 +340,41 @@ li {
   margin-bottom: 1rem;
 }
 @media (max-width: 450px) {
-  li {margin: 0}
+  li {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
 }
 .toc li {
   margin: 0;
 }
+.toc .heading {
+  font-weight: bold;
+  display: block;
+}
+
+
+.toc li {counter-increment: part;        counter-reset: subpart;}
+.toc li li {counter-increment: subpart;     counter-reset: chapter;}
+.toc li li li {counter-increment: chapter;     counter-reset: module;}
+.toc li li li li {counter-increment: module;      counter-reset: submodule;}
+.toc li li li li li {counter-increment: submodule;   counter-reset: submodule;}
+.toc li::before { content: counter(part) ". "; }
+.toc li li::before { content: counter(part) "." counter(subpart) ". "; }
+.toc li li li::before { content: counter(part) "." counter(subpart) "." counter(chapter) ". "; }
+.toc li li li li::before { content: counter(part) "." counter(subpart) "." counter(chapter) "." counter(module) ". "; }
+.toc li li li li li::before { content: counter(part) "." counter(subpart) "." counter(chapter) "." counter(module) "." counter(submodule) ". "; }
+
+h2 {counter-increment: part;        counter-reset: subpart;}
+h3 {counter-increment: subpart;     counter-reset: chapter;}
+h4 {counter-increment: chapter;     counter-reset: module;}
+h5 {counter-increment: module;      counter-reset: submodule;}
+h6 {counter-increment: submodule;   counter-reset: submodule;}
+h2::before { content: counter(part) ". "; }
+h3::before { content: counter(part) "." counter(subpart) ". "; }
+h4::before { content: counter(part) "." counter(subpart) "." counter(chapter) ". "; }
+h5::before { content: counter(part) "." counter(subpart) "." counter(chapter) "." counter(module) ". "; }
+h6::before { content: counter(part) "." counter(subpart) "." counter(chapter) "." counter(module) "." counter(submodule) ". "; }
 
 a {
   color: inherit;
@@ -422,7 +466,7 @@ a:hover {
   .toc ul ul,
   .toc ul ul ul {
     list-style: none;
-    margin: 0 0.5vw;
+    margin: 0;
     margin-right: 0;
   }
 }

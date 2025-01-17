@@ -27,7 +27,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     TOC: (props) => (
       <div className="toc">
         <Link href="/">Home</Link>
-        <h2>Table of Contents</h2>
+        <span className="heading">Table of Contents</span>
         {props.children}
       </div>
     ),
