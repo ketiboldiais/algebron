@@ -407,14 +407,10 @@ a:hover {
 }
 
 .toc ul {
-  list-style: decimal;
+  list-style: none;
+  margin: 0;
 }
-.toc ul ul {
-  list-style: lower-alpha;
-}
-.toc ul ul ul {
-  list-style: lower-roman;
-}
+
 
 .algebron-fig > div {
   font-family: KaTeX_main;

@@ -14,6 +14,7 @@
     "@next/mdx": "^15.1.0",
     "@react-three/fiber": "^9.0.0-alpha.8",
     "@types/geojson": "^7946.0.15",
+    "mathjax": "^3.2.2",
     "next": "15.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
