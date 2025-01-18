@@ -335,11 +335,10 @@ aside p {
 li p {
   margin: 0;
 }
-
-/* li {
+li {
   margin-top: 1rem;
   margin-bottom: 1rem;
-} */
+}
 @media (max-width: 450px) {
   li {
     margin-top: 0;

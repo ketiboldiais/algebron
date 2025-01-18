@@ -18,6 +18,12 @@ import {
 - [Total Probability Theorem](#total-probability-theorem)
 - [Bayes's Rule](#bayess-rule)
 - [Independence](#independence)
+  - [Independence of Event Complements](#independence-of-event-complements)
+  - [Conditional Independence](#conditional-independence)
+  - [Conditioning Affecting Independence](#conditioning-affecting-independence)
+  - [Independence of a Collection of Events](#independence-of-a-collection-of-events)
+    - [Pairwise Independence](#pairwise-independence)
+    - [Pairwise Independence vs. Independence](#pairwise-independence-vs-independence)
 
 </TOC>
 
@@ -305,11 +311,142 @@ import {CoinToss3} from "@/components/Fig";
       $$
         P(\text{first toss is } H ~|~ 1 ~ \text{head}) = \dfrac{p(1-p)^2}{3p(1-p)^2} = \dfrac{1}{3}.
       $$ 
-- __*definition*__. Events ${A}$ and ${B}$ are independent if and only if
+- Notice that:
   $$
-    P(A \cap B) = P(A) \cdot P(B).
+    P(H_2 ~|~ H_1) = p = P(H_2 ~|~ T_1).
   $$ 
-- In other words, events ${A}$ and ${B}$ are independent if the occurrence of ${A}$ has no effect on the probability of ${B}$'s occurrence.
+  That is, the probability of the second toss being heads, given the first toss was heads, is equal to the probability of the second toss being heads, given the first toss was tails. That is, our beliefs about what might happen in the second toss remain the same regardless of what happens in the first toss. This is an example of _independence_.
+- Events ${A}$ and ${B}$ are independent if the occurrence of ${A}$ has no effect on the probability of ${B}$'s occurrence.
+  - That is, the occurrence of ${A}$ provides no new information about ${B.}$
+- Here is the formal definition:
+  - __*definition*__. Events ${A}$ and ${B}$ are independent if and only if
+    $$
+      P(A \cap B) = P(A) \cdot P(B).
+    $$ 
+  - Why is this the definition?
+    1. If the occurrence of ${A}$ has no effect on the probability of ${B}$'s occurrence, then:
+      $$
+        P(A \cap B) = P(A) \cdot P(B ~|~ A) = P(A) \cdot P(B).
+      $$
+    2. If the relation ${P(A \cap B) = P(A) \cdot P(B)}$ holds, then the relation ${P(B ~|~ A) = P(B)}$ also holds. 
+    3. Since equality is symmetric, the relation ${P(A \cap B) = P(A) \cdot P(B)}$ implies that ${P(A ~|~ B) = P(A).}$
+    4. The definition applies even if ${P(A) = 0.}$
+
+### Independence of Event Complements
+- __*corollary*__. If ${A}$ and ${B}$ are independent, then ${A}$ and ${B^c}$ are independent.
+
+import {ConditionalIndependence, ConditionalIndependence2} from "@/components/Fig";
+
+### Conditional Independence
+- Suppose we have three events, ${A,}$ ${B,}$ and ${C.}$ We are told that ${C}$ occurs. 
+  <ConditionalIndependence/>
+- Examining the intersections, we want to model this conditionally:
+  $$
+    P(A \cap B ~|~ C) = P(A ~|~ C) P(B ~|~ C).
+  $$ 
+- Now suppose the picture looks like this:
+  <ConditionalIndependence2/>
+- If ${C}$ occurs, then we're in a universe where ${A}$ and ${B}$ have no intersection. This means that ${A}$ and ${B}$ are extremely dependent. Within ${C,}$ if ${A}$ occurs, then ${B}$ could not have occurred.
+  - This shows us that independence does not imply conditional independence.
+
+import {UnfairCoin1, UnfairCoin2, UnfairCoin3} from "@/components/Fig";
+
+### Conditioning Affecting Independence
+- Consider the following experiment. We have two unfair coins, with the following probabilities:
+  $$
+    P(H ~|~ \text{coin} ~ A) = 0.9 \\
+    P(H ~|~ \text{coin} ~ B) = 0.1.
+  $$ 
+  Moreover, the probability of obtaining heads on any toss remains the same, regardless of what happened in the previous toss. Thus, given a particular coin, we assume we have independent tosses. Visualizing the experiment with a tree:
+  <Cols of={2}>
+    <UnfairCoin1/>
+    <UnfairCoin2/>
+  </Cols>
+  Now suppose we're offered the two coins, and we must choose which coin to toss. The experiment's tree now becomes:
+  <UnfairCoin3/>
+  Are the coin tosses independent?
+- Let's try and compare two different probabilities:
+  $$
+    P(\text{toss} ~ 11 = H) \\
+    P(\text{toss} ~ 11 = H ~|~ \text{first 10 tosses are heads}) \\
+  $$ 
+  For the first probability:
+  $$
+    \begin{aligned}
+    P(\text{toss} ~ 11 = H) &= P(A) P(H_{11} ~|~ A) + P(B)P(H_{11} ~|~ B) \\
+    &= 0.5 \cdot 0.9 + 0.5 \cdot 0.1 \\
+    &= 0.5.
+    \end{aligned}
+  $$
+  For the second probability, we can think intuitively. If we pick coin ${B,}$ the event of picking ten heads in a row is extremely unlikely, since the probability of picking heads at each toss is ${0.1.}$ So, if we're getting ten heads in a row, there's almost complete certainty that we picked coin ${A.}$ Thus:
+  $$
+    \begin{aligned}
+    &P(\text{toss} ~ 11 = H ~|~ \text{first 10 tosses are heads}) \\
+    & \approx P(H_{11} ~|~ A) \\
+    & \approx 0.9.
+    \end{aligned}
+  $$
+  Thus, from just examining one particular scenario, we know for a fact that the tosses are no longer independent once we're asked to pick a coin.
+
+### Independence of a Collection of Events
+- Inuitively: A collection of events is independent if knowledge of some of the events does not change the probabilities of the other events.
+- __*definition*__. A collection of events ${A_1, A_2, \ldots, A_n}$ is _independent_ if:
+  $$
+    P(A_i \cap A_j \cap \ldots \cap A_m) = P(A_i) \cap P(A_j) \cap \ldots P(A_m)
+  $$ 
+  for any distinct indices ${i, j, \ldots, m.}$
+  
+import {FairCoinTosses} from "@/components/Fig";
+
+#### Pairwise Independence
+- Three events ${A_1, A_2, A_3,}$ are _pairwise independent_ if:
+  $$
+    \begin{aligned}
+    & P(A_1 \cap A_2) = P(A_1) \cdot P(A_2) \\
+    & P(A_1 \cap A_3) = P(A_1) \cdot P(A_3) \\
+    & P(A_2 \cap A_3) = P(A_2) \cdot P(A_3).
+    \end{aligned}
+  $$ 
+  We call this situation (${A_1}$ and ${A_2}$ are independent, ${A_1}$ and ${A_3}$ are independent, and ${A_2}$ and ${A_3}$ are independent), _pairwise independence_.
+- Complete independence, however, requires something more:
+  $$
+    P(A_1 \cap A_2 \cap A_3) = P(A_1) \cdot P(A_2) \cdot P(A_3).
+  $$ 
+
+#### Pairwise Independence vs. Independence
+- Consider an experiment with two independent fair coin tosses.
+  <FairCoinTosses/>
+- We have:
+  $$
+    P(H_1) = P(H_2) = \dfrac{1}{2}.
+  $$ 
+  where ${H_1}$ is heads for the first toss and ${H_2}$ is heads for the second toss.
+- The probability of obtaining heads on both tosses:
+  $$
+    P(HH) = P(H_1) \cdot P(H_2) = \dfrac{1}{2} \cdot \dfrac{1}{2} = \dfrac{1}{4}.
+  $$ 
+- Since ${P(HH) = 1/4,}$ it follows that all the other possiblities have probability ${1/4,}$ since the coin is fair and there are four possibilities.
+- Now let's introduce an event ${C:}$ We're told that the two tosses had the same result.
+  - This is the event where we get either ${HH}$ or ${TT.}$
+- Is event ${C}$ independent of the events ${H_1}$ and ${H_2?}$
+  - Let's first see if there's pairwise independence. Consider:
+    $$
+      P(H_1 \cap C) = P(H_1 \cap H_2) = 1/4.
+    $$ 
+    What about the product of the probabilities of ${H_1}$ and ${C?}$
+    $$
+      P(H_1) P(C) = (1/2)(1/4 + 1/4) = (1/2)(1/2) = 1/4.
+    $$
+    Since the probabilities of ${P(H_1 \cap C)}$ and ${P(H_1) P(C)}$ are the same, events ${H_1}$ and ${C}$ are independent events. By the same argument, ${H_2}$ and ${C}$ are independent. ${H_1}$ and ${H_2}$ are also independent from each other, so we have pairwise independence.
+  - Now, are they independent? For this, we must determine the probability of all three events happening, and see whether that probability is equal to the product of the individual probabilities:
+    $$
+      P(H_1 \cap H_2 \cap C) = P(HH) = 1/4.
+    $$ 
+    But:
+    $$
+      P(H_1) P(H_2) P(C) = (1/2)(1/2)(1/2) = 1/8.
+    $$
+    Since ${1/4 \neq 1/8,}$ ${H_1,}$ ${H_2,}$ and ${C}$ are not independent as a collection of events.
 
 
 

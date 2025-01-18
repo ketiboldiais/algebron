@@ -3,7 +3,6 @@
 // You may use, distribute, and modify this code under the
 // terms of the MIT license (see the bottom of this file).
 
-
 // Disabling TypeScript's no-explicity-any rule because we
 // have to do some heavy recursion in the CAS modules;
 // TypeScript goes insane with certain recursive types,
@@ -1506,7 +1505,9 @@ class Matrix {
 
   /** Returns true if this matrix and the the provided matrix have the same number of rows and the same number of columns. False otherwise. */
   congruent(matrix: Matrix) {
-    return this._rowcount === matrix._rowcount && this._colcount === matrix._colcount;
+    return (
+      this._rowcount === matrix._rowcount && this._colcount === matrix._colcount
+    );
   }
 
   /** @internal - Utility method for binary operations on matrices. */
@@ -1519,7 +1520,11 @@ class Matrix {
       : Array.isArray(arg)
       ? Matrix.from(arg)
       : arg;
-    if (this._rowcount !== other._rowcount || this._colcount !== other._colcount) return this;
+    if (
+      this._rowcount !== other._rowcount ||
+      this._colcount !== other._colcount
+    )
+      return this;
     const vectors: Vector[] = [];
     for (let i = 0; i < this._rowcount; i++) {
       const nums: number[] = [];
@@ -1792,13 +1797,16 @@ export abstract class Renderable {
     fz: (y: number) => number
   ): this;
   _id: string | number;
-  constructor() {
+  _origin: Vector;
+  constructor(origin: [number, number]) {
     this._id = uid(5);
+    this._origin = vector(origin);
   }
   id(value: string | number) {
     this._id = value;
     return this;
   }
+  _transformation: string = "";
 }
 
 export type SVGContext = {
@@ -1912,7 +1920,15 @@ export class SVG {
    * Includes the given Renderable to this SVG.
    */
   child(obj: Renderable) {
-    this._children.push(obj.render(this._fx, this._fy, this._fz));
+    obj._origin = vector([this._fx(obj._origin._x), this._fy(obj._origin._y)]);
+    if (obj instanceof Transformation) {
+      const d = obj.render(this._fx, this._fy, this._fz);
+      d._target = d._target.render(this._fx, this._fy, this._fz);
+      d._target._transformation = d._transformData;
+      this._children.push(d._target);
+    } else {
+      this._children.push(obj.render(this._fx, this._fy, this._fz));
+    }
     if (obj instanceof Path || obj instanceof LineObj) {
       obj._arrowEnd && this._defs.push(obj._arrowEnd);
       obj._arrowStart && this._defs.push(obj._arrowStart);
@@ -2318,7 +2334,7 @@ export class ArrowHead extends Renderable {
     return this;
   }
   constructor(id: string | number) {
-    super();
+    super([0, 0]);
     this._id = id;
   }
 }
@@ -2718,7 +2734,7 @@ export class Path3D extends Renderable {
   _origin: Vector;
   _cursor: Vector;
   constructor(x: number, y: number, z: number) {
-    super();
+    super([x, y]);
     this._origin = vector([x, y, z]);
     this._cursor = vector([x, y, z]);
   }
@@ -2776,7 +2792,7 @@ export function isPath3D(u: any): u is Path3D {
 export class Polygon extends Renderable {
   _points: [number, number][];
   constructor(points: [number, number][]) {
-    super();
+    super(points[0]);
     this._points = points;
   }
   render(fx: (x: number) => number, fy: (y: number) => number): this {
@@ -2799,7 +2815,7 @@ export function isPolygon(u: any): u is Polygon {
 export class Polyline extends Renderable {
   _points: [number, number][];
   constructor(points: [number, number][]) {
-    super();
+    super(points[0]);
     this._points = points;
   }
   render(fx: (x: number) => number, fy: (y: number) => number): this {
@@ -2912,7 +2928,7 @@ export class Path extends Renderable {
   }
 
   constructor() {
-    super();
+    super([0, 0]);
     this._id = uid(5);
     this._commands = [];
   }
@@ -3378,10 +3394,7 @@ export function plotPoints(points: [number, number][], pointSize: number = 2) {
  * Given the set of points, draws a smooth path through each of the points,
  * closed.
  */
-export function curveBlob(
-  points: [number, number][],
-  smoothing: number = 0.2,
-) {
+export function curveBlob(points: [number, number][], smoothing: number = 0.2) {
   const getCurvePathData = (points: Vector[], closed = true) => {
     if (closed) {
       points = points.concat(points.slice(0, 2));
@@ -3440,6 +3453,95 @@ export function curveBlob(
   return getCurvePathData(points.map(([x, y]) => vector([x, y])));
 }
 
+export class Ellipse extends Renderable {
+  render(fx: (x: number) => number, fy: (y: number) => number): this {
+    this._position = vector([fx(this._position._x), fy(this._position._y)]);
+    // this._rx = fx(this._rx);
+    // this._ry = fy(this._ry);
+    return this;
+  }
+
+  _fillOpacity: number | `${number}%` = 1;
+
+  fillOpacity(value: number | `${number}%`) {
+    this._fillOpacity = value;
+    return this;
+  }
+
+  _rx: number;
+
+  rx(value: number) {
+    this._rx = value;
+    return this;
+  }
+
+  _ry: number;
+
+  ry(value: number) {
+    this._ry = value;
+    return this;
+  }
+
+  constructor(position: [number, number], rx: number, ry: number) {
+    super(position);
+    this._position = vector(position);
+    this._rx = rx;
+    this._ry = ry;
+  }
+
+  _fill: string = "black";
+
+  fill(value: string) {
+    this._fill = value;
+    this._stroke = this._fill;
+    return this;
+  }
+
+  _stroke: string = this._fill;
+
+  stroke(value: string) {
+    this._stroke = value;
+    return this;
+  }
+
+  _strokeWidth: string | number = 1;
+
+  strokeWidth(value: string | number) {
+    this._strokeWidth = value;
+    return this;
+  }
+
+  _position: Vector = vector([0, 0]);
+
+  get _cx() {
+    return this._position._x;
+  }
+
+  get _cy() {
+    return this._position._y;
+  }
+
+  position(x: number, y: number) {
+    this._position = vector([x, y]);
+    return this;
+  }
+
+  _strokeDashArray: number = 0;
+
+  strokeDashArray(value: number) {
+    this._strokeDashArray = value;
+    return this;
+  }
+}
+
+export function ellipse(position: [number, number], rx: number, ry: number) {
+  return new Ellipse(position, rx, ry);
+}
+
+export function isEllipse(u: any): u is Ellipse {
+  return u && u instanceof Ellipse;
+}
+
 export class Circle extends Renderable {
   render(fx: (x: number) => number, fy: (y: number) => number): this {
     this._position = vector([fx(this._position._x), fy(this._position._y)]);
@@ -3454,7 +3556,7 @@ export class Circle extends Renderable {
 
   _radius: number;
   constructor(radius: number, position: [number, number]) {
-    super();
+    super(position);
     this._radius = radius;
     this._position = vector(position);
   }
@@ -3540,6 +3642,7 @@ export class TextObj extends Renderable {
   _position: Vector = vector([0, 0]);
   position(x: number, y: number) {
     this._position = vector([x, y]);
+    this._origin = vector([x, y]);
     return this;
   }
   _dy: number = 0;
@@ -3578,7 +3681,7 @@ export class TextObj extends Renderable {
     return this;
   }
   constructor(content: string | number) {
-    super();
+    super([0, 0]);
     this._content = content;
   }
 }
@@ -3636,7 +3739,7 @@ export class Group extends Renderable {
   }
 
   constructor(children: Renderable[]) {
-    super();
+    super([0, 0]);
     this.$children = children;
   }
 }
@@ -3648,6 +3751,100 @@ export function isGroup(u: any) {
 /** Returns a new SVG group object. */
 export function group(children: Renderable[]) {
   return new Group(children);
+}
+
+export class Transformation extends Renderable {
+  render(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    fx: (x: number) => number,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    fy: (y: number) => number,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    fz: (y: number) => number
+  ): this {
+    // this._rotateX && (this._rotateX = fx(this._rotateX));
+    // this._rotateY && (this._rotateY = fy(this._rotateY));
+    // this._rotateZ && (this._rotateZ = fz(this._rotateZ));
+    // this._translateX && (this._translateX = fx(this._translateX));
+    // this._translateY && (this._translateY = fx(this._translateY));
+    // this._scaleX && (this._scaleX = fx(this._scaleX));
+    // this._scaleY && (this._scaleY = fy(this._scaleY));
+    // this._skewX && (this._skewX = fx(this._skewX));
+    return this;
+  }
+  get _transformData() {
+    // if this has any translation
+    const out = [];
+    if (this._translateX || this._translateY) {
+      const translation = [];
+      this._translateX
+        ? translation.push(this._translateX)
+        : translation.push(0);
+      this._translateY
+        ? translation.push(this._translateY)
+        : translation.push(0);
+      out.push(`translate(${translation.join(",")})`);
+    }
+    // if this has any rotation
+    if (this._rotate) {
+      out.push(`rotate(${this._rotate},${this._origin._x},${this._origin._y})`);
+    }
+    // if this has any skew
+    if (this._skewX) {
+      out.push(`skewX(${this._skewX})`);
+    }
+    // if this has any scaling
+    if (this._scaleX || this._scaleY) {
+      const scaling = [];
+      this._scaleX ? scaling.push(this._scaleX) : scaling.push(1);
+      this._scaleY ? scaling.push(this._scaleY) : scaling.push(1);
+      out.push(`scale(${scaling.join(",")})`);
+    }
+    return out.join(" ");
+  }
+  _translateX: number = 0;
+  translateX(value: number) {
+    this._translateX = value;
+    return this;
+  }
+  _translateY: number = 0;
+  translateY(value: number) {
+    this._translateY = value;
+    return this;
+  }
+  _rotate: number = 0;
+  rotate(value: number) {
+    this._rotate = value;
+    return this;
+  }
+  _skewX: number = 0;
+  skewX(value: number) {
+    this._skewX = value;
+    return this;
+  }
+  _scaleX: number = 0;
+  scaleX(value: number) {
+    this._scaleX = value;
+    return this;
+  }
+  _scaleY: number = 0;
+  scaleY(value: number) {
+    this._scaleY = value;
+    return this;
+  }
+  _target: Renderable;
+  constructor(target: Renderable) {
+    super([target._origin._x, target._origin._y]);
+    this._target = target;
+  }
+}
+
+export function transform(target: Renderable) {
+  return new Transformation(target);
+}
+
+export function isTransformation(u: any): u is Transformation {
+  return u && u instanceof Transformation;
 }
 
 // function to draw a triangle with angle marks
@@ -3723,7 +3920,7 @@ export class LineObj extends Renderable {
   $start: Vector;
   $end: Vector;
   constructor(start: [number, number], end: [number, number]) {
-    super();
+    super(start);
     this.$start = vector(start);
     this.$end = vector(end);
   }
@@ -6353,6 +6550,74 @@ export namespace GeoJSON {
     type: "FeatureCollection";
     features: Array<Feature<G, P>>;
   }
+}
+
+export class QuadGrid extends Group {
+  _rowCount: number;
+  _columnCount: number;
+  _startingCoordinate: [number, number];
+  _quadWidth: number = 1;
+  quadWidth(value: number) {
+    this._quadWidth = value;
+    return this;
+  }
+  _quadHeight: number = 1;
+  quadHeight(value: number) {
+    this._quadHeight = value;
+    return this;
+  }
+  _quadFn: ((quad: Path, rowIndex:number, columnIndex:number) => Path) | null = null;
+
+  quadFn(callback: (quad: Path, rowIndex:number, columnIndex:number) => Path) {
+    this._quadFn = callback;
+    return this;
+  }
+
+  _gridFn: ((rowIndex: number, colIndex: number) => Renderable) | null = null;
+  gridFn(callback: (rowIndex: number, colIndex: number) => Renderable) {
+    this._gridFn = callback;
+    return this;
+  }
+  constructor(
+    rowCount: number,
+    columnCount: number,
+    startingCoordinate: [number, number]
+  ) {
+    super([]);
+    this._rowCount = rowCount;
+    this._columnCount = columnCount;
+    this._startingCoordinate = startingCoordinate;
+  }
+  done() {
+    const out: Renderable[][] = [];
+    const initX = this._startingCoordinate[0];
+    let [x, y] = this._startingCoordinate;
+    for (let row = 0; row < this._rowCount; row++) {
+      out.push([]);
+      for (let col = 0; col < this._columnCount; col++) {
+        let q = quad([x, y], this._quadWidth, this._quadHeight);
+        if (this._quadFn) {
+          q = this._quadFn(q, row, col);
+        }
+        out[row].push(q);
+        if (this._gridFn) {
+          out[row].push(this._gridFn(row, col));
+        }
+        x += this._quadWidth;
+      }
+      x = initX;
+      y -= this._quadHeight;
+    }
+    return out.flat();
+  }
+}
+
+export function quadGrid(
+  rowCount: number,
+  columnCount: number,
+  startingCoordinate: [number, number]
+) {
+  return new QuadGrid(rowCount, columnCount, startingCoordinate);
 }
 
 /** A value native to Winnow. */

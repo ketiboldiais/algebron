@@ -73,6 +73,11 @@ import {
   dist2D,
   quad,
   plotPoints,
+  isEllipse,
+  Ellipse,
+  ellipse,
+  transform,
+  quadGrid,
 } from "@/algebron/main";
 
 import {
@@ -220,6 +225,7 @@ const PATH = ({ data }: PathProps) => {
       strokeDasharray={data._strokeDashArray}
       markerEnd={data._arrowEnd ? `url(#${data._id}-end)` : ""}
       markerStart={data._arrowStart ? `url(#${data._id}-start)` : ""}
+      transform={`${data._transformation}`}
     />
   );
 };
@@ -249,6 +255,9 @@ const Fig2D = ({ elements }: Fig2DProps) => {
         if (isPolygon(data)) {
           return <POLYGON key={data._id} data={data} />;
         }
+        if (isEllipse(data)) {
+          return <ELLIPSE key={data._id} data={data} />;
+        }
       })}
     </>
   );
@@ -257,13 +266,42 @@ const Fig2D = ({ elements }: Fig2DProps) => {
 type POLYLINE_PROPS = { data: Polyline };
 
 const POLYLINE = ({ data }: POLYLINE_PROPS) => (
-  <polyline points={data.points()} fill={"none"} stroke={"black"} />
+  <polyline
+    transform={`${data._transformation}`}
+    points={data.points()}
+    fill={"none"}
+    stroke={"black"}
+  />
 );
 
 type POLYGON_PROPS = { data: Polygon };
 const POLYGON = ({ data }: POLYGON_PROPS) => (
-  <polygon points={data.points()} fill={"none"} stroke={"black"} />
+  <polygon
+    transform={`${data._transformation}`}
+    points={data.points()}
+    fill={"none"}
+    stroke={"black"}
+  />
 );
+
+type EllipseProps = { data: Ellipse };
+
+const ELLIPSE = ({ data }: EllipseProps) => {
+  return (
+    <ellipse
+      cx={data._cx}
+      cy={data._cy}
+      rx={data._rx}
+      ry={data._ry}
+      fill={data._fill}
+      fillOpacity={data._fillOpacity}
+      strokeWidth={data._strokeWidth}
+      stroke={data._stroke}
+      strokeDasharray={data._strokeDashArray}
+      transform={`${data._transformation}`}
+    />
+  );
+};
 
 type CircleProps = { data: Circle };
 
@@ -278,6 +316,7 @@ const CIRCLE = ({ data }: CircleProps) => {
       strokeWidth={data._strokeWidth}
       stroke={data._stroke}
       strokeDasharray={data._strokeDashArray}
+      transform={`${data._transformation}`}
     />
   );
 };
@@ -310,6 +349,7 @@ const TEXT = ({ data }: TextProps) => {
       dx={data._dx}
       dy={data._dy}
       fill={data._fill}
+      transform={`${data._transformation}`}
     >
       {data._content}
     </text>
@@ -319,7 +359,7 @@ const TEXT = ({ data }: TextProps) => {
 type GroupProps = { data: Group };
 const GROUP = ({ data }: GroupProps) => {
   return (
-    <g>
+    <g transform={`${data._transformation}`}>
       <Fig2D elements={data.$children} />
     </g>
   );
@@ -340,6 +380,7 @@ const LINE = ({ data }: L2DProps) => {
       markerEnd={data._arrowEnd ? `url(#${data._id}-end)` : ""}
       markerStart={data._arrowStart ? `url(#${data._id}-start)` : ""}
       strokeOpacity={data.$strokeOpacity}
+      transform={`${data._transformation}`}
     />
   );
 };
@@ -2868,6 +2909,343 @@ export const MapDemo = () => {
 };
 
 export const PartitionedSampleSpace = () => {
+  const d = svg(defaultSVGContext)
+    .children([
+      // axis({
+      //   on: "x",
+      //   domain: defaultSVGContext.domain,
+      //   range: defaultSVGContext.range,
+      // }),
+      // axis({
+      //   on: "y",
+      //   domain: defaultSVGContext.domain,
+      //   range: defaultSVGContext.range,
+      // }),
+      // grid(defaultSVGContext.domain, defaultSVGContext.range).done(),
+      curveBlob([
+        [1, 1],
+        [0, 2],
+        [-0.5, 1],
+        [-1, 0],
+        [0, -1],
+      ]),
+      curveBlob([
+        [0, 1],
+        [-0.25, -0.2],
+        [0.5, 0.1],
+      ]),
+      line([0, 2], [0, -1]),
+      line([-1, 0], [0, 0]),
+      text("A₁").position(0.5, 1),
+      text("A₂").position(-0.5, 0.25),
+      text("A₃").position(-0.35, -0.5),
+      text("B").position(0.2, 0.1),
+    ])
+    .translateY(-130);
+  return <Fig data={d} paddingBottom={35} />;
+};
+
+export const CoinToss3 = () => {
+  const domain = tuple(-10, 10);
+  const range = tuple(-8, 0.1);
+  const d = svg({
+    width: 500,
+    height: 800,
+    domain,
+    range,
+  }).children([
+    // axis({
+    //   on: "x",
+    //   domain,
+    //   range,
+    // }),
+    // axis({
+    //   on: "y",
+    //   domain,
+    //   range,
+    // }),
+    // grid(domain, range).done(),
+    tree(
+      subtree("start").nodes([
+        subtree("H").nodes([
+          subtree("H").nodes([subtree("H"), subtree("T")]),
+          subtree("T").nodes([subtree("H"), subtree("T")]),
+        ]),
+        subtree("T").nodes([
+          subtree("H").nodes([subtree("H"), subtree("T")]),
+          subtree("T").nodes([subtree("H"), subtree("T")]),
+        ]),
+      ])
+    )
+      .labelFn((node) => text(node.$name).position(node._x, node._y).dy(5))
+      .nodeFn((node) =>
+        circle(15, [node._x, node._y]).fill(cssvar("background")).stroke("none")
+      )
+      .layout("wetherell-shannon")
+      .done(),
+    text("𝑝").position(-2.5, -0.5),
+    text("1 - 𝑝").position(2.8, -0.5),
+
+    text("𝑝").position(2.5, -1.5),
+    text("1 - 𝑝").position(-2, -1.5),
+
+    text("𝑝").position(-5.5, -1.5),
+    text("1 - 𝑝").position(5.8, -1.5),
+
+    text("𝑝").position(-7, -2.5),
+    text("1 - 𝑝").position(-4.7, -2.5),
+
+    text("𝑝").position(-3, -2.5),
+    text("1 - 𝑝").position(-0.7, -2.5),
+
+    text("𝑝").position(1, -2.5),
+    text("1 - 𝑝").position(3.3, -2.53),
+
+    text("𝑝").position(5, -2.5),
+    text("1 - 𝑝").position(7.3, -2.5),
+  ]);
+  return <Fig data={d} paddingBottom={70} />;
+};
+
+export const ConditionalIndependence = () => {
+  const d = svg(defaultSVGContext)
+    .children([
+      // axis({
+      //   on: "x",
+      //   domain: defaultSVGContext.domain,
+      //   range: defaultSVGContext.range,
+      // }),
+      // axis({
+      //   on: "y",
+      //   domain: defaultSVGContext.domain,
+      //   range: defaultSVGContext.range,
+      // }),
+      // grid(defaultSVGContext.domain, defaultSVGContext.range).done(),
+      quad([-3, 2], 6, 4.5).stroke(cssvar("foreground")),
+      circle(50, [-1, 0]).fill("none").stroke(cssvar("foreground")),
+      circle(60, [0.5, 0.5]).fill("none").stroke(cssvar("foreground")),
+      circle(60, [0, -1]).fill("none").stroke(cssvar("foreground")),
+      [
+        text("A").position(-1.2, 0.5),
+        text("B").position(1, 1),
+        text("C").position(0, -1.5),
+        text("Ω").position(-2.5, 1.5),
+      ].map((t) => t.fill(cssvar("foreground"))),
+    ])
+    .translateY(-120);
+  return <Fig data={d} width={70} paddingBottom={35} />;
+};
+
+export const ConditionalIndependence2 = () => {
+  const d = svg(defaultSVGContext)
+    .children([
+      // axis({
+      //   on: "x",
+      //   domain: defaultSVGContext.domain,
+      //   range: defaultSVGContext.range,
+      // }),
+      // axis({
+      //   on: "y",
+      //   domain: defaultSVGContext.domain,
+      //   range: defaultSVGContext.range,
+      // }),
+      // grid(defaultSVGContext.domain, defaultSVGContext.range).done(),
+      quad([-3, 2], 6, 4.5).stroke(cssvar("foreground")),
+      transform(
+        ellipse([-1, 0], 40, 70).fill("none").stroke(cssvar("foreground"))
+      ).rotate(45),
+      transform(
+        ellipse([1, 0], 40, 70).fill("none").stroke(cssvar("foreground"))
+      ).rotate(-45),
+      transform(
+        ellipse([0, -1.3], 40, 70).fill("none").stroke(cssvar("foreground"))
+      ).rotate(90),
+      [
+        text("A").position(-1, 0),
+        text("B").position(1, 0),
+        text("C").position(0, -1.4),
+        text("Ω").position(-2.5, 1.5),
+      ].map((t) => t.fill(cssvar("foreground"))),
+    ])
+    .translateY(-120);
+  return <Fig data={d} width={70} paddingBottom={35} />;
+};
+
+export const UnfairCoin1 = () => {
+  const domain = tuple(-3, 3);
+  const range = tuple(-3, 0.5);
+  const d = svg({
+    width: 300,
+    height: 300,
+    domain,
+    range,
+  }).children([
+    // axis({
+    //   on: "x",
+    //   domain,
+    //   range,
+    // }),
+    // axis({
+    //   on: "y",
+    //   domain,
+    //   range,
+    // }),
+    // grid(domain, range).done(),
+    text("0.9").position(-1.2, -0.5),
+    text("0.1").position(1.2, -0.5),
+    text("0.9").position(-2.7, -1.5),
+    text("0.1").position(-1.3, -1.5),
+
+    text("0.9").position(1.3, -1.5),
+    text("0.1").position(2.7, -1.5),
+    tree(
+      subtree("Coin A").nodes([
+        subtree("H").nodes([leaf("H"), leaf("T")]),
+        subtree("T").nodes([leaf("H"), leaf("T")]),
+      ])
+    )
+      .labelFn((n) =>
+        text(n.$name).position(n._x, n._y).fill(cssvar("foreground")).dy(5)
+      )
+      .nodeFn((n) =>
+        circle(10, [n._x, n._y]).stroke("none").fill(cssvar("background"))
+      )
+      .layout("wetherell-shannon")
+      .done(),
+  ]);
+  return <Fig data={d} paddingBottom={80} />;
+};
+
+export const UnfairCoin2 = () => {
+  const domain = tuple(-3, 3);
+  const range = tuple(-3, 0.5);
+  const d = svg({
+    width: 300,
+    height: 300,
+    domain,
+    range,
+  }).children([
+    // axis({
+    //   on: "x",
+    //   domain,
+    //   range,
+    // }),
+    // axis({
+    //   on: "y",
+    //   domain,
+    //   range,
+    // }),
+    // grid(domain, range).done(),
+    text("0.1").position(-1.2, -0.5),
+    text("0.9").position(1.2, -0.5),
+    text("0.1").position(-2.7, -1.5),
+    text("0.9").position(-1.3, -1.5),
+
+    text("0.1").position(1.3, -1.5),
+    text("0.9").position(2.7, -1.5),
+    tree(
+      subtree("Coin B").nodes([
+        subtree("H").nodes([leaf("H"), leaf("T")]),
+        subtree("T").nodes([leaf("H"), leaf("T")]),
+      ])
+    )
+      .labelFn((n) =>
+        text(n.$name).position(n._x, n._y).fill(cssvar("foreground")).dy(5)
+      )
+      .nodeFn((n) =>
+        circle(10, [n._x, n._y]).stroke("none").fill(cssvar("background"))
+      )
+      .layout("wetherell-shannon")
+      .done(),
+  ]);
+  return <Fig data={d} paddingBottom={80} />;
+};
+
+export const UnfairCoin3 = () => {
+  const domain = tuple(-10, 10);
+  const range = tuple(-3, 3);
+  const d = svg({
+    width: 500,
+    height: 500,
+    domain,
+    range,
+  })
+    .children([
+      // axis({
+      //   on: "x",
+      //   domain,
+      //   range,
+      // }),
+      // axis({
+      //   on: "y",
+      //   domain,
+      //   range,
+      // }),
+      // grid(domain, range).done(),
+      tree(
+        subtree("Pick a coin").nodes([
+          subtree("A").nodes([
+            subtree("H").nodes([leaf("H"), leaf("T")]),
+            subtree("T").nodes([leaf("H"), leaf("T")]),
+          ]),
+          subtree("B").nodes([
+            subtree("H").nodes([leaf("H"), leaf("T")]),
+            subtree("T").nodes([leaf("H"), leaf("T")]),
+          ]),
+        ])
+      )
+        .labelFn((n) =>
+          text(n.$name).position(n._x, n._y).fill(cssvar("foreground")).dy(5)
+        )
+        .nodeFn((n) =>
+          circle(10, [n._x, n._y]).stroke("none").fill(cssvar("background"))
+        )
+        .layout("reingold-tilford")
+        .done(),
+      [
+        text("0.5").position(-2, 1.5).dx(-10),
+        text("0.5").position(2, 1.5).dx(10),
+        text("0.9").position(-5, 0.5).dx(-10),
+        text("0.1").position(-3, 0.5).dx(10),
+        text("0.1").position(3, 0.5).dx(-10),
+        text("0.9").position(5, 0.5).dx(10),
+        text("0.9").position(-6.5, -0.5).dx(-10),
+        text("0.1").position(-5.5, -0.5).dx(10),
+        text("0.9").position(-2.5, -0.5).dx(-10),
+        text("0.1").position(-1.5, -0.5).dx(10),
+        text("0.1").position(1.5, -0.5).dx(-10),
+        text("0.9").position(2.5, -0.5).dx(10),
+        text("0.1").position(5.5, -0.5).dx(-10),
+        text("0.9").position(6.5, -0.5).dx(10),
+      ].map((t) => t.fill(cssvar("foreground"))),
+    ])
+    .translateY(-50);
+  return <Fig data={d} width={80} paddingBottom={50} />;
+};
+
+export function checker(
+  rows: number,
+  columns: number,
+  startingCoordinate: [number, number],
+  quadWidth: number = 1,
+  quadHeight: number = 1
+) {
+  const out: Path[][] = [];
+  const [initX, initY] = startingCoordinate;
+  let [x, y] = startingCoordinate;
+  for (let row = 0; row < rows; row++) {
+    out.push([]);
+    for (let column = 0; column < columns; column++) {
+      out[row].push(quad([x, y], quadWidth, quadHeight));
+      x += quadWidth;
+    }
+    x = initX;
+    y -= quadHeight;
+  }
+  return out.flat();
+}
+
+export const FairCoinTosses = () => {
   const d = svg(defaultSVGContext).children([
     // axis({
     //   on: "x",
@@ -2880,93 +3258,26 @@ export const PartitionedSampleSpace = () => {
     //   range: defaultSVGContext.range,
     // }),
     // grid(defaultSVGContext.domain, defaultSVGContext.range).done(),
-    curveBlob([
-      [1, 1],
-      [0, 2],
-      [-0.5, 1],
-      [-1, 0],
-      [0, -1],
-    ]),
-    curveBlob([[0,1], [-.25,-.2], [.5,.1]]),
-    line([0, 2], [0, -1]),
-    line([-1, 0], [0, 0]),
-    text("A₁").position(0.5, 1),
-    text("A₂").position(-0.5, 0.25),
-    text("A₃").position(-0.35, -0.5),
-    text("B").position(0.2,0.1)
-  ]).translateY(-130);
-  return <Fig data={d} paddingBottom={35}/>;
+    quadGrid(2, 2, [-1, 1]).done(),
+    ellipse([0, 0.5], 80, 20)
+      .fill(cssvar('pencil'))
+      .fillOpacity(.3)
+      .stroke(cssvar("foreground")),
+    ellipse([-0.5, 0], 20, 80)
+      .fill(cssvar('pencil'))
+      .fillOpacity(.3)
+      .stroke(cssvar("foreground")),
+    text("𝐻𝐻").position(-0.5, 0.5),
+    text("𝐻𝑇").position(0.5, 0.5),
+    text("𝑇𝐻").position(-0.5, -0.5),
+    text("𝑇𝑇").position(0.5, -0.5),
+    line([3,2], [1.5,.7]),
+    line([-2,-3], [-.6,-1.6]),
+    text('First toss is heads').textAnchor('start').position(1.8,2.1),
+    text('Second toss is heads').textAnchor('start').position(-3,-3.4),
+  ]).translateY(-110);
+  return <Fig data={d} width={90} paddingBottom={55} />;
 };
-
-
-export const CoinToss3 = () => {
-  const domain = tuple(-10,10);
-  const range = tuple(-8,0.1);
-  const d = svg({
-    width: 500,
-    height: 800,
-    domain,
-    range,
-  }).children([
-      // axis({
-      //   on: "x",
-      //   domain,
-      //   range,
-      // }),
-      // axis({
-      //   on: "y",
-      //   domain,
-      //   range,
-      // }),
-      // grid(domain, range).done(),
-      tree(subtree('start').nodes([
-        subtree('H').nodes([
-          subtree('H').nodes([
-            subtree('H'),
-            subtree('T'),
-          ]),
-          subtree('T').nodes([
-            subtree('H'),
-            subtree('T'),
-          ]),
-        ]),
-        subtree('T').nodes([
-          subtree('H').nodes([
-            subtree('H'),
-            subtree('T'),
-          ]),
-          subtree('T').nodes([
-            subtree('H'),
-            subtree('T'),
-          ]),
-        ]),
-      ])).labelFn(node => text(node.$name).position(node._x, node._y).dy(5)).nodeFn(node => circle(15, [node._x, node._y]).fill(cssvar('background')).stroke('none')).layout('wetherell-shannon').done(),
-      text('𝑝').position(-2.5, -.5),
-      text('1 - 𝑝').position(2.8, -.5),
-
-
-      text('𝑝').position(2.5, -1.5),
-      text('1 - 𝑝').position(-2, -1.5),
-
-      text('𝑝').position(-5.5, -1.5),
-      text('1 - 𝑝').position(5.8, -1.5),
-
-
-      text('𝑝').position(-7, -2.5),
-      text('1 - 𝑝').position(-4.7, -2.5),
-
-      text('𝑝').position(-3, -2.5),
-      text('1 - 𝑝').position(-0.7, -2.5),
-
-      text('𝑝').position(1, -2.5),
-      text('1 - 𝑝').position(3.3, -2.53),
-
-      text('𝑝').position(5, -2.5),
-      text('1 - 𝑝').position(7.3, -2.5),
-  ])
-  return <Fig data={d} paddingBottom={70}/>
-}
-
 
 export default Fig;
 
