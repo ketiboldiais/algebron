@@ -284,34 +284,34 @@ const CIRCLE = ({ data }: CircleProps) => {
 
 type TextProps = { data: TextObj };
 const TEXT = ({ data }: TextProps) => {
-  if (data.$latex) {
-    const block = data.$latex === "block" ? true : false;
+  if (data._latex) {
+    const block = data._latex === "block" ? true : false;
     return (
       <foreignObject
-        x={data.$position.$x}
-        y={data.$position.$y}
-        width={data.$width}
-        height={data.$height}
-        color={data.$fill}
-        fontSize={data.$fontSize ? data.$fontSize : "inherit"}
-        fontStyle={data.$fontStyle ? data.$fontStyle : "inherit"}
+        x={data._position._x}
+        y={data._position._y}
+        width={data._width}
+        height={data._height}
+        color={data._fill}
+        fontSize={data._fontSize ? data._fontSize : "inherit"}
+        fontStyle={data._fontStyle ? data._fontStyle : "inherit"}
       >
-        <Tex content={data.$content} block={block} />
+        <Tex content={data._content} block={block} />
       </foreignObject>
     );
   }
   return (
     <text
-      textAnchor={data.$textAnchor}
-      fontStyle={data.$fontStyle}
-      fontSize={data.$fontSize ? data.$fontSize : "inherit"}
-      x={data.$position.$x}
-      y={data.$position.$y}
-      dx={data.$dx}
-      dy={data.$dy}
-      fill={data.$fill}
+      textAnchor={data._textAnchor}
+      fontStyle={data._fontStyle}
+      fontSize={data._fontSize ? data._fontSize : "inherit"}
+      x={data._position._x}
+      y={data._position._y}
+      dx={data._dx}
+      dy={data._dy}
+      fill={data._fill}
     >
-      {data.$content}
+      {data._content}
     </text>
   );
 };
@@ -330,10 +330,10 @@ type L2DProps = { data: LineObj };
 const LINE = ({ data }: L2DProps) => {
   return (
     <line
-      x1={data.$start.$x}
-      y1={data.$start.$y}
-      x2={data.$end.$x}
-      y2={data.$end.$y}
+      x1={data.$start._x}
+      y1={data.$start._y}
+      x2={data.$end._x}
+      y2={data.$end._y}
       stroke={data.$stroke}
       strokeWidth={data.$strokeWidth}
       strokeDasharray={data.$strokeDashArray}
@@ -396,7 +396,7 @@ export const LA1 = () => {
     grid(D, R).stroke(cssvar("dimgrey")).done(),
     line([0, 0], [3, 3]).stroke(cssvar("red")).arrowEnd(),
     line([0, 0], [4, 1]).stroke(cssvar("red")).arrowEnd(),
-    line([0, 0], [n.$x, n.$y]).stroke(cssvar("blue")).arrowEnd(),
+    line([0, 0], [n._x, n._y]).stroke(cssvar("blue")).arrowEnd(),
     text("a").position(2.5, 4).fill(cssvar("red")).latex("inline"),
     text("b").position(3.5, 2).fill(cssvar("red")).latex("inline"),
     text("a + b").position(5, 5.5).fill(cssvar("blue")).latex("inline"),
@@ -450,7 +450,7 @@ export const LA3 = () => {
     range: R,
   }).children([
     grid(D, R).stroke(cssvar("dimgrey")).done(),
-    line([0, 0], [n.$x, n.$y]).stroke(cssvar("blue")).arrowEnd(),
+    line([0, 0], [n._x, n._y]).stroke(cssvar("blue")).arrowEnd(),
     line([0, 0], [3, 3]).stroke(cssvar("red")).arrowEnd(),
     text("v").position(2.5, 4).latex("inline"),
     text("2v").position(5, 5.5).latex("inline"),
@@ -619,8 +619,8 @@ export function PLOT3D({ data }: Plot3DProps) {
     );
   };
   const containerStyles: CSSProperties = {
-    width: d.$width,
-    height: d.$height,
+    width: d._width,
+    height: d._height,
     margin: "0 auto",
   };
   return (
@@ -873,12 +873,12 @@ export const TreeTest = () => {
         ]),
       ])
     )
-      .nodeFn((node) => circle(5, [node.$x, node.$y]).stroke(cssvar("red")))
+      .nodeFn((node) => circle(5, [node._x, node._y]).stroke(cssvar("red")))
       .edgeColor(cssvar("red"))
       .labelFn((node) =>
         text(node.$name)
           .fill(cssvar("foreground"))
-          .position(node.$x, node.$y)
+          .position(node._x, node._y)
           .dx(-10)
           .dy(0)
       )
@@ -957,18 +957,18 @@ export const ConvexHullDemo = () => {
   const p = path();
   chull.hull.forEach((v, i) => {
     if (i === 0) {
-      p.moveTo(v.$x, v.$y);
+      p.moveTo(v._x, v._y);
     } else {
-      p.lineTo(v.$x, v.$y);
+      p.lineTo(v._x, v._y);
     }
   });
-  p.lineTo(chull.leftmost.$x, chull.leftmost.$y);
+  p.lineTo(chull.leftmost._x, chull.leftmost._y);
   p.stroke(cssvar("green"))
     .strokeWidth(1)
     .fill(cssvar("green"))
     .fillOpacity("20%");
   const cs = points.map((v) =>
-    circle(5, [v.$x, v.$y])
+    circle(5, [v._x, v._y])
       .fill(cssvar("green"))
       .stroke(cssvar("green"))
       .fillOpacity(0.7)
@@ -1869,14 +1869,14 @@ export const TrigFnAngles = () => {
     ),
 
     line([0, 0], [2, 0]).stroke(cssvar("foreground")),
-    line([0, 0], [l1.$x, l1.$y]).stroke(cssvar("foreground")),
+    line([0, 0], [l1._x, l1._y]).stroke(cssvar("foreground")),
     [
       text("θ").position(0.2, 0.2).fontSize("18px"),
-      text("𝑃(𝑥, 𝑦)").position(l1.$x, l1.$y).fontSize("18px").dy(-15).dx(-20),
+      text("𝑃(𝑥, 𝑦)").position(l1._x, l1._y).fontSize("18px").dy(-15).dx(-20),
       text("𝑥").position(4.2, 0).dy(5),
       text("𝑦").position(0, 4.2).dy(-1),
     ].map((t) => t.fill(cssvar("foreground"))),
-    circle(3, [l1.$x, l1.$y]).fill(cssvar("foreground")),
+    circle(3, [l1._x, l1._y]).fill(cssvar("foreground")),
     circle(3, [2, 0]).fill(cssvar("foreground")),
     circle(3, [0, 0]).fill(cssvar("foreground")),
   ]);
@@ -1898,27 +1898,27 @@ export const UnitCircleTrig = () => {
       // grid(domain, range).stroke(cssvar("dimgrey")).done(),
       // axis({ on: "x", domain, range }),
       // axis({ on: "y", domain, range }),
-      triangle([0, 0], [a1.$x, a1.$y], [a1.$x, 0])
+      triangle([0, 0], [a1._x, a1._y], [a1._x, 0])
         .fill(cssvar("dimgrey"))
         .fillOpacity(0.5)
         .stroke("none"),
       line([-3, 0], [3, 0]).stroke(cssvar("dimgrey")).arrowed(),
       line([0, -3], [0, 3]).stroke(cssvar("dimgrey")).arrowed(),
       line([0, 0], [2, 0]).stroke(cssvar("pencil")),
-      line([0, 0], [a1.$x, a1.$y]).strokeDashArray(2).stroke(cssvar("pencil")),
-      line([a1.$x, a1.$y], [a1.$x, 0])
+      line([0, 0], [a1._x, a1._y]).strokeDashArray(2).stroke(cssvar("pencil")),
+      line([a1._x, a1._y], [a1._x, 0])
         .stroke(cssvar("pencil"))
         .strokeDashArray(2),
-      line([a1.$x + 0.8, a1.$y], [a1.$x + 0.8, 0]).stroke(cssvar("pencil")),
-      line([0, -0.3], [a1.$x, -0.3]).stroke(cssvar("pencil")),
+      line([a1._x + 0.8, a1._y], [a1._x + 0.8, 0]).stroke(cssvar("pencil")),
+      line([0, -0.3], [a1._x, -0.3]).stroke(cssvar("pencil")),
       [
         text("𝑎").position(0.5, 0.8),
         text("𝑏").position(1.6, 0.6),
         text("𝑐").position(0.8, -0.2),
-        text("𝑦").position(a1.$x + 1.2, a1.$y / 2),
-        text("𝑥").position(a1.$x / 2, -0.5),
+        text("𝑦").position(a1._x + 1.2, a1._y / 2),
+        text("𝑥").position(a1._x / 2, -0.5),
         text("θ").position(0.35, 0.05),
-        text("𝑃(𝑥, 𝑦)").position(a1.$x, a1.$y).dy(-10).dx(15),
+        text("𝑃(𝑥, 𝑦)").position(a1._x, a1._y).dy(-10).dx(15),
         text("𝑥² + 𝑦² = 1").position(-2, 2),
       ].map((t) => t.fill(cssvar("foreground"))),
       path()
@@ -1931,7 +1931,7 @@ export const UnitCircleTrig = () => {
         .strokeDashArray(5),
       circle(3, [0, 0]).fill(cssvar("foreground")),
       circle(3, [2, 0]).fill(cssvar("foreground")),
-      circle(3, [a1.$x, a1.$y]).fill(cssvar("foreground")),
+      circle(3, [a1._x, a1._y]).fill(cssvar("foreground")),
     ]);
   return <Fig data={d} width={80} paddingBottom={50} />;
 };
@@ -1974,10 +1974,10 @@ export const RadianFig = () => {
       text("𝑟").position(1, 1).dx(-20).dy(10),
       text("𝑦").position(0, 3).dy(-10),
       text("𝑥").position(3, 0).dx(10).dy(4),
-      angleMarker([aEnd.$x, aEnd.$y], [0, 0], [bEnd.$x, bEnd.$y], 30, false)
+      angleMarker([aEnd._x, aEnd._y], [0, 0], [bEnd._x, bEnd._y], 30, false)
         .fill(cssvar("dimgrey"))
         .strokeDashArray(3),
-      arcFromPoints([aEnd.$x, aEnd.$y], [0, 0], [bEnd.$x, bEnd.$y], 110, false)
+      arcFromPoints([aEnd._x, aEnd._y], [0, 0], [bEnd._x, bEnd._y], 110, false)
         .id("am")
         .stroke(cssvar("pencil"))
         .strokeDashArray(2)
@@ -2166,7 +2166,7 @@ export const CubeTest = () => {
     const e1uv2 = e1uv.map((n, i) => (i === 2 ? n : n / e1uv.$z));
     const e2uv = e2.sub(camera);
     const e2uv2 = e2uv.map((n, i) => (i === 2 ? n : n / e2uv.$z));
-    p.moveTo(e1uv2.$x, e1uv2.$y, e1uv2.$z).lineTo(e2uv2.$x, e2uv2.$y, e2uv2.$z);
+    p.moveTo(e1uv2._x, e1uv2._y, e1uv2.$z).lineTo(e2uv2._x, e2uv2._y, e2uv2.$z);
   }
 
   const d = svg({
@@ -2535,7 +2535,7 @@ export const Freeform = () => {
         const s = p.matrixTransform(_ctm);
         const v = vector([s.x, s.y]);
         setClickPos(v);
-        const k = circle(3, [v.$x, v.$y]).id(`circle(${v.$x},${v.$y})`);
+        const k = circle(3, [v._x, v._y]).id(`circle(${v._x},${v._y})`);
         setSVGChildren((cs) => [...cs, k]);
       }
     }
@@ -2897,6 +2897,76 @@ export const PartitionedSampleSpace = () => {
   ]).translateY(-130);
   return <Fig data={d} paddingBottom={35}/>;
 };
+
+
+export const CoinToss3 = () => {
+  const domain = tuple(-10,10);
+  const range = tuple(-8,0.1);
+  const d = svg({
+    width: 500,
+    height: 800,
+    domain,
+    range,
+  }).children([
+      // axis({
+      //   on: "x",
+      //   domain,
+      //   range,
+      // }),
+      // axis({
+      //   on: "y",
+      //   domain,
+      //   range,
+      // }),
+      // grid(domain, range).done(),
+      tree(subtree('start').nodes([
+        subtree('H').nodes([
+          subtree('H').nodes([
+            subtree('H'),
+            subtree('T'),
+          ]),
+          subtree('T').nodes([
+            subtree('H'),
+            subtree('T'),
+          ]),
+        ]),
+        subtree('T').nodes([
+          subtree('H').nodes([
+            subtree('H'),
+            subtree('T'),
+          ]),
+          subtree('T').nodes([
+            subtree('H'),
+            subtree('T'),
+          ]),
+        ]),
+      ])).labelFn(node => text(node.$name).position(node._x, node._y).dy(5)).nodeFn(node => circle(15, [node._x, node._y]).fill(cssvar('background')).stroke('none')).layout('wetherell-shannon').done(),
+      text('𝑝').position(-2.5, -.5),
+      text('1 - 𝑝').position(2.8, -.5),
+
+
+      text('𝑝').position(2.5, -1.5),
+      text('1 - 𝑝').position(-2, -1.5),
+
+      text('𝑝').position(-5.5, -1.5),
+      text('1 - 𝑝').position(5.8, -1.5),
+
+
+      text('𝑝').position(-7, -2.5),
+      text('1 - 𝑝').position(-4.7, -2.5),
+
+      text('𝑝').position(-3, -2.5),
+      text('1 - 𝑝').position(-0.7, -2.5),
+
+      text('𝑝').position(1, -2.5),
+      text('1 - 𝑝').position(3.3, -2.53),
+
+      text('𝑝').position(5, -2.5),
+      text('1 - 𝑝').position(7.3, -2.5),
+  ])
+  return <Fig data={d} paddingBottom={70}/>
+}
+
 
 export default Fig;
 

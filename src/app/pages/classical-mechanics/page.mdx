@@ -6,13 +6,16 @@ import MdxLayout from "@/components/mdx-layout";
 <TOC>
 
 - [1D Motion](#1d-motion)
-  - [Position](#position)
-  - [Displacement](#displacement)
-  - [Average Velocity](#average-velocity)
-  - [Average Speed](#average-speed)
-  - [Instantaneous Velocity](#instantaneous-velocity)
-  - [Average Acceleration](#average-acceleration)
-  - [Instantaneous Acceleration](#instantaneous-acceleration)
+	- [Position](#position)
+	- [Displacement](#displacement)
+	- [Average Velocity](#average-velocity)
+	- [Average Speed](#average-speed)
+	- [Instantaneous Velocity](#instantaneous-velocity)
+	- [Average Acceleration](#average-acceleration)
+	- [Instantaneous Acceleration](#instantaneous-acceleration)
+	- [g Units](#g-units)
+	- [Acceleration Signum](#acceleration-signum)
+	- [Constant Acceleration](#constant-acceleration)
 
 
 </TOC>
@@ -22,32 +25,32 @@ import MdxLayout from "@/components/mdx-layout";
 - The principles and concepts of 1D motion will be later extended to 2 and 3D motion.
 
 ### Position
-- __*definition: position.*__ Let ${p}$ be some object. If ${p}$ exists in one-dimensional space ${\reals,}$ then ${p}$'s _position_ is an ${x \in \reals,}$ relative to some _reference point_ ${\mathscr{O}.}$ If ${p}$ exists in two-dimensional space ${\reals^2,}$ then ${p}$'s position is a pair ${(x,y) \in \reals^2,}$ again relative to some reference point ${\mathscr{O}.}$ If ${p}$ exists in three-dimensional space, then ${p}$'s position is a triple ${(x,y,z) \in \reals^3}$ (relative to some reference point ${\mathscr{O}.}$)
+- __*definition: position.*__ Let ${p}$ be some particle. If ${p}$ exists in one-dimensional space ${\reals,}$ then ${p}$'s _position_ is an ${x \in \reals,}$ relative to some _reference point_ ${\mathscr{O}.}$ If ${p}$ exists in two-dimensional space ${\reals^2,}$ then ${p}$'s position is a pair ${(x,y) \in \reals^2,}$ again relative to some reference point ${\mathscr{O}.}$ If ${p}$ exists in three-dimensional space, then ${p}$'s position is a triple ${(x,y,z) \in \reals^3}$ (relative to some reference point ${\mathscr{O}.}$)
 
 ### Displacement
-- __*definition: displacement.*__ Suppose an object ${p}$ has an initial position ${x_1}$ and a final position ${x_2.}$ Then the change from position ${x_1}$ to ${x_2}$ is called the _displacement_ of ${p,}$ denoted ${\Delta x,}$ where     
+- __*definition: displacement.*__ Suppose a particle ${p}$ has an initial position ${x_1}$ and a final position ${x_2.}$ Then the change from position ${x_1}$ to ${x_2}$ is called the _displacement_ of ${p,}$ denoted ${\Delta x,}$ where     
 $$
     \Delta x = x_2 - x_1.
 $$
 - Displacement is a vector quantity &mdash; it has a magnitude and a direction.
 
 ### Average Velocity
-- __*definition*__. _Average velocity_, denoted ${v_{\text{avg}},}$ is the ratio of an object's displacement ${\Delta x}$ over a particular time interval ${\Delta t.}$
+- __*definition*__. _Average velocity_, denoted ${v_{\text{avg}},}$ is the ratio of a particle's displacement ${\Delta x}$ over a particular time interval ${\Delta t.}$
     $$
         v_{\text{avg}} = \dfrac{\Delta x}{\Delta t}
         = \dfrac{x_2 - x_1}{t_2 - t_1}.
     $$
-    Above, ${t_2}$ is the time when the object's position is at ${x_2,}$ and ${t_1}$ is the time when the object's position is at ${x_1.}$
+    Above, ${t_2}$ is the time when the particle's position is at ${x_2,}$ and ${t_1}$ is the time when the particle's position is at ${x_1.}$
 - In a graph of ${x}$ versus ${t,}$ where ${x}$ corresponds to position and ${t}$ to time, the _slope_ of the secant line connecting two points on the ${x(t)}$ curve corresponds to ${v_{\text{avg}}.}$
 - Like displacement, ${v_{\text{avg}}}$ is a vector quantity &mdash; it has a magnitude and a direction.  
 - ${v_{\text{avg}}}$ always has the same sign as ${\Delta x}$ because ${\Delta t}$ is always positive.
 
 ### Average Speed
-- __*definition*__. _Average speed_, denoted ${s_{\text{avg}},}$ is the ratio of the total distance an object travels over a particular time interval ${\Delta t.}$
+- __*definition*__. _Average speed_, denoted ${s_{\text{avg}},}$ is the ratio of the total distance a particle travels over a particular time interval ${\Delta t.}$
 - Average speed is a _scalar quantity_ &mdash; it has a magnitude but no direction (ergo, no algebraic sign).
 
 ### Instantaneous Velocity
-- __*definition*__. A moving object's _instantaneous velocity_ (or simply _velocity_), denoted ${v,}$ is
+- __*definition*__. A moving particle's _instantaneous velocity_ (or simply _velocity_), denoted ${v,}$ is
     $$
         v = \lim_{\Delta t \to 0} \dfrac{\Delta x}{\Delta t}
         = \dfrac{\text{d} x}{\text{d} t}.
@@ -56,24 +59,78 @@ $$
 - A common unit for velocity is ${\text{m}/\text{s}}$ (meters per second).
 
 ### Average Acceleration
-- __*definition*__. An object's _average acceleration_, denoted ${a_{\text{avg}},}$ is the ratio of a change in velocity ${\Delta v}$ to the time interval ${\Delta t}$ in which the change occurs:
+- __*definition*__. An particle's _average acceleration_, denoted ${a_{\text{avg}},}$ is the ratio of a change in velocity ${\Delta v}$ to the time interval ${\Delta t}$ in which the change occurs:
   $$
     a_{\text{avg}} = \dfrac{\Delta v}{\Delta t}
     = \dfrac{v_2 - v_1}{t_2 - t_1}
   $$ 
-  where ${v_2}$ is the object's velocity at time ${t_2,}$ and ${v_1}$ at time ${t_1.}$
+  where ${v_2}$ is the particle's velocity at time ${t_2,}$ and ${v_1}$ at time ${t_1.}$
 - ${a_{\text{avg}}}$ is a vector quantity &mdash; it has a magnitude and a direction.
 - The algebraic sign of ${a_{\text{avg}}}$ indicates the direction of ${a_{\text{avg}}.}$ 
 
 ### Instantaneous Acceleration
-- __*definition*__. An object's _instantaneous acceleration_ (or simply _acceleration_), is
+- __*definition*__. An particle's _instantaneous acceleration_ (or simply _acceleration_), is
     $$
         a = \dfrac{\text{d} v}{\text{d} t}
         = \dfrac{\text{d}}{\text{d}t} \left( \dfrac{\text{d}x}{\text{d}t} \right)
         = \dfrac{\text{d}^2 x}{\text{d}t^2}.
     $$
-    That is, an object's acceleration at any instant is the second derivative of its position ${x(t)}$ with respect to time.
+    That is, a particle's acceleration at any instant is the second derivative of its position ${x(t)}$ with respect to time.
 - Acceleration is commonly measured in ${\text{m}/\text{s}^2}$ (meters per second squared).
+
+### g Units
+- Large accelerations are sometimes expressed in ${\text{g}}$ units:
+	$$
+		1 \text{g} = 9.8 \text{m}/\text{s}^2.
+	$$
+
+### Acceleration Signum
+- If the signs of the velocity and acceleration of a particle are the same, the speed of the particle increases. If the signs are opposite, the speed decreases.
+
+### Constant Acceleration
+Constant acceleration is a common case of movement. E.g., while stopped at a red light, you accelerate your car at an approximately constant rate when the light turns green.
+
+The following equations mathematically model this case. The equations only apply to constant acceleration.
+- __*equation*__. Where ${a}$ is constant,
+	$$
+		a = a_\text{avg} = \dfrac{v_1 - v_0}{t_1 - t_0},
+	$$
+	where ${v_1}$ is the velocity at time ${t_1}$ and ${v_0}$ is the velocity at time ${t_0.}$
+- __*equation*__. Under constant acceleration,
+	$$
+		v_{\text{avg}} = \dfrac{x_1 - x_0}{t_1 - t_0}.
+	$$
+- __*equation*__. Under constant acceleration,
+	$$
+		x_1 = x_0 + v_{\text{avg}}t.
+	$$
+- __*equation*__. Under constant acceleration,
+	$$
+		v_{\text{avg}} = \dfrac{1}{2}(v_0 + v_1).
+	$$
+- __*equation*__. Under constant acceleration,
+  $$
+		v_{\text{avg}} = v_0 + \dfrac{1}{2}at. 
+	$$
+- __*equation*__. Under constant acceleration,
+	$$
+		x_1 - x_0 = v_0t + \dfrac{1}{2}at^2.
+	$$
+- __*equation*__. Under constant acceleration,
+	$$
+		v_1^2 = v_0^2 + 2a(x_1 - x_0).
+	$$
+- __*equation*__. Under constant acceleration,
+	$$
+		x_1 - x_0 = \dfrac{1}{2}(v_0 + v_1)t.
+	$$
+- __*equation*__. Under constant acceleration,
+	$$
+		x_1 - x_0 = vt - \dfrac{1}{2}at^2.
+	$$
+
+	
+
 
 
 export default function MDXPage({ children }) {

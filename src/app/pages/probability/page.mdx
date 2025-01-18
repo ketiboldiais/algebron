@@ -275,7 +275,36 @@ import { PartitionedSampleSpace } from "@/components/Fig";
 - The moment this happens, we ought to revise our beliefs about the likelihoods of  the different scenarios, ${A_i.}$ Perhaps, because of ${B}$'s occurrence, other events become suddenly more likely.
 - We revise our beliefs by calculating conditional probabilities.
 
+import {CoinToss3} from "@/components/Fig";
+
 ## Independence
+- __*example*__. Consider an experiment where we toss a coin three times. The probability of heads, denoted ${P(H),}$ is
+  $$
+    P(H) = p,
+  $$
+  where ${p}$ is some nonnegative number less than ${1.}$ The probability of tails, denoted ${P(T),}$ is
+  $$
+    P(T) = 1 - p.
+  $$
+- Laying out the experiment's possibilities with a tree:
+  <CoinToss3/>
+- Let's work some problems:
+  1. What is the probability of tossing tails, head, tails? We use the multiplication rule: Multiply the probabilities along the edges:
+    $$
+      P(THT) = (1 - p)(p)(1 - p) = p^3 - 2p^2 + p.
+    $$
+  2. What is the probability of tossing one head?
+    $$
+      P(1 ~ \text{head}) = 3 p (1 - p)^2.
+    $$
+  3. What is the probability that the first toss is heads, if we know at least one head will occur?
+      $$
+        P(\text{first toss is } H ~|~ 1 ~ \text{head})
+      $$
+      Examining the tree, the set of events we're interested in are those with a heads toss. And out of those tosses with heads, we're particularly interested in those where the first toss is heads (the first left subtree). In this case, it's the sequence ${HTT.}$ Thus:
+      $$
+        P(\text{first toss is } H ~|~ 1 ~ \text{head}) = \dfrac{p(1-p)^2}{3p(1-p)^2} = \dfrac{1}{3}.
+      $$ 
 - __*definition*__. Events ${A}$ and ${B}$ are independent if and only if
   $$
     P(A \cap B) = P(A) \cdot P(B).

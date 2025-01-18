@@ -920,20 +920,20 @@ export function cartesianToPolar(x: number, y: number) {
  * An object implementing an n-length Vector.
  */
 export class Vector<T extends number[] = number[]> {
-  $elements: T;
+  _elements: T;
 
   /** Returns the length of this vector. */
   get length() {
-    return this.$elements.length;
+    return this._elements.length;
   }
 
   constructor(elements: T) {
-    this.$elements = elements;
+    this._elements = elements;
   }
 
   /** Returns a string representation of this vector. */
   toString() {
-    return "[" + this.$elements.toString() + "]";
+    return "[" + this._elements.toString() + "]";
   }
 
   /** Utility method for performing binary operations. */
@@ -945,13 +945,13 @@ export class Vector<T extends number[] = number[]> {
       ? homogenousVector(operand, this.length)
       : vector(operand);
     const [A, B] = equalen(this, arg);
-    return vector(A.$elements.map((c, i) => callback(c, B.$elements[i])));
+    return vector(A._elements.map((c, i) => callback(c, B._elements[i])));
   }
 
   map(callback: (n: number, i: number) => number) {
     const out = [];
     for (let i = 0; i < this.length; i++) {
-      const n = this.$elements[i];
+      const n = this._elements[i];
       out.push(callback(n, i));
     }
     return new Vector(out);
@@ -963,13 +963,13 @@ export class Vector<T extends number[] = number[]> {
    * matrix.
    */
   vxm(matrix: Matrix) {
-    if (this.length !== matrix.$C) return this;
+    if (this.length !== matrix._colcount) return this;
     const vector = new Vector([] as number[]);
-    for (let i = 1; i <= matrix.$R; i++) {
+    for (let i = 1; i <= matrix._rowcount; i++) {
       const v = matrix.element(i);
       if (v === null) return this;
       const d = this.dot(v);
-      vector.$elements[i - 1] = d;
+      vector._elements[i - 1] = d;
     }
     return vector;
   }
@@ -977,8 +977,8 @@ export class Vector<T extends number[] = number[]> {
   /** Returns the smallest component of this vector. */
   min() {
     let min = Infinity;
-    for (let i = 0; i < this.$elements.length; i++) {
-      const elem = this.$elements[i];
+    for (let i = 0; i < this._elements.length; i++) {
+      const elem = this._elements[i];
       if (elem < min) {
         min = elem;
       }
@@ -989,8 +989,8 @@ export class Vector<T extends number[] = number[]> {
   /** Returns the largest component of this vector. */
   max() {
     let max = -Infinity;
-    for (let i = 0; i < this.$elements.length; i++) {
-      const elem = this.$elements[i];
+    for (let i = 0; i < this._elements.length; i++) {
+      const elem = this._elements[i];
       if (elem > max) {
         max = elem;
       }
@@ -1000,7 +1000,7 @@ export class Vector<T extends number[] = number[]> {
 
   /** Returns the magnitude of this vector.  An optional precision value may be passed roundingthe magnitude to a specified number of decimal places. */
   mag(precision?: number) {
-    const out = sqrt(this.$elements.reduce((p, c) => p + c ** 2, 0));
+    const out = sqrt(this._elements.reduce((p, c) => p + c ** 2, 0));
     return !isNothing(precision) ? round(out, floor(precision)) : out;
   }
 
@@ -1043,20 +1043,20 @@ export class Vector<T extends number[] = number[]> {
 
   /** Returns the negation of this vector. */
   neg() {
-    return vector(this.$elements.map((c) => -c));
+    return vector(this._elements.map((c) => -c));
   }
 
   /** Returns this vector with each component set to its absolute value. */
   abs() {
-    return vector(this.$elements.map((c) => Math.abs(c)));
+    return vector(this._elements.map((c) => Math.abs(c)));
   }
 
   /** Returns true if this vector equals the provided vector. */
   equals(that: Vector) {
     if (this.length !== that.length) return false;
     for (let i = 0; i < this.length; i++) {
-      const e1 = this.$elements[i];
-      const e2 = that.$elements[i];
+      const e1 = this._elements[i];
+      const e2 = that._elements[i];
       if (e1 !== e2) return false;
     }
     return true;
@@ -1065,26 +1065,26 @@ export class Vector<T extends number[] = number[]> {
   /** Returns true if every component of this vector is zero. */
   isZero() {
     for (let i = 0; i < this.length; i++) {
-      if (this.$elements[i] !== 0) return false;
+      if (this._elements[i] !== 0) return false;
     }
     return true;
   }
 
   /** Returns true if this vector comprises exactly two elements. */
   is2D(): this is Vector<[number, number]> {
-    return this.$elements.length === 2;
+    return this._elements.length === 2;
   }
 
   /** Returns true if this vector comprises exactly three elements. */
   is3D(): this is Vector<[number, number, number]> {
-    return this.$elements.length === 3;
+    return this._elements.length === 3;
   }
 
   /** Returns a copy of this vector. */
   copy() {
     const elements = [];
-    for (let i = 0; i < this.$elements.length; i++) {
-      elements.push(this.$elements[i]);
+    for (let i = 0; i < this._elements.length; i++) {
+      elements.push(this._elements[i]);
     }
     return new Vector(elements);
   }
@@ -1093,7 +1093,7 @@ export class Vector<T extends number[] = number[]> {
   pad(slots: number, value: number) {
     if (slots < this.length) {
       const diff = this.length - slots;
-      const elements = [...this.$elements];
+      const elements = [...this._elements];
       for (let i = 0; i < diff; i++) {
         elements.push(value);
       }
@@ -1108,11 +1108,11 @@ export class Vector<T extends number[] = number[]> {
     if (index > this.length) {
       const diff = index - this.length;
       const vector = this.pad(diff, 0);
-      vector.$elements[index] = value;
+      vector._elements[index] = value;
       return vector;
     }
     const copy = this.copy();
-    copy.$elements[index] = value;
+    copy._elements[index] = value;
     return copy;
   }
 
@@ -1123,8 +1123,8 @@ export class Vector<T extends number[] = number[]> {
     if (other.length !== order) return 0;
     let sum = 0;
     for (let i = 0; i < order; i++) {
-      const a = this.$elements[i];
-      const b = other.$elements[i];
+      const a = this._elements[i];
+      const b = other._elements[i];
       const p = a * b;
       sum += p;
     }
@@ -1145,11 +1145,11 @@ export class Vector<T extends number[] = number[]> {
   }
 
   /** Returns the first element of this vector. */
-  get $x() {
-    return isNothing(this.$elements[0]) ? 0 : this.$elements[0];
+  get _x() {
+    return isNothing(this._elements[0]) ? 0 : this._elements[0];
   }
-  set $x(n: number) {
-    this.$elements[0] = n;
+  set _x(n: number) {
+    this._elements[0] = n;
   }
 
   /** Sets the second element of this vector to the provided value. */
@@ -1158,11 +1158,11 @@ export class Vector<T extends number[] = number[]> {
   }
 
   /** Returns the second element of this vector. */
-  get $y() {
-    return isNothing(this.$elements[1]) ? 0 : this.$elements[1];
+  get _y() {
+    return isNothing(this._elements[1]) ? 0 : this._elements[1];
   }
-  set $y(n: number) {
-    this.$elements[1] = n;
+  set _y(n: number) {
+    this._elements[1] = n;
   }
 
   /** Sets the third element of this vector to the provided value. */
@@ -1172,10 +1172,10 @@ export class Vector<T extends number[] = number[]> {
 
   /** Returns the third element of this vector. */
   get $z() {
-    return isNothing(this.$elements[2]) ? 0 : this.$elements[2];
+    return isNothing(this._elements[2]) ? 0 : this._elements[2];
   }
   set $z(z: number) {
-    this.$elements[2] = z;
+    this._elements[2] = z;
   }
 
   /** Sets the fourt element of this vector to the provided value. */
@@ -1185,29 +1185,29 @@ export class Vector<T extends number[] = number[]> {
 
   /** Returns the fourth element of this vector. */
   get $w() {
-    return isNothing(this.$elements[3]) ? 0 : this.$elements[3];
+    return isNothing(this._elements[3]) ? 0 : this._elements[3];
   }
   set $w(w: number) {
-    this.$elements[3] = w;
+    this._elements[3] = w;
   }
 
   /** Returns the angle between (a) the difference vector of this vector and the provided vector, and (b) the x-axis. */
   gamma(other: Vector) {
-    const dx = this.$x - other.$x;
-    const dy = this.$y - other.$y;
+    const dx = this._x - other._x;
+    const dy = this._y - other._y;
     const gamma = Math.atan2(dy, dx);
     return gamma;
   }
 
   /** Returns the element at the given index (indices start at 1). */
   element(index: number) {
-    const out = this.$elements[index - 1];
+    const out = this._elements[index - 1];
     return out !== undefined ? out : null;
   }
 
   /** Returns this vector as a number array. */
   toArray() {
-    return this.$elements.map((e) => e);
+    return this._elements.map((e) => e);
   }
 
   /** Returns the unit vector point from this vector 𝑢 to the provided 𝑣. */
@@ -1224,16 +1224,16 @@ export class Vector<T extends number[] = number[]> {
 
   /** Returns the 2D vector normal of this vector. */
   normal2D() {
-    return vector([-this.$y, this.$x]);
+    return vector([-this._y, this._x]);
   }
 
   /** Returns the cross product of this vector in-place. The cross product is used primarily to compute the vector perpendicular to two vectors. */
   cross(other: Vector) {
-    const ax = this.$x;
-    const ay = this.$y;
+    const ax = this._x;
+    const ay = this._y;
     const az = this.$z;
-    const bx = other.$x;
-    const by = other.$y;
+    const bx = other._x;
+    const by = other._y;
     const bz = other.$z;
     const cx = ay * bz - az * by;
     const cy = az * bx - ax * bz;
@@ -1243,16 +1243,16 @@ export class Vector<T extends number[] = number[]> {
 
   /** Returns the 2D distance between this vector and the provided vector. */
   distance2D(other: Vector) {
-    const dx = other.$x - this.$x;
-    const dy = other.$y - this.$y;
+    const dx = other._x - this._x;
+    const dy = other._y - this._y;
     const dsum = dx ** 2 + dy ** 2;
     return Math.sqrt(dsum);
   }
 
   /** Returns the 3D distance between this vector and the provided vector. */
   distance3D(other: Vector) {
-    const x = other.$x - this.$x;
-    const y = other.$y - this.$y;
+    const x = other._x - this._x;
+    const y = other._y - this._y;
     const z = other.$z - this.$z;
     const xyz = x * x + y * y + z * z;
     return Math.sqrt(xyz);
@@ -1280,8 +1280,8 @@ export class Vector<T extends number[] = number[]> {
   /** Returns a random 3D vector. The `min` argument sets the lower bound of the sampling interval. The `max` argument sets the upper bound of the sampling interval. The `restrict` argument takes `Z` or `R`. If `Z` is passed, random values are restricted to integers. If `R` is passed, random values are either integers or floats. */
   static random3D(min: number, max: number, restrict: "Z" | "R" = "R") {
     const v = Vector.random2D(min, max, restrict);
-    const x = v.$x;
-    const y = v.$y;
+    const x = v._x;
+    const y = v._y;
     const z = restrict === "Z" ? randInt(min, max) : randFloat(min, max);
     return new Vector([x, y, z]);
   }
@@ -1326,8 +1326,8 @@ function equalen(vectorA: Vector, vectorB: Vector): [Vector, Vector] {
   if (vectorA.length > vectorB.length) {
     let i = 0;
     for (i = 0; i < vectorA.length; i++) {
-      A.push(vectorA.$elements[i]);
-      B.push(isNothing(vectorB.$elements[i]) ? 0 : vectorB.$elements[i]);
+      A.push(vectorA._elements[i]);
+      B.push(isNothing(vectorB._elements[i]) ? 0 : vectorB._elements[i]);
     }
     const n = vectorB.length - i;
     for (let j = 0; j < n; j++) {
@@ -1337,8 +1337,8 @@ function equalen(vectorA: Vector, vectorB: Vector): [Vector, Vector] {
   } else if (vectorA.length < vectorB.length) {
     let i = 0;
     for (i = 0; i < vectorB.length; i++) {
-      A.push(isNothing(vectorA.$elements[i]) ? 0 : vectorA.$elements[i]);
-      B.push(vectorB.$elements[i]);
+      A.push(isNothing(vectorA._elements[i]) ? 0 : vectorA._elements[i]);
+      B.push(vectorB._elements[i]);
     }
     const n = vectorB.length - i;
     for (let j = 0; j < n; j++) {
@@ -1386,10 +1386,10 @@ export function dist2D(
 ) {
   p1 = Array.isArray(p1) ? vector(p1) : p1;
   p2 = Array.isArray(p2) ? vector(p2) : p2;
-  const x1 = p1.$x,
-    y1 = p1.$y,
-    x2 = p2.$x,
-    y2 = p2.$y;
+  const x1 = p1._x,
+    y1 = p1._y,
+    x2 = p2._x,
+    y2 = p2._y;
   return Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
 }
 
@@ -1404,10 +1404,10 @@ export function dir2D(
 ) {
   startPoint = Array.isArray(startPoint) ? vector(startPoint) : startPoint;
   endPoint = Array.isArray(endPoint) ? vector(endPoint) : endPoint;
-  const x = startPoint.$x,
-    y = startPoint.$y,
-    xx = endPoint.$x,
-    yy = endPoint.$y;
+  const x = startPoint._x,
+    y = startPoint._y,
+    xx = endPoint._x,
+    yy = endPoint._y;
   let angV = Math.acos(
     (xx - x) / Math.sqrt(Math.pow(x - xx, 2) + Math.pow(y - yy, 2))
   );
@@ -1420,49 +1420,49 @@ export function dir2D(
  */
 class Matrix {
   /** The vectors comprising this matrix. */
-  $vectors: Vector[];
+  _vectors: Vector[];
 
   /** The number of rows comprising this matrix. */
-  readonly $R: number;
+  readonly _rowcount: number;
 
   /** The number of columns comprising this matrix. */
-  readonly $C: number;
+  readonly _colcount: number;
 
   constructor(vectors: Vector[], rowcount: number, colcount: number) {
-    this.$vectors = vectors;
-    this.$R = rowcount;
-    this.$C = colcount;
+    this._vectors = vectors;
+    this._rowcount = rowcount;
+    this._colcount = colcount;
   }
 
   /** Returns true if this matrix is a square matrix. */
   isSquare() {
-    return this.$C === this.$R;
+    return this._colcount === this._rowcount;
   }
 
   /** Returns a copy of this matrix. */
   copy() {
-    const vs = this.$vectors.map((v) => v.copy());
-    return new Matrix(vs, this.$R, this.$C);
+    const vs = this._vectors.map((v) => v.copy());
+    return new Matrix(vs, this._rowcount, this._colcount);
   }
 
   /** Returns the vector element at the given index (indices start at 1). */
   element(index: number) {
-    const out = this.$vectors[index - 1];
+    const out = this._vectors[index - 1];
     return out !== undefined ? out : null;
   }
 
   /** Returns a column vector comprising all the vector elements at the given column. */
   column(index: number) {
-    if (index > this.$C) {
+    if (index > this._colcount) {
       const out: number[] = [];
-      for (let i = 0; i < this.$C; i++) {
+      for (let i = 0; i < this._colcount; i++) {
         out.push(0);
       }
       return vector(out);
     }
     const out: number[] = [];
-    this.$vectors.forEach((vector) => {
-      vector.$elements.forEach((n, i) => {
+    this._vectors.forEach((vector) => {
+      vector._elements.forEach((n, i) => {
         if (i === index) out.push(n);
       });
     });
@@ -1479,16 +1479,16 @@ class Matrix {
 
   /** Returns the string form of matrix. */
   toString() {
-    const out = this.$vectors.map((v) => v.toString()).join(",");
+    const out = this._vectors.map((v) => v.toString()).join(",");
     return `[${out}]`;
   }
 
   /** Sets the element at the given row index and column index. The row and column indices are expected to begin at 1. If no element exists at the provided indices, no change is done. */
   set(row: number, column: number, value: number) {
-    if (this.$vectors[row - 1] === undefined) return this;
-    if (this.$vectors[row - 1].$elements[column - 1] === undefined) return this;
+    if (this._vectors[row - 1] === undefined) return this;
+    if (this._vectors[row - 1]._elements[column - 1] === undefined) return this;
     const copy = this.copy();
-    copy.$vectors[row - 1].$elements[column - 1] = value;
+    copy._vectors[row - 1]._elements[column - 1] = value;
     return copy;
   }
 
@@ -1496,8 +1496,8 @@ class Matrix {
   forEach(
     callback: (element: number, rowIndex: number, columnIndex: number) => void
   ) {
-    for (let i = 1; i <= this.$R; i++) {
-      for (let j = 1; j <= this.$C; j++) {
+    for (let i = 1; i <= this._rowcount; i++) {
+      for (let j = 1; j <= this._colcount; j++) {
         callback(this.n(i, j), i, j);
       }
     }
@@ -1506,7 +1506,7 @@ class Matrix {
 
   /** Returns true if this matrix and the the provided matrix have the same number of rows and the same number of columns. False otherwise. */
   congruent(matrix: Matrix) {
-    return this.$R === matrix.$R && this.$C === matrix.$C;
+    return this._rowcount === matrix._rowcount && this._colcount === matrix._colcount;
   }
 
   /** @internal - Utility method for binary operations on matrices. */
@@ -1515,18 +1515,18 @@ class Matrix {
     op: (a: number, b: number) => number
   ) {
     const other = isNumber(arg)
-      ? Matrix.fill(this.$R, this.$C, arg)
+      ? Matrix.fill(this._rowcount, this._colcount, arg)
       : Array.isArray(arg)
       ? Matrix.from(arg)
       : arg;
-    if (this.$R !== other.$R || this.$C !== other.$C) return this;
+    if (this._rowcount !== other._rowcount || this._colcount !== other._colcount) return this;
     const vectors: Vector[] = [];
-    for (let i = 0; i < this.$R; i++) {
+    for (let i = 0; i < this._rowcount; i++) {
       const nums: number[] = [];
-      const row = this.$vectors[i].$elements;
+      const row = this._vectors[i]._elements;
       for (let j = 0; j < row.length; j++) {
         const a = row[j];
-        const b = other.$vectors[i].$elements[j];
+        const b = other._vectors[i]._elements[j];
         nums.push(op(a, b));
       }
       vectors.push(vector(nums));
@@ -1557,10 +1557,10 @@ class Matrix {
   /** Returns the transpose of this matrix. */
   transpose() {
     const copy: number[][] = [];
-    for (let i = 0; i < this.$R; ++i) {
-      const vector = this.$vectors[i];
-      for (let j = 0; j < this.$C; ++j) {
-        const element = vector.$elements[j];
+    for (let i = 0; i < this._rowcount; ++i) {
+      const vector = this._vectors[i];
+      for (let j = 0; j < this._colcount; ++j) {
+        const element = vector._elements[j];
         if (isNothing(element)) continue;
         if (isNothing(copy[j])) {
           copy[j] = [];
@@ -1574,9 +1574,9 @@ class Matrix {
   /** Returns the cofactor of this matrix. */
   cofactor() {
     let det = 0;
-    for (let r = 0; r < this.$R; r++) {
+    for (let r = 0; r < this._rowcount; r++) {
       const a = (-1) ** r;
-      const b = this.$vectors[0].$elements[r];
+      const b = this._vectors[0]._elements[r];
       const c = a * b;
       const mMinor = this.minor(1, r + 1);
       const minorDeterminant = mMinor.det();
@@ -1590,16 +1590,16 @@ class Matrix {
    */
   minor(row: number, col: number) {
     const out: number[][] = [];
-    for (let i = 0; i < this.$R; i++) {
+    for (let i = 0; i < this._rowcount; i++) {
       if (i === row - 1) {
         continue;
       }
       const minorRow = [];
-      for (let j = 0; j < this.$C; j++) {
+      for (let j = 0; j < this._colcount; j++) {
         if (j === col - 1) {
           continue;
         }
-        minorRow.push(this.$vectors[i].$elements[j]);
+        minorRow.push(this._vectors[i]._elements[j]);
       }
       out.push(minorRow);
     }
@@ -1612,9 +1612,9 @@ class Matrix {
    * must be suare.
    */
   det(): number {
-    if (this.$R === 2 && this.$C === 2) {
-      const p1 = this.$vectors[0].$elements[0] * this.$vectors[1].$elements[1];
-      const p2 = this.$vectors[0].$elements[1] * this.$vectors[1].$elements[0];
+    if (this._rowcount === 2 && this._colcount === 2) {
+      const p1 = this._vectors[0]._elements[0] * this._vectors[1]._elements[1];
+      const p2 = this._vectors[0]._elements[1] * this._vectors[1]._elements[0];
       return p1 - p2;
     }
     return this.cofactor();
@@ -1631,21 +1631,21 @@ class Matrix {
 
   /** Returns the matrix product of this matrix and the provided matrix. */
   mul(arg: number | Matrix | number[][]) {
-    const Ar = this.$R;
-    const Ac = this.$C;
-    if (arg instanceof Matrix && Ac !== arg.$R) {
+    const Ar = this._rowcount;
+    const Ac = this._colcount;
+    if (arg instanceof Matrix && Ac !== arg._rowcount) {
       return this;
     }
     const B = Matrix.of(Ar, Ac, arg);
-    const Bc = B.$C;
+    const Bc = B._colcount;
     const result: number[][] = [];
     for (let i = 0; i < Ar; i++) {
       result[i] = [];
       for (let j = 0; j < Bc; j++) {
         let sum = 0;
         for (let k = 0; k < Ac; k++) {
-          const a = this.$vectors[i].$elements[k];
-          const b = B.$vectors[k].$elements[j];
+          const a = this._vectors[i]._elements[k];
+          const b = B._vectors[k]._elements[j];
           sum += a * b;
         }
         result[i][j] = sum;
@@ -1667,9 +1667,9 @@ class Matrix {
 
   flat() {
     const out = [];
-    for (let i = 0; i < this.$R; i++) {
-      for (let j = 0; j < this.$C; j++) {
-        const e = this.$vectors[i].$elements[j];
+    for (let i = 0; i < this._rowcount; i++) {
+      for (let j = 0; j < this._colcount; j++) {
+        const e = this._vectors[i]._elements[j];
         out.push(e);
       }
     }
@@ -1719,14 +1719,14 @@ function isMatrix(value: any): value is Matrix {
 
 export function convexHull(points: Vector[]) {
   const isLeftTurn = (p: Vector, q: Vector, r: Vector) => {
-    return (q.$x - p.$x) * (r.$y - p.$y) - (r.$x - p.$x) * (q.$y - p.$y) > 0;
+    return (q._x - p._x) * (r._y - p._y) - (r._x - p._x) * (q._y - p._y) > 0;
   };
   if (points.length < 3) {
     return { hull: points, leftmost: points[0] };
   }
   let leftmost = points[0];
   for (let i = 1; i < points.length; i++) {
-    if (points[i].$x < leftmost.$x) {
+    if (points[i]._x < leftmost._x) {
       leftmost = points[i];
     }
   }
@@ -2355,7 +2355,7 @@ class M3DCommand extends Path3DCommand {
     super(P3D.M, vector([x, y, z]));
   }
   toString(): string {
-    return `M${this._end.$x},${this._end.$y}`;
+    return `M${this._end._x},${this._end._y}`;
   }
 }
 const M3D = (x: number, y: number, z: number) => new M3DCommand(x, y, z);
@@ -2366,7 +2366,7 @@ class L3DCommand extends Path3DCommand {
     super(P3D.L, vector([x, y, z]));
   }
   toString(): string {
-    return `L${this._end.$x},${this._end.$y}`;
+    return `L${this._end._x},${this._end._y}`;
   }
 }
 const L3D = (x: number, y: number, z: number) => new L3DCommand(x, y, z);
@@ -2390,7 +2390,7 @@ class Q3DCommand extends Path3DCommand {
     this._ctrl = vector(ctrl);
   }
   toString(): string {
-    return `Q${this._ctrl.$x},${this._ctrl.$y},${this._end.$x},${this._end.$y}`;
+    return `Q${this._ctrl._x},${this._ctrl._y},${this._end._x},${this._end._y}`;
   }
 }
 const Q3D = (ctrl: [number, number, number], end: [number, number, number]) =>
@@ -2410,7 +2410,7 @@ class C3DCommand extends Path3DCommand {
     this._ctrl2 = vector(ctrl2);
   }
   toString(): string {
-    return `C${this._ctrl1.$x},${this._ctrl1.$y},${this._ctrl2.$x},${this._ctrl2.$y},${this._end.$x},${this._end.$y}`;
+    return `C${this._ctrl1._x},${this._ctrl1._y},${this._ctrl2._x},${this._ctrl2._y},${this._end._x},${this._end._y}`;
   }
 }
 const C3D = (
@@ -2499,22 +2499,22 @@ export class Path3D extends Renderable {
       const E = op(p._end);
       switch (p._type) {
         case P3D.M:
-          return M3D(E.$x, E.$y, E.$z);
+          return M3D(E._x, E._y, E.$z);
         case P3D.L:
-          return L3D(E.$x, E.$y, E.$z);
+          return L3D(E._x, E._y, E.$z);
         case P3D.Q: {
           const q = p as Q3DCommand;
           const ctrl = op(q._ctrl);
-          return Q3D([ctrl.$x, ctrl.$y, ctrl.$z], [E.$x, E.$y, E.$z]);
+          return Q3D([ctrl._x, ctrl._y, ctrl.$z], [E._x, E._y, E.$z]);
         }
         case P3D.C: {
           const c = p as C3DCommand;
           const ctrl1 = op(c._ctrl1);
           const ctrl2 = op(c._ctrl2);
           return C3D(
-            [ctrl1.$x, ctrl1.$y, ctrl1.$z],
-            [ctrl2.$x, ctrl2.$y, ctrl2.$z],
-            [E.$x, E.$y, E.$z]
+            [ctrl1._x, ctrl1._y, ctrl1.$z],
+            [ctrl2._x, ctrl2._y, ctrl2.$z],
+            [E._x, E._y, E.$z]
           );
         }
         default:
@@ -2665,37 +2665,37 @@ export class Path3D extends Renderable {
     fz: (z: number) => number
   ): this {
     this._origin = vector([
-      fx(this._origin.$x),
-      fy(this._origin.$y),
+      fx(this._origin._x),
+      fy(this._origin._y),
       fz(this._origin.$z),
     ]);
     this._commands = this._commands.map((command) => {
       switch (command._type) {
         case P3D.M:
           return M3D(
-            fx(command._end.$x),
-            fy(command._end.$y),
+            fx(command._end._x),
+            fy(command._end._y),
             fz(command._end.$z)
           );
         case P3D.L:
           return L3D(
-            fx(command._end.$x),
-            fy(command._end.$y),
+            fx(command._end._x),
+            fy(command._end._y),
             fz(command._end.$z)
           );
         case P3D.C: {
           const c = command as C3DCommand;
           return C3D(
-            [fx(c._ctrl1.$x), fy(c._ctrl1.$y), fz(c._ctrl1.$z)],
-            [fx(c._ctrl2.$x), fy(c._ctrl2.$y), fz(c._ctrl2.$z)],
-            [fx(c._end.$x), fy(c._end.$y), fz(c._end.$z)]
+            [fx(c._ctrl1._x), fy(c._ctrl1._y), fz(c._ctrl1.$z)],
+            [fx(c._ctrl2._x), fy(c._ctrl2._y), fz(c._ctrl2.$z)],
+            [fx(c._end._x), fy(c._end._y), fz(c._end.$z)]
           );
         }
         case P3D.Q: {
           const q = command as Q3DCommand;
           return Q3D(
-            [fx(q._ctrl.$x), fy(q._ctrl.$y), fz(q._ctrl.$z)],
-            [fx(q._end.$x), fy(q._end.$y), fz(q._end.$z)]
+            [fx(q._ctrl._x), fy(q._ctrl._y), fz(q._ctrl.$z)],
+            [fx(q._end._x), fy(q._end._y), fz(q._end.$z)]
           );
         }
         case P3D.Z: {
@@ -2706,10 +2706,10 @@ export class Path3D extends Renderable {
     return this;
   }
   get _x1() {
-    return this._cursor.$x;
+    return this._cursor._x;
   }
   get _y1() {
-    return this._cursor.$y;
+    return this._cursor._y;
   }
   get _z1() {
     return this._cursor.$z;
@@ -2758,8 +2758,8 @@ export class Path3D extends Renderable {
   }
   toString() {
     const origin = this._origin;
-    const ox = origin.$x;
-    const oy = origin.$y;
+    const ox = origin._x;
+    const oy = origin._y;
     const M = `M${ox},${oy}`;
     return M + this._commands.map((c) => c.toString()).join("");
   }
@@ -3101,7 +3101,7 @@ export function curveLinear(points: (Vector | [number, number])[]) {
     if (Array.isArray(p)) {
       pts.push(p);
     } else {
-      pts.push([p.$x, p.$y]);
+      pts.push([p._x, p._y]);
     }
   });
   const p = path();
@@ -3139,9 +3139,9 @@ export function curveCatmullRom(
       const p2 = data[i + 1];
       const p3 = i + 2 < length ? data[i + 2] : p2;
 
-      const d1 = Math.sqrt((p0.$x - p1.$x) ** 2 + (p0.$y - p1.$y) ** 2);
-      const d2 = Math.sqrt((p1.$x - p2.$x) ** 2 + (p1.$y - p2.$y) ** 2);
-      const d3 = Math.sqrt((p2.$x - p3.$x) ** 2 + (p2.$y - p3.$y) ** 2);
+      const d1 = Math.sqrt((p0._x - p1._x) ** 2 + (p0._y - p1._y) ** 2);
+      const d2 = Math.sqrt((p1._x - p2._x) ** 2 + (p1._y - p2._y) ** 2);
+      const d3 = Math.sqrt((p2._x - p3._x) ** 2 + (p2._y - p3._y) ** 2);
 
       // Apply parametrization
       const d3powA = Math.pow(d3, alpha);
@@ -3165,20 +3165,20 @@ export function curveCatmullRom(
       }
 
       let bp1 = vector([
-        (-d2pow2A * p0.$x + A * p1.$x + d1pow2A * p2.$x) * N,
-        (-d2pow2A * p0.$y + A * p1.$y + d1pow2A * p2.$y) * N,
+        (-d2pow2A * p0._x + A * p1._x + d1pow2A * p2._x) * N,
+        (-d2pow2A * p0._y + A * p1._y + d1pow2A * p2._y) * N,
       ]);
 
       let bp2 = vector([
-        (d3pow2A * p1.$x + B * p2.$x - d2pow2A * p3.$x) * M,
-        (d3pow2A * p1.$y + B * p2.$y - d2pow2A * p3.$y) * M,
+        (d3pow2A * p1._x + B * p2._x - d2pow2A * p3._x) * M,
+        (d3pow2A * p1._y + B * p2._y - d2pow2A * p3._y) * M,
       ]);
 
-      if (bp1.$x === 0 && bp1.$y === 0) {
+      if (bp1._x === 0 && bp1._y === 0) {
         bp1 = p1;
       }
 
-      if (bp2.$x === 0 && bp2.$y === 0) {
+      if (bp2._x === 0 && bp2._y === 0) {
         bp2 = p2;
       }
 
@@ -3188,16 +3188,16 @@ export function curveCatmullRom(
     return result;
   };
   const pts = calcPoints();
-  p.moveTo(pts[0].lastStartPoint.$x, pts[0].lastStartPoint.$y);
+  p.moveTo(pts[0].lastStartPoint._x, pts[0].lastStartPoint._y);
   for (let i = 0; i < pts.length; i++) {
     const point = pts[i];
     p.bezierCurveTo(
-      point.bp1.$x,
-      point.bp1.$y,
-      point.bp2.$x,
-      point.bp2.$y,
-      point.p2.$x,
-      point.p2.$y
+      point.bp1._x,
+      point.bp1._y,
+      point.bp2._x,
+      point.bp2._y,
+      point.p2._x,
+      point.p2._y
     );
   }
   return p;
@@ -3218,7 +3218,7 @@ export function curveCardinal(
   const points = pathPoints
     .map((p) => {
       if (Array.isArray(p)) return p;
-      return [p.$x, p.$y];
+      return [p._x, p._y];
     })
     .flat();
   const pts = points.slice(0);
@@ -3387,8 +3387,8 @@ export function curveBlob(
       points = points.concat(points.slice(0, 2));
     }
     const line = (pointA: Vector, pointB: Vector) => {
-      const lengthX = pointB.$x - pointA.$x;
-      const lengthY = pointB.$y - pointA.$y;
+      const lengthX = pointB._x - pointA._x;
+      const lengthY = pointB._y - pointA._y;
       return {
         length: Math.sqrt(Math.pow(lengthX, 2) + Math.pow(lengthY, 2)),
         angle: Math.atan2(lengthY, lengthX),
@@ -3406,18 +3406,18 @@ export function curveBlob(
       const o = line(p, n);
       const angle = o.angle + (reverse ? Math.PI : 0);
       const length = o.length * smoothing;
-      const x = current.$x + Math.cos(angle) * length;
-      const y = current.$y + Math.sin(angle) * length;
+      const x = current._x + Math.cos(angle) * length;
+      const y = current._y + Math.sin(angle) * length;
       return vector([x, y]);
     };
 
     const p = path();
-    p.moveTo(points[0].$x, points[0].$y);
+    p.moveTo(points[0]._x, points[0]._y);
     for (let i = 1; i < points.length; i++) {
       const point = points[i];
       const cp1 = controlPoint(points[i - 1], points[i - 2], point, false);
       const cp2 = controlPoint(point, points[i - 1], points[i + 1], true);
-      p.bezierCurveTo(cp1.$x, cp1.$y, cp2.$x, cp2.$y, point.$x, point.$y);
+      p.bezierCurveTo(cp1._x, cp1._y, cp2._x, cp2._y, point._x, point._y);
     }
     if (closed) {
       const comLast = p._commands[p._commands.length - 1] as CCommand;
@@ -3442,7 +3442,7 @@ export function curveBlob(
 
 export class Circle extends Renderable {
   render(fx: (x: number) => number, fy: (y: number) => number): this {
-    this._position = vector([fx(this._position.$x), fy(this._position.$y)]);
+    this._position = vector([fx(this._position._x), fy(this._position._y)]);
     return this;
   }
   _fillOpacity: number | `${number}%` = 1;
@@ -3488,10 +3488,10 @@ export class Circle extends Renderable {
 
   _position: Vector = vector([0, 0]);
   get _cx() {
-    return this._position.$x;
+    return this._position._x;
   }
   get _cy() {
-    return this._position.$y;
+    return this._position._y;
   }
 
   position(x: number, y: number) {
@@ -3515,71 +3515,71 @@ export function isCircle(u: any) {
 }
 
 export class TextObj extends Renderable {
-  $latex: null | "block" | "inline" = null;
-  $width: number = 50;
+  _latex: null | "block" | "inline" = null;
+  _width: number = 50;
   width(value: number) {
-    this.$width = value;
+    this._width = value;
     return this;
   }
-  $height: number = 50;
+  _height: number = 50;
   height(value: number) {
-    this.$height = value;
+    this._height = value;
     return this;
   }
   latex(value: "block" | "inline") {
-    this.$latex = value;
+    this._latex = value;
     return this;
   }
 
   render(fx: (x: number) => number, fy: (y: number) => number): this {
-    this.$position = vector([fx(this.$position.$x), fy(this.$position.$y)]);
+    this._position = vector([fx(this._position._x), fy(this._position._y)]);
     return this;
   }
 
-  $content: string | number;
-  $position: Vector = vector([0, 0]);
+  _content: string | number;
+  _position: Vector = vector([0, 0]);
   position(x: number, y: number) {
-    this.$position = vector([x, y]);
+    this._position = vector([x, y]);
     return this;
   }
-  $dy: number = 0;
+  _dy: number = 0;
   dy(value: number) {
-    this.$dy = value;
+    this._dy = value;
     return this;
   }
-  $dx: number = 0;
+  _dx: number = 0;
   dx(value: number) {
-    this.$dx = value;
+    this._dx = value;
     return this;
   }
-  $textAnchor: "start" | "middle" | "end" = "middle";
+  _textAnchor: "start" | "middle" | "end" = "middle";
   textAnchor(value: "start" | "middle" | "end") {
-    this.$textAnchor = value;
+    this._textAnchor = value;
     return this;
   }
-  $fontStyle?: string;
+  _fontStyle?: string;
   fontStyle(value: string) {
-    this.$fontStyle = value;
+    this._fontStyle = value;
     return this;
   }
-  $fontFamily?: string;
+  _fontFamily?: string;
   fontFamily(value: string) {
-    this.$fontFamily = value;
+    this._fontFamily = value;
     return this;
   }
-  $fontSize?: string | number;
+  _fontSize?: string | number;
   fontSize(value: string | number) {
-    this.$fontSize = value;
+    this._fontSize = value;
     return this;
   }
-  $fill?: string;
+  _fill?: string;
   fill(color: string) {
-    this.$fill = color;
+    this._fill = color;
     return this;
   }
   constructor(content: string | number) {
     super();
-    this.$content = content;
+    this._content = content;
   }
 }
 
@@ -3715,8 +3715,8 @@ export class LineObj extends Renderable {
   }
 
   render(fx: (x: number) => number, fy: (y: number) => number): this {
-    this.$start = vector([fx(this.$start.$x), fy(this.$start.$y)]);
-    this.$end = vector([fx(this.$end.$x), fy(this.$end.$y)]);
+    this.$start = vector([fx(this.$start._x), fy(this.$start._y)]);
+    this.$end = vector([fx(this.$end._x), fy(this.$end._y)]);
     return this;
   }
 
@@ -3765,19 +3765,19 @@ export function angleMarker(
   const pt2 = Array.isArray(p2) ? vector(p2) : p2;
   const pt1 = Array.isArray(p1) ? vector(p1) : p1;
 
-  const dx1 = pt1.$x - pt2.$x;
-  const dy1 = pt1.$y - pt2.$y;
-  const dx2 = pt3.$x - pt2.$x;
-  const dy2 = pt3.$y - pt2.$y;
+  const dx1 = pt1._x - pt2._x;
+  const dy1 = pt1._y - pt2._y;
+  const dx2 = pt3._x - pt2._x;
+  const dy2 = pt3._y - pt2._y;
   let a1 = Math.atan2(dy1, dx1);
   let a2 = Math.atan2(dy2, dx2);
   const p = path();
-  p.moveTo(pt2.$x, pt2.$y);
+  p.moveTo(pt2._x, pt2._y);
   if (angleReverse) {
     a1 = Math.PI * 2 - a1;
     a2 = Math.PI * 2 - a2;
   }
-  p.arc(pt2.$x, pt2.$y, radius, a1, a2, false);
+  p.arc(pt2._x, pt2._y, radius, a1, a2, false);
   p.closePath();
   p.fill("none");
   return p;
@@ -3794,19 +3794,19 @@ export function arcFromPoints(
   const pt2 = Array.isArray(p2) ? vector(p2) : p2;
   const pt1 = Array.isArray(p1) ? vector(p1) : p1;
 
-  const dx1 = pt1.$x - pt2.$x;
-  const dy1 = pt1.$y - pt2.$y;
-  const dx2 = pt3.$x - pt2.$x;
-  const dy2 = pt3.$y - pt2.$y;
+  const dx1 = pt1._x - pt2._x;
+  const dy1 = pt1._y - pt2._y;
+  const dx2 = pt3._x - pt2._x;
+  const dy2 = pt3._y - pt2._y;
   let a1 = Math.atan2(dy1, dx1);
   let a2 = Math.atan2(dy2, dx2);
   const p = path();
-  // p.moveTo(pt2.$x, pt2.$y);
+  // p.moveTo(pt2._x, pt2._y);
   if (angleReverse) {
     a1 = Math.PI * 2 - a1;
     a2 = Math.PI * 2 - a2;
   }
-  p.arc(pt2.$x, pt2.$y, radius, a1, a2, false);
+  p.arc(pt2._x, pt2._y, radius, a1, a2, false);
   // p.closePath();
   p.fill("none");
   return p;
@@ -3826,13 +3826,13 @@ function ticklines2D(
   if (orientation === "x") {
     numbers.forEach((n) => {
       const tick = line([n, -tickLength], [n, tickLength]);
-      const label = text(n).position(tick.$start.$x, tick.$start.$y);
+      const label = text(n).position(tick.$start._x, tick.$start._y);
       output.push({ tick, label });
     });
   } else {
     numbers.forEach((n) => {
       const tick = line([-tickLength, n], [tickLength, n]);
-      const label = text(n).position(tick.$start.$x, tick.$start.$y);
+      const label = text(n).position(tick.$start._x, tick.$start._y);
       output.push({ tick, label });
     });
   }
@@ -4128,7 +4128,7 @@ class AxisLinear extends Group {
           ticks.push(t);
           const num = scale(n);
           tickLabels.push(
-            text(num).position(0, t.$end.$y).dy(5).dx(-20).fill(this._color)
+            text(num).position(0, t.$end._y).dy(5).dx(-20).fill(this._color)
           );
         }
       });
@@ -4237,7 +4237,7 @@ export class SequencePlot extends Group {
           i === dataset.length - 1
         ) {
           tickLabels.push(
-            text(i).position(t.$end.$x, 0).dy(15).fill(this.$axisColor)
+            text(i).position(t.$end._x, 0).dy(15).fill(this.$axisColor)
           );
         }
       }
@@ -4253,7 +4253,7 @@ export class SequencePlot extends Group {
           num = `${Number.parseInt(num)}`;
         }
         tickLabels.push(
-          text(num).position(0, t.$end.$y).dy(5).dx(-20).fill(this.$axisColor)
+          text(num).position(0, t.$end._y).dy(5).dx(-20).fill(this.$axisColor)
         );
       }
     });
@@ -4434,23 +4434,23 @@ export function linearSlope(
 
 class Disc extends Path {
   $radius: number;
-  $position: [number, number];
+  _position: [number, number];
   constructor(radius: number, position: [number, number]) {
     super();
-    this.$position = position;
+    this._position = position;
     this.$radius = radius;
     this._commands.push(
-      M(this.$position[0], this.$position[1] + radius),
-      A(1, 1, 0, 0, 1, this.$position[0], this.$position[1] - radius),
-      A(1, 1, 0, 0, 1, this.$position[0], this.$position[1] + radius)
+      M(this._position[0], this._position[1] + radius),
+      A(1, 1, 0, 0, 1, this._position[0], this._position[1] - radius),
+      A(1, 1, 0, 0, 1, this._position[0], this._position[1] + radius)
     );
   }
 
   get _cx() {
-    return this.$position[0];
+    return this._position[0];
   }
   get _cy() {
-    return this.$position[1];
+    return this._position[1];
   }
 
   radius(R: number) {
@@ -4818,17 +4818,17 @@ export class Plot3D {
     return this;
   }
 
-  $width: number = 200;
+  _width: number = 200;
 
   width(value: number) {
-    this.$width = value;
+    this._width = value;
     return this;
   }
 
-  $height: number = 200;
+  _height: number = 200;
 
   height(value: number) {
-    this.$height = value;
+    this._height = value;
     return this;
   }
 
@@ -4879,8 +4879,8 @@ class TNode {
   $shift: number = 0;
   $leftMostSibling: TreeChild | null = null;
   $name: string | number;
-  $dx: number = 0;
-  $dy: number = 0;
+  _dx: number = 0;
+  _dy: number = 0;
   $id: string | number = uid(10);
   $commands: (MCommand | LCommand)[] = [];
   _labelDx: number = 0;
@@ -4893,20 +4893,20 @@ class TNode {
     this._labelDy = value;
     return this;
   }
-  get $x() {
+  get _x() {
     return this.$commands[0][1];
   }
-  get $y() {
+  get _y() {
     return this.$commands[0][2];
   }
-  set $x(x: number) {
-    this.$commands = [M(x, this.$y)];
+  set _x(x: number) {
+    this.$commands = [M(x, this._y)];
   }
-  set $y(y: number) {
-    this.$commands = [M(this.$x, y)];
+  set _y(y: number) {
+    this.$commands = [M(this._x, y)];
   }
   set $z(z: number) {
-    this.$commands = [M(this.$x, this.$y)];
+    this.$commands = [M(this._x, this._y)];
   }
   constructor(name: string | number, parent?: Fork) {
     this.$name = name;
@@ -4914,9 +4914,9 @@ class TNode {
     this.$commands = [M(0, 0)];
   }
   sketch(depth: number = 0) {
-    this.$x = -1;
-    this.$y = depth;
-    this.$dx = 0;
+    this._x = -1;
+    this._y = depth;
+    this._dx = 0;
     this.$change = 0;
     this.$shift = 0;
     this.$thread = null;
@@ -4965,10 +4965,10 @@ class Leaf extends TNode {
   $ancestor: TreeChild;
   constructor(name: string | number, parent?: Fork) {
     super(name, parent);
-    this.$x = -1;
+    this._x = -1;
     this.$ancestor = this;
   }
-  get $height() {
+  get _height() {
     return 1;
   }
   onLastChild() {
@@ -5014,10 +5014,10 @@ class Fork extends TNode {
     this.$ancestor = parent.$ancestor;
     return this;
   }
-  get $height() {
+  get _height() {
     let height = -Infinity;
     this.$children.forEach((c) => {
-      const h = c.$height;
+      const h = c._height;
       if (h > height) height = h;
     });
     return height + 1;
@@ -5185,7 +5185,7 @@ class TreeObj extends Group {
     this.$tree.bfs((node) => {
       const p = node.$parent;
       if (p) {
-        const l = line([p.$x, p.$y], [node.$x, node.$y]);
+        const l = line([p._x, p._y], [node._x, node._y]);
         l.stroke(this.$edgeColor);
         this.$children.push(l);
       }
@@ -5196,7 +5196,7 @@ class TreeObj extends Group {
       if (this.$nodeFn) {
         nodes.push(this.$nodeFn(node));
       } else if (this.$nodeRadius) {
-        const c = circle(this.$nodeRadius, [node.$x, node.$y])
+        const c = circle(this.$nodeRadius, [node._x, node._y])
           .fill(this.$nodeFill)
           .stroke(this.$edgeColor);
         nodes.push(c);
@@ -5205,7 +5205,7 @@ class TreeObj extends Group {
         labels.push(this.$labelFn(node));
       } else {
         const t = text(node.$name)
-          .position(node.$x, node.$y)
+          .position(node._x, node._y)
           .textAnchor("middle")
           .fill(this.$textColor)
           .dx(node._labelDx)
@@ -5242,34 +5242,34 @@ class TreeObj extends Group {
       if (left === null || right === null) return;
       const sh = 2;
       if (isLeaf(left) && isLeaf(right)) {
-        right.$x = parent.$x + 1;
-        right.$y = parent.$y;
-        left.$x = parent.$x;
-        left.$y = parent.$y - sh;
-        parent.$dx = 1;
+        right._x = parent._x + 1;
+        right._y = parent._y;
+        left._x = parent._x;
+        left._y = parent._y - sh;
+        parent._dx = 1;
       } else {
         const L = left.$degree;
         const R = right.$degree;
         if (L >= R) {
-          left.$x = parent.$x + R + 1;
-          left.$y = parent.$y;
-          right.$x = parent.$x;
-          right.$y = parent.$y - 2;
-          parent.$dx += left.$x;
+          left._x = parent._x + R + 1;
+          left._y = parent._y;
+          right._x = parent._x;
+          right._y = parent._y - 2;
+          parent._dx += left._x;
         } else if (L < R) {
-          right.$x = parent.$x + L + 1;
-          right.$y = parent.$y;
-          left.$x = parent.$x;
-          left.$y = parent.$y - sh;
-          parent.$dx += right.$x;
+          right._x = parent._x + L + 1;
+          right._y = parent._y;
+          left._x = parent._x;
+          left._y = parent._y - sh;
+          parent._dx += right._x;
         }
       }
       parent.$children.forEach((c) => largerToRight(c));
     };
     const xmin = this.$xMin;
     const ymax = this.$yMax;
-    this.$tree.$x = xmin;
-    this.$tree.$y = ymax;
+    this.$tree._x = xmin;
+    this.$tree._y = ymax;
     largerToRight(this.$tree);
     return this;
   }
@@ -5300,8 +5300,8 @@ class TreeObj extends Group {
       wr.$change -= shift / st;
       wr.$shift += shift;
       wl.$change += shift / st;
-      wr.$x += shift;
-      wr.$dx += shift;
+      wr._x += shift;
+      wr._dx += shift;
     };
     const ancestor = (
       vil: TreeChild,
@@ -5324,10 +5324,10 @@ class TreeObj extends Group {
         let vir = v;
         let vor = v;
         let vil = w;
-        let sir = v.$dx;
-        let sor = v.$dx;
-        let sil = vil.$dx;
-        let sol = vol.$dx;
+        let sir = v._dx;
+        let sor = v._dx;
+        let sil = vil._dx;
+        let sol = vol._dx;
         let VIL: TreeChild | null = vil;
         let VIR: TreeChild | null = vir;
         let VOL: TreeChild | null = vol;
@@ -5344,25 +5344,25 @@ class TreeObj extends Group {
             vor = VOR;
             vor.$ancestor = v;
           }
-          const shift = vil.$x + sil - (vir.$x + sir) + distance;
+          const shift = vil._x + sil - (vir._x + sir) + distance;
           if (shift > 0) {
             const a = ancestor(vil, v, default_ancestor);
             movesubtree(a, v, shift);
             sir = sir + shift;
             sor = sor + shift;
           }
-          sil += vil.$dx;
-          sir += vir.$dx;
-          sol += vol.$dx;
-          sor += vor.$dx;
+          sil += vil._dx;
+          sir += vir._dx;
+          sol += vol._dx;
+          sor += vor._dx;
         }
         if (vil.right() && !vor.right()) {
           vor.$thread = vil.right();
-          vor.$dx += sil - sor;
+          vor._dx += sil - sor;
         } else {
           if (vir.left() && !vol.left()) {
             vol.$thread = vir.left();
-            vol.$dx += sir - sol;
+            vol._dx += sir - sol;
           }
           default_ancestor = v;
         }
@@ -5373,8 +5373,8 @@ class TreeObj extends Group {
       let shift = 0;
       let change = 0;
       for (const w of v.$children) {
-        w.$x += shift;
-        w.$dx += shift;
+        w._x += shift;
+        w._dx += shift;
         change += w.$change;
         shift += w.$shift + change;
       }
@@ -5383,8 +5383,8 @@ class TreeObj extends Group {
       if (v.$children.length === 0) {
         if (v.$leftMostSibling) {
           const lb = leftBrother(v);
-          if (lb) v.$x = lb.$x + distance;
-        } else v.$x = 0;
+          if (lb) v._x = lb._x + distance;
+        } else v._x = 0;
       } else {
         let default_ancestor = v.$children[0];
         for (const w of v.$children) {
@@ -5394,13 +5394,13 @@ class TreeObj extends Group {
         execShifts(v);
         const L = v.$children[0];
         const R = v.$children[v.$children.length - 1];
-        const midpoint = (L.$x + R.$x) / 2;
+        const midpoint = (L._x + R._x) / 2;
         const w = leftBrother(v);
         if (w) {
-          v.$x = w.$x + distance;
-          v.$dx = v.$x - midpoint;
+          v._x = w._x + distance;
+          v._dx = v._x - midpoint;
         } else {
-          v.$x = midpoint;
+          v._x = midpoint;
         }
       }
       return v;
@@ -5411,18 +5411,18 @@ class TreeObj extends Group {
       depth: number = 0,
       min: number | null = null
     ): number => {
-      v.$x += m;
-      v.$y = -depth;
-      if (min === null || v.$x < min) {
-        min = v.$x;
+      v._x += m;
+      v._y = -depth;
+      if (min === null || v._x < min) {
+        min = v._x;
       }
       for (const w of v.$children) {
-        min = secondwalk(w, m + v.$dx, depth + 1, min);
+        min = secondwalk(w, m + v._dx, depth + 1, min);
       }
       return min;
     };
     const thirdwalk = (tree: TreeChild, n: number) => {
-      tree.$x += n;
+      tree._x += n;
       for (const w of tree.$children) {
         thirdwalk(w, n);
       }
@@ -5437,25 +5437,25 @@ class TreeObj extends Group {
     };
     buccheim();
     buccheim();
-    const x = this.$tree.$x;
-    const y = this.$tree.$height / 2;
+    const x = this.$tree._x;
+    const y = this.$tree._height / 2;
     this.$tree.bfs((n) => {
-      n.$x -= x;
-      n.$y += y;
+      n._x -= x;
+      n._y += y;
     });
     return this;
   }
   private knuth() {
     this.$tree.bfs((node, level) => {
       const y = 0 - level;
-      node.$y = y;
+      node._y = y;
     });
     this.$tree.inorder((node, index) => {
-      node.$x = index;
+      node._x = index;
     });
-    const x = this.$tree.$x;
+    const x = this.$tree._x;
     this.$tree.bfs((node) => {
-      node.$x -= x;
+      node._x -= x;
     });
     return this;
   }
@@ -5477,7 +5477,7 @@ class TreeObj extends Group {
       TreeChild,
       TreeChild
     ] => {
-      const delta = left.$x + left_offset - (right.$x + right_offset);
+      const delta = left._x + left_offset - (right._x + right_offset);
       if (max_offset === null || delta > max_offset) {
         max_offset = delta;
       }
@@ -5488,8 +5488,8 @@ class TreeObj extends Group {
       const ri = right.left();
       const ro = right_outer.right();
       if (li && ri) {
-        left_offset += left.$dx;
-        right_offset += right.$dx;
+        left_offset += left._dx;
+        right_offset += right._dx;
         return contour(li, ri, max_offset, left_offset, right_offset, lo, ro);
       }
       const out = tuple(
@@ -5507,49 +5507,49 @@ class TreeObj extends Group {
       // eslint-disable-next-line prefer-const
       let [li, ri, diff, loffset, roffset, lo, ro] = contour(left, right);
       diff += 1;
-      diff += (right.$x + diff + left.$x) % 2;
-      right.$dx = diff;
-      right.$x += diff;
+      diff += (right._x + diff + left._x) % 2;
+      right._dx = diff;
+      right._x += diff;
       if (right.$children.length) {
         roffset += diff;
       }
       if (ri && !li) {
         lo.$thread = ri;
-        lo.$dx = roffset - loffset;
+        lo._dx = roffset - loffset;
       } else if (li && !ri) {
         ro.$thread = li;
-        ro.$dx = loffset - roffset;
+        ro._dx = loffset - roffset;
       }
-      const out = Math.floor((left.$x + right.$x) / 2);
+      const out = Math.floor((left._x + right._x) / 2);
       return out;
     };
     const addmods = (tree: TreeChild, mod: number = 0) => {
-      tree.$x += mod;
-      tree.$children.forEach((c) => addmods(c, mod + tree.$dx));
+      tree._x += mod;
+      tree.$children.forEach((c) => addmods(c, mod + tree._dx));
       return tree;
     };
     const setup = (tree: TreeChild, depth: number = 0) => {
       tree.sketch(-depth);
       if (tree.$children.length === 0) {
-        tree.$x = 0;
+        tree._x = 0;
         return tree;
       }
       if (tree.$children.length === 1) {
-        tree.$x = setup(tree.$children[0], depth + 1).$x;
+        tree._x = setup(tree.$children[0], depth + 1)._x;
         return tree;
       }
       const left = setup(tree.$children[0], depth + 1);
       const right = setup(tree.$children[1], depth + 1);
-      tree.$x = fixSubtrees(left, right);
+      tree._x = fixSubtrees(left, right);
       return tree;
     };
     setup(this.$tree);
     addmods(this.$tree);
-    const x = this.$tree.$x;
-    const y = this.$tree.$height / 2;
+    const x = this.$tree._x;
+    const y = this.$tree._height / 2;
     this.$tree.bfs((n) => {
-      n.$x -= x;
-      n.$y += y;
+      n._x -= x;
+      n._y += y;
     });
     return this;
   }
@@ -5563,7 +5563,7 @@ class TreeObj extends Group {
       tree.$children.forEach((c) => {
         lay(c, depth + 1, nexts, offsets);
       });
-      tree.$y = -depth;
+      tree._y = -depth;
       if (isNothing(nexts[depth])) {
         nexts[depth] = 0;
       }
@@ -5574,15 +5574,15 @@ class TreeObj extends Group {
       if (tree.$degree === 0) {
         x = nexts[depth];
       } else if (tree.$degree === 1) {
-        x = tree.$children[0].$x + 1;
+        x = tree.$children[0]._x + 1;
       } else {
         let lx = 0;
         tree.onFirstChild((n) => {
-          lx = n.$x;
+          lx = n._x;
         });
         let rx = 0;
         tree.onLastChild((n) => {
-          rx = n.$x;
+          rx = n._x;
         });
         const xpos = lx + rx;
         x = xpos / 2;
@@ -5590,23 +5590,23 @@ class TreeObj extends Group {
       offsets[depth] = max(offsets[depth], nexts[depth] - x);
       if (tree.$degree === 0) {
         const d = x + offsets[depth];
-        tree.$x = d;
+        tree._x = d;
       } else {
-        tree.$x = x;
+        tree._x = x;
       }
       nexts[depth] += 2;
-      tree.$dx = offsets[depth];
+      tree._dx = offsets[depth];
     };
     const addDxs = (tree: TreeChild, sum: number = 0) => {
-      tree.$x = tree.$x + sum;
-      sum += tree.$dx;
+      tree._x = tree._x + sum;
+      sum += tree._dx;
       tree.$children.forEach((c) => addDxs(c, sum));
     };
     lay(this.$tree, 0);
     addDxs(this.$tree);
-    const x = this.$tree.$x;
+    const x = this.$tree._x;
     this.$tree.bfs((n) => {
-      n.$x -= x;
+      n._x -= x;
     });
     return this;
   }
@@ -6005,7 +6005,7 @@ class ForceGraph extends Group {
 
   private iterate(MIN_X: number, MAX_X: number, MIN_Y: number, MAX_Y: number) {
     const rsq = (v: Vector, u: Vector) =>
-      (v.$x - u.$x) ** 2 + (v.$y - u.$y) ** 2;
+      (v._x - u._x) ** 2 + (v._y - u._y) ** 2;
     this.forEachPt((v) => {
       v.$f = v2D(0, 0);
       this.forEachPt((u) => {
@@ -6029,10 +6029,10 @@ class ForceGraph extends Group {
     let displacement = 0;
     this.forEachPt((v) => {
       v.$v = v.$v.add(v.$f).mul(this.$decay);
-      displacement += Math.abs(v.$v.$x) + Math.abs(v.$v.$y);
+      displacement += Math.abs(v.$v._x) + Math.abs(v.$v._y);
       v.$p = v.$p.add(v.$v);
-      v.$p.$x = clamp(MIN_X, v.$p.$x, MAX_X);
-      v.$p.$y = clamp(MIN_Y, v.$p.$y, MAX_Y);
+      v.$p._x = clamp(MIN_X, v.$p._x, MAX_X);
+      v.$p._y = clamp(MIN_Y, v.$p._y, MAX_Y);
     });
     this.$stable = displacement < this.$epsilon;
   }
@@ -6135,10 +6135,10 @@ class ForceGraph extends Group {
       const source = this.$particles.get(e.$source.$id);
       const target = this.$particles.get(e.$target.$id);
       if (source && target && !ids.has(e.$id)) {
-        const x1 = source.$p.$x;
-        const y1 = source.$p.$y;
-        const x2 = target.$p.$x;
-        const y2 = target.$p.$y;
+        const x1 = source.$p._x;
+        const y1 = source.$p._y;
+        const x2 = target.$p._x;
+        const y2 = target.$p._y;
         const l = line([x1, y1], [x2, y2]).stroke(this.$edgeColor);
         if (e.isDirected) {
           l.arrowEnd();
@@ -6150,12 +6150,12 @@ class ForceGraph extends Group {
     });
     this.$particles.forEach((p) => {
       const t = p.$id;
-      const c = circle(this.$nodeRadius, [p.$p.$x, p.$p.$y]).fill(
+      const c = circle(this.$nodeRadius, [p.$p._x, p.$p._y]).fill(
         this.$nodeColor
       );
       this.$children.push(c);
       const label = text(t)
-        .position(p.$p.$x, p.$p.$y + p.$r)
+        .position(p.$p._x, p.$p._y + p.$r)
         .fontFamily(this.$nodeFontFamily)
         .fontStyle(this.$nodeFontStyle)
         .fontSize(this.$nodeFontSize)
@@ -10743,13 +10743,13 @@ class TupleExpr extends Expr {
     return nodekind.tuple_expression;
   }
   toString(): string {
-    const elems = this.$elements.map((e) => e.toString()).join(",");
+    const elems = this._elements.map((e) => e.toString()).join(",");
     return `(${elems})`;
   }
-  $elements: LinkedList<Expr>;
+  _elements: LinkedList<Expr>;
   constructor(elements: Expr[]) {
     super();
-    this.$elements = linkedList(...elements);
+    this._elements = linkedList(...elements);
   }
 }
 
@@ -10766,15 +10766,15 @@ class VectorExpr extends Expr {
     return nodekind.vector_expression;
   }
   toString(): string {
-    const elems = this.$elements.map((e) => e.toString()).join(",");
+    const elems = this._elements.map((e) => e.toString()).join(",");
     return `[${elems}]`;
   }
   $op: Token;
-  $elements: Expr[];
+  _elements: Expr[];
   constructor(op: Token, elements: Expr[]) {
     super();
     this.$op = op;
-    this.$elements = elements;
+    this._elements = elements;
   }
 }
 
@@ -10797,16 +10797,16 @@ class MatrixExpr extends Expr {
     return nodekind.matrix_expression;
   }
   toString(): string {
-    const vectors = this.$vectors.map((v) => v.toString()).join(",");
+    const vectors = this._vectors.map((v) => v.toString()).join(",");
     return `[${vectors}]`;
   }
   $op: Token;
-  $vectors: VectorExpr[];
+  _vectors: VectorExpr[];
   $rowCount: number;
   $colCount: number;
   constructor(vectors: VectorExpr[], rows: number, columns: number, op: Token) {
     super();
-    this.$vectors = vectors;
+    this._vectors = vectors;
     this.$rowCount = rows;
     this.$colCount = columns;
     this.$op = op;
@@ -11804,7 +11804,7 @@ export function syntax(source: string) {
         // if this element is a vector expression, then we have a matrix
         if (isVectorExpr(element)) {
           rows++;
-          columns = element.$elements.length;
+          columns = element._elements.length;
           vectors.push(element);
         } else {
           elements.push(element);
@@ -12874,15 +12874,15 @@ class Resolver<T extends Resolvable = Resolvable> implements Visitor<void> {
     return;
   }
   tupleExpr(node: TupleExpr): void {
-    this.resolveEach(node.$elements.toArray());
+    this.resolveEach(node._elements.toArray());
     return;
   }
   vectorExpr(node: VectorExpr): void {
-    this.resolveEach(node.$elements);
+    this.resolveEach(node._elements);
     return;
   }
   matrixExpr(node: MatrixExpr): void {
-    this.resolveEach(node.$vectors);
+    this.resolveEach(node._vectors);
     return;
   }
   relationExpr(node: RelationExpr): void {
@@ -13451,13 +13451,13 @@ class Compiler implements Visitor<Primitive> {
   }
 
   tupleExpr(node: TupleExpr): Primitive {
-    const elements = node.$elements.map((e) => this.eval(e));
+    const elements = node._elements.map((e) => this.eval(e));
     return elements;
   }
 
   vectorExpr(node: VectorExpr): Primitive {
     const nums: number[] = [];
-    const elements = node.$elements;
+    const elements = node._elements;
     for (let i = 0; i < elements.length; i++) {
       const n = this.eval(elements[i]);
       if (typeof n !== "number") {
@@ -13474,7 +13474,7 @@ class Compiler implements Visitor<Primitive> {
   }
 
   matrixExpr(node: MatrixExpr): Primitive {
-    const vs = node.$vectors;
+    const vs = node._vectors;
     const vectors: Vector[] = [];
     for (let i = 0; i < vs.length; i++) {
       const v = this.eval(vs[i]);
