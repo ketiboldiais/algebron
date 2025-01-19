@@ -8,11 +8,11 @@
   --foreground: #171717;
   --blockquote-bg: rgb(227, 227, 227);
   /* --red: tomato; */
-  --red: rgb(70, 70, 70);
+  --red: rgb(221, 115, 115);
   /* --blue: dodgerblue; */
-  --blue: rgb(66, 66, 66);
+  --blue: rgb(89, 150, 194);
   /* --green: yellowgreen; */
-  --green: rgb(53, 53, 53);
+  --green: rgb(119, 175, 140);
   --grey: rgb(117, 117, 117);
   --pencil: rgb(138, 138, 138);
   /* --lightgrey: #B2BEB5; */
@@ -78,7 +78,7 @@
 }
 
 html {
-  font-size: 16px;
+  font-size: 15px;
 }
 
 @media (min-width: 300px) and (max-width: 750px) {
@@ -106,7 +106,7 @@ body {
 pre,
 code {
   font-family: monospace;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
 }
 
 textarea {
@@ -188,6 +188,10 @@ h6 {
   font-weight: bold;
   font-size: 1.2rem;
   font-family: ftb;
+}
+
+th {
+  font-size: 0.95rem;
 }
 
 table,

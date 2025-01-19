@@ -5,6 +5,7 @@ import MdxLayout from "@/components/mdx-layout";
 
 <TOC>
 
+- [Introduction](#introduction)
 - [1D Motion](#1d-motion)
 	- [Position](#position)
 	- [Displacement](#displacement)
@@ -17,9 +18,24 @@ import MdxLayout from "@/components/mdx-layout";
 	- [Acceleration Signum](#acceleration-signum)
 	- [Constant Acceleration](#constant-acceleration)
 	- [Free-fall Acceleration](#free-fall-acceleration)
+- [2D \& 3D Motion](#2d--3d-motion)
+	- [Position \& Displacement](#position--displacement)
+	- [Velocity in Space](#velocity-in-space)
+	- [Acceleration in Space](#acceleration-in-space)
+	- [Projectile Motion](#projectile-motion)
+		- [The Horizontal Motion](#the-horizontal-motion)
+		- [The Vertical Motion](#the-vertical-motion)
+		- [The Equation of the Path](#the-equation-of-the-path)
 
 
 </TOC>
+
+## Introduction
+These notes cover my first year course in classical mechanics. The notes assume familiarity with the following concepts:
+
+1. Basic linear algebra (_See_ [Linear Algebra Notes: Physical Vectors](/pages/linear-algebra#physical-vectors)). 
+2. Differential Calculus (_See_ [Calculus Notes](/pages/calculus)).
+2. Integral Calculus (_See_ [Calculus Notes](/pages/calculus)).
 
 ## 1D Motion
 - 1D motion is motion along a straight line.
@@ -136,6 +152,160 @@ The following equations mathematically model this case. The equations only apply
   - Free-fall acceleration is independent of the object's mass, density, or shape — it is the same for all objects.
   - At sea-level in Earth's midlatitudes, the value is roughly ${9.807 \text{m}/\text{s}^2.}$
 
+## 2D & 3D Motion
+### Position & Displacement
+- We can locate a particle with a position vector ${\overrightarrow{r}:}$
+	$$
+		\overrightarrow{r} = x \hat{i} + y \hat{j} + z \hat{k}.
+	$$
+- Suppose an object moves from position ${\overrightarrow{r}_1}$ to ${\overrightarrow{r}_2.}$ Then its _displacement_ is: 
+		$$
+			\Delta\overrightarrow{r} = \overrightarrow{r}_2 - \overrightarrow{r}_1.
+		$$
+	- Using unit-vector notation, we can rewrite this as:
+		$$
+			\Delta \overrightarrow{r} = (x_2 - x_1) \hat{i} + (y_2 - y_1) \hat{j} + (z_2 - z_1) \hat{k}.
+		$$ 
+		where coordinates ${(x_1, y_1, z_1)}$ correspond to position vector ${\overrightarrow{r}_1,}$ and coordinates ${(x_2, y_2, z_2)}$ correspond to position vector ${\overrightarrow{r}_2.}$
+	- We may also write:
+		$$
+			\Delta \overrightarrow{r} = \Delta x \hat{i} + \Delta y \hat{j} + \Delta z \hat{k}.
+		$$
+		where ${\Delta x = x_2 - x_1,}$ ${\Delta y = y_2 - y_1,}$ and ${\Delta z = z_2 - z_1.}$
+
+### Velocity in Space
+- A particle moves from point ${A}$ to point ${B.}$ How fast does it move?
+- If a particle moves through a displacement ${\Delta \overrightarrow{r}}$ in a time interval ${\Delta t,}$ then its average velocity, denoted ${\overrightarrow{v}_{\text{avg}},}$ is:
+	$$
+		\overrightarrow{v}_{\text{avg}} = \dfrac{\Delta \overrightarrow{r}}{\Delta t}.
+	$$
+  - We can rewrite this as: 
+	$$
+	\begin{aligned}
+		\overrightarrow{v}_{\text{avg}} &= \dfrac{\Delta x \hat{i} + \Delta y \hat{j} + \Delta z \hat{k}}{\Delta t} \\[1.5em]
+		&= \dfrac{\Delta x }{\Delta t} \hat{i} + \dfrac{\Delta y}{\Delta t} \hat{j} + \dfrac{\Delta z}{\Delta t} \hat{k}.
+	\end{aligned}
+	$$
+- The _instantaneous velocity_ of the particle is given by:
+  $$
+	\overrightarrow{v} = \dfrac{\text{d}\overrightarrow{r}}{\text{d}t}.
+  $$ 
+  - The direction of the instantaneous velocity ${\overrightarrow{v}}$ of a particle is always tangent to the particle's path at the particle's position.
+- We can extend this to three dimensions:
+  $$
+  \begin{aligned}
+	\overrightarrow{v} &= \dfrac{\text{d}}{\text{d}t} (x \hat{i} + y \hat{j} + z \hat{k}) \\[1.5em]
+	\dfrac{\text{d}x}{\text{d}t} \hat{i} + \dfrac{\text{d}y}{\text{d}t} \hat{j} + \dfrac{\text{d}z}{\text{d}t} \hat{k}.
+  \end{aligned}
+  $$ 
+  - This equation can be simplified to:
+	$$
+		\overrightarrow{v} = v_x \hat{i} + v_y \hat{j} + v_z \hat{k},
+	$$
+	where:
+	<Cols of={3}>
+		$$
+			v_x = \dfrac{\text{d}x}{\text{d}t}
+		$$
+		$$
+			v_y = \dfrac{\text{d}y}{\text{d}t}
+		$$
+		$$
+			v_z = \dfrac{\text{d}z}{\text{d}t}.
+		$$
+	</Cols>
+
+### Acceleration in Space
+- When a particle's velocity changes from ${\overrightarrow{v}_1}$ to ${\overrightarrow{v}_2}$ over a time interval ${\Delta t,}$ its _average acceleration_ during ${\Delta t}$ is given by: 
+	$$
+		\overrightarrow{a}_{\text{avg}} = \dfrac{\overrightarrow{v}_2 - \overrightarrow{v}_1}{\Delta t} = \dfrac{\Delta \overrightarrow{v}}{\Delta t}.
+	$$
+- As ${\Delta t \to 0,}$ the limit ${\overrightarrow{a}_{\text{avg}}}$ aproaches the _instantaneous acceleration_ ${\overrightarrow{a}:}$
+	$$
+		\overrightarrow{a} = \dfrac{\text{d}\overrightarrow{v}}{\text{d}t}.
+	$$
+- If a particle's velocity changes in either magnitude or direction (or both), then the particle has an acceleration.
+- Instantaneous acceleration can be written in unit-vector form as:
+  $$
+  \begin{aligned}
+	\overrightarrow{a} &= \dfrac{\text{d}}{\text{d}t} (v_x \hat{i} + v_y \hat{j} + v_z \hat{k}) \\[1.5em]
+	&= \dfrac{\text{d}v_x}{\text{d}t} \hat{i} + \dfrac{\text{d}v_y}{\text{d}t} \hat{j} + \dfrac{\text{d}v_z}{\text{d}t} \hat{k}.
+  \end{aligned}
+  $$ 
+  - We can rewrite this as:
+	$$
+		\overrightarrow{a} = a_x \hat{i} + a_y \hat{j} + a_z \hat{k},
+	$$
+	where
+	<Cols of={3}>
+		$$
+			a_x = \dfrac{\text{d}v_x}{\text{d}t}
+		$$
+		$$
+			a_y = \dfrac{\text{d}v_y}{\text{d}t}
+		$$
+		$$
+			a_z = \dfrac{\text{d}v_z}{\text{d}t}.
+		$$
+	</Cols>
+
+### Projectile Motion
+- A _projectile_ is a particle that moves in a vertical plane with some initial velocity ${\overrightarrow{v}_0}$ but its acceleration is always the free-fall acceleration ${\overrightarrow{g},}$ which points downward.
+- The projectile's initial velocity can be written as:
+  $$
+	\overrightarrow{v}_0 = v_{0_x} \hat{i} + v_{0_y} \hat{j}.
+  $$ 
+  - If we know the angle ${\theta_0}$ (the angle between ${\overrightarrow{v}_0}$ and the positive ${x}$-direction), we have:
+    $$
+		\begin{aligned}
+			 v_{0_x} &= v_0 \cos \theta_0 \\[1.5em]
+			 v_{0_y} &= v_0 \sin \theta_0.
+		\end{aligned}
+	$$ 
+- During its projectile motion:
+  - the particle's position vector ${\overrightarrow{r}}$ and velocity ${\overrightarrow{v}}$ change continuously.
+  - But, its acceleration vector ${\overrightarrow{a}}$ is constant and _always_ directed vertically downward.
+  - There is no horizontal acceleration.
+- In projectile motion, the horizontal motion and the vertical motion are independent of one another; that is, neither motion affects the other.
+
+#### The Horizontal Motion
+- There is no acceleration in the horizontal direction, so the horizontal component ${v_x}$ of the projectile's velocity remains unchanged from its initial value ${v_{0_x}}$ throughout the motion.
+- At any time ${t,}$ the projectile's horizontal displacement ${x_t - x_0}$ (where ${x_t}$ is the projectil's position at time ${t}$) from an initial position ${x_0}$ is given by:
+	$$
+		x_t - x_0 = v_{0_x} t.
+	$$
+- Since ${v_{0_x} = v_0 \cos \theta_0,}$ we have:
+  $$
+	x_t - x_0 = (v_0 \cos \theta_0) t.
+  $$ 
+
+#### The Vertical Motion
+- The vertical motion of a projectile is _free-fall_. 
+- This means that the acceleration is constant.
+- Thus, we may use the kinematic equations, with ${a = g:}$
+  $$
+	y_t - y_0 = v_{0_y} t - \dfrac{1}{2}gt^2,
+  $$
+  wherer ${y_t}$ is the projectile's position at time ${t,}$ ${y_0}$ is its initial position, ${v_{0_y}}$ is the ${y}$-component of ${v_0,}$ and ${g}$ is the acceleration due to gravity.
+- Since ${v_{0_y} = v_0 \sin \theta_0,}$ we have:
+  $$
+	y - y_0 = (v_0 \sin \theta_0)t - \dfrac{1}{2}gt^2.
+  $$ 
+- Replacing ${a = g}$ with the other kinematic equations, we have:
+  $$
+	\begin{aligned}
+		v_y &= v_0 \sin \theta_0 - gt \\[1.5em]
+		v_y^2 &= (v_0 \sin \theta_0)^2 - 2g(y_t - y_0).
+	\end{aligned}
+  $$
+
+#### The Equation of the Path
+- The equation of the projectile's path (its _trajectory_) is given by:
+  $$
+	y = (\tan \theta_0)x - \dfrac{gx^2}{2(v_0 \cos \theta_0)^2}.
+  $$ 
+- For simplicity, we let ${x_0}$ and ${y_0 = 0.}$
+- Because ${g,}$ ${\theta_0,}$ and ${v_0}$ are constants, the trajectory equation is of the form ${y = ax + bx^2,}$ where ${a}$ and ${b}$ are constants. Thus, the projectile's trajectory is _parabolic_.
 
 
 export default function MDXPage({ children }) {

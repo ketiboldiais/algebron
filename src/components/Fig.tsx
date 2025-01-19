@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable react-hooks/rules-of-hooks */
 
 "use client";
 
@@ -56,9 +55,6 @@ import {
   triangle,
   polarToCartesian,
   toRadians,
-  path3D,
-  Path3D,
-  isPath3D,
   arrowhead,
   arcFromPoints,
   xtick,
@@ -78,6 +74,7 @@ import {
   ellipse,
   transform,
   quadGrid,
+  Vector,
 } from "@/algebron/main";
 
 import {
@@ -98,6 +95,7 @@ import { Canvas, useThree } from "@react-three/fiber";
 import { AxesHelper, DoubleSide, GridHelper, Vector3 } from "three";
 
 const cssvar = (varname: string) => `var(--${varname})`;
+
 const defaultSVGContext: SVGContext = {
   width: 500,
   height: 500,
@@ -131,6 +129,31 @@ const axis = (spec: AxisSpec) => {
   out.done();
   return out;
 };
+
+export function getCoordinates(event:MouseEvent<SVGElement>) {
+  const {top, left} = event.currentTarget.getBoundingClientRect()
+  return {
+    x: event.clientX - left,
+    y: event.clientX - parseInt(`${top}`, 10),
+  }
+}
+
+export function useDrag() {
+  const [coordinates, setCoordinates] = useState(vector([0,0]));
+  const [dragging, setDragging] = useState(false);
+  return {
+    coordinates,
+    startDrag: (coords: Vector) => setDragging(true),
+    drag: (coords: Vector) => {
+      if (dragging) {
+        setCoordinates(coords);
+      }
+    },
+    stopDrag: (_: Vector) => {
+      setDragging(false);
+    }
+  }
+}
 
 const FIGURE = ({ children }: { children: ReactNode }) => {
   return <figure className="algebron-fig">{children}</figure>;
@@ -183,7 +206,7 @@ const Fig = ({ data, width = 100, paddingBottom = width, title }: FigProps) => {
 
 type Fig2DProps = { elements: Renderable[] };
 
-type PathProps = { data: Path | Path3D };
+type PathProps = { data: Path };
 
 type DEFProps = { elements: ArrowHead[] };
 const DEF = ({ elements }: DEFProps) => {
@@ -237,7 +260,7 @@ const Fig2D = ({ elements }: Fig2DProps) => {
         if (isGroup(data)) {
           return <GROUP key={data._id} data={data} />;
         }
-        if (isPath(data) || isPath3D(data)) {
+        if (isPath(data)) {
           return <PATH key={data._id} data={data} />;
         }
         if (isLine(data)) {
@@ -357,6 +380,7 @@ const TEXT = ({ data }: TextProps) => {
 };
 
 type GroupProps = { data: Group };
+
 const GROUP = ({ data }: GroupProps) => {
   return (
     <g transform={`${data._transformation}`}>
@@ -420,121 +444,92 @@ export const Tex = ({ content, block, style }: TexProps) => {
   return <Component style={style} dangerouslySetInnerHTML={state} />;
 };
 
-export const LA1 = () => {
-  const D = tuple(-8, 8);
-  const R = tuple(-8, 8);
-  const xAxis = axis({ on: "x", domain: D, range: R });
-  const yAxis = axis({ on: "y", domain: D, range: R });
-  const j = vector([3, 3]);
-  const k = vector([4, 1]);
-  const n = j.add(k);
+// Linear Algebra Figures
+
+export const GeoVectorSum = () => {
+  const domain = tuple(0,5);
+  const range = tuple(0,5);
   const d = svg({
-    width: 400,
-    height: 400,
-    domain: D,
-    range: R,
-  }).children([
-    grid(D, R).stroke(cssvar("dimgrey")).done(),
-    line([0, 0], [3, 3]).stroke(cssvar("red")).arrowEnd(),
-    line([0, 0], [4, 1]).stroke(cssvar("red")).arrowEnd(),
-    line([0, 0], [n._x, n._y]).stroke(cssvar("blue")).arrowEnd(),
-    text("a").position(2.5, 4).fill(cssvar("red")).latex("inline"),
-    text("b").position(3.5, 2).fill(cssvar("red")).latex("inline"),
-    text("a + b").position(5, 5.5).fill(cssvar("blue")).latex("inline"),
-    xAxis,
-    yAxis,
-  ]);
-  return <Fig data={d} width={60} />;
+    width: 500,
+    height: 500,
+    domain,
+    range,
+  })
+    .children([
+      // axis({
+      //   on: "x",
+      //   domain,
+      //   range,
+      // }),
+      // axis({
+      //   on: "y",
+      //   domain,
+      //   range,
+      // }),
+      // grid(domain, range)
+      //   .stroke(cssvar("dimgrey"))
+      //   .done(),
+      text("\\overrightarrow{a}")
+        .fontSize(22)
+        .latex("block")
+        .position(0.7, 1.5),
+      text("\\overrightarrow{b}")
+        .fontSize(22)
+        .latex("block")
+        .position(2.5, 2.6),
+      text("\\overrightarrow{s}").fontSize(22).latex("block").position(1.8, 1),
+      [
+        text("𝐴").position(0, 0).dy(-10),
+        text("𝐵").position(2, 2).dy(-15),
+        text("𝐶").position(4, 2).dx(10).dy(-15),
+      ].map((t) => t.fill(cssvar("foreground")).fontSize(25)),
+      line([0, 0], [2, 2]).strokeWidth(1.8).stroke(cssvar("red")).arrowEnd(),
+      line([2, 2], [4, 2]).strokeWidth(1.8).stroke(cssvar("blue")).arrowEnd(),
+      line([0, 0], [4, 2]).strokeWidth(1.8).stroke(cssvar("green")).arrowEnd(),
+      circle(5, [0, 0]).fill(cssvar("foreground")),
+      circle(5, [2, 2]).fill(cssvar("foreground")),
+      circle(5, [4, 2]).fill(cssvar("foreground")),
+    ]).translateY(-170)
+  return <Fig data={d} width={70} paddingBottom={50}/>;
 };
 
-export const LA2 = () => {
-  const D = tuple(-3, 8);
-  const R = tuple(-3, 8);
-  const xAxis = axis({ on: "x", domain: D, range: R });
-  const yAxis = axis({ on: "y", domain: D, range: R });
+export const VectorComponents = () => {
+  const domain = tuple(-1,5);
+  const range = tuple(-1,5);
   const d = svg({
-    width: 400,
-    height: 400,
-    domain: D,
-    range: R,
+    width: 500,
+    height: 500,
+    domain, range,
   }).children([
-    grid(D, R).stroke(cssvar("dimgrey")).done(),
-    cplot("fn f(x) = 3x^2 + 4x - 1", D, R).stroke(cssvar("red")).done(),
-    cplot("fn f(x) = 4x^2 - 2x + 2", D, R).stroke(cssvar("blue")).done(),
-    text("3x^2 + 4x - 1")
-      .fill(cssvar("red"))
-      .position(1, 2)
-      .width(100)
-      .latex("inline"),
-    text("4x^2 - 2x + 2")
-      .position(1.5, 6)
-      .fill(cssvar("blue"))
-      .width(100)
-      .latex("inline"),
-    xAxis,
-    yAxis,
-  ]);
-  return <Fig data={d} width={60} />;
-};
-
-export const LA3 = () => {
-  const D = tuple(-8, 8);
-  const R = tuple(-8, 8);
-  const xAxis = axis({ on: "x", domain: D, range: R });
-  const yAxis = axis({ on: "y", domain: D, range: R });
-  const j = vector([3, 3]);
-  const n = j.mul(2);
-  const d = svg({
-    width: 400,
-    height: 400,
-    domain: D,
-    range: R,
-  }).children([
-    grid(D, R).stroke(cssvar("dimgrey")).done(),
-    line([0, 0], [n._x, n._y]).stroke(cssvar("blue")).arrowEnd(),
-    line([0, 0], [3, 3]).stroke(cssvar("red")).arrowEnd(),
-    text("v").position(2.5, 4).latex("inline"),
-    text("2v").position(5, 5.5).latex("inline"),
-    xAxis,
-    yAxis,
-  ]);
-  return <Fig data={d} width={60} />;
-};
-
-export const LA4 = () => {
-  const D = tuple(-8, 8);
-  const R = tuple(-8, 8);
-  const xAxis = axis({ on: "x", domain: D, range: R });
-  const yAxis = axis({ on: "y", domain: D, range: R });
-  const d = svg({
-    width: 400,
-    height: 400,
-    domain: D,
-    range: R,
-  }).children([
-    grid(D, R).stroke(cssvar("dimgrey")).done(),
-    xAxis,
-    yAxis,
-    cplot("fn f(x) = sin(x)", D, R).stroke(cssvar("red")).done(),
-    cplot("fn g(x) = cos(x)", D, R).stroke(cssvar("blue")).done(),
-    cplot("fn h(x) = cos(x) + sin(x)", D, R).stroke(cssvar("green")).done(),
-    text("f(x) = \\sin(x)")
-      .fill(cssvar("red"))
-      .position(-6, 3)
-      .width(100)
-      .latex("inline"),
-    text("g(x) = \\cos(x)")
-      .fill(cssvar("blue"))
-      .position(-4, -2)
-      .width(100)
-      .latex("inline"),
-    text("h(x) = \\cos(x) + \\sin(x)")
-      .fill(cssvar("green"))
-      .position(1.5, 4)
-      .width(150)
-      .latex("inline"),
-  ]);
-  return <Fig data={d} width={60} />;
+    // axis({
+    //   on: "x",
+    //   domain,
+    //   range,
+    // }),
+    // axis({
+    //   on: "y",
+    //   domain: domain,
+    //   range: range,
+    // }),
+    // grid(domain, range).done(),
+    text('θ').position(1.5,1.1),
+    text('a_{y}').latex('block').fontSize(20).position(-0.5, 2.5),
+    text('a_{x}').latex('block').fontSize(20).position(1.7, 0.1),
+    text('\\overrightarrow{a}').latex('block').fontSize(20).position(1.5,2.5),
+    text('𝑥').position(4.1,0).dy(5),
+    text('𝑦').position(0,4.1),
+    line([0,4], [0,-.5]),
+    line([-.5,0], [4,0]),
+    [line([1,1], [3,3]).stroke(cssvar('blue')),
+    line([0,1], [0,3]).stroke(cssvar('red')),
+    line([1,0], [3,0]).stroke(cssvar('red'))].map(l => l.arrowEnd().strokeWidth(2)),
+    arcFromPoints([3,1], [1,1], [3,3], 30).stroke(cssvar('pencil')),
+    line([0,1], [3,1]).strokeDashArray(5),
+    line([3,0], [3,3]).strokeDashArray(5),
+    line([0,3], [3,3]).strokeDashArray(5),
+    line([1,0], [1,1]).strokeDashArray(5),
+  ]).translateY(-50);
+  return <Fig data={d} width={70} paddingBottom={60}/>;
 };
 
 export const LA5 = () => {
@@ -781,9 +776,7 @@ export const Calc1 = () => {
   const R = tuple(-5, 5);
   const xAxis = axis({ on: "x", domain: D, range: R });
   const yAxis = axis({ on: "y", domain: D, range: R });
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const xs = range(-5, 5, 0.5).map((_) => randInt(-4, 4));
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const ys = range(-5, 5, 0.5).map((_) => randInt(-4, 4));
   const xys = zip(xs, ys).filter(
     ([x, y]) =>
@@ -2148,114 +2141,6 @@ export const Path3DTest = () => {
   );
 };
 
-export const CubeTest = () => {
-  const domain = tuple(-10, 10);
-  const range = tuple(-10, 10);
-  const camera = vector([1.5, 0, 4]);
-  const [zRotation, setZRotation] = useState(0);
-  const [yRotation, setYRotation] = useState(0);
-  const [xRotation, setXRotation] = useState(0);
-  const degify = interpolator([0, 100], [0, 360]);
-  const handleZRotationChange = (event: ChangeEvent<HTMLInputElement>) => {
-    event.preventDefault();
-    const value = +Number.parseFloat(event.target.value).toPrecision(3);
-    const deg = toRadians(degify(value));
-    setZRotation(deg);
-  };
-  const handleXRotationChange = (event: ChangeEvent<HTMLInputElement>) => {
-    event.preventDefault();
-    const value = +Number.parseFloat(event.target.value).toPrecision(3);
-    const deg = toRadians(degify(value));
-    setXRotation(deg);
-  };
-  const handleYRotationChange = (event: ChangeEvent<HTMLInputElement>) => {
-    event.preventDefault();
-    const value = +Number.parseFloat(event.target.value).toPrecision(3);
-    const deg = toRadians(degify(value));
-    setYRotation(deg);
-  };
-  const vertices = {
-    A: vector([1, 1, 1]),
-    B: vector([-1, 1, 1]),
-    C: vector([1, -1, 1]),
-    D: vector([-1, -1, 1]),
-    E: vector([1, 1, -1]),
-    F: vector([-1, 1, -1]),
-    G: vector([1, -1, -1]),
-    H: vector([-1, -1, -1]),
-  };
-  const edges: [keyof typeof vertices, keyof typeof vertices][] = [
-    ["A", "B"],
-    ["C", "D"],
-    ["E", "F"],
-    ["G", "H"],
-    ["A", "C"],
-    ["B", "D"],
-    ["E", "G"],
-    ["F", "H"],
-    ["A", "E"],
-    ["C", "G"],
-    ["B", "F"],
-    ["D", "H"],
-  ];
-  const p = path3D(0, 0, 1);
-  for (let i = 0; i < edges.length; i++) {
-    const edge = edges[i];
-    const e1 = vertices[edge[0]];
-    const e2 = vertices[edge[1]];
-    const e1uv = e1.sub(camera);
-    const e1uv2 = e1uv.map((n, i) => (i === 2 ? n : n / e1uv.$z));
-    const e2uv = e2.sub(camera);
-    const e2uv2 = e2uv.map((n, i) => (i === 2 ? n : n / e2uv.$z));
-    p.moveTo(e1uv2._x, e1uv2._y, e1uv2.$z).lineTo(e2uv2._x, e2uv2._y, e2uv2.$z);
-  }
-
-  const d = svg({
-    width: 500,
-    height: 500,
-    domain,
-    range,
-    zDomain: domain,
-  }).children([
-    grid(domain, range).stroke(cssvar("dimgrey")).done(),
-    axis({ on: "x", domain, range }),
-    axis({ on: "y", domain, range }),
-    p.rotateZ(zRotation).rotateY(yRotation).rotateX(xRotation).scale(6, 6),
-  ]);
-  return (
-    <div>
-      <div className="flex items-center">
-        <input
-          step={0.1}
-          className="mr-5"
-          type="range"
-          onChange={handleXRotationChange}
-        />
-        <Tex content={`x\\text{-rotation} = ${xRotation}`} block />
-      </div>
-      <div className="flex items-center">
-        <input
-          step={0.1}
-          className="mr-5"
-          type="range"
-          onChange={handleYRotationChange}
-        />
-        <Tex content={`y\\text{-rotation} = ${yRotation}`} block />
-      </div>
-      <div className="flex items-center">
-        <input
-          step={0.1}
-          className="mr-5"
-          type="range"
-          onChange={handleZRotationChange}
-        />
-        <Tex content={`z\\text{-rotation} = ${zRotation}`} block />
-      </div>
-      <Fig data={d} />
-    </div>
-  );
-};
-
 export const BasicSineWave = () => {
   const domain = tuple(-1.5, 7.5);
   const range = tuple(-2.5, 2.5);
@@ -2553,49 +2438,6 @@ export const EpsilonNeighborhood = () => {
       circle(2, [2.2, 0]).fill(cssvar("red")),
     ]);
   return <Fig data={d} width={100} paddingBottom={15} />;
-};
-
-export const Freeform = () => {
-  const svgcss: CSSProperties = {
-    border: "thin solid grey",
-  };
-  const svgRef = useRef<SVGSVGElement | null>(null);
-  const [clickPos, setClickPos] = useState(vector([0, 0]));
-  const [svgChildren, setSVGChildren] = useState<Renderable[]>([]);
-  // const sx = interpolator([0, 500], [-5, 5]);
-  // const sy = interpolator([500, 0], [-5, 5]);
-  const handleSVGClick = (event: MouseEvent<SVGSVGElement>) => {
-    event.preventDefault();
-    if (svgRef.current) {
-      const p = svgRef.current.createSVGPoint();
-      p.x = event.clientX;
-      p.y = event.clientY;
-      let _ctm = svgRef.current.getScreenCTM();
-      if (_ctm) {
-        _ctm = _ctm.inverse();
-        const s = p.matrixTransform(_ctm);
-        const v = vector([s.x, s.y]);
-        setClickPos(v);
-        const k = circle(3, [v._x, v._y]).id(`circle(${v._x},${v._y})`);
-        setSVGChildren((cs) => [...cs, k]);
-      }
-    }
-  };
-
-  return (
-    <div>
-      <p>{clickPos.toString()}</p>
-      <svg
-        onClick={handleSVGClick}
-        ref={svgRef}
-        width={500}
-        height={500}
-        style={svgcss}
-      >
-        <Fig2D elements={svgChildren} />
-      </svg>
-    </div>
-  );
 };
 
 // Probability Diagrams
@@ -3246,36 +3088,38 @@ export function checker(
 }
 
 export const FairCoinTosses = () => {
-  const d = svg(defaultSVGContext).children([
-    // axis({
-    //   on: "x",
-    //   domain: defaultSVGContext.domain,
-    //   range: defaultSVGContext.range,
-    // }),
-    // axis({
-    //   on: "y",
-    //   domain: defaultSVGContext.domain,
-    //   range: defaultSVGContext.range,
-    // }),
-    // grid(defaultSVGContext.domain, defaultSVGContext.range).done(),
-    quadGrid(2, 2, [-1, 1]).done(),
-    ellipse([0, 0.5], 80, 20)
-      .fill(cssvar('pencil'))
-      .fillOpacity(.3)
-      .stroke(cssvar("foreground")),
-    ellipse([-0.5, 0], 20, 80)
-      .fill(cssvar('pencil'))
-      .fillOpacity(.3)
-      .stroke(cssvar("foreground")),
-    text("𝐻𝐻").position(-0.5, 0.5),
-    text("𝐻𝑇").position(0.5, 0.5),
-    text("𝑇𝐻").position(-0.5, -0.5),
-    text("𝑇𝑇").position(0.5, -0.5),
-    line([3,2], [1.5,.7]),
-    line([-2,-3], [-.6,-1.6]),
-    text('First toss is heads').textAnchor('start').position(1.8,2.1),
-    text('Second toss is heads').textAnchor('start').position(-3,-3.4),
-  ]).translateY(-110);
+  const d = svg(defaultSVGContext)
+    .children([
+      // axis({
+      //   on: "x",
+      //   domain: defaultSVGContext.domain,
+      //   range: defaultSVGContext.range,
+      // }),
+      // axis({
+      //   on: "y",
+      //   domain: defaultSVGContext.domain,
+      //   range: defaultSVGContext.range,
+      // }),
+      // grid(defaultSVGContext.domain, defaultSVGContext.range).done(),
+      quadGrid(2, 2, [-1, 1]).done(),
+      ellipse([0, 0.5], 80, 20)
+        .fill(cssvar("pencil"))
+        .fillOpacity(0.3)
+        .stroke(cssvar("foreground")),
+      ellipse([-0.5, 0], 20, 80)
+        .fill(cssvar("pencil"))
+        .fillOpacity(0.3)
+        .stroke(cssvar("foreground")),
+      text("𝐻𝐻").position(-0.5, 0.5),
+      text("𝐻𝑇").position(0.5, 0.5),
+      text("𝑇𝐻").position(-0.5, -0.5),
+      text("𝑇𝑇").position(0.5, -0.5),
+      line([3, 2], [1.5, 0.7]),
+      line([-2, -3], [-0.6, -1.6]),
+      text("First toss is heads").textAnchor("start").position(1.8, 2.1),
+      text("Second toss is heads").textAnchor("start").position(-3, -3.4),
+    ])
+    .translateY(-110);
   return <Fig data={d} width={90} paddingBottom={55} />;
 };
 

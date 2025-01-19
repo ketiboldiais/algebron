@@ -48,6 +48,8 @@ import {
     - [collectTerms(𝑢,𝑆)](#collectterms𝑢𝑆)
   - [2D Graphics](#2d-graphics)
     - [SVGObj](#svgobj)
+    - [Renderable](#renderable)
+      - [Group](#group)
     - [Cartesian Plot](#cartesian-plot)
     - [Polar Plot](#polar-plot)
     - [Tree Drawing](#tree-drawing)
@@ -57,11 +59,8 @@ import {
   - [3D Graphics](#3d-graphics)
     - [3D Plot](#3d-plot)
       - [Multiple Plots](#multiple-plots)
-  - [3D Paths](#3d-paths)
+      - [Maps](#maps)
   - [3D Function Plot Wireframes](#3d-function-plot-wireframes)
-  - [Freeform](#freeform)
-- [React Components](#react-components)
-  - [Fig](#fig)
 
 </TOC>
 
@@ -173,8 +172,8 @@ Any expression surrounded by the apostrophe (`'`) in Praxis is interpreted as a 
 
 Composite types in Praxis are data types with an underlying data structure, made up of primitive (or composite) data types. Where primitives are the simplest data types that cannot be reduced further (i.e., atomic), composites are those that can be reduced further.
 
-
 #### Vectors
+
 A vector is similar to a list, except its elements can only be integers or floating point numbers, or expressions that reduce to integers or floating point numbers. Vectors are written with square brackets. For example:
 
 ```rust
@@ -432,43 +431,46 @@ console.log(b.strung()); // (24 + 26x + 9(x^2) + (x^3))
 ```
 
 #### distribute(𝑢)
+
 Where ${u}$ is a string or MathObj corresponding to an algebraic expression, returns the distributed form of ${u.}$
 
-~~~ts
-const e1 = distribute("a * (b + c)")
-console.log(e1.strung()) // a * b + a * c
+```ts
+const e1 = distribute("a * (b + c)");
+console.log(e1.strung()); // a * b + a * c
 
 const e2 = distribute("a * (b + c) * (d + e)");
 console.log(e2.strung()); // a * b * (d + e) + a * c * (d + e)
 
 const e3 = distribute("(x + y)/(x * y)");
 console.log(e3.strung()); // x^(-1) + y^(-1)
-~~~
+```
 
- 
-<Warning/> There are some caveats to this function. First, the `distribute` function may not always return results the user expects (e.g., in the examples above, `e2` and `e3`). This is largely because of `distribute`'s underlying algorithm:
+<Warning /> There are some caveats to this function. First, the `distribute`
+function may not always return results the user expects (e.g., in the examples
+above, `e2` and `e3`). This is largely because of `distribute`'s underlying
+algorithm:
 
 <Procedure>
 
-1. __if__ ${u}$ is not a product:
-   1. __return__ ${u.}$ 
-2. __else__ (${u}$ is a product):
-   1. __if__ ${u}$ does not have an operand that is a sum:
-      1. __return__ ${u.}$
-   2. __else__ (${u}$ has an operand that is a sum):
-      1. __let__ ${v}$ be the first operand that is a sum.
-      2. __let__ ${S = 0.}$
-      3. __for each__ operand of ${v:}$
+1. **if** ${u}$ is not a product:
+   1. **return** ${u.}$
+2. **else** (${u}$ is a product):
+   1. **if** ${u}$ does not have an operand that is a sum:
+      1. **return** ${u.}$
+   2. **else** (${u}$ has an operand that is a sum):
+      1. **let** ${v}$ be the first operand that is a sum.
+      2. **let** ${S = 0.}$
+      3. **for each** operand of ${v:}$
          1. form a product with the remaining operands of ${u.}$
          2. call this product ${p.}$
          3. ${S = S + p}$
-      4. __return__ ${S.}$
+      4. **return** ${S.}$
 
 </Procedure>
 
 Take note of line 6. This line indicates that the `distribute` function only applies the distributive property with the first operand that is a sum. It will not distribute further past that. We do not distribute further because the expression could potentially explode in memory and space.
 
-This leads to the second caveat: The `distribute` function should be used with care. Distribution tends to make expressions _longer_. Because the result of `distribute` undergoes automatic simplification, calling this function may result in stack overflows or slow processing. 
+This leads to the second caveat: The `distribute` function should be used with care. Distribution tends to make expressions _longer_. Because the result of `distribute` undergoes automatic simplification, calling this function may result in stack overflows or slow processing.
 
 #### collectTerms(𝑢,𝑆)
 
@@ -503,7 +505,145 @@ Algebron provides an API for 2D graphics. This API only performs the mathematica
 
 #### SVGObj
 
-An object corresponding to the description of an SVG element.
+An object corresponding to an SVG element. This object describes an SVG element. Pass this object to your frontend framework of choice to create the specified element.
+
+On this site, the `SVGObj` is used as follows:
+
+```tsx
+import {
+  svg,
+  isGroup,
+  isPath,
+  isLine,
+  isText,
+  isCircle,
+  isArrowhead,
+  SVG,
+  Renderable,
+  isPath3D,
+  isPolyline,
+  isPolygon,
+  isEllipse,
+} from "@/algebron/main";
+
+const FIGURE = ({ children }: { children: ReactNode }) => {
+  return <figure className="algebron-fig">{children}</figure>;
+};
+
+type Fig2DProps = { elements: Renderable[] };
+
+const Fig2D = ({ elements }: Fig2DProps) => {
+  return (
+    <>
+      {elements.map((data) => {
+        if (isGroup(data)) {
+          return <GROUP key={data._id} data={data} />;
+        }
+        if (isPath(data) || isPath3D(data)) {
+          return <PATH key={data._id} data={data} />;
+        }
+        if (isLine(data)) {
+          return <LINE key={data._id} data={data} />;
+        }
+        if (isText(data)) {
+          return <TEXT key={data._id} data={data} />;
+        }
+        if (isCircle(data)) {
+          return <CIRCLE key={data._id} data={data} />;
+        }
+        if (isPolyline(data)) {
+          return <POLYLINE key={data._id} data={data} />;
+        }
+        if (isPolygon(data)) {
+          return <POLYGON key={data._id} data={data} />;
+        }
+        if (isEllipse(data)) {
+          return <ELLIPSE key={data._id} data={data} />;
+        }
+      })}
+    </>
+  );
+};
+
+type FigProps = {
+  data: SVG;
+  width?: number | string;
+  paddingBottom?: number | string;
+  title?: ReactNode;
+};
+
+const Fig = ({ data, width = 100, paddingBottom = width, title }: FigProps) => {
+  const par = "xMidYMid meet";
+
+  const viewbox = `0 0 ${data._width} ${data._height}`;
+
+  const boxcss = {
+    display: "block",
+    margin: "0 auto",
+    position: "relative",
+    width: typeof width === "number" ? `${width}%` : width,
+    paddingBottom:
+      typeof paddingBottom === "number" ? `${paddingBottom}%` : paddingBottom,
+    overflow: "hidden",
+  } as const;
+
+  const svgcss = {
+    display: "inline-block",
+    position: "absolute",
+    top: "0",
+    left: "0",
+    right: "0",
+    bottom: "0",
+  } as const;
+
+  return (
+    <FIGURE>
+      <div style={boxcss}>
+        <svg viewBox={viewbox} preserveAspectRatio={par} style={svgcss}>
+          <DEF elements={data._defs} />
+          <g
+            transform={`translate(${data._translate[0]},${data._translate[1]})`}
+          >
+            <Fig2D elements={data._children} />
+          </g>
+        </svg>
+      </div>
+      {title && <figcaption>{title}</figcaption>}
+    </FIGURE>
+  );
+};
+```
+
+#### Renderable
+SVG shapes are described by `Renderable` objects. These objects are defined by the `Renderable` abstract class. Subclasses of `Renderable` describe specific SVG shapes. As of Algebron version 1.0, the following SVG shapes are supported:
+
+| Renderable Subclass | SVG Tag      |
+| ------------------- | ------------ |
+| `Group`             | `<g>`        |
+| `Path`              | `<path>`     |
+| `LineObj`           | `<line>`     |
+| `TextObj`           | `<text>`     |
+| `Circle`            | `<circle>`   |
+| `Polyline`          | `<polyline>` |
+| `Polygon`           | `<polygon>`  |
+| `Ellipse`           | `<ellipse>`  |
+
+##### Group
+SVG groups are described by `Group` objects. These objects are defined by the `Group` class. Below is an example of using the `Group` object with a React component:
+
+~~~tsx
+import { isGroup, Group, } from "@/algebron/main"
+
+type GroupProps = { data: Group };
+
+const GROUP = ({ data }: GroupProps) => {
+  return (
+    <g transform={`${data._transformation}`}>
+      <Fig2D elements={data.$children} />
+    </g>
+  );
+};
+~~~
 
 #### Cartesian Plot
 
@@ -561,13 +701,13 @@ Three-dimensional plots can be generated with Algebron's `plot3D` function:
 
 <MultiPlot3DDemo />
 
-### 3D Paths
+import { MapDemo } from "@/components/Fig";
 
-The `path3D` function can be used to plot 3-dimensional paths.
+##### Maps
 
-import { CubeTest, Path3DTest } from "@/components/Fig";
+<MapDemo />
 
-<CubeTest />
+import { Path3DTest } from "@/components/Fig";
 
 ### 3D Function Plot Wireframes
 
@@ -575,23 +715,6 @@ The `fplot3D` function can be used to plot wireframes of 3D functions in SVG.
 
 <Path3DTest />
 
-
-### Freeform
-import {Freeform} from "@/components/Fig";
-
-<Freeform/>
-
-## React Components
-
-As mentioned earlier, Algebron does not provide any frontend components or do any rendering. This site, however, uses React and ThreeJS to render the data generated by Algebron's graphics modules. To provide users guidance on how to use Algebron's graphics modules, this section outlines the React components used by this site.
-
-### Fig
-
-Figures on Algebron's site are rendered with the `Fig` component.
-
-import { MapDemo } from "@/components/Fig";
-
-<MapDemo/>
 
 export default function MDXPage({ children }) {
     return <MdxLayout>{children}</MdxLayout>
