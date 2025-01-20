@@ -26,6 +26,8 @@ import MdxLayout from "@/components/mdx-layout";
 		- [The Horizontal Motion](#the-horizontal-motion)
 		- [The Vertical Motion](#the-vertical-motion)
 		- [The Equation of the Path](#the-equation-of-the-path)
+		- [The Horizontal Range](#the-horizontal-range)
+		- [The Effects of Air](#the-effects-of-air)
 
 
 </TOC>
@@ -306,6 +308,32 @@ The following equations mathematically model this case. The equations only apply
   $$ 
 - For simplicity, we let ${x_0}$ and ${y_0 = 0.}$
 - Because ${g,}$ ${\theta_0,}$ and ${v_0}$ are constants, the trajectory equation is of the form ${y = ax + bx^2,}$ where ${a}$ and ${b}$ are constants. Thus, the projectile's trajectory is _parabolic_.
+
+#### The Horizontal Range
+- The _horizontal range_ of the projectile, denoted ${R,}$ is the horizontal distance the projectile traveled when it returns to its initial height. 
+- Where ${x_f - x_0 = R}$ and ${y_f - y_0 = 0,}$ (where ${x_f}$ is the final ${x}$-position and ${y_f}$ is the final ${y}$-position) we have:
+  $$
+	R = (v_0 \cos \theta_0) t
+  $$ 
+  and
+  $$
+	0 = (v_0 \sin \theta_0) t - \dfrac{1}{2} g t^2.
+  $$
+  If we eliminate ${t}$ in both equations, we get:
+  $$
+	R = \dfrac{2v_0^2}{g} \sin \theta_0 \cos \theta_0.
+  $$
+  Using the identity ${2 \theta_0 = 2 \sin \theta_0 \cos \theta_0,}$ we get:
+  $$
+	R = \dfrac{v_0^2}{g} \sin 2 \theta_0.
+  $$
+- This equation does not give the horizontal distance travelled by a projectile when the final height is not the launch height.
+- Notice: The ${R}$ is at its maximum when ${\sin 2 \theta_0 = 1.}$ This corresponds to ${2 \theta_0 = 90 \degree}$ or ${\theta_0 = 45 \degree.}$ 
+	- But, when the launch and landing heights differ, a launch angle of ${45 \degree}$ does not yield the maximum horizontal distance.
+
+#### The Effects of Air
+- In the preceding discussion, we assumed that the effects of air are negligible.
+- In reality, _air resistance_ can have a significant impact on the projectile motion: Air resistance reduces both height and range.
 
 
 export default function MDXPage({ children }) {

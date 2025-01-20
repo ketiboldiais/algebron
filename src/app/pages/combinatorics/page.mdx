@@ -1,0 +1,127 @@
+import MdxLayout from "@/components/mdx-layout";
+
+# Combinatorics
+
+
+<TOC>
+
+- [Basic Counting Principles](#basic-counting-principles)
+  - [The Product Rule](#the-product-rule)
+  - [The Sum Rule](#the-sum-rule)
+  - [The Subtraction Rule](#the-subtraction-rule)
+  - [The Division Rule](#the-division-rule)
+  - [The Pigeonhole Principle](#the-pigeonhole-principle)
+- [Permutations](#permutations)
+- [Combinations](#combinations)
+
+</TOC>
+
+## Basic Counting Principles
+
+### The Product Rule
+- __*rule*__. A procedure comprises tasks ${t_1, t_2, \ldots, t_m}$ tasks in sequence. If each task ${t_i,}$ ${i = 1, 2, \ldots, n}$ can be done in ${n_i}$ ways, regardless of how the previous tasks are done, then there are ${n_1 \cdot n_2 \cdot \ldots \cdot n_m}$ ways to carry out the procedure. 
+- __*example*__. ${P}$ has ${4}$ shirts, ${2}$ ties, and ${3}$ trousers. How many ways can ${P}$ get dressed if ${P}$ picks one shirt, one tie, and one trouser?
+    - ${P}$ has four choices for shirts:
+      $$
+        4
+      $$ 
+      then, for each choice, ${P}$ has two choices for ties:
+      $$
+        4 \times 2
+      $$
+      then, for each shirt and tie pick, ${P}$ has ${3}$ choices for trousers:
+      $$
+        4 \times 2 \times 3 = 24.
+      $$
+      Thus, ${P}$ has ${24}$ ways to get dressed.
+- __*example*__. ${A}$ and ${B}$ have rented out a floor in a building for an office. The floor has ${12}$ offices. How many ways are there to assign different offices for ${A}$ and ${B?}$
+    - Let's say ${A}$ gets to pick first. ${A}$ can pick from ${12}$ offices. That leaves ${11}$ offices for ${B}$ to pick. Thus, there are:
+        $$
+            12 \times 11 = 132
+        $$
+        ways to assign offices to ${A}$ and ${B.}$
+
+### The Sum Rule
+- __*rule*__. A task can be done in one of ${n_1}$ ways, one of ${n_2}$ ways, ${\ldots,}$ or in one of ${n_m}$ ways, where none of the set of ${n_i}$ ways of doing the task is the same as any of the set of ${n_j}$ ways, for all pairs ${i}$ and ${j}$ with ${1 \leq i \lt j \leq m.}$ Then the number of ways to do the task is ${n_1 + n_2 + \ldots + n_m.}$
+- __*example*__. A senate committee must fill a vacant seat. The committee would like either a senator with a JD or a senator with an economics PhD. How many different choices are there if there are ${5}$ senators with an economics PhD and ${83}$ senators with a JD, and no one has both an economics PhD and a JD?    
+    - There are ${5}$ ways to choose a senator with an economics PhD.
+    - There are ${83}$ ways to choose a senator with a JD.
+    - Choosing a senator with an economics PhD is never the same as choosing a senator with a JD, because no senator has both an economics PhD and a JD. 
+    - By the sum rule, it follows that there are:
+      $$
+        5 + 83 = 88
+      $$ 
+      ways to fill the seat.
+
+### The Subtraction Rule
+- __*rule*__. If a task can be done in either ${n_1}$ ways or ${n_2}$ ways, then the number of ways to do the task is ${n_1 + n_2}$ minus the number of ways to do the task that are common to the two different ways.
+- The subtraction rule is also called the _principle of inclusion-exclusion_. 
+- __*example*__. An accounting firm receives ${350}$ applications from university graduates. ${220}$ applicants majored in accounting, ${147}$ majored in business, and ${51}$ majored in both accounting and business. How many applicants majored neither in accounting nor in business? 
+    - Let ${A}$ be the set of students who majored in accounting.
+    - Let ${B}$ be the set of students who majored in business.
+    - Then ${A \cup B}$ is the set of students who majored in accounting or business (or both), and ${A \cap B}$ is the set of students who majored in both accounting and business. 
+    - By the subtraction rule, the students who majored in either accounting or business (or both) is:
+        $$
+        \begin{aligned}
+            \left\lvert A \cup B \right\rvert &= \left\lvert A \right\rvert + \left\lvert B \right\rvert - \left\lvert A \cap B \right\rvert \\[1.5em]
+            &= 220 + 147 - 51 \\[1.5em]
+            &= 316.
+        \end{aligned}
+        $$ 
+    - Since there were ${350}$ total applicants, the number of applicants who majored in neither accounting or business is:
+      $$
+        350 - 316 = 34.
+      $$ 
+
+### The Division Rule
+- __*rule*__. Suppose a task ${t}$ can be done using a procedure that can be carried out ${n}$ ways. For every way ${w,}$ exactly ${d}$ of the ${n}$ ways correspond to the way ${w.}$ Then there are ${n/d}$ ways to do ${t.}$  
+
+### The Pigeonhole Principle
+- __*the pigeonhole principle*__. Let ${k}$ be a positive integer. Suppose ${k + 1}$ or more objects must be placed into ${k}$ boxes. Then there is at least one box containing two or more objects.
+- __*corollary*__. A function ${f}$ from a set with ${k + 1}$ or more elements to a set with ${k}$ elements is not one-to-one.
+- __*theorem*__. Let ${n}$ and ${k}$ be positive integers. If ${n}$ objects are placed into ${k}$ boxes, then there is at least one box containing at least ${\lceil n/k \rceil}$ objects.
+    - This is a generalized form of the Pigeonhole Principle.
+
+## Permutations
+- Let ${n}$ be a positive integer and ${r}$ an integer with ${1 \leq r \leq n.}$ There are
+  $$
+    _n P_r = n(n - 1)(n - 2) \ldots (n - r + 1)
+  $$ 
+  ${r}$-permutations of a set with ${n}$ distinct elements.
+- __*example*__. A password consists of seven distinct letters. How many ways can these letters be arranged?
+    - The password comprises ${7}$ slots, each occupied by a distinct letter. The first letter can go into one of ${7}$ places. The second letter can go into one of ${6}$ places. The third into ${5,}$ and so on.
+    - There are:
+      $$
+      \begin{aligned}
+        7! &= 7 \times 6 \times 5 \times 4 \times 3 \times 2 \times 1 \\[1.5em]
+        &= 5040
+      \end{aligned}
+      $$ 
+      possible arrangements.
+- __*corollary*__. If ${n}$ and ${r}$ are integers with ${0 \leq r \leq n,}$ then
+  $$
+    _n P _r = \dfrac{n!}{(n - r)!}.
+  $$  
+
+## Combinations
+- Let ${n}$ be a nonnegative integer and ${k}$ an integer with ${0 \leq k \leq n.}$ Then the number of ${k}$-combinations of a set with ${n}$ elements is:
+  $$
+    \binom{n}{k} = \dfrac{n!}{k! (n - k)!}.
+  $$ 
+- __*example*__. A crime is committed by ${5}$ perpetrators. A detective identifies ${10}$ suspects. How many ways are there to select the ${5}$ perpetrators from the ${10}$ suspects?
+    - There are
+        $$
+            \binom{10}{5} = \dfrac{10!}{5! 5!} = 252
+        $$
+        possible ways.
+- __*example*__. A group of ${30}$ soldiers have been trained as special forces operators. A team of ${6}$ operators must be sent on a mission. How many ways are there to select the ${6}$ operators from the ${30}$ (assuming all have the same job)?
+    - There are
+        $$
+            \binom{30}{6} = \dfrac{30!}{6!24!} = 593~775
+        $$   
+        possible ways.
+
+export default function MDXPage({ children }) {
+    return <MdxLayout>{children}</MdxLayout>
+
+}

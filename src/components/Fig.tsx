@@ -3123,7 +3123,79 @@ export const FairCoinTosses = () => {
   return <Fig data={d} width={90} paddingBottom={55} />;
 };
 
-export default Fig;
+
+export const SinePeriod = () => {
+  const domain = tuple(-10,10);
+  const range = tuple(-2,2);
+  const d = svg({
+    width: 500,
+    height: 500,
+    domain,
+    range,
+  }).children([
+      // axis({
+      //   on: "x",
+      //   domain,
+      //   range,
+      // }),
+      // axis({
+      //   on: "y",
+      //   domain,
+      //   range,
+      // }),
+      // grid(domain, range).done(),
+      line([0,-2], [0,2]).stroke(cssvar('dimgrey')),
+      line([-10,0], [10,0]).stroke(cssvar('dimgrey')),
+      cplot('fn f(x) = sin(x)', domain, range).strokeWidth(2).stroke(cssvar('red')).done(),
+      line([0, 1.5], [2 * Math.PI, 1.5]).strokeDashArray(4),
+      line([0,0], [0,1.5]).strokeDashArray(4),
+      line([2 * Math.PI,0], [2 * Math.PI,1.5]).strokeDashArray(4),
+      text("1 period").position(3,1.6),
+      circle(3, [2 * Math.PI, 0]),
+      circle(3, [0, 0]),
+      text("2π").position(2 * Math.PI,-.15).dx(10),
+      text("0").position(0,-.15).dx(10),
+  ])
+  return <Fig data={d} width={70}/>
+}
+
+
+export const SineAmplitude = () => {
+  const domain = tuple(-10,10);
+  const range = tuple(-10,10);
+  const d = svg({
+    width: 500,
+    height: 500,
+    domain,
+    range,
+  }).children([
+      axis({
+        on: "x",
+        domain,
+        range,
+      }),
+      axis({
+        on: "y",
+        domain,
+        range,
+      }),
+      // grid(domain, range).done(),
+      // line([0,-10], [0,10]).stroke(cssvar('dimgrey')),
+      // line([-10,0], [10,0]).stroke(cssvar('dimgrey')),
+      cplot('fn f(x) = sin(x)', domain, range).strokeWidth(2).stroke(cssvar('red')).done(),
+      cplot('fn f(x) = 2sin(x)', domain, range).strokeWidth(2).stroke(cssvar('blue')).done(),
+      cplot('fn f(x) = 3sin(x)', domain, range).strokeWidth(2).stroke(cssvar('green')).done(),
+      cplot('fn f(x) = 4sin(x)', domain, range).strokeWidth(2).stroke(cssvar('orange')).done(),
+      [text("f(x) = \\sin x").position(-10.2,10).fill(cssvar('red')),
+      text("f(x) = 2\\sin x").position(-10,9).fill(cssvar('blue')),
+      text("f(x) = 3\\sin x").position(-10,8).fill(cssvar('green')),
+      text("f(x) = 4\\sin x").position(-10,7).fill(cssvar('orange'))].map(t => t.width(100).latex('block')),
+  ])
+  return <Fig data={d} width={80}/>
+}
+
+
+
 
 // export const TEMPLATE = () => {
 //   const d = svg(defaultSVGContext).children([
@@ -3141,3 +3213,5 @@ export default Fig;
 //   ])
 //   return <Fig data={d}/>
 // }
+
+export default Fig;

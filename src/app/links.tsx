@@ -8,6 +8,7 @@ export const links = [
     { title: "Complex Analysis", url: "/pages/complex-analysis" },
     { title: "Linear Algebra", url: "/pages/linear-algebra" },
     { title: "Number Theory", url: "/pages/number-theory" },
+    { title: "Combinatorics", url: "/pages/combinatorics" },
     { title: "Probability", url: "/pages/probability" },
     { title: "Numerical Analysis", url: "/pages/numerical-analysis" },
 ];

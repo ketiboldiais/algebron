@@ -13,6 +13,7 @@
   --blue: rgb(89, 150, 194);
   /* --green: yellowgreen; */
   --green: rgb(119, 175, 140);
+  --orange: rgb(220, 185, 113);
   --grey: rgb(117, 117, 117);
   --pencil: rgb(138, 138, 138);
   /* --lightgrey: #B2BEB5; */
@@ -39,6 +40,7 @@
     --red: tomato;
     --blue: cyan;
     --green: rgb(155, 255, 133);
+    --orange: rgb(255, 188, 62);
     --purple: violet;
     --dimgrey: rgb(110, 110, 110);
     --lightgrey: #6a726c;

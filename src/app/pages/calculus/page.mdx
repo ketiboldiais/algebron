@@ -49,6 +49,11 @@ import MdxLayout from "@/components/mdx-layout";
     - [Periodic Functions](#periodic-functions)
     - [The Sine Function](#the-sine-function)
     - [The Cosine Function](#the-cosine-function)
+    - [Properties of Sine \& Cosine](#properties-of-sine--cosine)
+    - [The Period of a Function](#the-period-of-a-function)
+    - [Sinusoids](#sinusoids)
+    - [The Amplitude of a Function](#the-amplitude-of-a-function)
+    - [Phase Shifts](#phase-shifts)
     - [The Arcsine Function](#the-arcsine-function)
 - [Sequences](#sequences)
   - [Convergent Sequences](#convergent-sequences)
@@ -66,6 +71,22 @@ import MdxLayout from "@/components/mdx-layout";
   - [Cauchy Sequences](#cauchy-sequences)
   - [The Sandwich Theorem](#the-sandwich-theorem)
 - [The Derivative](#the-derivative)
+  - [The Derivative as a Function](#the-derivative-as-a-function)
+  - [Derivative Notations](#derivative-notations)
+  - [Differentiability](#differentiability)
+  - [Differentiability \& Continuity](#differentiability--continuity)
+  - [Higher Derivatives](#higher-derivatives)
+- [Differentiation Rules](#differentiation-rules)
+  - [Derivative of a Constant Function](#derivative-of-a-constant-function)
+  - [Derivatives of Power Functions](#derivatives-of-power-functions)
+  - [The Constant Multiple Rule](#the-constant-multiple-rule)
+  - [The Sum Rule](#the-sum-rule)
+  - [The Difference Rule](#the-difference-rule)
+  - [Derivatives of Exponential Functions](#derivatives-of-exponential-functions)
+  - [The Product Rule](#the-product-rule)
+  - [The Quotient Rule](#the-quotient-rule)
+  - [Derivatives of Trigonometric Functions](#derivatives-of-trigonometric-functions)
+  - [The Chain Rule](#the-chain-rule)
 
 </TOC>
 
@@ -746,6 +767,8 @@ Historically, the symbols ${\sin,}$ ${\cos,}$ etc., were abbreviations of sine, 
     \dfrac{M - m}{2}.
   $$
 
+ 
+
 import {BasicSineWave} from "@/components/Fig";
 
 #### The Sine Function
@@ -781,6 +804,63 @@ import {BasicCosineWave} from "@/components/Fig";
 - As an even function, ${f(x) = \cos x}$ is symmetric about the ${y}$-axis.
 - The basic cosine wave crosses the ${x}$-axis a fourth of the way through the basic cycle and again three-fourths of the way.
 - The curve reaches its highest point at the beginning and end of the basic cycle and reaches its lowest point halfway through the basic cycle.
+
+#### Properties of Sine & Cosine
+- ${f(x) = \sin x}$ and ${g(x) = \cos x}$ are periodic functions with a period of ${2 \pi.}$
+- The domain of each function is ${(-\infty, \infty)}$ and the range is ${[-1,1].}$ 
+- The graph of ${y = \sin x}$ is symmetric about the origin, because it is an odd function.
+- The graph of ${y = \cos x}$ is symmetric about the ${y}$-axis, because it is an even function.
+
+import {SinePeriod} from "@/components/Fig";
+
+#### The Period of a Function
+- __*definition*__. The period ${P}$ of a periodic function ${f}$ is the number representing the interval such that ${f(x + P) = f(x).}$ That is, it is the number representing the shortest interval over which a function completes one full cycle.
+- __*example*__. The period of sine, cosine, secant, and cosecant is ${2 \pi.}$
+  - Below is a graph of ${f(x) = \sin x,}$ with its period annotated.
+    <SinePeriod/>
+- __*example*__. The period of tangent and cotangent is ${\pi.}$
+
+#### Sinusoids
+- __*definition*__. A function that has the same general shape as a sine or cosine function is known as a _sinusoidal function_ or _sinusoid_. The general forms of sinusoids are:
+    $$
+        \begin{aligned}
+             y &= A \sin (Bx - C) + D, \\[1.5em]
+             y &= A \cos (Bx - C) + D.
+        \end{aligned}
+    $$
+- If we let ${C = 0}$ and ${D = 0}$ in the general form equations, we get:
+    $$
+      \begin{aligned}
+         y &= A \sin (Bx) \\[1.5em]
+         y &= A \cos (Bx).
+      \end{aligned}
+    $$
+  The period is ${\dfrac{2 \pi}{B}.}$
+
+import {SineAmplitude} from "@/components/Fig";
+
+#### The Amplitude of a Function
+- The _amplitude_ of a periodic function is the function's greatest distance from its resting position.
+- __*definition*__. If we let ${C = 0}$ and ${D = 0}$ in the general form equations of the sine and cosine functions, we obtain the forms
+    $$
+        \begin{aligned}
+            y &= A \sin (Bx), \\[1.5em]
+            y &= A \cos (Bx).
+        \end{aligned}
+    $$
+    The amplitude is ${A,}$ and the vertical height from the midline is ${\left\lvert A \right\rvert.}$
+- Consider the following variations of ${f(x) = A \sin x,}$ with varying amplitude ${A:}$
+  <SineAmplitude/>
+
+#### Phase Shifts
+- Given an equation in the forms
+  $$
+      \begin{aligned}
+            f(x) &= A \sin (Bx - C) ~ \text{or} \\[1.5em]
+            f(x) &= A \cos (Bx - C),
+      \end{aligned}
+  $$
+  the value ${C/B}$ is the _phase shift_ and the value ${D}$ is the _vertical shift_.
 
 import {ArcsinePlot} from "@/components/Fig";
 
@@ -955,6 +1035,139 @@ import {TangentLineLab} from "@/components/Fig";
     \end{aligned}  \\[1em]
       \text{or} \\[1em]
       y = -2x - 1.
+  $$
+
+### The Derivative as a Function
+- We can interpret the derivative as a function:
+  $$
+    f'(x) = \lim\limits_{h \to 0} \dfrac{f(x + h) - f(x)}{h}.
+  $$ 
+
+### Derivative Notations
+- Given a function ${f,}$ the following notations are equivalent:
+  $$
+    \begin{aligned}
+      f'(x) &= y' \\[1.5em]
+      &= \dfrac{\text{d}y}{\text{d}x} \\[1.5em]
+      &= \dfrac{\text{d}f}{\text{d}x} \\[1.5em]
+      &= \dfrac{\text{d}}{\text{d}x} f(x) \\[1.5em]
+      &= D f(x) \\[1.5em]
+      &= D_x f(x) \\[1.5em]
+      &= \lim\limits_{\Delta x \to 0} \dfrac{\Delta y}{\Delta x}.
+    \end{aligned}
+  $$
+- If we ant to indicate the value of a derivative ${\dfrac{\text{d}y}{\text{d}x}}$ at a specific number ${a,}$ we use the notation:
+  $$
+    \left.\dfrac{\text{d}y}{\text{d}x}\right\rvert_{x = a}
+  $$
+
+### Differentiability
+- __*definition*__. A function ${f}$ is _differentiable_ at ${a}$ if ${f'(a)}$ exists. It is differentiable on an open interval ${(a,b)}$ if it is differentiable at every number in the interval.
+
+### Differentiability & Continuity
+- __*definition*__. If a function ${f}$ is differentiable at ${a,}$ then ${f}$ is _continuous_ at ${a.}$
+
+### Higher Derivatives
+- If ${f}$ is a differentiable function, then its derivative ${f'}$ is also a function, so ${f'}$ may have a derivative of its own, denoted ${(f')' = f''.}$ We call ${f''}$ the _second derivative_ of ${f.}$ Further, since ${f''}$ is a function, ${f''}$ may have a derivative as well, in which case ${(f'')' = f'''.}$ We call this the third derivative of ${f.}$ This pattern continues.  
+- We can use Leibniz notation to denote the higher-order derivatives:
+  $$
+    \dfrac{\text{d}}{\text{d}x} \left( \dfrac{\text{d}y}{\text{d}x} \right) = \dfrac{\text{d}^2 y}{\text{d}x^2}. 
+  $$ 
+
+## Differentiation Rules
+### Derivative of a Constant Function
+- __*theorem*__. Where ${c}$ is a constant,
+  $$
+    \dfrac{\text{d}}{\text{d}x} c = 0.
+  $$
+
+### Derivatives of Power Functions
+- __*theorem*__. Where ${x}$ is a variable,
+  $$
+    \dfrac{\text{d}}{\text{d}x} (x) = 1.
+  $$ 
+- __*theorem*__. Where ${n}$ is a real number,
+  $$
+    \dfrac{\text{d}}{\text{d}x} \left( x^n \right) = n x^{n - 1}.
+  $$
+
+### The Constant Multiple Rule 
+- Where ${c}$ is a constant and ${f}$ is a differentiable function,
+  $$
+    \dfrac{\text{d}}{\text{d}x} \left( c f(x) \right) = c \dfrac{\text{d}}{\text{d}x} f(x).
+  $$
+
+### The Sum Rule
+- Where ${f}$ and ${g}$ are differentiable functions,
+  $$
+    \dfrac{\text{d}}{\text{d}x} \left( f(x) + g(x) \right) = \dfrac{\text{d}}{\text{d}x} f(x) + \dfrac{\text{d}}{\text{d}x} g(x).
+  $$
+
+
+### The Difference Rule
+- Where ${f}$ and ${g}$ are differentiable functions,
+  $$
+    \dfrac{\text{d}}{\text{d}x} \left( f(x) - g(x) \right) = \dfrac{\text{d}}{\text{d}x} f(x) - \dfrac{\text{d}}{\text{d}x} g(x).
+  $$
+
+### Derivatives of Exponential Functions
+- __*definition*__. ${e}$ is the number such that
+  $$
+    \lim\limits_{h \to 0} \dfrac{e^h - 1}{h} = 1.
+  $$
+- __*theorem*__. Where ${e}$ is Euler's number,
+  $$
+    \dfrac{\text{d}}{\text{d}x} (e^x) = e^x.
+  $$ 
+
+### The Product Rule
+- __*theorem*__. Where ${f}$ and ${g}$ are differentiable functions,
+  $$
+    \dfrac{\text{d}}{\text{d}x} \left( f(x) g(x) \right) = f(x) \dfrac{\text{d}}{\text{d}x} g(x) + g(x) \dfrac{\text{d}}{\text{d}x} f(x).
+  $$
+  Alternatively, in Newton's notation, where ${a = f(x)}$ and ${b = g(x),}$
+  $$
+    (ab)' = ab' + ba'.
+  $$
+
+### The Quotient Rule
+- __*theorem*__. Where ${f}$ and ${g}$ are differentiable functions,
+  $$
+    \dfrac{\text{d}}{\text{d}x} \left( \dfrac{f(x)}{g(x)} \right) 
+    = \dfrac{g(x) \dfrac{\text{d}}{\text{d}x} f(x) - f(x) \dfrac{\text{d}}{\text{d}x} g(x)}{\left( g(x) \right)^2 }
+  $$
+  Alternatively, in Newton's notation, where ${a = f(x)}$ and ${b = g(x),}$
+  $$
+    \left(\dfrac{a}{b}\right)' = \dfrac{ba' - ab'}{b^2}.
+  $$
+
+### Derivatives of Trigonometric Functions
+- The table below outlines the derivatives of the trigonometric functions.
+  | ${f(x)}$   | ${f'(x)}$          |
+  | ---------- | ------------------ |
+  | ${\sin x}$ | ${\cos x}$         |
+  | ${\cos x}$ | ${- \sin x}$       |
+  | ${\tan x}$ | ${\sec^2 x}$       |
+  | ${\csc x}$ | ${-\csc x \cot x}$ |
+  | ${\sec x}$ | ${\sec x \tan x}$  |
+  | ${\cot x}$ | ${- \csc x}$       |
+- There are two special trigonometric limits that are often helpful to solving problems:
+  $$
+    \lim\limits_{\theta \to 0} \dfrac{\sin \theta}{\theta} = 1.
+  $$ 
+  and
+  $$
+    \lim\limits_{\theta \to 0} \dfrac{\cos \theta - 1}{\theta} = 0.
+  $$
+
+### The Chain Rule
+- __*theorem*__. If ${g}$ is differentiable at ${x}$ and ${f}$ is differentiable at ${g(x),}$ then the composite function ${F = f \circ g}$ defined by ${F(x) = f(g(x))}$ is differentiable at ${x.}$ ${F'}$ is given by the product:
+  $$
+    F'(x) = f'(g(x)) \cdot g'(x).
+  $$ 
+  Or, in Leibniz notation, where ${y = f(u)}$ and ${u = g(x)}$ are both differentiable functions,
+  $$
+    \dfrac{\text{d}y}{\text{d}x} = \dfrac{\text{d}y}{\text{d}u} \dfrac{\text{d}u}{\text{d}x}.
   $$
 
 export default function MDXPage({ children }) {
