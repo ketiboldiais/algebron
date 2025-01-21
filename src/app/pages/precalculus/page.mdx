@@ -1,0 +1,66 @@
+import MdxLayout from "@/components/mdx-layout";
+
+# Precalculus
+
+<TOC>
+
+
+</TOC>
+
+import { ImageRelations1 } from "@/components/Precalculus";
+
+## Functions
+- __*definition*__. A relation ${f}$ from a set ${A}$ to a set ${B}$ is a function if, for each ${x \in A,}$ there is at most one element ${y \in B.}$
+    - Functions are sometimes called __mappings__. 
+- We can denote a function with the notation:
+	$$
+			f: A \to B.
+	$$ 
+  - The __domain__ of ${f}$ is the set ${A}$ or a subset of ${A.}$ 
+	- The __codomain__ of ${f}$ is the set ${B.}$ 
+	- The __range__ of ${f}$ is a subset of ${B.}$
+- __*example*__. Below are relations ${f,}$ ${g,}$ and ${h.}$
+	<ImageRelations1/>
+	- ${f}$ is not a function since one input maps to two elements in the codomain.
+	- ${g}$ is a function since each input maps to at most one element in the codomain.
+	- ${h}$ is a function since each input maps to at most one element in the codomain. Notice that not every input must be mapped. The only requirement is that an input maps to at most one.
+
+import { Affine1, Affine2 } from "@/components/Precalculus";
+
+## Affine Functions
+- __*definition*__. An __affine function__ is a function defined by an equation of the form
+	$$
+		f(x) = ax + b,
+	$$
+	where ${a}$ and ${b}$ are constants in ${\reals}$. 
+	- If ${b = 0}$ and ${a \neq 0,}$ we call ${f}$ a __linear function__.
+- __*example*__. ${f(x) = 2x + 1}$ is an affine function.
+- __*example*__. ${f(x) = 2x}$ is a linear function.
+- __*example*__. ${f(x) = {x}/{3}}$ is a linear function.
+- __*example*__. ${f(x) = \dfrac{x}{3} + \pi}$ is an affine function.
+- __*example*__. Below are graphs of affine functions.
+	<Cols of={2}>
+		<Affine1/>
+		<Affine2/>
+	</Cols>
+- __*theorem*__. If ${f}$ is an affine function then it has a constant rate of change equal to the slope of its graph.
+- __*theorem*__. If a function ${f}$ has a constant rate of change, then it must be an affine function.
+
+import { Quadratic1 } from "@/components/Precalculus";
+
+## Quadratic Functions
+- __*definition*__. A quadratic function is a function of the form
+	$$
+		f(x) = ax^2 + bx + c,
+	$$
+	where ${a,b,c}$ are real constants and ${a \neq 0.}$
+- The graph of a quadratic function is called a __parabola__.
+- __*example*__. Below is the graph of ${y = 2x^2 - 2x - 1.}$
+	<Quadratic1/>
+	
+
+
+export default function MDXPage({ children }) {
+    return <MdxLayout>{children}</MdxLayout>
+
+}

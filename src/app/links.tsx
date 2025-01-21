@@ -1,5 +1,6 @@
 export const links = [
     { title: "Algebron Documentation", url: "/pages/algebron" },
+    { title: "Precalculus", url: "/pages/precalculus" },
     { title: "Geometry", url: "/pages/geometry" },
     { title: "Set Theory", url: "/pages/set-theory" },
     { title: "Calculus", url: "/pages/calculus" },

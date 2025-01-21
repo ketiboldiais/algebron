@@ -3674,6 +3674,39 @@ export function haxis(interval: [number, number], step: number) {
   return new HorizontalAxis(interval, step);
 }
 
+
+export type AxisSpec = {
+  on: "x" | "y";
+  domain: [number, number];
+  range: [number, number];
+  hideTicks?: boolean;
+  color?: string,
+};
+
+export const axis = (spec: AxisSpec) => {
+  const out = spec.on === "x" ? haxis(spec.domain, 1) : vaxis(spec.range, 1);
+  if (!spec.hideTicks) {
+    if (spec.on === "x") {
+      out.ticks((t) => {
+        t.label.dy(15);
+        spec.color && t.label.fill(spec.color);
+        spec.color && t.tick.stroke(spec.color);
+        return t;
+      });
+    } else {
+      out.ticks((t) => {
+        t.label.dy(5).dx(15);
+        spec.color && t.label.fill(spec.color);
+        spec.color && t.tick.stroke(spec.color);
+        return t;
+      });
+    }
+  }
+  spec.color && out.stroke(spec.color);
+  out.done();
+  return out;
+};
+
 class Grid extends Group {
   done() {
     const xmin = this.$xDomain[0];

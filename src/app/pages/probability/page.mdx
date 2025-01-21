@@ -1,47 +1,24 @@
 import MdxLayout from "@/components/mdx-layout";
-import {
-    UnitSquare, 
-    EventDiagram,
-} from "@/components/Fig";
 
 # Probability
 
 <TOC>
 
-- [Terminology](#terminology)
-- [Probability Axioms](#probability-axioms)
-- [Discrete Uniform Law](#discrete-uniform-law)
-- [Probability Calculation Steps](#probability-calculation-steps)
-- [Countable Additivity](#countable-additivity)
-- [Conditional Probabilities](#conditional-probabilities)
-  - [Multiplication Rule](#multiplication-rule)
-- [Total Probability Theorem](#total-probability-theorem)
-- [Bayes's Rule](#bayess-rule)
-- [Independence](#independence)
-  - [Independence of Event Complements](#independence-of-event-complements)
-  - [Conditional Independence](#conditional-independence)
-  - [Conditioning Affecting Independence](#conditioning-affecting-independence)
-  - [Independence of a Collection of Events](#independence-of-a-collection-of-events)
-    - [Pairwise Independence](#pairwise-independence)
-    - [Pairwise Independence vs. Independence](#pairwise-independence-vs-independence)
 
 </TOC>
 
+import {Tetrahedral1, Tetrahedral2, TetraTree, UnitSquare} from "@/components/Probability";
 
-
-
-## Terminology
+## Sample Space
 - An _experiment_ is a sequence of operations carried out under specified conditions.
 - The result of an experiment is called an _outcome_.     
 - If an experiment's outcomes are not predetermined, then the experiment is called a _chance_ experiment. 
 - __*definition*__. The _sample space_, denoted ${\Omega,}$ is the set of all possible outcomes of a statistical experiment. Each outcome in a sample space is called a _sample point_. 
 - __*definition*__. A _probability model_ is a sample space and an operation of assigning probabilities.
 - __*example*__. When we toss a coin, we have a sample space with two outcomes:
-
     $$
         \Omega = \set{H, T}.
     $$
-
     where ${H}$ is _heads_ and ${T}$ is _tails_.  
 - __*example*__. If we toss the coin three times, then the sample space is:
     $$
@@ -53,405 +30,31 @@ import {
             THT & TTT
         \end{matrix} \right\rbrace.
     $$
-- The sample space resulting from tossing a coin finitely many times is an example of a _discrete_ and _finite_ sample space.
-- __*example*__. A bullet is shot at the square target below.
+  - The sample space resulting from tossing a coin finitely many times is an example of a _discrete_ and _finite_ sample space.
+- __*example*__. Consider an experiment where we roll a tetrahedral (4-sided) die.
+  - We can visualize the sample space with a grid:
+  	<Tetrahedral1/>
+		If we roll a ${2}$ on the first roll and a ${3}$ on the second, we would have the outcome: 
+  	<Tetrahedral2/>
+  - Alternatively, we can visualize the sample space with a tree:
+  	<TetraTree/>
+- __*example*__. Suppose a rifle fires at the square target below. We mark the point where the bullet hits. Suppose further that the shooter always hits the target with infinite precision. In this case, the sample space is _infinite_ and _continuous_. 
+	<UnitSquare/>
 
-    <UnitSquare/>
-
-    The sample space of the bullet hitting the target is the set 
-
-    $$
-        \set{(x,y) : 0 \leq x,y \leq 1}.
-    $$
-
-    This is an example of a _continuous_ and _infinite_ sample space, since there are infinitely many pairs ${(x,y)}$ with ${0 \leq x,y \leq 1.}$
-- Probabilities are assigned to _events_. 
-- __*definition*__. An _event_ is a subset of the sample space. 
-  - __*example*__. Below is a sample space, with events ${A}$ and ${B.}$
-    <EventDiagram/>
-
-import { L016B } from "@/components/Fig"; 
+import {BullsEye, Events} from "@/components/Probability"
 
 ## Probability Axioms
-- By convention, a probability value is always between ${0}$ and ${1.}$
-- __*axiom*__. A probability of some event ${A,}$ denoted ${P(A),}$ is a nonnegative real number. That is, ${P(A) \geq 0.}$
-  - This is called the _Nonnegativity Axiom_ of Probability Theory.
-- __*axiom*__. The probability of a sample space is ${1.}$ That is, ${P(\Omega) = 1.}$
-  - This is called the _Normalization Axiom_ of Probability Theory.
-- With just the two axioms, we have the following corollaries:
-    1. __*corollary*__. Given an event ${A,}$ we have ${P(A) \leq 1.}$
-    2. __*corollary*__. ${P(\varnothing) = 0.}$
-- __*axiom*__. Given events ${A}$ and ${B,}$ if ${A \cap B = \varnothing,}$ then ${P(A \cup B) = P(A) + P(B).}$
-  - This is called the _Finite Additivity Axiom_ of Probability Theory. 
-  - We will state a stronger version of this axiom in later sections.
-- From the three axioms, we can derive several corollaries.
-  - __*corollary*__. ${P(A) + P(A^c) = 1.}$
-  - __*corollary*__.
-    $$
-    \begin{aligned}
-        P(\set{s_1, s_2, \ldots, s_k}) &= P(\set{s_1}) + \ldots + P(\set{s_k}) \\[1em]
-        &= P(s_1) + \ldots + P(s_2).
-    \end{aligned}
-    $$
-  - __*corollary*__. If ${A \subset B,}$ then ${P(A) \leq P(B).}$ That is, if we have a set ${A}$ that's smaller than a set ${B,}$ then the probability that an outcome falls inside ${B}$ is at least as big as the probability that an outcome falls inside ${A.}$  
-  - __*corollary*__. ${P(A \cup B) = P(A) + P(B) - P(A \cap B).}$
-    <L016B/>
-  - __*corollary*__. ${P(A \cup B) \leq P(A) - P(B).}$
-    - This is called the _union bound inequality_.
-  - __*corollary*__. ${P(A \cup B \cup C) = P(A) + P(A^c \cap B) + P(A^c \cap B^c \cap C).}$
-
-## Discrete Uniform Law
-- __*definition*__. A probability model obeys the _discrete uniform law_ if it satisfies the following conditions:
-  1. The sample space ${\Omega}$ is _finite_.
-  2. The sample space ${\Omega}$ comprises ${n}$ elements, each equally likely. That is, each element has probability ${1/n.}$
-  3. If an event ${A \subset \Omega}$ consists of ${k}$ elements, then
-      $$
-          P(A) = k \cdot \dfrac{1}{n} = \dfrac{k}{n}.
-      $$
-
-## Probability Calculation Steps
-1. Specify the sample space.
-2. Specify a probability law.
-3. Identify the event of interest.
-4. Calculate the probability of that event. 
-
-## Countable Additivity
-- Consider an experiment where we toss a coin. We count how many times we had to toss until we reach first reach heads. The first heads might appear in the first toss, the second toss, the third, fourth, etc. Thus, our sample space is the set of positive integers:
-  $$
-    \Omega = \set{1,2,3,\ldots} = \Z^+.
-  $$ 
-- This is an example of a _discrete_ but _infinite_ sample space.
-- Now let's determine what probability law applies. We will discuss this law later, but for now, assume that the probability law is:
-  $$
-    P(n) = \dfrac{1}{2^n}.
-  $$ 
-  where ${n}$ is the number of tosses until the first heads.
-  - Let's verify that this probability law, as applied, makes sense. 
-  - The probabilities must sum to ${1:}$
-    $$
-      \begin{aligned}
-      \sum_{n = 1}^{\infty} \dfrac{1}{2^n} &= \dfrac{1}{2} \sum_{n = 0}^{\infty} \dfrac{1}{2^n} \\[2em]
-      &= \dfrac{1}{2} \cdot \dfrac{1}{1 - (1/2)} \\[2em]
-      &= 1.
-      \end{aligned}
-    $$
-  - It appears that our probability law is valid.
-- Now consider calculating the probability that the outcome is even (that is, the number of tosses it took us to reach the first heads is even).
-  $$
-  \begin{aligned}
-    P(\text{$n$ is even}) &= P(\set{2,4,6,\ldots}) \\[2em]
-    &= P(\set{2} \cup \set{4} \cup \set{6} \cup \ldots) \\[2em]
-    &= P(2) + P(4) + P(6) + \ldots \\[2em]
-    &= \dfrac{1}{2^2} + \dfrac{1}{2^4} + \dfrac{1}{2^6} + \ldots \\[2em]
-    &= \dfrac{1}{4} \left( 1 + \dfrac{1}{4} + \dfrac{1}{4^2} + \ldots \right) \\[2em]
-    &= \dfrac{1}{4} \left( \dfrac{1}{1-(1/4)}\right) \\[2em]
-    &= \dfrac{1}{3}.
-  \end{aligned}
-  $$
-- That's an awfully nice rational number. Is our calculation correct? Yes, but only by luck. We made a mistake. Nothing that we've discussed so far allows us to take this step:
-  $$
-    P(\set{2} \cup \set{4} \cup \set{6} \cup \ldots)
-    = P(2) + P(4) + P(6) + \ldots \\[2em]
-  $$
-- Our rule for summing disjoint sets only applies to _finitely many_ disjoint sets, not _infinitely many_. 
-- We patch this issue with the _Countable Additivity Axiom_:
-  - __*axiom*__. If ${A_1, A_2, A_3, \ldots}$ is an infinite sequence of disjoint events, then
-    $$
-      P(A_1 \cup A_2 \cup A_3 \cup \ldots) = P(A_1) + P(A_2) + P(A_3) + \ldots.
-    $$  
-    or, more concisely:
-    $$
-      P\left( \bigcup_{i = 0}^{\infty} A_i \right) = \sum_{i = 0}^{\infty} P(A_i).
-    $$
-
-import { L02_2, RadarExample } from "@/components/Fig";
-
-## Conditional Probabilities
-- Consider the following sample space for some experiment, comprising ${12}$ equally likely outcomes.
-  <L02_2/>
-- We see that ${P(A) = 5/12}$ and ${P(B) = 6/12.}$
-- Suppose we're told that ${B}$ occurs. How does the model change?
-  1. The outcomes outside of ${B}$ are no longer possible, so we assign them zero probability.
-  2. There are six outcomes in ${B.}$ We stated that the outcomes are all equally likely, and we have not been given any reason to change the relative probabilities. So, these six outcomes remain equally likely. Thus, each outcome in ${B}$ now has a probability of ${1/6.}$
-- We introduce some new notation for this situation:
-  - ${P(A|B).}$ This means "the probability of ${A,}$ given that ${B}$ occurred." Here, we have two outcomes in ${A}$ and ${B,}$ each equally likely, so:
-    $$
-      P(A | B) = \dfrac{1}{6} + \dfrac{1}{6} = \dfrac{2}{6} = \dfrac{1}{3}.
-    $$ 
-  - ${P(B|B).}$ This means "the probability of ${B,}$ given that ${B}$ occurred." Since ${B}$ has occurred, we have:
-    $$
-      P(B | B) = 1.
-    $$
-- __*definition*__. The probability of ${A,}$ give that ${B}$ occurred, is given by:
-  $$
-    P(A | B) = \dfrac{P(A \cap B)}{P(B)}.
-  $$
-  provided that ${P(B) \gt 0.}$
-- __*example*__. Consider a drone detection system. Suppose ${A}$ is the event where a drone is flying above. Suppose ${B}$ is the event where a red dot, indicating a drone, appears on the screen. Let's outline the possible scenarios:
-
-<RadarExample/>
-
-  - Here are what the set theoretic notations mean:
-    1. ${A:}$ a drone is flying above.
-    2. ${B:}$ red dot appears on the screen.
-    3. ${A \cap B:}$ a drone is flying above _and_ a red dot appears on the screen.
-    4. ${A \cap B^c:}$ a drone is flying above and a red dot _does not_ appear on the screen (a _false negative_).
-    5. ${A^c \cap B:}$ a drone is _not_ flying above and a red dot appears on the screen (a _false positive_).
-    6. ${A^c \cap B^c:}$ a drone is _not_ flying above and a red dot _does not_ appear on the screen. 
-  - Let's say, through repeated testing of the drone detection system, we find that: 
-    - ${P(A) = 0.05.}$
-    - ${P(A^c) = 0.95.}$ 
-  - We annotate these probabilities along the tree's edges above.
-  - What do the other probabilities mean?
-    - ${0.99}$ corresponds to the probability of ${B}$ (a red dot appearing on the screen) given ${A}$ (a drone flying). I.e., ${P(B | A) = 0.99.}$
-    - ${0.01}$ corresponds to the probability of _not_ ${B}$ (a red dot _not_ appearing on the screen) given ${A}$ (no drone is flying above). I.e., ${P(B^c | A).}$ 
-    - Similarly, ${P(B | A^c) = 0.1}$ (the probability of a red dot appearing given _no_ drone flying above is ${0.1}$).
-    - And ${P(A^c | B^c) = 0.9}$ (the probability of a red dot _not_ appearing given _no_ drone is flying above is ${0.9}$). 
-- __*example.*__ Let's calculate some probabilities.
-  1. The probability of a drone flying overhead and the system detecting it: 
-    $$
-      \begin{aligned}
-        P(A \cap B) &= P(A) \cdot P(B) \\ 
-        &= 0.05 \cdot 0.99 \\
-        &= 0.0495.
-      \end{aligned}
-    $$
-  2. The probability of ${B:}$
-    $$
-      \begin{aligned}
-        P(B) &= (0.05 \cdot 0.99) + (0.95 \cdot 0.1) \\
-        &= 0.1445.
-      \end{aligned}
-    $$
-  3. The probability of a drone flying overhead given the system has detected it.
-    $$
-      \begin{aligned}
-        P(A | B) &= \dfrac{0.05 \cdot 0.99}{0.95 \cdot 0.1} \\[2em]
-        &= 0.34.
-      \end{aligned}
-    $$
-    This example is interesting. It tells us that, despite such an accurate system, the fact that it detects a drone does not imply that there is a drone. 
-
-### Multiplication Rule
-- Consider:
-  $$
-    P(A ~|~ B) = \dfrac{P(A \cap B)}{P(B)}.
-  $$ 
-  Rearranging:
-  $$
-    \begin{aligned}
-      P(A \cap B) &= P(B) \cdot P(A ~|~ B) \\
-      &= P(A) \cdot P(B ~|~ A).
-    \end{aligned}
-  $$
-- This is a simple application of the _multiplication rule of probabilities_.
-  - __*multiplication rule*__. 
-    $$
-      P(A_1 \cap A_2 \cap \ldots \cap A_n) = P(A_1) \prod_{i=2}^{n} P(A_i ~|~ A_1 \cap A_2 \cap \ldots \cap A_{i-1}).
-    $$ 
-
-import { PartitionedSampleSpace } from "@/components/Fig";
-
-## Total Probability Theorem
-- Say we have the following sample space, partitioned into ${A_1,}$ ${A_2,}$ and ${A_3.}$
-  <PartitionedSampleSpace/>
-- The event ${B}$ can happen in three different ways:
-  1. ${B}$ given ${A_1}$ occurred (${A_3 \cap B}$).
-  2. ${B}$ given ${A_2}$ occurred (${A_2 \cap B}$).
-  3. ${B}$ given ${A_3}$ occurred (${A_3 \cap B}$).
-- Can we compute ${P(B)}$? Yes:
-  $$
-    \begin{aligned}
-      P(B) &= P(B \cap A_1) + P(B \cap A_2) + P(B \cap A_3) \\ 
-      &= P(A_1) \cdot P(B ~|~ A_1) + P(A_2) \cdot P(B ~|~ A_2) + \ldots + \ldots
-    \end{aligned}
-  $$  
-- This leads to the following formula:
-  $$
-    P(B) = \sum_{i=1}^{n} P(A_i) P(B ~|~ A_i).
-  $$ 
-  - Notice that ${P(B)}$ looks like a _weighted average_ of ${P(B ~|~ A_i),}$ where the weight is ${P(A_i).}$ 
-
-## Bayes's Rule
-- Bayes's Rule is a systematic approach for incorporating new evidence. 
-- Imagine a sample space partitioned in three tripartites: ${A_1,}$ ${A_2,}$ and ${A_3.}$ We call each tripartite a _scenario_.
-- Now let's say we assign each scenario a probability (based on some method; perhaps repeated experimentation, inferences from other experiments, etc.) Thus, we have ${P(A_i)}$ for every ${i.}$ We call these initial probabilities our _initial beliefs_. 
-- Under each scenario, we have an event ${B.}$ Each event ${B}$ under ${A_i}$ has a probability that it will occur given the scenario ${A_i.}$ Thus, we have ${P(B ~|~ A_i)}$ for every ${i.}$
-- Now the experiment is carried out, and we observe that ${B}$ does occur. 
-- The moment this happens, we ought to revise our beliefs about the likelihoods of  the different scenarios, ${A_i.}$ Perhaps, because of ${B}$'s occurrence, other events become suddenly more likely.
-- We revise our beliefs by calculating conditional probabilities.
-
-import {CoinToss3} from "@/components/Fig";
-
-## Independence
-- __*example*__. Consider an experiment where we toss a coin three times. The probability of heads, denoted ${P(H),}$ is
-  $$
-    P(H) = p,
-  $$
-  where ${p}$ is some nonnegative number less than ${1.}$ The probability of tails, denoted ${P(T),}$ is
-  $$
-    P(T) = 1 - p.
-  $$
-- Laying out the experiment's possibilities with a tree:
-  <CoinToss3/>
-- Let's work some problems:
-  1. What is the probability of tossing tails, head, tails? We use the multiplication rule: Multiply the probabilities along the edges:
-    $$
-      P(THT) = (1 - p)(p)(1 - p) = p^3 - 2p^2 + p.
-    $$
-  2. What is the probability of tossing one head?
-    $$
-      P(1 ~ \text{head}) = 3 p (1 - p)^2.
-    $$
-  3. What is the probability that the first toss is heads, if we know at least one head will occur?
-      $$
-        P(\text{first toss is } H ~|~ 1 ~ \text{head})
-      $$
-      Examining the tree, the set of events we're interested in are those with a heads toss. And out of those tosses with heads, we're particularly interested in those where the first toss is heads (the first left subtree). In this case, it's the sequence ${HTT.}$ Thus:
-      $$
-        P(\text{first toss is } H ~|~ 1 ~ \text{head}) = \dfrac{p(1-p)^2}{3p(1-p)^2} = \dfrac{1}{3}.
-      $$ 
-- Notice that:
-  $$
-    P(H_2 ~|~ H_1) = p = P(H_2 ~|~ T_1).
-  $$ 
-  That is, the probability of the second toss being heads, given the first toss was heads, is equal to the probability of the second toss being heads, given the first toss was tails. That is, our beliefs about what might happen in the second toss remain the same regardless of what happens in the first toss. This is an example of _independence_.
-- Events ${A}$ and ${B}$ are independent if the occurrence of ${A}$ has no effect on the probability of ${B}$'s occurrence.
-  - That is, the occurrence of ${A}$ provides no new information about ${B.}$
-- Here is the formal definition:
-  - __*definition*__. Events ${A}$ and ${B}$ are independent if and only if
-    $$
-      P(A \cap B) = P(A) \cdot P(B).
-    $$ 
-  - Why is this the definition?
-    1. If the occurrence of ${A}$ has no effect on the probability of ${B}$'s occurrence, then:
-      $$
-        P(A \cap B) = P(A) \cdot P(B ~|~ A) = P(A) \cdot P(B).
-      $$
-    2. If the relation ${P(A \cap B) = P(A) \cdot P(B)}$ holds, then the relation ${P(B ~|~ A) = P(B)}$ also holds. 
-    3. Since equality is symmetric, the relation ${P(A \cap B) = P(A) \cdot P(B)}$ implies that ${P(A ~|~ B) = P(A).}$
-    4. The definition applies even if ${P(A) = 0.}$
-
-### Independence of Event Complements
-- __*corollary*__. If ${A}$ and ${B}$ are independent, then ${A}$ and ${B^c}$ are independent.
-
-import {ConditionalIndependence, ConditionalIndependence2} from "@/components/Fig";
-
-### Conditional Independence
-- Suppose we have three events, ${A,}$ ${B,}$ and ${C.}$ We are told that ${C}$ occurs. 
-  <ConditionalIndependence/>
-- Examining the intersections, we want to model this conditionally:
-  $$
-    P(A \cap B ~|~ C) = P(A ~|~ C) P(B ~|~ C).
-  $$ 
-- Now suppose the picture looks like this:
-  <ConditionalIndependence2/>
-- If ${C}$ occurs, then we're in a universe where ${A}$ and ${B}$ have no intersection. This means that ${A}$ and ${B}$ are extremely dependent. Within ${C,}$ if ${A}$ occurs, then ${B}$ could not have occurred.
-  - This shows us that independence does not imply conditional independence.
-
-import {UnfairCoin1, UnfairCoin2, UnfairCoin3} from "@/components/Fig";
-
-### Conditioning Affecting Independence
-- Consider the following experiment. We have two unfair coins, with the following probabilities:
-  $$
-    P(H ~|~ \text{coin} ~ A) = 0.9 \\
-    P(H ~|~ \text{coin} ~ B) = 0.1.
-  $$ 
-  Moreover, the probability of obtaining heads on any toss remains the same, regardless of what happened in the previous toss. Thus, given a particular coin, we assume we have independent tosses. Visualizing the experiment with a tree:
-  <Cols of={2}>
-    <UnfairCoin1/>
-    <UnfairCoin2/>
-  </Cols>
-  Now suppose we're offered the two coins, and we must choose which coin to toss. The experiment's tree now becomes:
-  <UnfairCoin3/>
-  Are the coin tosses independent?
-- Let's try and compare two different probabilities:
-  $$
-    P(\text{toss} ~ 11 = H) \\
-    P(\text{toss} ~ 11 = H ~|~ \text{first 10 tosses are heads}) \\
-  $$ 
-  For the first probability:
-  $$
-    \begin{aligned}
-    P(\text{toss} ~ 11 = H) &= P(A) P(H_{11} ~|~ A) + P(B)P(H_{11} ~|~ B) \\
-    &= 0.5 \cdot 0.9 + 0.5 \cdot 0.1 \\
-    &= 0.5.
-    \end{aligned}
-  $$
-  For the second probability, we can think intuitively. If we pick coin ${B,}$ the event of picking ten heads in a row is extremely unlikely, since the probability of picking heads at each toss is ${0.1.}$ So, if we're getting ten heads in a row, there's almost complete certainty that we picked coin ${A.}$ Thus:
-  $$
-    \begin{aligned}
-    &P(\text{toss} ~ 11 = H ~|~ \text{first 10 tosses are heads}) \\
-    & \approx P(H_{11} ~|~ A) \\
-    & \approx 0.9.
-    \end{aligned}
-  $$
-  Thus, from just examining one particular scenario, we know for a fact that the tosses are no longer independent once we're asked to pick a coin.
-
-### Independence of a Collection of Events
-- Inuitively: A collection of events is independent if knowledge of some of the events does not change the probabilities of the other events.
-- __*definition*__. A collection of events ${A_1, A_2, \ldots, A_n}$ is _independent_ if:
-  $$
-    P(A_i \cap A_j \cap \ldots \cap A_m) = P(A_i) \cap P(A_j) \cap \ldots P(A_m)
-  $$ 
-  for any distinct indices ${i, j, \ldots, m.}$
-  
-import {FairCoinTosses} from "@/components/Fig";
-
-#### Pairwise Independence
-- Three events ${A_1, A_2, A_3,}$ are _pairwise independent_ if:
-  $$
-    \begin{aligned}
-    & P(A_1 \cap A_2) = P(A_1) \cdot P(A_2) \\
-    & P(A_1 \cap A_3) = P(A_1) \cdot P(A_3) \\
-    & P(A_2 \cap A_3) = P(A_2) \cdot P(A_3).
-    \end{aligned}
-  $$ 
-  We call this situation (${A_1}$ and ${A_2}$ are independent, ${A_1}$ and ${A_3}$ are independent, and ${A_2}$ and ${A_3}$ are independent), _pairwise independence_.
-- Complete independence, however, requires something more:
-  $$
-    P(A_1 \cap A_2 \cap A_3) = P(A_1) \cdot P(A_2) \cdot P(A_3).
-  $$ 
-
-#### Pairwise Independence vs. Independence
-- Consider an experiment with two independent fair coin tosses.
-  <FairCoinTosses/>
-- We have:
-  $$
-    P(H_1) = P(H_2) = \dfrac{1}{2}.
-  $$ 
-  where ${H_1}$ is heads for the first toss and ${H_2}$ is heads for the second toss.
-- The probability of obtaining heads on both tosses:
-  $$
-    P(HH) = P(H_1) \cdot P(H_2) = \dfrac{1}{2} \cdot \dfrac{1}{2} = \dfrac{1}{4}.
-  $$ 
-- Since ${P(HH) = 1/4,}$ it follows that all the other possiblities have probability ${1/4,}$ since the coin is fair and there are four possibilities.
-- Now let's introduce an event ${C:}$ We're told that the two tosses had the same result.
-  - This is the event where we get either ${HH}$ or ${TT.}$
-- Is event ${C}$ independent of the events ${H_1}$ and ${H_2?}$
-  - Let's first see if there's pairwise independence. Consider:
-    $$
-      P(H_1 \cap C) = P(H_1 \cap H_2) = 1/4.
-    $$ 
-    What about the product of the probabilities of ${H_1}$ and ${C?}$
-    $$
-      P(H_1) P(C) = (1/2)(1/4 + 1/4) = (1/2)(1/2) = 1/4.
-    $$
-    Since the probabilities of ${P(H_1 \cap C)}$ and ${P(H_1) P(C)}$ are the same, events ${H_1}$ and ${C}$ are independent events. By the same argument, ${H_2}$ and ${C}$ are independent. ${H_1}$ and ${H_2}$ are also independent from each other, so we have pairwise independence.
-  - Now, are they independent? For this, we must determine the probability of all three events happening, and see whether that probability is equal to the product of the individual probabilities:
-    $$
-      P(H_1 \cap H_2 \cap C) = P(HH) = 1/4.
-    $$ 
-    But:
-    $$
-      P(H_1) P(H_2) P(C) = (1/2)(1/2)(1/2) = 1/8.
-    $$
-    Since ${1/4 \neq 1/8,}$ ${H_1,}$ ${H_2,}$ and ${C}$ are not independent as a collection of events.
-
-
-
-
+### Events 
+- Suppose a rifleman shoots at the target below.
+	<BullsEye/>
+	What is the probability that the center is hit with infinite precision?
+	- It's impossible to hit the center with infinite precision. No matter how close we get, there's always a coordinate ${(x,y)}$ that's closer. The probability of hitting the center with infinite precision is ${0.}$
+	- For this reason, we assign probabilities to __events__ rather than outcomes.
+		<Events/>
+- __*definition*__. Given a sample space ${\Omega,}$ and event ${E}$ is a subset of ${\Omega.}$
+	
 
 export default function MDXPage({ children }) {
-  return <MdxLayout>{children}</MdxLayout>;
+    return <MdxLayout>{children}</MdxLayout>
+
 }

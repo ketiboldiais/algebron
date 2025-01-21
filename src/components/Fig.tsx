@@ -93,8 +93,26 @@ import {
 } from "three/examples/jsm/Addons.js";
 import { Canvas, useThree } from "@react-three/fiber";
 import { AxesHelper, DoubleSide, GridHelper, Vector3 } from "three";
+import Image from "next/image";
 
-const cssvar = (varname: string) => `var(--${varname})`;
+export const Img = ({
+  url,
+  alt,
+  width,
+  height,
+}: {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  url: any;
+  alt: string;
+  width?: number;
+  height?: number;
+}) => (
+  <figure style={{ width: "fit-content", marginTop: "20px", marginBottom: "20px" }}>
+    <Image width={width} height={height} src={url} alt={alt} />
+  </figure>
+);
+
+export const cssvar = (varname: string) => `var(--${varname})`;
 
 const defaultSVGContext: SVGContext = {
   width: 500,
@@ -130,16 +148,16 @@ const axis = (spec: AxisSpec) => {
   return out;
 };
 
-export function getCoordinates(event:MouseEvent<SVGElement>) {
-  const {top, left} = event.currentTarget.getBoundingClientRect()
+export function getCoordinates(event: MouseEvent<SVGElement>) {
+  const { top, left } = event.currentTarget.getBoundingClientRect();
   return {
     x: event.clientX - left,
     y: event.clientX - parseInt(`${top}`, 10),
-  }
+  };
 }
 
 export function useDrag() {
-  const [coordinates, setCoordinates] = useState(vector([0,0]));
+  const [coordinates, setCoordinates] = useState(vector([0, 0]));
   const [dragging, setDragging] = useState(false);
   return {
     coordinates,
@@ -151,8 +169,8 @@ export function useDrag() {
     },
     stopDrag: (_: Vector) => {
       setDragging(false);
-    }
-  }
+    },
+  };
 }
 
 const FIGURE = ({ children }: { children: ReactNode }) => {
@@ -447,8 +465,8 @@ export const Tex = ({ content, block, style }: TexProps) => {
 // Linear Algebra Figures
 
 export const GeoVectorSum = () => {
-  const domain = tuple(0,5);
-  const range = tuple(0,5);
+  const domain = tuple(0, 5);
+  const range = tuple(0, 5);
   const d = svg({
     width: 500,
     height: 500,
@@ -489,47 +507,56 @@ export const GeoVectorSum = () => {
       circle(5, [0, 0]).fill(cssvar("foreground")),
       circle(5, [2, 2]).fill(cssvar("foreground")),
       circle(5, [4, 2]).fill(cssvar("foreground")),
-    ]).translateY(-170)
-  return <Fig data={d} width={70} paddingBottom={50}/>;
+    ])
+    .translateY(-170);
+  return <Fig data={d} width={70} paddingBottom={50} />;
 };
 
 export const VectorComponents = () => {
-  const domain = tuple(-1,5);
-  const range = tuple(-1,5);
+  const domain = tuple(-1, 5);
+  const range = tuple(-1, 5);
   const d = svg({
     width: 500,
     height: 500,
-    domain, range,
-  }).children([
-    // axis({
-    //   on: "x",
-    //   domain,
-    //   range,
-    // }),
-    // axis({
-    //   on: "y",
-    //   domain: domain,
-    //   range: range,
-    // }),
-    // grid(domain, range).done(),
-    text('θ').position(1.5,1.1),
-    text('a_{y}').latex('block').fontSize(20).position(-0.5, 2.5),
-    text('a_{x}').latex('block').fontSize(20).position(1.7, 0.1),
-    text('\\overrightarrow{a}').latex('block').fontSize(20).position(1.5,2.5),
-    text('𝑥').position(4.1,0).dy(5),
-    text('𝑦').position(0,4.1),
-    line([0,4], [0,-.5]),
-    line([-.5,0], [4,0]),
-    [line([1,1], [3,3]).stroke(cssvar('blue')),
-    line([0,1], [0,3]).stroke(cssvar('red')),
-    line([1,0], [3,0]).stroke(cssvar('red'))].map(l => l.arrowEnd().strokeWidth(2)),
-    arcFromPoints([3,1], [1,1], [3,3], 30).stroke(cssvar('pencil')),
-    line([0,1], [3,1]).strokeDashArray(5),
-    line([3,0], [3,3]).strokeDashArray(5),
-    line([0,3], [3,3]).strokeDashArray(5),
-    line([1,0], [1,1]).strokeDashArray(5),
-  ]).translateY(-50);
-  return <Fig data={d} width={70} paddingBottom={60}/>;
+    domain,
+    range,
+  })
+    .children([
+      // axis({
+      //   on: "x",
+      //   domain,
+      //   range,
+      // }),
+      // axis({
+      //   on: "y",
+      //   domain: domain,
+      //   range: range,
+      // }),
+      // grid(domain, range).done(),
+      text("θ").position(1.5, 1.1),
+      text("a_{y}").latex("block").fontSize(20).position(-0.5, 2.5),
+      text("a_{x}").latex("block").fontSize(20).position(1.7, 0.1),
+      text("\\overrightarrow{a}")
+        .latex("block")
+        .fontSize(20)
+        .position(1.5, 2.5),
+      text("𝑥").position(4.1, 0).dy(5),
+      text("𝑦").position(0, 4.1),
+      line([0, 4], [0, -0.5]),
+      line([-0.5, 0], [4, 0]),
+      [
+        line([1, 1], [3, 3]).stroke(cssvar("blue")),
+        line([0, 1], [0, 3]).stroke(cssvar("red")),
+        line([1, 0], [3, 0]).stroke(cssvar("red")),
+      ].map((l) => l.arrowEnd().strokeWidth(2)),
+      arcFromPoints([3, 1], [1, 1], [3, 3], 30).stroke(cssvar("pencil")),
+      line([0, 1], [3, 1]).strokeDashArray(5),
+      line([3, 0], [3, 3]).strokeDashArray(5),
+      line([0, 3], [3, 3]).strokeDashArray(5),
+      line([1, 0], [1, 1]).strokeDashArray(5),
+    ])
+    .translateY(-50);
+  return <Fig data={d} width={70} paddingBottom={60} />;
 };
 
 export const LA5 = () => {
@@ -3123,79 +3150,93 @@ export const FairCoinTosses = () => {
   return <Fig data={d} width={90} paddingBottom={55} />;
 };
 
-
 export const SinePeriod = () => {
-  const domain = tuple(-10,10);
-  const range = tuple(-2,2);
+  const domain = tuple(-10, 10);
+  const range = tuple(-2, 2);
   const d = svg({
     width: 500,
     height: 500,
     domain,
     range,
   }).children([
-      // axis({
-      //   on: "x",
-      //   domain,
-      //   range,
-      // }),
-      // axis({
-      //   on: "y",
-      //   domain,
-      //   range,
-      // }),
-      // grid(domain, range).done(),
-      line([0,-2], [0,2]).stroke(cssvar('dimgrey')),
-      line([-10,0], [10,0]).stroke(cssvar('dimgrey')),
-      cplot('fn f(x) = sin(x)', domain, range).strokeWidth(2).stroke(cssvar('red')).done(),
-      line([0, 1.5], [2 * Math.PI, 1.5]).strokeDashArray(4),
-      line([0,0], [0,1.5]).strokeDashArray(4),
-      line([2 * Math.PI,0], [2 * Math.PI,1.5]).strokeDashArray(4),
-      text("1 period").position(3,1.6),
-      circle(3, [2 * Math.PI, 0]),
-      circle(3, [0, 0]),
-      text("2π").position(2 * Math.PI,-.15).dx(10),
-      text("0").position(0,-.15).dx(10),
-  ])
-  return <Fig data={d} width={70}/>
-}
-
+    // axis({
+    //   on: "x",
+    //   domain,
+    //   range,
+    // }),
+    // axis({
+    //   on: "y",
+    //   domain,
+    //   range,
+    // }),
+    // grid(domain, range).done(),
+    line([0, -2], [0, 2]).stroke(cssvar("dimgrey")),
+    line([-10, 0], [10, 0]).stroke(cssvar("dimgrey")),
+    cplot("fn f(x) = sin(x)", domain, range)
+      .strokeWidth(2)
+      .stroke(cssvar("red"))
+      .done(),
+    line([0, 1.5], [2 * Math.PI, 1.5]).strokeDashArray(4),
+    line([0, 0], [0, 1.5]).strokeDashArray(4),
+    line([2 * Math.PI, 0], [2 * Math.PI, 1.5]).strokeDashArray(4),
+    text("1 period").position(3, 1.6),
+    circle(3, [2 * Math.PI, 0]),
+    circle(3, [0, 0]),
+    text("2π")
+      .position(2 * Math.PI, -0.15)
+      .dx(10),
+    text("0").position(0, -0.15).dx(10),
+  ]);
+  return <Fig data={d} width={70} />;
+};
 
 export const SineAmplitude = () => {
-  const domain = tuple(-10,10);
-  const range = tuple(-10,10);
+  const domain = tuple(-10, 10);
+  const range = tuple(-10, 10);
   const d = svg({
     width: 500,
     height: 500,
     domain,
     range,
   }).children([
-      axis({
-        on: "x",
-        domain,
-        range,
-      }),
-      axis({
-        on: "y",
-        domain,
-        range,
-      }),
-      // grid(domain, range).done(),
-      // line([0,-10], [0,10]).stroke(cssvar('dimgrey')),
-      // line([-10,0], [10,0]).stroke(cssvar('dimgrey')),
-      cplot('fn f(x) = sin(x)', domain, range).strokeWidth(2).stroke(cssvar('red')).done(),
-      cplot('fn f(x) = 2sin(x)', domain, range).strokeWidth(2).stroke(cssvar('blue')).done(),
-      cplot('fn f(x) = 3sin(x)', domain, range).strokeWidth(2).stroke(cssvar('green')).done(),
-      cplot('fn f(x) = 4sin(x)', domain, range).strokeWidth(2).stroke(cssvar('orange')).done(),
-      [text("f(x) = \\sin x").position(-10.2,10).fill(cssvar('red')),
-      text("f(x) = 2\\sin x").position(-10,9).fill(cssvar('blue')),
-      text("f(x) = 3\\sin x").position(-10,8).fill(cssvar('green')),
-      text("f(x) = 4\\sin x").position(-10,7).fill(cssvar('orange'))].map(t => t.width(100).latex('block')),
-  ])
-  return <Fig data={d} width={80}/>
-}
-
-
-
+    axis({
+      on: "x",
+      domain,
+      range,
+    }),
+    axis({
+      on: "y",
+      domain,
+      range,
+    }),
+    // grid(domain, range).done(),
+    // line([0,-10], [0,10]).stroke(cssvar('dimgrey')),
+    // line([-10,0], [10,0]).stroke(cssvar('dimgrey')),
+    cplot("fn f(x) = sin(x)", domain, range)
+      .strokeWidth(2)
+      .stroke(cssvar("red"))
+      .done(),
+    cplot("fn f(x) = 2sin(x)", domain, range)
+      .strokeWidth(2)
+      .stroke(cssvar("blue"))
+      .done(),
+    cplot("fn f(x) = 3sin(x)", domain, range)
+      .strokeWidth(2)
+      .stroke(cssvar("green"))
+      .done(),
+    cplot("fn f(x) = 4sin(x)", domain, range)
+      .strokeWidth(2)
+      .stroke(cssvar("orange"))
+      .done(),
+    [
+      text("f(x) = \\sin x").position(-10.2, 10).fill(cssvar("red")),
+      text("f(x) = 2\\sin x").position(-10, 9).fill(cssvar("blue")),
+      text("f(x) = 3\\sin x").position(-10, 8).fill(cssvar("green")),
+      text("f(x) = 4\\sin x").position(-10, 7).fill(cssvar("orange")),
+    ].map((t) => t.width(100).latex("block")),
+  ]);
+  return <Fig data={d} width={80} />;
+};
 
 // export const TEMPLATE = () => {
 //   const d = svg(defaultSVGContext).children([

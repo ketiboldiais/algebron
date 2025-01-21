@@ -7,6 +7,51 @@ import MdxLayout from "@/components/mdx-layout";
 
 </TOC>
 
+### Sample Space
+A __sample space__ is the set of all possible outcomes of an experiment. The sample space should be:
+
+1. mutually exclusive,
+2. collectively exhaustive, and
+3. at the right granularity.
+
+
+
+#### Binomial Probabilities
+Consider a coin tossed ${n \geq 1}$ times in a row, each toss independent. Suppose the probability of heads is:
+
+$$
+    P(H) = p.
+$$ 
+
+This implies that the probability of tails is:
+
+$$
+    P(T) = 1 - p.
+$$ 
+
+What is the probability that in the ${n}$ coin tosses, we observe exactly ${k}$ heads? I.e., what is:
+
+$$
+    P(k \text{ heads})?
+$$ 
+
+We start by considering an example scenario. What is:
+
+$$
+    P(HTTHHH)?
+$$
+
+We take ${n = 6.}$ Since the tosses are independent, we have:
+
+$$
+    P(HTTHHH) = p(1-p)(1-p)ppp = p^4(1-p)^2.
+$$
+
+We can generalize the answer:
+
+$$
+    P(\text{particular sequence}) = p ^ \text{\# heads} (1 - p) ^ \text{\# tails} 
+$$
 
 
 
