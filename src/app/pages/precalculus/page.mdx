@@ -46,7 +46,7 @@ import { Affine1, Affine2 } from "@/components/Precalculus";
 - __*theorem*__. If ${f}$ is an affine function then it has a constant rate of change equal to the slope of its graph.
 - __*theorem*__. If a function ${f}$ has a constant rate of change, then it must be an affine function.
 
-import { Quadratic1 } from "@/components/Precalculus";
+import { Quadratic1, QuadraticFunctionLab } from "@/components/Precalculus";
 
 ## Quadratic Functions
 - __*definition*__. A quadratic function is a function of the form
@@ -57,6 +57,46 @@ import { Quadratic1 } from "@/components/Precalculus";
 - The graph of a quadratic function is called a __parabola__.
 - __*example*__. Below is the graph of ${y = 2x^2 - 2x - 1.}$
 	<Quadratic1/>
+- Given a quadratic ${y = ax^2 + bx + c,}$ if ${a \gt 0,}$ then ${y}$ opens up upward. If ${a \lt 0,}$ then ${y}$ opens up downward.
+- Comparing ${u = x^2}$ to ${w = ax^2:}$
+  - If ${\left\lvert a \right\rvert \gt 1,}$ then ${w}$'s graph opens up narrower than ${u.}$ 
+  - If ${\left\lvert a \right\rvert \lt 1,}$ then ${w}$'s graph opens up wider than ${u.}$
+- The parabola ${y = ax^2 + bx + c}$ can always be rewritten in the form
+	$$
+		y = a(x - h)^2 + k
+	$$
+	where ${h}$ is the ${x}$-coordinate of the parabola's vertex, ${(h,k)}$ and the axis of symmetry is the line ${x = h.}$ The parabola opens upward if ${a \gt 0}$ and ${a \lt 0.}$
+- Below is an interactive demonstration of a quadratic function.
+	<QuadraticFunctionLab/>
+
+### The Vertex Formula
+- __*theorem*__. The ${x}$-coordinate of the vertex of the parabola ${y = ax ^ 2 + bx + c}$ is given by
+	$$
+		x = \dfrac{-b}{2a}.
+	$$
+
+import {VerticalSymmetry} from "@/components/Precalculus"; 
+
+## Vertical Symmetry Testing
+- Parabolas are symmetric about a vertical line. More generally, we can test other functions for vertical symmetry.
+- __*vertical symmetry test*__. The graph of a function ${f}$ is symmetric about the line ${x = k}$ if the following conditions are met:
+	- ${x + k \in \text{dom}(f) \implies x - k \in \text{dom}(f)}$ 
+	- ${f(x + h) = f(x - h).}$
+	<VerticalSymmetry/>
+
+## Polynomial Functions
+- __*definition*__. A __polynomial function__ is a function defined by an equation of the form
+	$$
+		f(x) = a_n x ^n + a _{n - 1} x ^{n - 1} + \ldots + a _{1} x + a _{0},
+	$$
+	where ${n}$ is a nonnegative integer and the ${a _{i}}$'s are constants. If ${a _{n} \neq 0,}$ then the __degree__ of the polynomial is ${n.}$
+- __*notation*__. Given a polynomial ${p,}$ we denote the degree of ${p}$ with the notation 
+	$$
+		\text{deg}(p).
+	$$
+- __*example*__. ${y = 7}$ is a polynomial, with ${\text{deg}(y) = 0.}$ We can think of ${y = 7}$ as ${y = 7x^{0}.}$ 
+- __*definition*__. A function of the form ${y = x ^{n}}$ where ${n}$ is any real-number constant is called a __power function__. 
+- Power functions are polynomials. Power functions with nonnegative integer exponents are the simplest polynomial functions.
 	
 
 

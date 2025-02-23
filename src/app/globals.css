@@ -507,6 +507,17 @@ input[type="range"]::-webkit-slider-thumb {
   border: none;
 }
 
+.live-demo {
+  /* border: 1px solid grey; */
+  padding: 5px;
+  /* width: 80%; */
+  margin: 5px auto;
+}
+.demo-control {
+  padding: 5px 10px;
+  font-size: 0.9rem;
+}
+
 /* Thumb: Firefox */
 input[type="range"]::-moz-range-thumb {
   height: 10px;
